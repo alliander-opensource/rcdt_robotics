@@ -12,4 +12,4 @@ on:
 
 jobs:
   actions:
-    uses: Alliander/rcdt_linting/.github/workflows/actions.yml@main
+    uses: alliander-opensource/rcdt_linting/.github/workflows/actions.yml@main
