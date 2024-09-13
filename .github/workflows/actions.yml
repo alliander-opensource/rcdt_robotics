@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Actions
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  actions:
+    uses: Alliander/rcdt_linting/.github/workflows/actions.yml@main
