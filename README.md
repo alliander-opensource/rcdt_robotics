@@ -23,6 +23,7 @@ This repository gives an overview of the robots from RCDT and the different repo
 **Robot specific repositories:**
 
 - [rcdt_franka](https://github.com/alliander-opensource/rcdt_franka)
+- [rcdt_panther](https://github.com/alliander-opensource/rcdt_panther)
 - [rcdt_mobile_manipulator](https://github.com/alliander-opensource/rcdt_mobile_manipulator)
 
 ## General repositories
