@@ -26,6 +26,10 @@ This repository gives an overview of the robots from RCDT and the different repo
 - [rcdt_panther](https://github.com/alliander-opensource/rcdt_panther)
 - [rcdt_mobile_manipulator](https://github.com/alliander-opensource/rcdt_mobile_manipulator)
 
+**Forked repositories:**
+
+- [franka_description](https://github.com/alliander-opensource/franka_description)
+
 ## General repositories
 
 The following repositories are general repositories, used for all the robots.
@@ -42,6 +46,10 @@ Contains github workflows, used by the other repositories, used for automatic ch
 
 Contains ROS2-based utility functions that can be used for ROS2 software development for any robot. This avoids duplication of often repeated code between different robotic specific repositories.
 
+## Robot specific repositories
+
+The following repositories contain software developed for a specific robot:
+
 **rcdt_franka:**
 
 Contains the RCDT-developed software for the Franka Research 3.
@@ -53,6 +61,17 @@ Contains the RCDT-developed software for the Husarion Panther.
 **rcdt_mobile_manipulator:**
 
 Contains RCDT-developed software for mobile manipulators. So far, the only supported mobile manipulator is a combination of the Husarion Panther base with a Franka Research 3 arm. Therefore, this repository depends on *rcdt_franka* and *rcdt_panther*.
+
+## Forked repositories
+
+The following repositories are forked and adapted for our needs:
+
+**franka_description:**
+
+Contains the description of the franka robot. We made adaptions to:
+
+- support gripper usage in simulation
+- enable usage in combination with a driving base
 
 ## License
 
