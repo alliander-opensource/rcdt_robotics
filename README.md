@@ -19,6 +19,7 @@ This repository gives an overview of the robots from RCDT and the different repo
 - [rcdt_docker](https://github.com/alliander-opensource/rcdt_docker)
 - [rcdt_linting](https://github.com/alliander-opensource/rcdt_linting)
 - [rcdt_utilities](https://github.com/alliander-opensource/rcdt_utilities)
+- [rcdt_detection](https://github.com/alliander-opensource/rcdt_detection)
 
 **Robot specific repositories:**
 
@@ -45,6 +46,10 @@ Contains github workflows, used by the other repositories, used for automatic ch
 **rcdt_utilities:**
 
 Contains ROS2-based utility functions that can be used for ROS2 software development for any robot. This avoids duplication of often repeated code between different robotic specific repositories.
+
+**rcdt_detection:**
+
+Contains ROS2-based detection packages.
 
 ## Robot specific repositories
 
