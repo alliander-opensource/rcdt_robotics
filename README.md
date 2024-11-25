@@ -6,77 +6,43 @@ SPDX-License-Identifier: Apache-2.0
 
 # RCDT Robotics
 
-This repository gives an overview of the robots from RCDT and the different repositories developed for these robots.
-
-**Robots:**
+This repository is used for development of robotics in the Alliander Research Center for Digital Technologies (RCDT). Currently, RCDT has two robots we use for development:
 
 | ![drawing](img/fr3.jpg) | ![drawing](img/hp.jpg) |
 | :---------------------: | :--------------------: |
 |    Franka Research 3    |    Husarion Panther    |
 
-**General repositories:**
+## Clone this repository
 
-- [rcdt_docker](https://github.com/alliander-opensource/rcdt_docker)
-- [rcdt_linting](https://github.com/alliander-opensource/rcdt_linting)
-- [rcdt_utilities](https://github.com/alliander-opensource/rcdt_utilities)
-- [rcdt_detection](https://github.com/alliander-opensource/rcdt_detection)
+To use this repository, first clone it including the submodules:
 
-**Robot specific repositories:**
+`git clone --recurse-submodules https://github.com/alliander-opensource/rcdt_robotics.git`
 
-- [rcdt_franka](https://github.com/alliander-opensource/rcdt_franka)
-- [rcdt_panther](https://github.com/alliander-opensource/rcdt_panther)
-- [rcdt_mobile_manipulator](https://github.com/alliander-opensource/rcdt_mobile_manipulator)
+## Install docker
 
-**Forked repositories:**
+This repository contains docker files to simplify the installation process of the required software. To install docker itself, please check: [docs/install_docker](docs/install_docker.md).
 
-- [franka_description](https://github.com/alliander-opensource/franka_description)
+## Build/run an image
 
-## General repositories
+To build and run one of our images, use the run script in root of the repository and follow the instructions:
 
-The following repositories are general repositories, used for all the robots.
+`. run`
 
-**rcdt_docker:**
+The selected image will build and run.
 
-Contains scripts to generate different docker images for the different robots. This simplifies the process of installing the software requirements for every robot and makes switching between different robot systems easier.
+## ROS2 packages
 
-**rcdt_linting:**
+The ROS2 packages, developed for the robots, can be found in `ros2_ws/src`. While using the docker image, one can build the packages inside the ros2_ws, using colcon:
 
-Contains github workflows, used by the other repositories, used for automatic checks on code format and quality.
+`colcon build --symlink-install`
 
-**rcdt_utilities:**
+Do not forget to source afterwards:
 
-Contains ROS2-based utility functions that can be used for ROS2 software development for any robot. This avoids duplication of often repeated code between different robotic specific repositories.
+`source /home/rcdt/ros2_ws/install/setup.bash`
 
-**rcdt_detection:**
+You can also automate this by adding the source command to the `.bashrc.personal` file, in the root of this repository.
 
-Contains ROS2-based detection packages.
-
-## Robot specific repositories
-
-The following repositories contain software developed for a specific robot:
-
-**rcdt_franka:**
-
-Contains the RCDT-developed software for the Franka Research 3.
-
-**rcdt_panther:**
-
-Contains the RCDT-developed software for the Husarion Panther.
-
-**rcdt_mobile_manipulator:**
-
-Contains RCDT-developed software for mobile manipulators. So far, the only supported mobile manipulator is a combination of the Husarion Panther base with a Franka Research 3 arm. Therefore, this repository depends on *rcdt_franka* and *rcdt_panther*.
-
-## Forked repositories
-
-The following repositories are forked and adapted for our needs:
-
-**franka_description:**
-
-Contains the description of the franka robot. We made adaptions to:
-
-- support gripper usage in simulation
-- enable usage in combination with a driving base
+You should now be able to use the ROS2 packages. Check the package specific README files for further instructions.
 
 ## License
 
