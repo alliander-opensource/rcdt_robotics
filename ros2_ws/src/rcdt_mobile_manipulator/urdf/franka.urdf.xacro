@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="franka">
+
+  <!-- Define arm and end-effector: -->
+  <xacro:arg name="arm_id" default="fr3" />
+  <xacro:arg name="ee_id" default="franka_hand" />
+
+  <!-- Load arm: -->
+  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro" />
+  <xacro:franka_robot
+    arm_id="$(arg arm_id)"
+    joint_limits="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/joint_limits.yaml')}"
+    inertials="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/inertials.yaml')}"
+    kinematics="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/kinematics.yaml')}"
+    dynamics="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/dynamics.yaml')}"
+    parent="base_link"
+    ee_id="franka_hand"
+    gazebo="true"
+    xyz="0 0 0.32" />
+
+  <!-- Load ros2 control: -->
+  <xacro:include filename="$(find franka_description)/robots/common/franka_arm.ros2_control.xacro" />
+  <xacro:franka_arm_ros2_control
+    arm_id="$(arg arm_id)"
+    robot_ip=""
+    hand="true"
+    ign_ros2_control="true" />
+</robot>

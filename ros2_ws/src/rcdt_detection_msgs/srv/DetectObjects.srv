@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Detects objects with camera, takes no input and returns centroids
+---
+PointList objects

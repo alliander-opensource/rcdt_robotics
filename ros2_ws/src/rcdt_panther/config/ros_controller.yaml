@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+controller_manager:
+  ros__parameters:
+    update_rate: 1000
+
+diff_drive_controller:
+  ros__parameters:
+    type: diff_drive_controller/DiffDriveController
+    left_wheel_names: [fl_wheel_joint, rl_wheel_joint]
+    right_wheel_names: [fr_wheel_joint, rr_wheel_joint]
+
+    wheel_separation: 0.697
+    wheel_radius: 0.1825
+
+    use_stamped_vel: true

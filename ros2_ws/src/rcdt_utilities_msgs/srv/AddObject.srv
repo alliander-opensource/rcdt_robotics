@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+moveit_msgs/CollisionObject object
+---
+bool success

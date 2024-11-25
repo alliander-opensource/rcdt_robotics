@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  franka:
+    image: franka
+    container_name: franka
+    runtime: nvidia
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    tty: true
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "../ros2_ws:/home/rcdt/ros2_ws"
+      - "../.bashrc.personal:/home/rcdt/.bashrc.personal"
+      - "../pyproject.toml:/home/rcdt/pyproject.toml"
+      - "/dev:/dev"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
+  mobile_manipulator:
+    image: mobile_manipulator
+    container_name: mobile_manipulator
+    runtime: nvidia
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    tty: true
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "../ros2_ws:/home/rcdt/ros2_ws"
+      - "../.bashrc.personal:/home/rcdt/.bashrc.personal"
+      - "../pyproject.toml:/home/rcdt/pyproject.toml"
+      - "/dev/input:/dev/input"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
+  panther:
+    image: panther
+    container_name: panther
+    runtime: nvidia
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    tty: true
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "../ros2_ws:/home/rcdt/ros2_ws"
+      - "../.bashrc.personal:/home/rcdt/.bashrc.personal"
+      - "../pyproject.toml:/home/rcdt/pyproject.toml"
+      - "/dev/input:/dev/input"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
+  ros2:
+    image: ros2
+    container_name: ros2
+    runtime: nvidia
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    tty: true
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
+      - "../ros2_ws:/home/rcdt/ros2_ws"
+      - "../.bashrc.personal:/home/rcdt/.bashrc.personal"
+      - "../pyproject.toml:/home/rcdt/pyproject.toml"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
