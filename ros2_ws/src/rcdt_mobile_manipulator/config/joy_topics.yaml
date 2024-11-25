@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+franka:
+  topic: "/franka/joy"
+  button: 0
+panther:
+  topic: "/panther/joy"
+  button: 1
+none:
+  topic: ""
+  button: 2
