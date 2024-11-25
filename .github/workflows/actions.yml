@@ -11,5 +11,20 @@ on:
     branches: [master, main]
 
 jobs:
-  actions:
-    uses: alliander-opensource/rcdt_linting/.github/workflows/actions.yml@main
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install ruff
+      - run: ruff format --check
+      - run: ruff check
+
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: REUSE Compliance Check
+        uses: fsfe/reuse-action@v4

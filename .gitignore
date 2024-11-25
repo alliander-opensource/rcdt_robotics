@@ -1,5 +1,18 @@
 # SPDX-FileCopyrightText: Alliander N. V.
-#
+# 
 # SPDX-License-Identifier: Apache-2.0
 
-.vscode
+__pychache__/
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+franka_ws/
+libfranka/
+moveit_ws/
+
+.bashrc.personal
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.vscode-server

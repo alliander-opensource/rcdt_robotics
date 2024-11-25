@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+geometry_msgs/PoseStamped goal_pose
+---
+geometry_msgs/Pose end_pose
+---
+geometry_msgs/Pose start_pose
