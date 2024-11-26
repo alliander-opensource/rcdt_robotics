@@ -19,6 +19,5 @@ RUN usermod -aG sudo,dialout $UNAME
 RUN apt update
 RUN apt full-upgrade -y
 
-# Set .bashrc:
-COPY ./bashrc/.bashrc /home/$UNAME/.bashrc
+RUN echo "if test -f ~/.bashrc.personal; then\nsource ~/.bashrc.personal\nfi" > /home/$UNAME/.bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/$UNAME/.bashrc
