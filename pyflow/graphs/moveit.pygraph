@@ -12,6 +12,52 @@
             "uuid": "2f13562e-2394-4a99-8951-b53deda0a5b8",
             "inputs": [
                 {
+                    "name": "oz",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_oz",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "faa542cb-e42a-4e03-8fbc-66990de80eef",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "oz",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "pz",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_pz",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "7a040204-12a9-4d46-87a2-ad1972a03878",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pz",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "py",
                     "package": "PyFlowBase",
                     "fullName": "PoseStampedMsg_py",
@@ -31,29 +77,6 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "py",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "px",
-                    "package": "PyFlowBase",
-                    "fullName": "PoseStampedMsg_px",
-                    "dataType": "FloatPin",
-                    "direction": 0,
-                    "value": "0.2",
-                    "uuid": "5f65adff-c2e4-40a8-96e1-6212cd3b6055",
-                    "linkedTo": [],
-                    "pinIndex": 1,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "px",
                         "wires": {}
                     }
                 },
@@ -127,15 +150,15 @@
                     }
                 },
                 {
-                    "name": "oz",
+                    "name": "px",
                     "package": "PyFlowBase",
-                    "fullName": "PoseStampedMsg_oz",
+                    "fullName": "PoseStampedMsg_px",
                     "dataType": "FloatPin",
                     "direction": 0,
-                    "value": "0.0",
-                    "uuid": "faa542cb-e42a-4e03-8fbc-66990de80eef",
+                    "value": "0.2",
+                    "uuid": "5f65adff-c2e4-40a8-96e1-6212cd3b6055",
                     "linkedTo": [],
-                    "pinIndex": 7,
+                    "pinIndex": 1,
                     "options": [
                         256
                     ],
@@ -145,30 +168,7 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "oz",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "pz",
-                    "package": "PyFlowBase",
-                    "fullName": "PoseStampedMsg_pz",
-                    "dataType": "FloatPin",
-                    "direction": 0,
-                    "value": "0.3",
-                    "uuid": "7a040204-12a9-4d46-87a2-ad1972a03878",
-                    "linkedTo": [],
-                    "pinIndex": 3,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "pz",
+                        "displayName": "px",
                         "wires": {}
                     }
                 }
@@ -209,7 +209,7 @@
                                 "destinationUUID": "cfba2b78-52ed-434b-a554-811a996468c8",
                                 "sourceName": "PoseStampedMsg_PoseStamped",
                                 "destinationName": "MoveitMove_PoseStamped",
-                                "uuid": "4ed32e8a-db1a-418b-ad06-cf38f28a13e3",
+                                "uuid": "09529b59-f605-4904-8bb5-290710e14349",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -236,7 +236,7 @@
                     "output": {}
                 }
             },
-            "x": -193.01851510683142,
+            "x": -201.0,
             "y": -155.51487095384476
         },
         {
@@ -282,7 +282,7 @@
                                 "destinationUUID": "cfba2b78-52ed-434b-a554-811a996468c8",
                                 "sourceName": "PoseStampedMsg_PoseStamped",
                                 "destinationName": "MoveitMove_PoseStamped",
-                                "uuid": "4ed32e8a-db1a-418b-ad06-cf38f28a13e3",
+                                "uuid": "09529b59-f605-4904-8bb5-290710e14349",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -358,8 +358,8 @@
                     "output": {}
                 }
             },
-            "x": -49.29000797018444,
-            "y": -151.25703750407052
+            "x": -5.427030313515623,
+            "y": -155.25703750407052
         },
         {
             "package": "RCDT",
@@ -369,6 +369,29 @@
             "name": "CollisionObjectMsg",
             "uuid": "c5d07b28-2835-46e5-8304-ec473bf6527b",
             "inputs": [
+                {
+                    "name": "d2",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_d2",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.1",
+                    "uuid": "188272e4-5636-4a36-963f-89641b303efe",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "d2",
+                        "wires": {}
+                    }
+                },
                 {
                     "name": "x",
                     "package": "PyFlowBase",
@@ -393,6 +416,29 @@
                     }
                 },
                 {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "00d4880c-90e9-4eaf-8ab5-1cb111c521f7",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "d1",
                     "package": "PyFlowBase",
                     "fullName": "CollisionObjectMsg_d1",
@@ -412,29 +458,6 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "d1",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "d2",
-                    "package": "PyFlowBase",
-                    "fullName": "CollisionObjectMsg_d2",
-                    "dataType": "FloatPin",
-                    "direction": 0,
-                    "value": "0.1",
-                    "uuid": "188272e4-5636-4a36-963f-89641b303efe",
-                    "linkedTo": [],
-                    "pinIndex": 6,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "d2",
                         "wires": {}
                     }
                 },
@@ -483,29 +506,6 @@
                         "displayName": "y",
                         "wires": {}
                     }
-                },
-                {
-                    "name": "z",
-                    "package": "PyFlowBase",
-                    "fullName": "CollisionObjectMsg_z",
-                    "dataType": "FloatPin",
-                    "direction": 0,
-                    "value": "0.3",
-                    "uuid": "00d4880c-90e9-4eaf-8ab5-1cb111c521f7",
-                    "linkedTo": [],
-                    "pinIndex": 3,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "z",
-                        "wires": {}
-                    }
                 }
             ],
             "outputs": [
@@ -544,7 +544,7 @@
                                 "destinationUUID": "a10a1eff-0236-4bb0-9dd2-e02d8692362a",
                                 "sourceName": "CollisionObjectMsg_CollisionObject",
                                 "destinationName": "MoveitAddObject_CollisionObject",
-                                "uuid": "f7acbcfc-bba5-428c-8f5f-4f11a656c783",
+                                "uuid": "0cfd048c-3e77-47f9-a329-8462c4ba2951",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -571,8 +571,8 @@
                     "output": {}
                 }
             },
-            "x": -200.2207855463971,
-            "y": 18.119136975568765
+            "x": -198.0,
+            "y": -4.880863024431235
         },
         {
             "package": "RCDT",
@@ -641,7 +641,7 @@
                                 "destinationUUID": "a10a1eff-0236-4bb0-9dd2-e02d8692362a",
                                 "sourceName": "CollisionObjectMsg_CollisionObject",
                                 "destinationName": "MoveitAddObject_CollisionObject",
-                                "uuid": "f7acbcfc-bba5-428c-8f5f-4f11a656c783",
+                                "uuid": "0cfd048c-3e77-47f9-a329-8462c4ba2951",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -693,8 +693,8 @@
                     "output": {}
                 }
             },
-            "x": -37.168654564328165,
-            "y": 17.182055763028135
+            "x": -18.427030313515623,
+            "y": -19.81794423697187
         },
         {
             "package": "RCDT",
@@ -767,8 +767,40 @@
                     "output": {}
                 }
             },
-            "x": -18.427030313515623,
-            "y": 165.240887344447
+            "x": 1.5729696864843774,
+            "y": 70.240887344447
+        },
+        {
+            "package": "PyFlowBase",
+            "lib": null,
+            "type": "stickyNote",
+            "owningGraphName": "root",
+            "name": "Instructions",
+            "uuid": "3369991a-a60c-4677-a092-9d6223cbd6f5",
+            "inputs": [],
+            "outputs": [],
+            "meta": {
+                "var": {},
+                "label": "Instructions"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 342.0,
+                    "h": 114.0
+                },
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Instructions</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                },
+                "color": 4294967176,
+                "textColor": 4278190080,
+                "currentText": "- Run the franka simulation with moveit:=node<br/>- Execute MoveitMove to move to the given pose.<br/>- Execute MoveitAddObject to add the given object.<br/>- Execute MoveitClearObjects to clear objects.<br/>"
+            },
+            "x": -209.0,
+            "y": -288.0
         }
     ],
     "depth": 1,

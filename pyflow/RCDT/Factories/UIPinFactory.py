@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
+# ruff: noqa
 
 from PyFlow.UI.Canvas.UIPinBase import UIPinBase
 
