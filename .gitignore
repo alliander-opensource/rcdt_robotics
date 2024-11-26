@@ -6,10 +6,12 @@ __pycache__/
 ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
+.config/
+.vscode/
 
 .bashrc.personal
 .bash_history
 .bash_logout
+.bashrc
 .profile
 .vscode-server
-.vscode

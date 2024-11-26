@@ -15,3 +15,17 @@ RUN apt install -y ros-humble-realsense2-description
 
 # rcdt_utilities
 RUN apt install -y ros-humble-rviz-visual-tools
+
+# Rosboard (https://github.com/dheera/rosboard):
+RUN python3 -m pip install tornado
+RUN python3 -m pip install simplejpeg 
+RUN mkdir -p /home/$UNAME/rosboard_ws/src
+WORKDIR /home/$UNAME/rosboard_ws
+RUN git clone https://github.com/dheera/rosboard.git src/rosboard
+RUN . /opt/ros/humble/setup.sh && colcon build
+RUN echo "source /home/$UNAME/rosboard_ws/install/setup.bash" >> /home/$UNAME/.bashrc
+
+# PyFlow (https://github.com/alliander-opensource/PyFlow):
+RUN pip install git+https://github.com/alliander-opensource/PyFlow.git@master
+RUN apt install -y libxcb-cursor-dev
+ENV QT_API=pyside6

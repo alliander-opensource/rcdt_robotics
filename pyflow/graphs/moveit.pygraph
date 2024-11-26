@@ -1,0 +1,779 @@
+{
+    "name": "root",
+    "category": "",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStampedMsg",
+            "owningGraphName": "root",
+            "name": "PoseStampedMsg",
+            "uuid": "2f13562e-2394-4a99-8951-b53deda0a5b8",
+            "inputs": [
+                {
+                    "name": "py",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_py",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.2",
+                    "uuid": "555741a0-491e-49bf-8d12-3bfdfa2a51c1",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "py",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "px",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_px",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.2",
+                    "uuid": "5f65adff-c2e4-40a8-96e1-6212cd3b6055",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "px",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "ox",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_ox",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "1.0",
+                    "uuid": "d5945bd2-a545-40d3-a917-9f576178f76b",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ox",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "ow",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_ow",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "9dc306d8-125d-4141-85f8-12492f49b71f",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "ow",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "oy",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_oy",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "fce53261-0a59-4484-91ec-eb81c4892bb5",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "oy",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "oz",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_oz",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "faa542cb-e42a-4e03-8fbc-66990de80eef",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "oz",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "pz",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_pz",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "7a040204-12a9-4d46-87a2-ad1972a03878",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pz",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStampedMsg_PoseStamped",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"{\\\"header\\\": {\\\"stamp\\\": {\\\"sec\\\": 0, \\\"nanosec\\\": 0}, \\\"frame_id\\\": \\\"\\\"}, \\\"pose\\\": {\\\"position\\\": {\\\"x\\\": 0.2, \\\"y\\\": 0.2, \\\"z\\\": 0.3}, \\\"orientation\\\": {\\\"x\\\": 1.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 0.0}}}\"",
+                    "uuid": "2f0870b8-cd4d-4812-bd22-b89ad9689f46",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStampedMsg",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveitMove",
+                            "inPinId": 2,
+                            "lhsNodeUid": "2f13562e-2394-4a99-8951-b53deda0a5b8",
+                            "rhsNodeUid": "54687e80-add5-49ae-9018-515ea1659150"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "2f0870b8-cd4d-4812-bd22-b89ad9689f46",
+                                "destinationUUID": "cfba2b78-52ed-434b-a554-811a996468c8",
+                                "sourceName": "PoseStampedMsg_PoseStamped",
+                                "destinationName": "MoveitMove_PoseStamped",
+                                "uuid": "4ed32e8a-db1a-418b-ad06-cf38f28a13e3",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStampedMsg"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStampedMsg</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -193.01851510683142,
+            "y": -155.51487095384476
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveitMove",
+            "owningGraphName": "root",
+            "name": "MoveitMove",
+            "uuid": "54687e80-add5-49ae-9018-515ea1659150",
+            "inputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitMove_PoseStamped",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"{\\\"header\\\": {\\\"stamp\\\": {\\\"sec\\\": 0, \\\"nanosec\\\": 0}, \\\"frame_id\\\": \\\"\\\"}, \\\"pose\\\": {\\\"position\\\": {\\\"x\\\": 0.2, \\\"y\\\": 0.2, \\\"z\\\": 0.3}, \\\"orientation\\\": {\\\"x\\\": 1.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 0.0}}}\"",
+                    "uuid": "cfba2b78-52ed-434b-a554-811a996468c8",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStampedMsg",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveitMove",
+                            "inPinId": 2,
+                            "lhsNodeUid": "2f13562e-2394-4a99-8951-b53deda0a5b8",
+                            "rhsNodeUid": "54687e80-add5-49ae-9018-515ea1659150"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "2f0870b8-cd4d-4812-bd22-b89ad9689f46",
+                                "destinationUUID": "cfba2b78-52ed-434b-a554-811a996468c8",
+                                "sourceName": "PoseStampedMsg_PoseStamped",
+                                "destinationName": "MoveitMove_PoseStamped",
+                                "uuid": "4ed32e8a-db1a-418b-ad06-cf38f28a13e3",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitMove_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "11280054-1605-4763-b31e-785f520aa0d2",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitMove_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "2bc31478-e9e1-44e7-91ad-a92ae13fa839",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveitMove"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveitMove</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -49.29000797018444,
+            "y": -151.25703750407052
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "CollisionObjectMsg",
+            "owningGraphName": "root",
+            "name": "CollisionObjectMsg",
+            "uuid": "c5d07b28-2835-46e5-8304-ec473bf6527b",
+            "inputs": [
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.2",
+                    "uuid": "cbe1a29b-0ff2-4a42-93df-192fc2e2c9b9",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "d1",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_d1",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.1",
+                    "uuid": "698765dc-d0fd-4de9-90db-d80223e71544",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "d1",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "d2",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_d2",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.1",
+                    "uuid": "188272e4-5636-4a36-963f-89641b303efe",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "d2",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "d0",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_d0",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.1",
+                    "uuid": "0383d3e8-9d93-4d40-a7cd-3d59a0a9fe26",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "d0",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "a66950a9-6ff0-43d2-92e6-d56dd9a75246",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "00d4880c-90e9-4eaf-8ab5-1cb111c521f7",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "CollisionObject",
+                    "package": "PyFlowBase",
+                    "fullName": "CollisionObjectMsg_CollisionObject",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"{\\\"header\\\": {\\\"stamp\\\": {\\\"sec\\\": 0, \\\"nanosec\\\": 0}, \\\"frame_id\\\": \\\"\\\"}, \\\"pose\\\": {\\\"position\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0}, \\\"orientation\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 1.0}}, \\\"id\\\": \\\"\\\", \\\"type\\\": {\\\"key\\\": \\\"\\\", \\\"db\\\": \\\"\\\"}, \\\"primitives\\\": [{\\\"type\\\": 1, \\\"dimensions\\\": [0.1, 0.1, 0.1], \\\"polygon\\\": {\\\"points\\\": []}}], \\\"primitive_poses\\\": [{\\\"position\\\": {\\\"x\\\": 0.2, \\\"y\\\": 0.0, \\\"z\\\": 0.3}, \\\"orientation\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 1.0}}], \\\"meshes\\\": [], \\\"mesh_poses\\\": [], \\\"planes\\\": [], \\\"plane_poses\\\": [], \\\"subframe_names\\\": [], \\\"subframe_poses\\\": [], \\\"operation\\\": \\\"\\\\u0000\\\"}\"",
+                    "uuid": "f4f3a437-124a-4ae2-af83-39470f3011ca",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "CollisionObjectMsg",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveitAddObject",
+                            "inPinId": 2,
+                            "lhsNodeUid": "c5d07b28-2835-46e5-8304-ec473bf6527b",
+                            "rhsNodeUid": "61554ce5-ed07-4d4a-a0f5-a9430316f94a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "CollisionObject",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "f4f3a437-124a-4ae2-af83-39470f3011ca",
+                                "destinationUUID": "a10a1eff-0236-4bb0-9dd2-e02d8692362a",
+                                "sourceName": "CollisionObjectMsg_CollisionObject",
+                                "destinationName": "MoveitAddObject_CollisionObject",
+                                "uuid": "f7acbcfc-bba5-428c-8f5f-4f11a656c783",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "CollisionObjectMsg"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">CollisionObjectMsg</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -200.2207855463971,
+            "y": 18.119136975568765
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveitAddObject",
+            "owningGraphName": "root",
+            "name": "MoveitAddObject",
+            "uuid": "61554ce5-ed07-4d4a-a0f5-a9430316f94a",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitAddObject_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "2bd059e0-dd2b-404f-be79-e94fd043b76b",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "CollisionObject",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitAddObject_CollisionObject",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"{\\\"header\\\": {\\\"stamp\\\": {\\\"sec\\\": 0, \\\"nanosec\\\": 0}, \\\"frame_id\\\": \\\"\\\"}, \\\"pose\\\": {\\\"position\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0}, \\\"orientation\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 1.0}}, \\\"id\\\": \\\"\\\", \\\"type\\\": {\\\"key\\\": \\\"\\\", \\\"db\\\": \\\"\\\"}, \\\"primitives\\\": [{\\\"type\\\": 1, \\\"dimensions\\\": [0.1, 0.1, 0.1], \\\"polygon\\\": {\\\"points\\\": []}}], \\\"primitive_poses\\\": [{\\\"position\\\": {\\\"x\\\": 0.2, \\\"y\\\": 0.0, \\\"z\\\": 0.3}, \\\"orientation\\\": {\\\"x\\\": 0.0, \\\"y\\\": 0.0, \\\"z\\\": 0.0, \\\"w\\\": 1.0}}], \\\"meshes\\\": [], \\\"mesh_poses\\\": [], \\\"planes\\\": [], \\\"plane_poses\\\": [], \\\"subframe_names\\\": [], \\\"subframe_poses\\\": [], \\\"operation\\\": \\\"\\\\u0000\\\"}\"",
+                    "uuid": "a10a1eff-0236-4bb0-9dd2-e02d8692362a",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "CollisionObjectMsg",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveitAddObject",
+                            "inPinId": 2,
+                            "lhsNodeUid": "c5d07b28-2835-46e5-8304-ec473bf6527b",
+                            "rhsNodeUid": "61554ce5-ed07-4d4a-a0f5-a9430316f94a"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "CollisionObject",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "f4f3a437-124a-4ae2-af83-39470f3011ca",
+                                "destinationUUID": "a10a1eff-0236-4bb0-9dd2-e02d8692362a",
+                                "sourceName": "CollisionObjectMsg_CollisionObject",
+                                "destinationName": "MoveitAddObject_CollisionObject",
+                                "uuid": "f7acbcfc-bba5-428c-8f5f-4f11a656c783",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitAddObject_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "d9ff2e1f-f484-4fee-b085-8bc1af6d861f",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveitAddObject"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveitAddObject</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -37.168654564328165,
+            "y": 17.182055763028135
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveitClearObjects",
+            "owningGraphName": "root",
+            "name": "MoveitClearObjects",
+            "uuid": "0956f5a3-340a-40fc-b865-cf52666dd667",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitClearObjects_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "06c63ade-167f-4977-bbd7-511db49182de",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveitClearObjects_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "ab9e8180-4f52-4ba0-8f9b-3b2e90aee4ce",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveitClearObjects"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveitClearObjects</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -18.427030313515623,
+            "y": 165.240887344447
+        }
+    ],
+    "depth": 1,
+    "isRoot": true,
+    "parentGraphName": "None",
+    "fileVersion": "3.0.0",
+    "activeGraph": "root"
+}
