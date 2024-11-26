@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from RCDT.Nodes.core import PyflowNode, RosNode
 
 from rclpy.action import ActionClient

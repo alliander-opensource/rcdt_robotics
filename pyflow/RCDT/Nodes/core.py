@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PyFlow.Core import NodeBase, PinBase
 from typing import Callable
 from threading import Thread

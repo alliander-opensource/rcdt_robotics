@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # PyFlow
 
 To simplify test and usage of the ROS2 package, it is possible to use PyFlow. PyFlow is a visual scripting framework for python. A [fork](https://github.com/alliander-opensource/PyFlow) of the original repository is automatically installed in the docker image. To use PyFlow, simply launch the application inside the docker container using:

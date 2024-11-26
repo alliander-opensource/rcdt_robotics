@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PyFlow.Core import PinBase
 from RCDT.Nodes.core import RosMessage
 from rosidl_runtime_py import convert
