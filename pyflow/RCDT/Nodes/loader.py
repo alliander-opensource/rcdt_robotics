@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from RCDT.Nodes.core import RosNode, RosMessage
+from RCDT.Nodes.core import RosMessage, RosService, RosNode
 from typing import List
 import sys
 import inspect
@@ -25,42 +25,63 @@ class CollisionObjectMsg(RosMessage):
         messages.CollisionObjectMsg(self)
 
 
-class RvizMark(RosNode):
+class RvizMark(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.RvizMark(self)
         super().__init__(name)
 
 
-class GetImage(RosNode):
+class GetImageFromTopic(RosNode):
     def __init__(self, name: str):
         reload(nodes)
-        nodes.GetImage(self)
+        nodes.GetImageFromTopic(self)
         super().__init__(name)
 
 
-class Segment(RosNode):
+class GetImageFromFile(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.GetImageFromFile(self)
+        super().__init__(name)
+
+
+class GetImageFromList(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.GetImageFromList(self)
+        super().__init__(name)
+
+
+class PublishImage(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.PublishImage(self)
+        super().__init__(name)
+
+
+class Segment(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.Segment(self)
         super().__init__(name)
 
 
-class MoveitMove(RosNode):
+class MoveitMoveRobot(RosService):
     def __init__(self, name: str):
         reload(nodes)
-        nodes.MoveitMove(self)
+        nodes.MoveitMoveRobot(self)
         super().__init__(name)
 
 
-class MoveitAddObject(RosNode):
+class MoveitAddObject(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.MoveitAddObject(self)
         super().__init__(name)
 
 
-class MoveitClearObjects(RosNode):
+class MoveitClearObjects(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.MoveitClearObjects(self)
