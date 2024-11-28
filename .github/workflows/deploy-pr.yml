@@ -26,9 +26,9 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Set MODIFIED_BRANCH_NAME
         env:
-          name: "${{env.BRANCH_NAME}}"
+          head_ref: "${{github.head_ref}}"
         run: |
-          echo "MODIFIED_BRANCH_NAME=${name/\//-}" >> $GITHUB_ENV
+          echo "MODIFIED_BRANCH_NAME=${head_ref/\//-}" >> $GITHUB_ENV
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
