@@ -31,4 +31,4 @@ jobs:
           file: ./dockerfile/franka.Dockerfile
           tags: |
             rcdt/robotics:${{ github.head_ref }}-latest
-            rcdt/robotics:${{ github.head_ref }}-$GITHUB_SHA
+            rcdt/robotics:${{ github.head_ref }}-${{ github.sha }}
