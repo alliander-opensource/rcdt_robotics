@@ -7,8 +7,8 @@ name: deploy-pr
 on:
   pull_request:
     branches: [main]
-    paths:
-      - dockerfiles/**
+    # paths:
+    #   - dockerfiles/**
 
 jobs:
   docker:
