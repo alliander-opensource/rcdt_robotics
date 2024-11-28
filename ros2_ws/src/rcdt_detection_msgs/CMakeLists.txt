@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   msg/PointList.msg
   srv/DetectObjects.srv
   srv/SegmentImage.srv
+  srv/FilterMasks.srv
   DEPENDENCIES geometry_msgs sensor_msgs
 )
 

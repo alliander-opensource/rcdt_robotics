@@ -23,6 +23,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   nodes/object_detection.py
   nodes/segment_image_node.py
+  nodes/filter_masks_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

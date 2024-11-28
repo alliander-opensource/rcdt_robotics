@@ -9,6 +9,7 @@ ros2_ws/log/
 ignore/
 .config/
 .vscode/
+.data/
 
 .bashrc.personal
 .bash_history

@@ -67,6 +67,13 @@ class Segment(RosService):
         super().__init__(name)
 
 
+class Filter(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.Filter(self)
+        super().__init__(name)
+
+
 class MoveitMoveRobot(RosService):
     def __init__(self, name: str):
         reload(nodes)

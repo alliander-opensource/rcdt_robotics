@@ -11,7 +11,7 @@ import cv2
 from rcdt_detection.image_manipulation import cv2_image_to_ros_image
 
 from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot
-from rcdt_detection_msgs.srv import SegmentImage
+from rcdt_detection_msgs.srv import SegmentImage, FilterMasks
 from std_srvs.srv import Trigger
 
 
@@ -72,7 +72,9 @@ class GetImageFromList:
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        images = self.ui.get_data("images")
+        succes, images = self.ui.get_data("images")
+        if not succes:
+            return
         n = self.ui.input_pins["n"].getData()
         image = images[int(n)]
         self.ui.set_data("image", image)
@@ -84,11 +86,13 @@ class PublishImage:
         self.ui = ui
         self.ui.input_dict = {"image": Image}
         self.ui.output_dict = {}
-        self.pub = PyflowNode.node.create_publisher(Image, "test", 10)
+        self.pub = PyflowNode.node.create_publisher(Image, "/debug_image", 10)
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        image = self.ui.get_data("image")
+        succes, image = self.ui.get_data("image")
+        if not succes:
+            return
         self.pub.publish(image)
 
 
@@ -101,11 +105,34 @@ class Segment:
 
     def run_async(self) -> None:
         request = SegmentImage.Request()
-        request.input_image = self.ui.get_data("input_image")
+        succes, input_image = self.ui.get_data("input_image")
+        if not succes:
+            return
+        request.input_image = input_image
         response: SegmentImage.Response = self.ui.call_service(request)
         if response is None:
             return
         self.ui.set_data("segmented_image", response.segmented_image)
+        self.ui.set_data("masks", response.masks)
+
+
+class Filter:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = FilterMasks
+        ui.client = PyflowNode.node.create_client(FilterMasks, "/filter_masks")
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = FilterMasks.Request()
+        success, masks = self.ui.get_data("masks")
+        if not success:
+            return
+        request.masks = masks
+        request.filter_method = "brick"
+        response: FilterMasks.Response = self.ui.call_service(request)
+        if response is None:
+            return
         self.ui.set_data("masks", response.masks)
 
 

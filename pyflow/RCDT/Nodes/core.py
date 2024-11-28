@@ -5,6 +5,7 @@
 from PyFlow.Core import NodeBase, PinBase
 from typing import Callable, Dict
 from threading import Thread
+import os
 import json
 import logging
 from rosidl_runtime_py import set_message
@@ -47,6 +48,8 @@ class RosNode(NodeBase):
         self.exi: PinBase = self.createInputPin("In", "ExecPin", callback=self.start)
         self.exo: PinBase = self.createOutputPin("Out", "ExecPin")
         self.data_folder = "/home/rcdt/rcdt_robotics/pyflow/.data/"
+        if not os.path.exists(self.data_folder):
+            os.makedirs(self.data_folder)
 
         self.input_dict: Dict[str, type | str]
         self.input_objects: Dict[str, object]
@@ -108,15 +111,18 @@ class RosNode(NodeBase):
         set_message.set_message_fields(msg, msg_dict)
         return msg
 
-    def get_data(self, pin_name: str) -> object:
+    def get_data(self, pin_name: str) -> tuple[bool, object]:
         if pin_name not in self.input_pins:
             return
         pin = self.input_pins[pin_name]
         file_name = pin.getData()
         path = self.data_folder + file_name + ".pickle"
+        if not os.path.exists(path):
+            logging.error("Data path does not exist. Exiting.")
+            return False, None
         with open(path, "rb") as handle:
             data = pickle.load(handle)
-        return data
+        return True, data
 
     def set_data(self, pin_name: str, data: object) -> None:
         if pin_name not in self.output_pins:

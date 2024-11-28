@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+sensor_msgs/Image[] masks
+string filter_method
+---
+sensor_msgs/Image[] masks
+bool success

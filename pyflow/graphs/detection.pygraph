@@ -1,0 +1,1191 @@
+{
+    "name": "root",
+    "category": "",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "GetImageFromFile",
+            "owningGraphName": "root",
+            "name": "GetImageFromFile",
+            "uuid": "636d4fb2-3f6a-483a-b3d3-e88fc5b21d2b",
+            "inputs": [
+                {
+                    "name": "builtins/str",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromFile_builtins/str",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"/home/rcdt/rcdt_robotics/images/image1.jpg\"",
+                    "uuid": "14481cd4-f8f1-4d2f-bccc-fb50b30595f9",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "builtins/str",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromFile_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "2874e6c8-ec2b-4e2f-9800-23ff5eb79471",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromFile_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "def12c54-fb7d-491a-9b19-3faad834541a",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromFile_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"PAUAACRGNSDX\"",
+                    "uuid": "83e73430-f86e-4a5d-b665-9828bdc26560",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "GetImageFromFile",
+                            "outPinId": 2,
+                            "rhsNodeName": "Segment",
+                            "inPinId": 2,
+                            "lhsNodeUid": "636d4fb2-3f6a-483a-b3d3-e88fc5b21d2b",
+                            "rhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0"
+                        },
+                        {
+                            "lhsNodeName": "GetImageFromFile",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage3",
+                            "inPinId": 2,
+                            "lhsNodeUid": "636d4fb2-3f6a-483a-b3d3-e88fc5b21d2b",
+                            "rhsNodeUid": "8fc5a482-8b6d-4c31-8e53-f792cfcfdddb"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "83e73430-f86e-4a5d-b665-9828bdc26560",
+                                "destinationUUID": "5e1f34ab-960d-45fd-b647-00da374f6305",
+                                "sourceName": "GetImageFromFile_sensor_msgs/Image",
+                                "destinationName": "PublishImage3_sensor_msgs/Image",
+                                "uuid": "a706f986-74ae-424a-8da9-8cca980b9e6e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "GetImageFromFile"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">GetImageFromFile</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "path": true
+                    },
+                    "output": {
+                        "image": true
+                    }
+                }
+            },
+            "x": -409.02195882110834,
+            "y": 49.31088625623693
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PublishImage",
+            "owningGraphName": "root",
+            "name": "PublishImage",
+            "uuid": "14d5483e-2a80-4592-8b85-fd484b07ccf5",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "0709a406-87d3-4bda-9edf-cb865d3a1ec2",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"OHIVHUUVLHOX\"",
+                    "uuid": "d2205340-8ec3-4200-bade-5f339c641a83",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "GetImageFromList",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage",
+                            "inPinId": 2,
+                            "lhsNodeUid": "1e731931-c019-43ba-95a6-2ead81c171d1",
+                            "rhsNodeUid": "14d5483e-2a80-4592-8b85-fd484b07ccf5"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "450ebeb0-1e9a-41cc-962d-af2971ffa9f4",
+                                "destinationUUID": "d2205340-8ec3-4200-bade-5f339c641a83",
+                                "sourceName": "GetImageFromList_sensor_msgs/Image",
+                                "destinationName": "PublishImage_sensor_msgs/Image",
+                                "uuid": "cca0365f-76f7-46bb-8af1-75efa4aa0ed2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "19a442ac-f320-4a63-9a5d-91d5468be24d",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PublishImage"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PublishImage</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "image": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": 355.02978398568206,
+            "y": 204.32538561309028
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "Segment",
+            "owningGraphName": "root",
+            "name": "Segment",
+            "uuid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+            "inputs": [
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"PAUAACRGNSDX\"",
+                    "uuid": "a7b3ec58-e36b-4407-b18d-3f284bca4997",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "GetImageFromFile",
+                            "outPinId": 2,
+                            "rhsNodeName": "Segment",
+                            "inPinId": 2,
+                            "lhsNodeUid": "636d4fb2-3f6a-483a-b3d3-e88fc5b21d2b",
+                            "rhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "83e73430-f86e-4a5d-b665-9828bdc26560",
+                                "destinationUUID": "a7b3ec58-e36b-4407-b18d-3f284bca4997",
+                                "sourceName": "GetImageFromFile_sensor_msgs/Image",
+                                "destinationName": "Segment_sensor_msgs/Image",
+                                "uuid": "805f4445-94b3-411c-b61e-772c1816ded5",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "a9a4461a-1549-4a9d-8bcc-c335c0861d18",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "sensor_msgs/Image1",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_sensor_msgs/Image1",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"JTOWJLDTKFDU\"",
+                    "uuid": "62b664b0-8257-430f-a89c-5bfb6cec0b49",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage2",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "03c52c78-88ad-4b47-ab06-6dd7a29e266f"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image1",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "62b664b0-8257-430f-a89c-5bfb6cec0b49",
+                                "destinationUUID": "7d904053-4164-4981-9299-dcb607989c0a",
+                                "sourceName": "Segment_sensor_msgs/Image1",
+                                "destinationName": "PublishImage2_sensor_msgs/Image",
+                                "uuid": "7c74982e-2153-435e-9657-a39991dfe311",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "sequence<sensor_msgs/Image>",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_sequence<sensor_msgs/Image>",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"KOVFTVRGTOPV\"",
+                    "uuid": "c369e559-64b6-4d16-b790-632069285c79",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 3,
+                            "rhsNodeName": "GetImageFromList",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "1e731931-c019-43ba-95a6-2ead81c171d1"
+                        },
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 3,
+                            "rhsNodeName": "Filter",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "f52cdecf-662a-46d4-96de-7699a993c03e"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sequence<sensor_msgs/Image>",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "c369e559-64b6-4d16-b790-632069285c79",
+                                "destinationUUID": "6cf2f192-2bbc-4475-899e-29954ff75819",
+                                "sourceName": "Segment_sequence<sensor_msgs/Image>",
+                                "destinationName": "Filter_sequence<sensor_msgs/Image>",
+                                "uuid": "21002ffd-16fe-4bcb-8ac9-031fc692a53e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "boolean",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_boolean",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"{}\"",
+                    "uuid": "f7fc1492-e5b5-47b7-bc00-c932b296a807",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "boolean",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "Segment_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "fa7a5acc-0c41-4ffb-a329-0d347aa4ed01",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "Segment"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Segment</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "input_image": true
+                    },
+                    "output": {
+                        "segmented_image": true,
+                        "masks": true,
+                        "success": true
+                    }
+                }
+            },
+            "x": -169.14240852462981,
+            "y": 48.624775638420246
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PublishImage",
+            "owningGraphName": "root",
+            "name": "PublishImage2",
+            "uuid": "03c52c78-88ad-4b47-ab06-6dd7a29e266f",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage2_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "645593ef-37cf-418b-9b46-ca0082326494",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage2_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"JTOWJLDTKFDU\"",
+                    "uuid": "7d904053-4164-4981-9299-dcb607989c0a",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage2",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "03c52c78-88ad-4b47-ab06-6dd7a29e266f"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "62b664b0-8257-430f-a89c-5bfb6cec0b49",
+                                "destinationUUID": "7d904053-4164-4981-9299-dcb607989c0a",
+                                "sourceName": "Segment_sensor_msgs/Image1",
+                                "destinationName": "PublishImage2_sensor_msgs/Image",
+                                "uuid": "7c74982e-2153-435e-9657-a39991dfe311",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage2_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "2777fa29-bd7a-448c-bb23-fd1a8d577f30",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PublishImage2"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PublishImage2</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "image": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": 144.71885968199126,
+            "y": -23.71105021920088
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PublishImage",
+            "owningGraphName": "root",
+            "name": "PublishImage3",
+            "uuid": "8fc5a482-8b6d-4c31-8e53-f792cfcfdddb",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage3_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "7c553e3c-f7c0-4e86-bf93-c5f974b4ae57",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage3_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"PAUAACRGNSDX\"",
+                    "uuid": "5e1f34ab-960d-45fd-b647-00da374f6305",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "GetImageFromFile",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage3",
+                            "inPinId": 2,
+                            "lhsNodeUid": "636d4fb2-3f6a-483a-b3d3-e88fc5b21d2b",
+                            "rhsNodeUid": "8fc5a482-8b6d-4c31-8e53-f792cfcfdddb"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "83e73430-f86e-4a5d-b665-9828bdc26560",
+                                "destinationUUID": "5e1f34ab-960d-45fd-b647-00da374f6305",
+                                "sourceName": "GetImageFromFile_sensor_msgs/Image",
+                                "destinationName": "PublishImage3_sensor_msgs/Image",
+                                "uuid": "a706f986-74ae-424a-8da9-8cca980b9e6e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "PublishImage3_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "f02c1553-ac40-47a5-ac9f-39e85dd685b2",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PublishImage3"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PublishImage3</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "image": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -171.53216697519022,
+            "y": -65.10758457473972
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "Filter",
+            "owningGraphName": "root",
+            "name": "Filter",
+            "uuid": "f52cdecf-662a-46d4-96de-7699a993c03e",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "2253e6fb-a5bf-4738-9137-8f796dd7e9cf",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "string",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_string",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"{}\"",
+                    "uuid": "579764d7-25d2-4f2d-94dd-2e26cd9d29ae",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "string",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sequence<sensor_msgs/Image>",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_sequence<sensor_msgs/Image>",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"KOVFTVRGTOPV\"",
+                    "uuid": "6cf2f192-2bbc-4475-899e-29954ff75819",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 3,
+                            "rhsNodeName": "Filter",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "f52cdecf-662a-46d4-96de-7699a993c03e"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sequence<sensor_msgs/Image>",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "c369e559-64b6-4d16-b790-632069285c79",
+                                "destinationUUID": "6cf2f192-2bbc-4475-899e-29954ff75819",
+                                "sourceName": "Segment_sequence<sensor_msgs/Image>",
+                                "destinationName": "Filter_sequence<sensor_msgs/Image>",
+                                "uuid": "21002ffd-16fe-4bcb-8ac9-031fc692a53e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "sequence<sensor_msgs/Image>1",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_sequence<sensor_msgs/Image>1",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"GDEPZIGTXQJH\"",
+                    "uuid": "ffeb40be-16ad-448d-b93c-626bca416a47",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sequence<sensor_msgs/Image>1",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "66b65ad8-bb3c-4b3c-b37e-7cc61700f738",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "boolean",
+                    "package": "PyFlowBase",
+                    "fullName": "Filter_boolean",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"{}\"",
+                    "uuid": "7c96ab15-dd14-4758-a33d-f9e71f3866d6",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "boolean",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "Filter"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Filter</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "masks": true,
+                        "filter_method": true
+                    },
+                    "output": {
+                        "masks": true,
+                        "success": true
+                    }
+                }
+            },
+            "x": 145.50115197848586,
+            "y": 78.96758885295134
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "GetImageFromList",
+            "owningGraphName": "root",
+            "name": "GetImageFromList",
+            "uuid": "1e731931-c019-43ba-95a6-2ead81c171d1",
+            "inputs": [
+                {
+                    "name": "builtins/list",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromList_builtins/list",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"KOVFTVRGTOPV\"",
+                    "uuid": "807f3d8f-101a-48b1-80f3-44011514d794",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segment",
+                            "outPinId": 3,
+                            "rhsNodeName": "GetImageFromList",
+                            "inPinId": 2,
+                            "lhsNodeUid": "011a4e97-e91c-4934-b44b-1cc34969e4c0",
+                            "rhsNodeUid": "1e731931-c019-43ba-95a6-2ead81c171d1"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "builtins/list",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "c369e559-64b6-4d16-b790-632069285c79",
+                                "destinationUUID": "807f3d8f-101a-48b1-80f3-44011514d794",
+                                "sourceName": "Segment_sequence<sensor_msgs/Image>",
+                                "destinationName": "GetImageFromList_builtins/list",
+                                "uuid": "54581232-4a62-489d-b044-873c14bb2192",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "builtins/str",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromList_builtins/str",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"5\"",
+                    "uuid": "d75e43db-aabd-4a36-acbe-47245832b31c",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "builtins/str",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromList_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "471c0333-5a9d-4148-855f-1f045ae8d962",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromList_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "182d1d6c-4077-4913-b716-04e360efa7a8",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sensor_msgs/Image",
+                    "package": "PyFlowBase",
+                    "fullName": "GetImageFromList_sensor_msgs/Image",
+                    "dataType": "StringPin",
+                    "direction": 1,
+                    "value": "\"OHIVHUUVLHOX\"",
+                    "uuid": "450ebeb0-1e9a-41cc-962d-af2971ffa9f4",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "GetImageFromList",
+                            "outPinId": 2,
+                            "rhsNodeName": "PublishImage",
+                            "inPinId": 2,
+                            "lhsNodeUid": "1e731931-c019-43ba-95a6-2ead81c171d1",
+                            "rhsNodeUid": "14d5483e-2a80-4592-8b85-fd484b07ccf5"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sensor_msgs/Image",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "450ebeb0-1e9a-41cc-962d-af2971ffa9f4",
+                                "destinationUUID": "d2205340-8ec3-4200-bade-5f339c641a83",
+                                "sourceName": "GetImageFromList_sensor_msgs/Image",
+                                "destinationName": "PublishImage_sensor_msgs/Image",
+                                "uuid": "cca0365f-76f7-46bb-8af1-75efa4aa0ed2",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "GetImageFromList"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">GetImageFromList</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "images": true,
+                        "n": true
+                    },
+                    "output": {
+                        "image": true
+                    }
+                }
+            },
+            "x": 148.20686149281778,
+            "y": 202.07737175505758
+        }
+    ],
+    "depth": 1,
+    "isRoot": true,
+    "parentGraphName": "None",
+    "fileVersion": "3.0.0",
+    "activeGraph": "root"
+}
