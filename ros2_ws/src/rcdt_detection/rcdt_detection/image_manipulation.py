@@ -56,3 +56,8 @@ def segmentation_mask_to_binary_mask(mask: torch.Tensor) -> ndarray:
 def single_to_three_channel(image: ndarray) -> ndarray:
     """Convert given single-channel image to three-channel image."""
     return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+
+def three_to_single_channel(image: ndarray) -> ndarray:
+    """Convert given three-channel image to single-channel image."""
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

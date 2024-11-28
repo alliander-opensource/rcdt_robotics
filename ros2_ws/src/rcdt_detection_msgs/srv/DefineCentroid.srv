@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+sensor_msgs/Image image
+---
+sensor_msgs/Image image
+vision_msgs/Point2D centroid
+bool success

@@ -74,6 +74,13 @@ class Filter(RosService):
         super().__init__(name)
 
 
+class DefineCentroidNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.DefineCentroidNode(self)
+        super().__init__(name)
+
+
 class MoveitMoveRobot(RosService):
     def __init__(self, name: str):
         reload(nodes)

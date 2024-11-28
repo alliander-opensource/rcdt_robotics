@@ -11,7 +11,7 @@ import cv2
 from rcdt_detection.image_manipulation import cv2_image_to_ros_image
 
 from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot
-from rcdt_detection_msgs.srv import SegmentImage, FilterMasks
+from rcdt_detection_msgs.srv import SegmentImage, FilterMasks, DefineCentroid
 from std_srvs.srv import Trigger
 
 
@@ -134,6 +134,25 @@ class Filter:
         if response is None:
             return
         self.ui.set_data("masks", response.masks)
+
+
+class DefineCentroidNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = DefineCentroid
+        ui.client = PyflowNode.node.create_client(DefineCentroid, "/define_centroid")
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = DefineCentroid.Request()
+        success, image = self.ui.get_data("image")
+        if not success:
+            return
+        request.image = image
+        response: DefineCentroid.Response = self.ui.call_service(request)
+        if response is None:
+            return
+        self.ui.set_data("image", response.image)
 
 
 class MoveitMoveRobot:
