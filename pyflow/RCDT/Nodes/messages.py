@@ -10,6 +10,28 @@ import json
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_msgs.msg import CollisionObject
 from shape_msgs.msg import SolidPrimitive
+from vision_msgs.msg import Point2D
+
+
+class Point2DMsg:
+    def __init__(self, ui: RosMessage):
+        self.msg = Point2D()
+        ui.compute_callback = self.compute
+        self.x_pin: PinBase = ui.createInputPin("x", "FloatPin")
+        self.y_pin: PinBase = ui.createInputPin("y", "FloatPin")
+
+        self.out: PinBase = ui.createOutputPin(
+            self.msg.__class__.__name__, "StringPin", "{}"
+        )
+
+    def compute(self) -> None:
+        self.msg = Point2D()
+        self.msg.x = self.x_pin.getData()
+        self.msg.y = self.y_pin.getData()
+
+        msg_dict = convert.message_to_ordereddict(self.msg)
+        msg_json = json.dumps(msg_dict)
+        self.out.setData(msg_json)
 
 
 class PoseStampedMsg:

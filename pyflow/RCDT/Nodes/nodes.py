@@ -4,14 +4,19 @@
 
 from RCDT.Nodes.core import PyflowNode, RosService, RosNode
 
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CameraInfo
 from rclpy import wait_for_message
 import cv2
 
 from rcdt_detection.image_manipulation import cv2_image_to_ros_image
 
 from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot
-from rcdt_detection_msgs.srv import SegmentImage, FilterMasks, DefineCentroid
+from rcdt_detection_msgs.srv import (
+    SegmentImage,
+    FilterMasks,
+    DefineCentroid,
+    PointFromPixel,
+)
 from std_srvs.srv import Trigger
 
 
@@ -28,6 +33,25 @@ class RvizMark:
         request = AddMarker.Request()
         request.marker_pose = self.ui.get_message("marker_pose")
         self.ui.call_service(request)
+
+
+class GetCameraInfo:
+    def __init__(self, ui: RosNode):
+        self.ui = ui
+        self.ui.input_dict = {"topic": str}
+        self.ui.output_dict = {"camera_info": CameraInfo}
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        success, message = wait_for_message.wait_for_message(
+            msg_type=CameraInfo,
+            node=PyflowNode.node,
+            topic=self.ui.get_string("topic"),
+            time_to_wait=1,
+        )
+        if success:
+            self.ui.set_data("camera_info", message)
+            self.ui.success = True
 
 
 class GetImageFromTopic:
@@ -153,6 +177,30 @@ class DefineCentroidNode:
         if response is None:
             return
         self.ui.set_data("image", response.image)
+
+
+class PointFromPixelNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = PointFromPixel
+        ui.client = PyflowNode.node.create_client(PointFromPixel, "/point_from_pixel")
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = PointFromPixel.Request()
+        success, depth_image = self.ui.get_data("depth_image")
+        if not success:
+            return
+        success, camera_info = self.ui.get_data("camera_info")
+        if not success:
+            return
+        request.pixel = self.ui.get_message("pixel")
+        request.depth_image = depth_image
+        request.camera_info = camera_info
+        response: PointFromPixel.Response = self.ui.call_service(request)
+        if response is None:
+            return
+        self.ui.set_data("point", response.point)
 
 
 class MoveitMoveRobot:

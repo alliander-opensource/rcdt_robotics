@@ -11,6 +11,13 @@ from RCDT.Nodes import messages
 from RCDT.Nodes import nodes
 
 
+class Point2DMsg(RosMessage):
+    def __init__(self, name: str):
+        super().__init__(name)
+        reload(messages)
+        messages.Point2DMsg(self)
+
+
 class PoseStampedMsg(RosMessage):
     def __init__(self, name: str):
         super().__init__(name)
@@ -29,6 +36,13 @@ class RvizMark(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.RvizMark(self)
+        super().__init__(name)
+
+
+class GetCameraInfo(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.GetCameraInfo(self)
         super().__init__(name)
 
 
@@ -78,6 +92,13 @@ class DefineCentroidNode(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.DefineCentroidNode(self)
+        super().__init__(name)
+
+
+class PointFromPixelNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.PointFromPixelNode(self)
         super().__init__(name)
 
 
