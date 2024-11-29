@@ -33,7 +33,8 @@ jobs:
           df -h
           grep MemTotal /proc/meminfo
           echo $GITHUB_HEAD_REF
-          echo "MODIFIED_BRANCH_NAME=${head_ref/\//-}" >> $GITHUB_ENV
+          echo "MODIFIED_BRANCH_NAME=${GITHUB_HEAD_REF/\//-}" >> $GITHUB_ENV
+          echo ${GITHUB_HEAD_REF/\//-}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
