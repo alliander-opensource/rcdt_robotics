@@ -39,7 +39,6 @@ jobs:
         with:
           push: true
           context: ./dockerfiles
-          # build-contexts: local://context=./dockerfiles
           file: ./dockerfiles/franka.Dockerfile
           tags: |
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
