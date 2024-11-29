@@ -38,9 +38,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: .
-          build-contexts: local://context=./dockerfiles
-          file: franka.Dockerfile
+          context: ./dockerfiles
+          # build-contexts: local://context=./dockerfiles
+          file: ./dockerfiles/franka.Dockerfile
           tags: |
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-${{ github.sha }}
