@@ -7,8 +7,8 @@ name: deploy-main
 on:
   push:
     branches: [main]
-    # paths:
-    #   - dockerfiles/**
+    paths:
+      - dockerfiles/**
 
 jobs:
   docker:
