@@ -3,7 +3,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-INCLUDE ./general/pre_install.dockerfile
+INCLUDE ./test.Dockerfile
+
+# INCLUDE ./general/pre_install.dockerfile
 
 # INCLUDE ./general/dep_core.dockerfile
 
