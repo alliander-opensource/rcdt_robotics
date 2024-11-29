@@ -33,8 +33,7 @@ jobs:
           head_ref: "${{github.head_ref}}"
         run: |
           echo "MODIFIED_BRANCH_NAME=${head_ref/\//-}" >> $GITHUB_ENV
-          ls -al
-          ls -al .
+          ls -al /dockerfiles
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
