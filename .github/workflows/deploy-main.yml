@@ -2,17 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: deploy-pr
+name: deploy-main
 
 on:
-  pull_request:
+  push:
     branches: [main]
     # paths:
     #   - dockerfiles/**
 
 jobs:
   docker:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -31,5 +30,5 @@ jobs:
           context: ./dockerfiles
           file: ./dockerfiles/franka.Dockerfile
           tags: |
-            rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-${{ github.sha }}
-            rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
+            rcdt/robotics:main-$GITHUB_SHA
+            rcdt/robotics:latest
