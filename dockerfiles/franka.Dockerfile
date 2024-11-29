@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-INCLUDE test.dockerfile
+INCLUDE dockerfiles/test.dockerfile
 
 # INCLUDE ./general/pre_install.dockerfile
 
