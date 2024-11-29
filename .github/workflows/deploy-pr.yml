@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: "{{defaultContext}}:dockerfiles"
+          context: .
           build-contexts: local://context=./dockerfiles
           file: franka.Dockerfile
           tags: |
