@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: "{{defaultContext}}:dockerfiles"
+          context: "{{defaultContext}}:dockerfiles/"
           file: franka.Dockerfile
           tags: |
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
