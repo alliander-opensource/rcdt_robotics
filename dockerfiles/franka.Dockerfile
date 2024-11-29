@@ -3,16 +3,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-INCLUDE ./general/pre_install.Dockerfile
+INCLUDE ./general/pre_install.dockerfile
 
-INCLUDE ./general/dep_core.Dockerfile
+# INCLUDE ./general/dep_core.dockerfile
 
-INCLUDE ./general/gazebo.Dockerfile
+# INCLUDE ./general/gazebo.dockerfile
 
-INCLUDE ./general/moveit.Dockerfile
+# INCLUDE ./general/moveit.dockerfile
 
-INCLUDE ./franka/main.Dockerfile
+# INCLUDE ./franka/main.dockerfile
 
-INCLUDE ./general/dep_dev.Dockerfile
+# INCLUDE ./general/dep_dev.dockerfile
 
-INCLUDE ./general/post_install.Dockerfile
+# INCLUDE ./general/post_install.dockerfile
