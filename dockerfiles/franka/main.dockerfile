@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Install libfranka:
-INCLUDE ./libfranka.Dockerfile
+INCLUDE ./libfranka.dockerfile
 
 #Install ros2 franka:
-INCLUDE ./franka_ros2.Dockerfile
+INCLUDE ./franka_ros2.dockerfile
