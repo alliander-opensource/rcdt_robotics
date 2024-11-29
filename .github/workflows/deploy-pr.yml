@@ -40,7 +40,7 @@ jobs:
           push: true
           context: "{{defaultContext}}:dockerfiles"
           build-contexts: local=./dockerfiles
-          file: ./dockerfiles/franka.Dockerfile
+          file: franka.Dockerfile
           tags: |
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-${{ github.sha }}
