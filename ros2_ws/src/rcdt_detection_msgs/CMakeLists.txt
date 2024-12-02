@@ -14,11 +14,11 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   msg/PointList.msg
-  srv/DetectObjects.srv
-  srv/SegmentImage.srv
-  srv/FilterMasks.srv
   srv/DefineCentroid.srv
+  srv/DetectObjects.srv
+  srv/FilterMasks.srv
   srv/PointFromPixel.srv
+  srv/SegmentImage.srv
   DEPENDENCIES geometry_msgs sensor_msgs vision_msgs
 )
 

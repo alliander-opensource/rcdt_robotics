@@ -26,19 +26,17 @@ class DefineCentroidNode(Node):
     def callback(
         self, request: DefineCentroid.Request, response: DefineCentroid.Response
     ) -> DefineCentroid.Response:
-        """Segments"""
         cv2_image = ros_image_to_cv2_image(request.image)
-        encoding = request.image.encoding
         single_channel = three_to_single_channel(cv2_image)
         moments = cv2.moments(single_channel)
-        x = int(moments["m10"] / moments["m00"])
-        y = int(moments["m01"] / moments["m00"])
+        x = float(moments["m10"] / moments["m00"])
+        y = float(moments["m01"] / moments["m00"])
         radius = int(0.01 * max(cv2_image.shape))
-        cv2_marked = cv2.circle(cv2_image, (x, y), radius, (255, 0, 0), -1)
+        cv2_marked = cv2.circle(cv2_image, (int(x), int(y)), radius, (255, 0, 0), -1)
 
-        response.centroid.x = float(x)
-        response.centroid.y = float(y)
-        response.image = cv2_image_to_ros_image(cv2_marked, encoding)
+        response.centroid.x = x
+        response.centroid.y = y
+        response.image = cv2_image_to_ros_image(cv2_marked)
 
         response.success = True
         return response
@@ -46,9 +44,15 @@ class DefineCentroidNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = DefineCentroidNode()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        node = DefineCentroidNode()
+        rclpy.spin(node)
+    except Exception as e:
+        ros_logger.error(e)
+        raise e
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":

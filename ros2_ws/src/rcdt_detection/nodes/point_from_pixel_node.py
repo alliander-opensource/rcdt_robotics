@@ -15,7 +15,7 @@ from rcdt_detection.image_manipulation import ros_image_to_cv2_image
 ros_logger = logging.get_logger(__name__)
 
 
-class PoseFromPixelNode(Node):
+class PointFromPixelNode(Node):
     def __init__(self) -> None:
         super().__init__("point_from_pixel")
         self.create_service(PointFromPixel, "/point_from_pixel", self.callback)
@@ -24,7 +24,7 @@ class PoseFromPixelNode(Node):
         self, request: PointFromPixel.Request, response: PointFromPixel.Response
     ) -> PointFromPixel.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
-        intr = self.calculate_intrinsics(request.camera_info)
+        intr = calculate_intrinsics(request.camera_info)
         pix_x = int(request.pixel.x)
         pix_y = int(request.pixel.y)
         depth_value = cv2_image[pix_y, pix_x]
@@ -38,32 +38,39 @@ class PoseFromPixelNode(Node):
         response.success = True
         return response
 
-    def calculate_intrinsics(self, camera_info: CameraInfo) -> rs2.intrinsics:
-        """Calculate camera intrinsics for translating image to world coordinates."""
-        intrinsics = rs2.intrinsics()
 
-        intrinsics.width = camera_info.width
-        intrinsics.height = camera_info.height
-        intrinsics.ppx = camera_info.k[2]
-        intrinsics.ppy = camera_info.k[5]
-        intrinsics.fx = camera_info.k[0]
-        intrinsics.fy = camera_info.k[4]
+def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
+    """Calculate camera intrinsics for translating image to world coordinates."""
+    intrinsics = rs2.intrinsics()
 
-        if camera_info.distortion_model == "plumb_bob":
-            intrinsics.model = rs2.distortion.brown_conrady
-        elif camera_info.distortion_model == "equidistant":
-            intrinsics.model = rs2.distortion.kannala_brandt4
+    intrinsics.width = camera_info.width
+    intrinsics.height = camera_info.height
+    intrinsics.ppx = camera_info.k[2]
+    intrinsics.ppy = camera_info.k[5]
+    intrinsics.fx = camera_info.k[0]
+    intrinsics.fy = camera_info.k[4]
 
-        intrinsics.coeffs = list(camera_info.d)
+    if camera_info.distortion_model == "plumb_bob":
+        intrinsics.model = rs2.distortion.brown_conrady
+    elif camera_info.distortion_model == "equidistant":
+        intrinsics.model = rs2.distortion.kannala_brandt4
 
-        return intrinsics
+    intrinsics.coeffs = list(camera_info.d)
+
+    return intrinsics
 
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = PoseFromPixelNode()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        node = PointFromPixelNode()
+        rclpy.spin(node)
+    except Exception as e:
+        ros_logger.error(e)
+        raise e
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":

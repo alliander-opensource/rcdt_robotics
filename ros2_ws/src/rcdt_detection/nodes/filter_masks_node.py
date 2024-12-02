@@ -22,23 +22,22 @@ class FilterMasksNode(Node):
     def callback(
         self, request: FilterMasks.Request, response: FilterMasks.Response
     ) -> FilterMasks.Response:
-        """Segments"""
         match request.filter_method:
             case "brick":
                 is_selected = is_brick
             case _:
-                ros_logger.warn("Selected filter_method unknown. Exiting.")
+                ros_logger.warn(
+                    f"Selected filter_method '{request.filter_method}' unknown. Exiting."
+                )
                 response.success = False
                 return response
 
-        n_slected = 0
         for mask_ros in request.masks:
             mask_cv2 = ros_image_to_cv2_image(mask_ros)
             if is_selected(mask_cv2):
                 response.masks.append(mask_ros)
-                n_slected += 1
         ros_logger.info(
-            f"Checked {len(request.masks)} masks, of which {n_slected} are selected."
+            f"Checked {len(request.masks)} masks, of which {len(response.masks)} are selected."
         )
         response.success = True
         return response
@@ -46,9 +45,15 @@ class FilterMasksNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = FilterMasksNode()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        node = FilterMasksNode()
+        rclpy.spin(node)
+    except Exception as e:
+        ros_logger.error(e)
+        raise e
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":
