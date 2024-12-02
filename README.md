@@ -22,6 +22,10 @@ To use this repository, first clone it including the submodules:
 
 This repository contains docker files to simplify the installation process of the required software. To install docker itself, please check: [docs/install_docker](docs/install_docker.md).
 
+## git lfs
+
+This repository uses git lfs for larger files, in particular for 3D simulation assets. To install git LFS please check: [git lfs](https://git-lfs.com/).
+
 ## Build/run an image
 
 To build and run one of our images, use the run script in root of the repository and follow the instructions:
