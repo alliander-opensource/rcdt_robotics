@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Perfrom pre-install steps:
-INCLUDE ./general/pre_install.Dockerfile
+INCLUDE ./general/pre_install.dockerfile
 
 # Gazebo:
 RUN apt install -y ros-${ROS_DISTRO}-ros-gz
@@ -16,4 +16,4 @@ RUN apt install -y ros-${ROS_DISTRO}-moveit
 RUN apt install -y ros-${ROS_DISTRO}-urdf-tutorial
 
 #Perfrom post-install steps:
-INCLUDE ./general/post_install.Dockerfile
+INCLUDE ./general/post_install.dockerfile

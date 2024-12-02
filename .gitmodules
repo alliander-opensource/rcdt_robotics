@@ -5,3 +5,4 @@
 [submodule "ros2_ws/src/franka_description"]
 	path = ros2_ws/src/franka_description
 	url = git@github.com:alliander-opensource/franka_description.git
+	branch = main

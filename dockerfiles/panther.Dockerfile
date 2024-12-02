@@ -3,12 +3,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-INCLUDE ./general/pre_install.Dockerfile
+INCLUDE ./general/pre_install.dockerfile
 
-INCLUDE ./general/dep_core.Dockerfile
+INCLUDE ./general/dep_core.dockerfile
 
-INCLUDE ./general/moveit.Dockerfile
+INCLUDE ./general/moveit.dockerfile
 
-INCLUDE ./panther/main.Dockerfile
+INCLUDE ./panther/main.dockerfile
 
-INCLUDE ./general/post_install.Dockerfile
+INCLUDE ./general/post_install.dockerfile
