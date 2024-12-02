@@ -16,7 +16,7 @@ find_package(moveit_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AddMarker.srv"
   "srv/AddObject.srv"
-  "action/Moveit.action"
+  "srv/MoveRobot.srv"
   DEPENDENCIES std_msgs geometry_msgs moveit_msgs
 )
 

@@ -4,29 +4,25 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(rcdt_detection)
+project(rcdt_sensors)
 
-find_package(rclpy REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-
-# Install project files
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}
-)
-
-# Install python package
-ament_python_install_package(${PROJECT_NAME})
+find_package(rclpy REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(realsense2_camera_msgs REQUIRED)
 
 # Install nodes
 install(PROGRAMS
-  nodes/define_centroid_node.py
-  nodes/filter_masks_node.py
-  nodes/object_detection.py
-  nodes/point_from_pixel_node.py
-  nodes/segment_image_node.py
+  nodes/combine_camera_topics_node.py
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install project files
+install(
+  DIRECTORY
+  urdf
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

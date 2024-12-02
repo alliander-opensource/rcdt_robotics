@@ -19,7 +19,7 @@ def ros_image_to_cv2_image(
     return cv_bridge.imgmsg_to_cv2(image_message, desired_encoding=desired_encoding)
 
 
-def cv2_image_to_ros_image(image: ndarray, encoding: str) -> ndarray:
+def cv2_image_to_ros_image(image: ndarray, encoding: str = "passthrough") -> Image:
     """Convert cv2 image message to ROS image."""
     return cv_bridge.cv2_to_imgmsg(image, encoding=encoding)
 
@@ -56,3 +56,8 @@ def segmentation_mask_to_binary_mask(mask: torch.Tensor) -> ndarray:
 def single_to_three_channel(image: ndarray) -> ndarray:
     """Convert given single-channel image to three-channel image."""
     return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+
+def three_to_single_channel(image: ndarray) -> ndarray:
+    """Convert given three-channel image to single-channel image."""
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

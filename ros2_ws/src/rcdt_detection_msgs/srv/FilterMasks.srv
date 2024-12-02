@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-sensor_msgs/Image input_image
+sensor_msgs/Image[] masks
+string filter_method
 ---
-sensor_msgs/Image segmented_image
 sensor_msgs/Image[] masks
 bool success

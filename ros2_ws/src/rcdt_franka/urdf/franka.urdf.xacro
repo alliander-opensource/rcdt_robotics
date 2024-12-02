@@ -44,7 +44,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <!-- Load realsense: -->
   <xacro:if value="$(arg load_realsense)">
-    <xacro:include filename="$(find rcdt_utilities)/urdf/rcdt_realsense_d435.urdf.xacro" />
+    <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_realsense_d435.urdf.xacro" />
     <link name="realsense_link" />
     <joint name="realsense_link_joint" type="fixed">
       <origin xyz="0.02 0 0.05" rpy="0 ${-0.5*pi} ${pi}" />

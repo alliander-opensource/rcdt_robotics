@@ -8,8 +8,6 @@ from typing import List
 
 import rclpy
 from rclpy.node import Node
-from rclpy.action import ActionServer
-from rclpy.action.server import ServerGoalHandle
 
 from moveit.planning import MoveItPy, PlanningComponent, PlanningSceneMonitor
 from moveit.core.robot_state import RobotState
@@ -20,8 +18,7 @@ from moveit.core.planning_scene import PlanningScene
 
 from geometry_msgs.msg import PoseStamped
 from moveit_msgs.msg import CollisionObject
-from rcdt_utilities_msgs.action import Moveit
-from rcdt_utilities_msgs.srv import AddObject
+from rcdt_utilities_msgs.srv import AddObject, MoveRobot
 from std_srvs.srv import Trigger
 
 
@@ -38,7 +35,7 @@ class MoveitControllerNode(Node):
         self.planner: PlanningComponent = self.robot.get_planning_component(group)
         self.monitor: PlanningSceneMonitor = self.robot.get_planning_scene_monitor()
 
-        self.server = ActionServer(self, Moveit, name, self.callback)
+        self.create_service(MoveRobot, "~/move_robot", self.move_robot)
         self.create_service(AddObject, "~/add_object", self.add_object)
         self.create_service(Trigger, "~/clear_objects", self.clear_objects)
 
@@ -65,22 +62,13 @@ class MoveitControllerNode(Node):
         self.planner.set_start_state_to_current_state()
         self.state: RobotState = self.planner.get_start_state()
 
-    def callback(self, goal_handle: ServerGoalHandle) -> None:
-        goal: Moveit.Goal = goal_handle.request
-
+    def move_robot(
+        self, request: MoveRobot.Request, response: MoveRobot.Response
+    ) -> None:
         self.update_state()
-        feedback = Moveit.Feedback()
-        feedback.start_pose = self.state.get_pose(self.ee_link)
-        goal_handle.publish_feedback(feedback)
+        response.success = self.move_to_pose(request.goal_pose)
 
-        success = self.move_to_pose(goal.goal_pose)
-        goal_handle.succeed() if success else goal_handle.abort()
-
-        self.update_state()
-        result = Moveit.Result()
-        result.end_pose = self.state.get_pose(self.ee_link)
-
-        return result
+        return response
 
     def plan_and_execute(self) -> bool:
         plan: MotionPlanResponse = self.planner.plan()
