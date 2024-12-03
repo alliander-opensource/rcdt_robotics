@@ -2,11 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from PyFlow.Core import PinBase
 from RCDT.Nodes.core import RosMessage
-from rosidl_runtime_py import convert
-import json
-
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_msgs.msg import CollisionObject
 from shape_msgs.msg import SolidPrimitive
@@ -15,87 +11,72 @@ from vision_msgs.msg import Point2D
 
 class Point2DMsg:
     def __init__(self, ui: RosMessage):
-        self.msg = Point2D()
+        self.ui = ui
         ui.compute_callback = self.compute
-        self.x_pin: PinBase = ui.createInputPin("x", "FloatPin")
-        self.y_pin: PinBase = ui.createInputPin("y", "FloatPin")
-
-        self.out: PinBase = ui.createOutputPin(
-            self.msg.__class__.__name__, "StringPin", "{}"
-        )
+        ui.input_dict = {"x": float, "y": float}
+        ui.output_dict = {"msg": Point2D}
 
     def compute(self) -> None:
-        self.msg = Point2D()
-        self.msg.x = self.x_pin.getData()
-        self.msg.y = self.y_pin.getData()
-
-        msg_dict = convert.message_to_ordereddict(self.msg)
-        msg_json = json.dumps(msg_dict)
-        self.out.setData(msg_json)
+        data = Point2D()
+        data.x = self.ui.get_data("x")
+        data.y = self.ui.get_data("y")
+        self.ui.set_data("msg", data)
 
 
 class PoseStampedMsg:
     def __init__(self, ui: RosMessage):
-        self.msg = PoseStamped()
+        self.ui = ui
         ui.compute_callback = self.compute
-        self.px_pin: PinBase = ui.createInputPin("px", "FloatPin")
-        self.py_pin: PinBase = ui.createInputPin("py", "FloatPin")
-        self.pz_pin: PinBase = ui.createInputPin("pz", "FloatPin")
-
-        self.ow_pin: PinBase = ui.createInputPin("ow", "FloatPin")
-        self.ox_pin: PinBase = ui.createInputPin("ox", "FloatPin")
-        self.oy_pin: PinBase = ui.createInputPin("oy", "FloatPin")
-        self.oz_pin: PinBase = ui.createInputPin("oz", "FloatPin")
-
-        self.out: PinBase = ui.createOutputPin(
-            self.msg.__class__.__name__, "StringPin", "{}"
-        )
+        ui.input_dict = {
+            "frame_id": str,
+            "px": float,
+            "py": float,
+            "pz": float,
+            "ow": float,
+            "ox": float,
+            "oy": float,
+            "oz": float,
+        }
+        ui.output_dict = {"msg": PoseStamped}
 
     def compute(self) -> None:
-        self.msg = PoseStamped()
-        self.msg.pose.position.x = self.px_pin.getData()
-        self.msg.pose.position.y = self.py_pin.getData()
-        self.msg.pose.position.z = self.pz_pin.getData()
-        self.msg.pose.orientation.w = self.ow_pin.getData()
-        self.msg.pose.orientation.x = self.ox_pin.getData()
-        self.msg.pose.orientation.y = self.oy_pin.getData()
-        self.msg.pose.orientation.z = self.oz_pin.getData()
-
-        msg_dict = convert.message_to_ordereddict(self.msg)
-        msg_json = json.dumps(msg_dict)
-        self.out.setData(msg_json)
+        data = PoseStamped()
+        data.header.frame_id = self.ui.get_data("frame_id")
+        data.pose.position.x = self.ui.get_data("px")
+        data.pose.position.y = self.ui.get_data("py")
+        data.pose.position.z = self.ui.get_data("pz")
+        data.pose.orientation.w = self.ui.get_data("ow")
+        data.pose.orientation.x = self.ui.get_data("ox")
+        data.pose.orientation.y = self.ui.get_data("oy")
+        data.pose.orientation.z = self.ui.get_data("oz")
+        self.ui.set_data("msg", data)
 
 
 class CollisionObjectMsg:
     def __init__(self, ui: RosMessage):
-        self.msg = CollisionObject()
+        self.ui = ui
         ui.compute_callback = self.compute
-        self.x_pin: PinBase = ui.createInputPin("x", "FloatPin")
-        self.y_pin: PinBase = ui.createInputPin("y", "FloatPin")
-        self.z_pin: PinBase = ui.createInputPin("z", "FloatPin")
-
-        for n in range(3):
-            setattr(self, f"d{n}_pin", ui.createInputPin(f"d{n}", "FloatPin"))
-
-        self.out: PinBase = ui.createOutputPin(
-            self.msg.__class__.__name__, "StringPin", "{}"
-        )
+        ui.input_dict = {
+            "x": float,
+            "y": float,
+            "z": float,
+            "d0": float,
+            "d1": float,
+            "d2": float,
+        }
+        ui.output_dict = {"msg": CollisionObject}
 
     def compute(self) -> None:
-        self.msg = CollisionObject()
+        data = CollisionObject()
         pose = Pose()
-        pose.position.x = self.x_pin.getData()
-        pose.position.y = self.y_pin.getData()
-        pose.position.z = self.z_pin.getData()
-        self.msg.primitive_poses.append(pose)
+        pose.position.x = self.ui.get_data("x")
+        pose.position.y = self.ui.get_data("y")
+        pose.position.z = self.ui.get_data("z")
+        data.primitive_poses.append(pose)
 
         primitive = SolidPrimitive()
         primitive.type = SolidPrimitive.BOX
         for n in range(3):
-            pin: PinBase = getattr(self, f"d{n}_pin")
-            primitive.dimensions.append(pin.getData())
-        self.msg.primitives.append(primitive)
-
-        msg_dict = convert.message_to_ordereddict(self.msg)
-        msg_json = json.dumps(msg_dict)
-        self.out.setData(msg_json)
+            primitive.dimensions.append(self.ui.get_data(f"d{n}"))
+        data.primitives.append(primitive)
+        self.ui.set_data("msg", data)
