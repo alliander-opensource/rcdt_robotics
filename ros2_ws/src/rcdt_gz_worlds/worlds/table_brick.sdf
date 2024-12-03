@@ -36,69 +36,36 @@ SPDX-License-Identifier: Apache-2.0
 
 
     <model name="dining_table">
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0.5 0 -0.73 0 0 0</pose>
       <include>
         <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Dining Table</uri>
       </include>
     </model>
 
     <model name='brick0'>
-      <pose>0 0 2 0 0 0</pose>
+      <pose>0.5 0 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
-
-
     <model name='brick1'>
-      <pose>0 0 2.1 .1 0 1</pose>
+      <pose>0.7 0 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
-
     <model name='brick2'>
-      <pose>0 0 2.2 1 .1 0</pose>
+      <pose>0.6 -0.05 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
-
-    <model name='brick3'>
-      <pose>0 0 2.3 0 0 .3</pose>
+        <model name='brick3'>
+      <pose>0.6 0.05 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
-
-    <model name='brick4'>
-      <pose>0.1 0.1 2.4 .2 1 0</pose>
-      <include>
-        <uri>model://brick</uri>
-      </include>
-    </model>
-
-    <model name='brick5'>
-      <pose>0.2 0.1 2.5 0 0 0.1</pose>
-      <include>
-        <uri>model://brick</uri>
-      </include>
-    </model>
-
-    <model name='brick6'>
-      <pose>0 0.1 2.6 0.4 0 0</pose>
-      <include>
-        <uri>model://brick</uri>
-      </include>
-    </model>
-
-    <model name='brick7'>
-      <pose>0.1 0 2.7 1 0.25 0</pose>
-      <include>
-        <uri>model://brick</uri>
-      </include>
-    </model>
-
     <!-- regular static world elements-->
 
     <light type="directional" name="sun">
@@ -116,6 +83,7 @@ SPDX-License-Identifier: Apache-2.0
     </light>
 
     <model name="ground_plane">
+    <pose>0 0 -0.74 0 0 0</pose>
       <static>true</static>
       <link name="link">
         <collision name="collision">

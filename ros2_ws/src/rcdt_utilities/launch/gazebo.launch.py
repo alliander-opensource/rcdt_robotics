@@ -10,15 +10,20 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-world_arg = LaunchArgument("world", "empty.sdf")
+world_arg = LaunchArgument("world", "table_brick.sdf")
 
 
 def launch_setup(context: LaunchContext) -> List:
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = world_arg.value(context)
 
-    #if world == "":
-    world = get_file_path("rcdt_utilities", ["sdf"], "empty.xml.sdf")
+    ign_resource_path = SetEnvironmentVariable(
+        name="IGN_GAZEBO_RESOURCE_PATH",
+        value=[
+            os.path.join(pkg_share, "worlds"),
+            ":" + os.path.join(pkg_share, "models"),
+        ],
+    )
 
     gz_args = f" -r {world}"
     if not load_gazebo_ui:
@@ -34,6 +39,7 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     return [
+        ign_resource_path,
         gazebo,
         bridge,
     ]

@@ -2,14 +2,13 @@ import os
 from typing import List
 
 from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription, LaunchContext
+from launch import LaunchContext, LaunchDescription
 from launch.actions import (
     IncludeLaunchDescription,
-    SetEnvironmentVariable,
     OpaqueFunction,
+    SetEnvironmentVariable,
 )
 from launch_ros.actions import Node
-
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", True, [True, False])

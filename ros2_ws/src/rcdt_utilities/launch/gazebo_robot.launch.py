@@ -2,15 +2,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import os
 from typing import List
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    IncludeLaunchDescription,
+    OpaqueFunction,
+    SetEnvironmentVariable,
+)
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-world_arg = LaunchArgument("world", "")
+world_arg = LaunchArgument("world", "table_brick.sdf")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
@@ -19,8 +25,18 @@ def launch_setup(context: LaunchContext) -> List:
     world = world_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
 
-    if world == "":
-        world = get_file_path("rcdt_utilities", ["sdf"], "empty.xml.sdf")
+    # if world == "":
+    #     world = get_file_path("rcdt_utilities", ["sdf"], "empty.xml.sdf")
+
+    pkg_share = get_package_share_directory("rcdt_gz_worlds")
+
+    ign_resource_path = SetEnvironmentVariable(
+        name="IGN_GAZEBO_RESOURCE_PATH",
+        value=[
+            os.path.join(pkg_share, "worlds"),
+            ":" + os.path.join(pkg_share, "models"),
+        ],
+    )
 
     gz_args = f" -r {world}"
     if not load_gazebo_ui:
@@ -55,6 +71,7 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     return [
+        ign_resource_path,
         gazebo,
         spawn_robot,
         bridge,
