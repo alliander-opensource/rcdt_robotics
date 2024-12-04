@@ -18,6 +18,13 @@ class Point2DMsg(RosMessage):
         super().__init__(name)
 
 
+class TransformMsg(RosMessage):
+    def __init__(self, name: str):
+        reload(messages)
+        messages.TransformMsg(self)
+        super().__init__(name)
+
+
 class PoseStampedMsg(RosMessage):
     def __init__(self, name: str):
         reload(messages)

@@ -39,12 +39,13 @@ class TransformPoseNode:
     def __init__(self, ui: RosService):
         self.ui = ui
         ui.service = TransformPose
-        ui.client = PyflowNode.node.create_client(TransformPose, "/transform_frame")
+        ui.client = PyflowNode.node.create_client(TransformPose, "/transform_pose")
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
         request = TransformPose.Request()
         request.pose_in = self.ui.get_data("pose_in")
+        request.transform = self.ui.get_data("transform")
         request.target_frame = self.ui.get_data("target_frame")
         response: TransformPose.Response = self.ui.call_service(request)
         self.ui.set_pins_based_on_response(response)

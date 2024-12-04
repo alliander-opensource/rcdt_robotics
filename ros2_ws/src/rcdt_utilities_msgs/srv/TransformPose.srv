@@ -4,6 +4,7 @@
 
 
 geometry_msgs/PoseStamped pose_in
+geometry_msgs/Transform transform
 string target_frame
 ---
 geometry_msgs/PoseStamped pose_out

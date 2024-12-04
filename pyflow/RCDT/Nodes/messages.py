@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from RCDT.Nodes.core import RosMessage
-from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import PoseStamped, Pose, Transform
 from moveit_msgs.msg import CollisionObject
 from shape_msgs.msg import SolidPrimitive
 from vision_msgs.msg import Point2D
@@ -20,6 +20,33 @@ class Point2DMsg:
         data = Point2D()
         data.x = self.ui.get_data("x")
         data.y = self.ui.get_data("y")
+        self.ui.set_data("msg", data)
+
+
+class TransformMsg:
+    def __init__(self, ui: RosMessage):
+        self.ui = ui
+        ui.compute_callback = self.compute
+        ui.input_dict = {
+            "px": float,
+            "py": float,
+            "pz": float,
+            "ow": float,
+            "ox": float,
+            "oy": float,
+            "oz": float,
+        }
+        ui.output_dict = {"msg": Transform}
+
+    def compute(self) -> None:
+        data = Transform()
+        data.translation.x = self.ui.get_data("px")
+        data.translation.y = self.ui.get_data("py")
+        data.translation.z = self.ui.get_data("pz")
+        data.rotation.w = self.ui.get_data("ow")
+        data.rotation.x = self.ui.get_data("ox")
+        data.rotation.y = self.ui.get_data("oy")
+        data.rotation.z = self.ui.get_data("oz")
         self.ui.set_data("msg", data)
 
 
