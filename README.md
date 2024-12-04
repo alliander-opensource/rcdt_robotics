@@ -44,7 +44,7 @@ Do not forget to source afterwards:
 
 `source /home/rcdt/ros2_ws/install/setup.bash`
 
-You can also automate this by adding the source command to the `.bashrc.personal` file, in the root of this repository.
+You can also automate this by adding the source command to the `.personal.bashrc` file, in the root of this repository.
 
 You should now be able to use the ROS2 packages. Check the package specific README files for further instructions.
 

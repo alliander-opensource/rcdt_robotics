@@ -60,7 +60,7 @@ SPDX-License-Identifier: Apache-2.0
         <uri>model://brick</uri>
       </include>
     </model>
-        <model name='brick3'>
+    <model name='brick3'>
       <pose>0.6 0.05 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
@@ -83,7 +83,7 @@ SPDX-License-Identifier: Apache-2.0
     </light>
 
     <model name="ground_plane">
-    <pose>0 0 -0.74 0 0 0</pose>
+      <pose>0 0 -0.74 0 0 0</pose>
       <static>true</static>
       <link name="link">
         <collision name="collision">

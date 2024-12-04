@@ -25,18 +25,15 @@ def launch_setup(context: LaunchContext) -> List:
     world = world_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
 
-    # if world == "":
-    #     world = get_file_path("rcdt_utilities", ["sdf"], "empty.xml.sdf")
-
     pkg_share = get_package_share_directory("rcdt_gz_worlds")
 
-    ign_resource_path = SetEnvironmentVariable(
-        name="IGN_GAZEBO_RESOURCE_PATH",
-        value=[
-            os.path.join(pkg_share, "worlds"),
-            ":" + os.path.join(pkg_share, "models"),
-        ],
-    )
+    # ign_resource_path = SetEnvironmentVariable(
+    #     name="IGN_GAZEBO_RESOURCE_PATH",
+    #     value=[
+    #         os.path.join(pkg_share, "worlds"),
+    #         ":" + os.path.join(pkg_share, "models"),
+    #     ],
+    # )
 
     gz_args = f" -r {world}"
     if not load_gazebo_ui:
@@ -71,7 +68,7 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     return [
-        ign_resource_path,
+        # ign_resource_path,
         gazebo,
         spawn_robot,
         bridge,

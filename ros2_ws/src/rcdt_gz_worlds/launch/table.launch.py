@@ -29,6 +29,14 @@ def launch_setup(context: LaunchContext) -> List:
         ],
     )
 
+    gz_path = SetEnvironmentVariable(
+        name="GZ_SIM_RESOURCE_PATH",
+        value=[
+            os.path.join(pkg_share, "worlds"),
+            ":" + os.path.join(pkg_share, "models"),
+        ],
+    )
+
     print("-------------")
     print(os.path.join(pkg_share, "worlds"), ":" + os.path.join(pkg_share, "models"))
 
@@ -46,7 +54,8 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     return [
-        ign_resource_path,
+        # gz_path,
+        # ign_resource_path,
         gazebo,
         bridge,
     ]
