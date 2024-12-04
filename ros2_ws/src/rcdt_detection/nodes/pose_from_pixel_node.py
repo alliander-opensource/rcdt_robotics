@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+import numpy as np
 import pyrealsense2 as rs2
 from rclpy import logging
 from rclpy.node import Node
@@ -26,9 +27,16 @@ class PoseFromPixelNode(Node):
         self, request: PoseFromPixel.Request, response: PoseFromPixel.Response
     ) -> PoseFromPixel.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
-        intr = realsense_435_intrinsics()
+        height, width = cv2_image.shape
+        intr = realsense_435_intrinsics(width, height)
         x_pixel = int(request.pixel.x)
         y_pixel = int(request.pixel.y)
+
+        if not is_pixel_valid(width, height, [x_pixel, y_pixel]):
+            ros_logger.error("Requested pixel location is invalid. Exiting.")
+            response.success = False
+            return response
+
         depth_value = cv2_image[y_pixel, x_pixel]
         x_mm, y_mm, z_mm = rs2.rs2_deproject_pixel_to_point(
             intr, [x_pixel, y_pixel], depth_value
@@ -45,12 +53,23 @@ class PoseFromPixelNode(Node):
         return response
 
 
-def realsense_435_intrinsics() -> rs2.intrinsics:
+def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
+    valid = True
+    if not 0 <= pixel[0] < width:
+        ros_logger.warn(f"Pixel x={pixel[0]} while image width={width}.")
+        valid = False
+    if not 0 <= pixel[1] < height:
+        ros_logger.warn(f"Pixel y={pixel[0]} while image height={height}.")
+        valid = False
+    return valid
+
+
+def realsense_435_intrinsics(width: int, height: int) -> rs2.intrinsics:
     """Gives the intrinsics for a realsense 435."""
     intrinsics = rs2.intrinsics()
 
-    intrinsics.width = 640
-    intrinsics.height = 480
+    intrinsics.width = int(width)
+    intrinsics.height = int(height)
     intrinsics.ppx = 316.3547668457031
     intrinsics.ppy = 243.0697021484375
     intrinsics.fx = 387.0155334472656
