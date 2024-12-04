@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-import numpy as np
 import pyrealsense2 as rs2
 from rclpy import logging
 from rclpy.node import Node
