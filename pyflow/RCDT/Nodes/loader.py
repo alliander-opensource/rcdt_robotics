@@ -109,10 +109,10 @@ class DefineCentroidNode(RosService):
         super().__init__(name)
 
 
-class PointFromPixelNode(RosService):
+class PoseFromPixelNode(RosService):
     def __init__(self, name: str):
         reload(nodes)
-        nodes.PointFromPixelNode(self)
+        nodes.PoseFromPixelNode(self)
         super().__init__(name)
 
 

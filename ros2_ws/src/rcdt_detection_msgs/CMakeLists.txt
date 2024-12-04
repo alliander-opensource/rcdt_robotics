@@ -17,7 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/DefineCentroid.srv
   srv/DetectObjects.srv
   srv/FilterMasks.srv
-  srv/PointFromPixel.srv
+  srv/PoseFromPixel.srv
   srv/SegmentImage.srv
   DEPENDENCIES geometry_msgs sensor_msgs vision_msgs
 )

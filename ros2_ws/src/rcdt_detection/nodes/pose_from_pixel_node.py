@@ -9,34 +9,56 @@ import pyrealsense2 as rs2
 from rclpy import logging
 from rclpy.node import Node
 from sensor_msgs.msg import CameraInfo
-from rcdt_detection_msgs.srv import PointFromPixel
+from rcdt_detection_msgs.srv import PoseFromPixel
 from rcdt_detection.image_manipulation import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)
 
 
-class PointFromPixelNode(Node):
+class PoseFromPixelNode(Node):
+    """Converts a pixel to the corresponding pose in meters."""
+
     def __init__(self) -> None:
         super().__init__("point_from_pixel")
-        self.create_service(PointFromPixel, "/point_from_pixel", self.callback)
+        self.create_service(PoseFromPixel, "/point_from_pixel", self.callback)
 
     def callback(
-        self, request: PointFromPixel.Request, response: PointFromPixel.Response
-    ) -> PointFromPixel.Response:
+        self, request: PoseFromPixel.Request, response: PoseFromPixel.Response
+    ) -> PoseFromPixel.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
-        intr = calculate_intrinsics(request.camera_info)
-        pix_x = int(request.pixel.x)
-        pix_y = int(request.pixel.y)
-        depth_value = cv2_image[pix_y, pix_x]
-        x, y, z = rs2.rs2_deproject_pixel_to_point(intr, [pix_x, pix_y], depth_value)
-        self.get_logger().info(
-            f"Pixel ({pix_x}, {pix_y}) corresponds to Point ({x:.2f}, {y:.2f}, {z:.2f})."
+        intr = realsense_435_intrinsics()
+        x_pixel = int(request.pixel.x)
+        y_pixel = int(request.pixel.y)
+        depth_value = cv2_image[y_pixel, x_pixel]
+        x_mm, y_mm, z_mm = rs2.rs2_deproject_pixel_to_point(
+            intr, [x_pixel, y_pixel], depth_value
         )
-        response.point.x = float(x)
-        response.point.y = float(y)
-        response.point.z = float(z)
+        x_m, y_m, z_m = x_mm / 1000, y_mm / 1000, z_mm / 1000
+        self.get_logger().info(
+            f"Pixel ({x_pixel}, {y_pixel}) corresponds to Point ({x_m:.3f}, {y_m:.3f}, {z_m:.3f})."
+        )
+        response.pose.pose.position.x = float(x_m)
+        response.pose.pose.position.y = float(y_m)
+        response.pose.pose.position.z = float(z_m)
+        response.pose.header.frame_id = "camera_depth_optical_frame"
         response.success = True
         return response
+
+
+def realsense_435_intrinsics() -> rs2.intrinsics:
+    """Gives the intrinsics for a realsense 435."""
+    intrinsics = rs2.intrinsics()
+
+    intrinsics.width = 640
+    intrinsics.height = 480
+    intrinsics.ppx = 316.3547668457031
+    intrinsics.ppy = 243.0697021484375
+    intrinsics.fx = 387.0155334472656
+    intrinsics.fy = 387.0155334472656
+
+    intrinsics.model = rs2.distortion.brown_conrady
+
+    return intrinsics
 
 
 def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
@@ -63,7 +85,7 @@ def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     try:
-        node = PointFromPixelNode()
+        node = PoseFromPixelNode()
         rclpy.spin(node)
     except Exception as e:
         ros_logger.error(e)

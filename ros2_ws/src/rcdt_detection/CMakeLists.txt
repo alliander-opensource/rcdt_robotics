@@ -24,7 +24,7 @@ install(PROGRAMS
   nodes/define_centroid_node.py
   nodes/filter_masks_node.py
   nodes/object_detection.py
-  nodes/point_from_pixel_node.py
+  nodes/pose_from_pixel_node.py
   nodes/segment_image_node.py
   DESTINATION lib/${PROJECT_NAME}
 )

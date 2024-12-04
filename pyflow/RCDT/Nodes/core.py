@@ -82,7 +82,7 @@ class Base(NodeBase):
         if pin_name not in self.input_pins:
             return
         pin = self.input_pins[pin_name]
-        if self.input_dict[pin_name] in [str, float]:
+        if self.input_dict[pin_name] in [str, float, "string"]:
             return self.get_raw_data(pin)
 
         file_name = pin.getData()

@@ -15,7 +15,7 @@ from rcdt_detection_msgs.srv import (
     SegmentImage,
     FilterMasks,
     DefineCentroid,
-    PointFromPixel,
+    PoseFromPixel,
 )
 from std_srvs.srv import Trigger
 
@@ -176,21 +176,21 @@ class DefineCentroidNode:
         self.ui.set_data("image", response.image)
 
 
-class PointFromPixelNode:
+class PoseFromPixelNode:
     def __init__(self, ui: RosService):
         self.ui = ui
-        ui.service = PointFromPixel
-        ui.client = PyflowNode.node.create_client(PointFromPixel, "/point_from_pixel")
+        ui.service = PoseFromPixel
+        ui.client = PyflowNode.node.create_client(PoseFromPixel, "/point_from_pixel")
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        request = PointFromPixel.Request()
+        request = PoseFromPixel.Request()
         request.pixel = self.ui.get_data("pixel")
         request.depth_image = self.ui.get_data("depth_image")
-        response: PointFromPixel.Response = self.ui.call_service(request)
+        response: PoseFromPixel.Response = self.ui.call_service(request)
         if response is None:
             return
-        self.ui.set_data("point", response.point)
+        self.ui.set_data("pose", response.pose)
 
 
 class MoveitMoveRobot:
