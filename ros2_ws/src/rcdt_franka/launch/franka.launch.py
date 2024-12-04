@@ -17,6 +17,7 @@ load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 moveit_mode_arg = LaunchArgument("moveit", "off", ["node", "rviz", "servo", "off"])
+world_arg = LaunchArgument("world", "table_brick.sdf")
 
 
 def launch_setup(context: LaunchContext) -> None:
@@ -25,6 +26,7 @@ def launch_setup(context: LaunchContext) -> None:
     use_rviz = use_rviz_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
     moveit_mode = moveit_mode_arg.value(context)
+    world = world_arg.value(context)
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
     xacro_arguments = {}
@@ -45,6 +47,7 @@ def launch_setup(context: LaunchContext) -> None:
             launch_arguments={
                 "realsense": str(use_realsense),
                 "load_gazebo_ui": str(load_gazebo_ui),
+                "world": str(world),
             }.items(),
         )
     else:
@@ -150,6 +153,7 @@ def generate_launch_description() -> LaunchDescription:
             use_rviz_arg.declaration,
             use_realsense_arg.declaration,
             moveit_mode_arg.declaration,
+            world_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

@@ -19,7 +19,7 @@ find_package(tf2_eigen REQUIRED)
 # Install project files
 install(
   DIRECTORY
-  launch rviz sdf
+  launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
 

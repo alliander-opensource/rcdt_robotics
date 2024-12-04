@@ -1,4 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
 <sdf version="1.6">
     <model name="brick">
         <pose>0 0 0 1.57079632679 0 0</pose>
