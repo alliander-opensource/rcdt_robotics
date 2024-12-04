@@ -47,7 +47,7 @@ class TransformPoseNode:
         request.pose_in = self.ui.get_data("pose_in")
         request.target_frame = self.ui.get_data("target_frame")
         response: TransformPose.Response = self.ui.call_service(request)
-        self.ui.set_data("pose_out", response.pose_out)
+        self.ui.set_pins_based_on_response(response)
 
 
 class GetCameraInfo:
@@ -143,8 +143,7 @@ class Segment:
         request = SegmentImage.Request()
         request.input_image = self.ui.get_data("input_image")
         response: SegmentImage.Response = self.ui.call_service(request)
-        self.ui.set_data("segmented_image", response.segmented_image)
-        self.ui.set_data("masks", response.masks)
+        self.ui.set_pins_based_on_response(response)
 
 
 class Filter:
@@ -159,7 +158,7 @@ class Filter:
         request.masks = self.ui.get_data("masks")
         request.filter_method = "brick"
         response: FilterMasks.Response = self.ui.call_service(request)
-        self.ui.set_data("masks", response.masks)
+        self.ui.set_pins_based_on_response(response)
 
 
 class DefineCentroidNode:
@@ -173,7 +172,7 @@ class DefineCentroidNode:
         request = DefineCentroid.Request()
         request.image = self.ui.get_data("image")
         response: DefineCentroid.Response = self.ui.call_service(request)
-        self.ui.set_data("image", response.image)
+        self.ui.set_pins_based_on_response(response)
 
 
 class PoseFromPixelNode:
@@ -188,9 +187,7 @@ class PoseFromPixelNode:
         request.pixel = self.ui.get_data("pixel")
         request.depth_image = self.ui.get_data("depth_image")
         response: PoseFromPixel.Response = self.ui.call_service(request)
-        if response is None:
-            return
-        self.ui.set_data("pose", response.pose)
+        self.ui.set_pins_based_on_response(response)
 
 
 class MoveitMoveRobot:

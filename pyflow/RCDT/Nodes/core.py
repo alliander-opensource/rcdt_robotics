@@ -192,3 +192,13 @@ class RosService(RosNode):
         response = self.client.call(request)
         logging.info("Finished.")
         return response
+
+    def set_pins_based_on_response(self, response: object) -> None:
+        if response is None:
+            logging.warning("Response was none. No data pins set.")
+            return
+        if not response.success:
+            logging.warning("Response was not successful. No data pins set.")
+            return
+        for pin_name in self.output_pins:
+            self.set_data(pin_name, getattr(response, pin_name))
