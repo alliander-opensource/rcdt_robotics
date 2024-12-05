@@ -24,12 +24,14 @@ def generate_launch_description() -> LaunchDescription:
             "align_depth.enable": "true",
             "enable_sync": "true",
             "enable_rgbd": "true",
+            "depth_module.depth_profile": "640x480x30",
+            "rgb_camera.color_profile": "640x480x30",
         }.items(),
     )
 
     return LaunchDescription(
         [
-            detection_node,
+            # detection_node,
             realsense_node,
         ]
     )

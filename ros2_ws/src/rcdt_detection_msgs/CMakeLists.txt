@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
+find_package(realsense2_camera_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -19,7 +20,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/FilterMasks.srv
   srv/PoseFromPixel.srv
   srv/SegmentImage.srv
-  DEPENDENCIES geometry_msgs sensor_msgs vision_msgs
+  srv/SplitRGBD.srv
+  DEPENDENCIES geometry_msgs sensor_msgs vision_msgs realsense2_camera_msgs
 )
 
 if(BUILD_TESTING)

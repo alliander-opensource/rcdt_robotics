@@ -5,6 +5,7 @@
 from RCDT.Nodes.core import PyflowNode, RosService, RosNode
 
 from sensor_msgs.msg import Image, CameraInfo
+from realsense2_camera_msgs.msg import RGBD
 from rclpy import wait_for_message
 import cv2
 
@@ -16,6 +17,7 @@ from rcdt_detection_msgs.srv import (
     FilterMasks,
     DefineCentroid,
     PoseFromPixel,
+    SplitRGBD,
 )
 from std_srvs.srv import Trigger
 
@@ -89,6 +91,25 @@ class GetImageFromTopic:
             self.ui.success = True
 
 
+class GetRGBDFromTopic:
+    def __init__(self, ui: RosNode):
+        self.ui = ui
+        self.ui.input_dict = {"topic": str}
+        self.ui.output_dict = {"rgbd": RGBD}
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        success, message = wait_for_message.wait_for_message(
+            msg_type=RGBD,
+            node=PyflowNode.node,
+            topic=self.ui.get_data("topic"),
+            time_to_wait=1,
+        )
+        if success:
+            self.ui.set_data("rgbd", message)
+            self.ui.success = True
+
+
 class GetImageFromFile:
     def __init__(self, ui: RosNode):
         self.ui = ui
@@ -147,6 +168,20 @@ class Segment:
         self.ui.set_pins_based_on_response(response)
 
 
+class SplitRGBDNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = SplitRGBD
+        ui.client = PyflowNode.node.create_client(SplitRGBD, "/split_rgbd")
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = SplitRGBD.Request()
+        request.rgbd = self.ui.get_data("rgbd")
+        response: SplitRGBD.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
+
+
 class Filter:
     def __init__(self, ui: RosService):
         self.ui = ui
@@ -187,6 +222,7 @@ class PoseFromPixelNode:
         request = PoseFromPixel.Request()
         request.pixel = self.ui.get_data("pixel")
         request.depth_image = self.ui.get_data("depth_image")
+        request.camera_info = self.ui.get_data("camera_info")
         response: PoseFromPixel.Response = self.ui.call_service(request)
         self.ui.set_pins_based_on_response(response)
 

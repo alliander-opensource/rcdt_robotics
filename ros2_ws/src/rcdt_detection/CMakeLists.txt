@@ -26,6 +26,7 @@ install(PROGRAMS
   nodes/object_detection.py
   nodes/pose_from_pixel_node.py
   nodes/segment_image_node.py
+  nodes/split_rgbd_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

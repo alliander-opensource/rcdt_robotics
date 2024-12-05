@@ -67,6 +67,13 @@ class GetImageFromTopic(RosNode):
         super().__init__(name)
 
 
+class GetRGBDFromTopic(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.GetRGBDFromTopic(self)
+        super().__init__(name)
+
+
 class GetImageFromFile(RosNode):
     def __init__(self, name: str):
         reload(nodes)
@@ -88,17 +95,17 @@ class PublishImage(RosNode):
         super().__init__(name)
 
 
-class NormalizeImageNode(RosService):
-    def __init__(self, name: str):
-        reload(nodes)
-        nodes.NormalizeImageNode(self)
-        super().__init__(name)
-
-
 class Segment(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.Segment(self)
+        super().__init__(name)
+
+
+class SplitRGBDNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.SplitRGBDNode(self)
         super().__init__(name)
 
 

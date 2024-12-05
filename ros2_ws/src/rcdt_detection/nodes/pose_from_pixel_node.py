@@ -27,7 +27,7 @@ class PoseFromPixelNode(Node):
     ) -> PoseFromPixel.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
         height, width = cv2_image.shape
-        intr = realsense_435_intrinsics(width, height)
+        intr = calculate_intrinsics(request.camera_info)
         x_pixel = int(request.pixel.x)
         y_pixel = int(request.pixel.y)
 
