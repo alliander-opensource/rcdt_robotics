@@ -39,7 +39,7 @@ SPDX-License-Identifier: Apache-2.0
 
           <ignition_frame_id>${namespace}_color_optical_frame</ignition_frame_id>
           <camera>
-            <horizontal_fov>${75.0/180.0*pi}</horizontal_fov>
+            <horizontal_fov>${69.0/180.0*pi}</horizontal_fov>
             <image>
               <width>640</width>
               <height>480</height>
@@ -61,7 +61,7 @@ SPDX-License-Identifier: Apache-2.0
 
           <ignition_frame_id>${namespace}_depth_optical_frame</ignition_frame_id>
           <camera>
-            <horizontal_fov>${75.0/180.0*pi}</horizontal_fov>
+            <horizontal_fov>${69.0/180.0*pi}</horizontal_fov> <!-- Using color FOV, to avoid align. -->
             <image>
               <width>640</width>
               <height>480</height>
