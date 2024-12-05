@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="thermal_camera">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin
+      filename="ignition-gazebo-physics-system"
+      name="ignition::gazebo::systems::Physics">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-sensors-system"
+      name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-scene-broadcaster-system"
+      name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-user-commands-system"
+      name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+
+
+    <gui fullscreen="0">
+      <!-- 3D scene plugin -->
+      <plugin filename="GzScene3D" name="3D View">
+        <ignition-gui>
+        <!-- <transform>20 20 </transform> -->
+          <title>3D View</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="string" key="state">docked</property>
+        </ignition-gui>
+
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.4 0.4 0.4</ambient_light>
+        <background_color>0.8 0.8 0.8</background_color>
+        <camera_pose>-6 0 6 0 0.5 0</camera_pose>
+      </plugin>
+
+      <!-- Thermal Camera Visualization -->
+      <plugin filename="ImageDisplay" name="Thermal Camera View">
+        <ignition-gui>
+          <title>Thermal Camera</title>
+          <property type="string" key="state">floating</property>
+          <property type="double" key="width">350</property>
+          <property type="double" key="height">315</property>
+        </ignition-gui>
+        <topic>thermal_camera</topic>
+        <topic_picker>false</topic_picker>
+      </plugin>
+
+      <!-- Depth Camera Visualization -->
+      <!-- <plugin filename="ImageDisplay" name="Depth Camera View">
+        <ignition-gui>
+          <title>Depth Camera</title>
+          <property type="string" key="state">floating</property>
+          <property type="double" key="width">350</property>
+          <property type="double" key="height">315</property>
+          <anchors target="Thermal Camera View">
+            <line own="left" target="right" />
+            <line own="top" target="top" />
+          </anchors>
+        </ignition-gui>
+        <topic>/model/igt_one/depth_camera</topic>
+        <topic_picker>false</topic_picker>
+      </plugin> -->
+    </gui>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- <atmosphere type="adiabatic">
+      <temperature>300</temperature>
+      <temperature_gradient>0</temperature_gradient>
+    </atmosphere> -->
+
+
+    <model name="sensor_mount">
+      <pose>0 0 0 0 0 0</pose>
+      <static>true</static>
+
+      <!-- Mount Geometry -->
+      <link name="mount_link">
+        <inertial>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1.0</mass>
+        </inertial>
+        <collision name="mount_collision">
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="mount_visual">
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.8 1</ambient>
+            <diffuse>0.3 0.3 0.8 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+          </material>
+        </visual>
+      </link>
+
+      <!-- Thermal Camera -->
+      <link name="camera_link">
+        <pose>0 0 0.75 0 0 3.14</pose>
+        <collision name="camera_collision">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="camera_visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name="thermal_camera" type="thermal">
+          <camera>
+            <horizontal_fov>1.1</horizontal_fov>
+            <image>
+              <width>320</width>
+              <height>256</height>
+              <format>L16</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>100</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>true</visualize>
+          <topic>thermal_camera</topic>
+        </sensor>
+
+        <!-- Depth Camera -->
+        <sensor name="d435_depth" type="depth_camera">
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>1</visualize>
+          <topic>/model/igt_one/depth_camera</topic>
+          <camera name="d435">
+            <horizontal_fov>1.1</horizontal_fov>
+            <image>
+              <width>320</width>
+              <height>256</height>
+              <format>RGB_INT8</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>100</far>
+            </clip>
+            <noise>
+              <type>gaussian</type>
+              <mean>0</mean>
+              <stddev>0.007</stddev>
+            </noise>
+          </camera>
+        </sensor>
+      </link>
+
+      <!-- Fixed Joint to Attach Cameras to Mount -->
+      <joint name="camera_to_mount" type="fixed">
+        <parent>mount_link</parent>
+        <child>camera_link</child>
+      </joint>
+    </model>
+
+
+    <include>
+      <name>sky</name>
+      <uri>model://sky</uri>
+    </include>
+  </world>
+</sdf>
