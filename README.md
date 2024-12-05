@@ -17,7 +17,7 @@ This repository is used for development of robotics in the Alliander Research Ce
 To use this repository, first clone it including the submodules:
 
 `git clone --recurse-submodules https://github.com/alliander-opensource/rcdt_robotics.git`
-In case you cloned the repository, but forgot to pass the --recurse-submodules flag, this canbe fixed by running:
+In case you cloned the repository, but forgot to pass the --recurse-submodules flag, this can be fixed by running:
 `git submodule update --init --recursive`
 
 ## Install docker
