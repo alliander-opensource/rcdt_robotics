@@ -4,11 +4,8 @@
 
 from typing import List
 
-from launch import LaunchContext, LaunchDescription
-from launch.actions import (
-    IncludeLaunchDescription,
-    OpaqueFunction,
-)
+from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
@@ -37,14 +34,19 @@ def launch_setup(context: LaunchContext) -> List:
         output="screen",
     )
 
+    convert_image = Node(
+        package="rcdt_sensors",
+        executable="convert_32FC1_to_16UC1_node.py",
+    )
+
     bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"]
     if use_realsense:
         bridge_topics.extend(
             [
-                "/camera/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/depth/image_rect_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/camera/camera/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/camera/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/camera/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
 
@@ -54,10 +56,12 @@ def launch_setup(context: LaunchContext) -> List:
         arguments=bridge_topics,
     )
 
+    skip = LaunchDescriptionEntity()
     return [
         gazebo,
         spawn_robot,
         bridge,
+        convert_image if use_realsense else skip,
     ]
 
 

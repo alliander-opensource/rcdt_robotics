@@ -9,7 +9,7 @@ from rclpy.node import Node
 from rclpy import logging
 from rcdt_detection_msgs.srv import FilterMasks
 from rcdt_detection.object_detectors import is_brick
-from rcdt_detection.image_manipulation import ros_image_to_cv2_image
+from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)
 

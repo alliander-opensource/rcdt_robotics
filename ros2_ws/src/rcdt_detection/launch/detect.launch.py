@@ -4,17 +4,11 @@
 
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from launch_ros.actions import Node
 
 from rcdt_utilities.launch_utils import get_file_path
 
 
 def generate_launch_description() -> LaunchDescription:
-    detection_node = Node(
-        package="rcdt_detection",
-        executable="object_detection.py",
-    )
-
     realsense_launch_description = get_file_path(
         "realsense2_camera", ["launch"], "rs_launch.py"
     )
@@ -24,12 +18,13 @@ def generate_launch_description() -> LaunchDescription:
             "align_depth.enable": "true",
             "enable_sync": "true",
             "enable_rgbd": "true",
+            "depth_module.depth_profile": "640x480x30",
+            "rgb_camera.color_profile": "640x480x30",
         }.items(),
     )
 
     return LaunchDescription(
         [
-            detection_node,
             realsense_node,
         ]
     )

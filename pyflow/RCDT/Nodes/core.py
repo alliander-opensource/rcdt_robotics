@@ -3,12 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from PyFlow.Core import NodeBase, PinBase
-from typing import Callable, Dict
+from typing import Callable, Dict, Literal
 from threading import Thread
 import os
-import json
 import logging
-from rosidl_runtime_py import set_message
 
 import pickle
 from random import choice
@@ -25,104 +23,79 @@ class PyflowNode(Node):
     node.get_logger().info("Node started!")
 
 
-class RosMessage(NodeBase):
-    def __init__(self, name: str):
-        super(RosMessage, self).__init__(name)
-        self.compute_callback: Callable | None
-
-    @staticmethod
-    def category() -> str:
-        return "Messages"
-
-    def compute(self, *_args: any, **_kwargs: any) -> None:
-        if self.compute_callback is None:
-            logging.error("No compute callback defined. Exit.")
-            return
-        self.compute_callback()
-
-
-class RosNode(NodeBase):
-    def __init__(self, name: str):
-        super(RosNode, self).__init__(name)
-        self.run_async: Callable | None
-        self.exi: PinBase = self.createInputPin("In", "ExecPin", callback=self.start)
-        self.exo: PinBase = self.createOutputPin("Out", "ExecPin")
+class Base(NodeBase):
+    def __init__(self, name: str, executable: bool):
+        super(Base, self).__init__(name)
         self.data_folder = "/home/rcdt/rcdt_robotics/pyflow/.data/"
         if not os.path.exists(self.data_folder):
             os.makedirs(self.data_folder)
 
-        self.input_dict: Dict[str, type | str]
-        self.input_objects: Dict[str, object]
-        self.output_dict: Dict[str, type | str]
-        self.ouput_objects: Dict[str, object]
+        if executable:
+            self.create_execution_pins()
 
-        self.input_pins: Dict[str, PinBase] = {}
-        self.output_pins: Dict[str, PinBase] = {}
+        self.input_dict: Dict[str, type]
+        self.output_dict: Dict[str, type]
+        self.input_pins = self.create_data_pins(self.input_dict, "input")
+        self.output_pins = self.create_data_pins(self.output_dict, "output")
 
-        self.create_pins()
+    def create_execution_pins(self) -> None:
+        self.exi: PinBase = self.createInputPin("In", "ExecPin", callback=self.start)
+        self.exo: PinBase = self.createOutputPin("Out", "ExecPin")
 
-        self.active = False
-        self.finished = False
-        self.success = False
+    def start(self) -> None:
+        pass
 
-    def create_pins(self) -> None:
-        for key, value in self.input_dict.items():
-            pin_name = value
-            if isinstance(pin_name, type):
-                pin_name = self.type_to_str(value)
-            pin = self.createInputPin(pin_name, "StringPin", "{}", group=key)
-            self.input_pins[key] = pin
+    def create_data_pins(
+        self, type_dict: Dict[str, type | str], pin_type: Literal["input", "output"]
+    ) -> Dict[str, PinBase]:
+        pin_dict = {}
+        for key, value in type_dict.items():
+            pin_name = key
+            group_name = ""
 
-        for key, value in self.output_dict.items():
-            pin_name = value
-            if isinstance(pin_name, type):
-                pin_name = self.type_to_str(value)
-            pin = self.createOutputPin(pin_name, "StringPin", "{}", group=key)
-            self.output_pins[key] = pin
+            if value is str:
+                data_type = "StringPin"
+                default_value = ""
+            elif value is float:
+                data_type = "FloatPin"
+                default_value = 0.0
+            else:
+                data_type = "StringPin"
+                default_value = ""
+                group_name = value
 
-    def type_to_str(self, t: type) -> str:
-        module_name = t.__module__.split(".")[0]
-        name = t.__name__
-        return f"{module_name}/{name}"
+            if isinstance(group_name, type):
+                group_name = group_name.__name__
 
-    def fix_bytes_in_dict(self, msg_dict: dict, msg: object) -> dict:
-        """
-        The set_message.set_message_fields() method cannot handle bytes well.
-        This method sets bytes correctly, in the first layer of the dict.
-        This method needs to be expanded for handling bytes in sub-dicts of the dict.
-        """
-        for key, item in msg_dict.items():
-            item_type = type(getattr(msg, key))
-            if item_type is bytes:
-                str_byte = str.encode(item)
-                msg_dict[key] = str_byte
-        return msg_dict
+            if pin_type == "input":
+                pin = self.createInputPin(
+                    pin_name, data_type, default_value, group=group_name
+                )
+            elif pin_type == "output":
+                pin = self.createOutputPin(
+                    pin_name, "StringPin", "{}", group=group_name
+                )
+            pin_dict[key] = pin
+        return pin_dict
 
-    def get_string(self, pin_name: str) -> str:
-        pin = self.input_pins[pin_name]
-        return pin.getData()
-
-    def get_message(self, pin_name: str) -> object:
-        pin = self.input_pins[pin_name]
-        msg = self.input_objects[pin_name]
-        msg_json = pin.getData()
-        msg_dict = json.loads(msg_json)
-        msg_dict = self.fix_bytes_in_dict(msg_dict, msg)
-        set_message.set_message_fields(msg, msg_dict)
-        return msg
-
-    def get_data(self, pin_name: str) -> tuple[bool, object]:
+    def get_data(self, pin_name: str) -> object:
         if pin_name not in self.input_pins:
             return
         pin = self.input_pins[pin_name]
+        if self.input_dict[pin_name] in [str, float, "string"]:
+            return self.get_raw_data(pin)
+
         file_name = pin.getData()
         path = self.data_folder + file_name + ".pickle"
         if not os.path.exists(path):
             logging.error("Data path does not exist. Exiting.")
-            return False, None
+            return None
         with open(path, "rb") as handle:
             data = pickle.load(handle)
-        return True, data
+        return data
+
+    def get_raw_data(self, pin: PinBase) -> str | float:
+        return pin.getData()
 
     def set_data(self, pin_name: str, data: object) -> None:
         if pin_name not in self.output_pins:
@@ -133,6 +106,31 @@ class RosNode(NodeBase):
         with open(path, "wb") as handle:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         pin.setData(file_name)
+
+
+class RosMessage(Base):
+    def __init__(self, name: str):
+        super(RosMessage, self).__init__(name, executable=False)
+        self.compute_callback: Callable | None
+
+    def compute(self, *_args: any, **_kwargs: any) -> None:
+        if self.compute_callback is None:
+            logging.error("No compute callback defined. Exit.")
+            return
+        self.compute_callback()
+
+    @staticmethod
+    def category() -> str:
+        return "Messages"
+
+
+class RosNode(Base):
+    def __init__(self, name: str):
+        super(RosNode, self).__init__(name, executable=True)
+        self.run_async: Callable | None
+        self.active = False
+        self.finished = False
+        self.success = False
 
     def start(self, *_args: any, **_kwargs: any) -> None:
         if self.run_async is None:
@@ -170,17 +168,19 @@ class RosService(RosNode):
     def set_dicts_from_service(self) -> None:
         self.request = self.service.Request()
         self.input_dict = {}
-        self.input_objects = {}
         for key, value in self.request.get_fields_and_field_types().items():
-            self.input_dict[key] = value
-            self.input_objects[key] = getattr(self.request, key)
+            pin_type: str = value
+            if "/" in pin_type:
+                pin_type = pin_type.split("/")[1]
+            self.input_dict[key] = pin_type
 
         self.response = self.service.Response()
         self.output_dict = {}
-        self.output_objects = {}
         for key, value in self.response.get_fields_and_field_types().items():
-            self.output_dict[key] = value
-            self.output_objects[key] = getattr(self.response, key)
+            pin_type: str = value
+            if "/" in pin_type:
+                pin_type = pin_type.split("/")[1]
+            self.output_dict[key] = pin_type
 
     def call_service(self, request: object) -> object | None:
         logging.info("Connecting to service...")
@@ -192,3 +192,13 @@ class RosService(RosNode):
         response = self.client.call(request)
         logging.info("Finished.")
         return response
+
+    def set_pins_based_on_response(self, response: object) -> None:
+        if response is None:
+            logging.warning("Response was none. No data pins set.")
+            return
+        if not response.success:
+            logging.warning("Response was not successful. No data pins set.")
+            return
+        for pin_name in self.output_pins:
+            self.set_data(pin_name, getattr(response, pin_name))

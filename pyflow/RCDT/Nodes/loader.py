@@ -13,29 +13,50 @@ from RCDT.Nodes import nodes
 
 class Point2DMsg(RosMessage):
     def __init__(self, name: str):
-        super().__init__(name)
         reload(messages)
         messages.Point2DMsg(self)
+        super().__init__(name)
+
+
+class TransformMsg(RosMessage):
+    def __init__(self, name: str):
+        reload(messages)
+        messages.TransformMsg(self)
+        super().__init__(name)
 
 
 class PoseStampedMsg(RosMessage):
     def __init__(self, name: str):
-        super().__init__(name)
         reload(messages)
         messages.PoseStampedMsg(self)
+        super().__init__(name)
 
 
 class CollisionObjectMsg(RosMessage):
     def __init__(self, name: str):
-        super().__init__(name)
         reload(messages)
         messages.CollisionObjectMsg(self)
+        super().__init__(name)
 
 
 class RvizMark(RosService):
     def __init__(self, name: str):
         reload(nodes)
         nodes.RvizMark(self)
+        super().__init__(name)
+
+
+class TransformPoseNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.TransformPoseNode(self)
+        super().__init__(name)
+
+
+class ExpressPoseInOtherFrameNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.ExpressPoseInOtherFrameNode(self)
         super().__init__(name)
 
 
@@ -50,6 +71,13 @@ class GetImageFromTopic(RosNode):
     def __init__(self, name: str):
         reload(nodes)
         nodes.GetImageFromTopic(self)
+        super().__init__(name)
+
+
+class GetRGBDFromTopic(RosNode):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.GetRGBDFromTopic(self)
         super().__init__(name)
 
 
@@ -81,6 +109,13 @@ class Segment(RosService):
         super().__init__(name)
 
 
+class SplitRGBDNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.SplitRGBDNode(self)
+        super().__init__(name)
+
+
 class Filter(RosService):
     def __init__(self, name: str):
         reload(nodes)
@@ -95,10 +130,10 @@ class DefineCentroidNode(RosService):
         super().__init__(name)
 
 
-class PointFromPixelNode(RosService):
+class PoseFromPixelNode(RosService):
     def __init__(self, name: str):
         reload(nodes)
-        nodes.PointFromPixelNode(self)
+        nodes.PoseFromPixelNode(self)
         super().__init__(name)
 
 

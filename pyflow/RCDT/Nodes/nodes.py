@@ -5,17 +5,25 @@
 from RCDT.Nodes.core import PyflowNode, RosService, RosNode
 
 from sensor_msgs.msg import Image, CameraInfo
+from realsense2_camera_msgs.msg import RGBD
 from rclpy import wait_for_message
 import cv2
 
-from rcdt_detection.image_manipulation import cv2_image_to_ros_image
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image
 
-from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot
+from rcdt_utilities_msgs.srv import (
+    AddMarker,
+    AddObject,
+    MoveRobot,
+    TransformPose,
+    ExpressPoseInOtherFrame,
+)
 from rcdt_detection_msgs.srv import (
     SegmentImage,
     FilterMasks,
     DefineCentroid,
-    PointFromPixel,
+    PoseFromPixel,
+    SplitRGBD,
 )
 from std_srvs.srv import Trigger
 
@@ -31,8 +39,42 @@ class RvizMark:
 
     def run_async(self) -> None:
         request = AddMarker.Request()
-        request.marker_pose = self.ui.get_message("marker_pose")
+        request.marker_pose = self.ui.get_data("marker_pose")
         self.ui.call_service(request)
+
+
+class TransformPoseNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = TransformPose
+        ui.client = PyflowNode.node.create_client(
+            TransformPose, "/manipulate_pose/transform_pose_relative"
+        )
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = TransformPose.Request()
+        request.pose = self.ui.get_data("pose")
+        request.transform = self.ui.get_data("transform")
+        response: TransformPose.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
+
+
+class ExpressPoseInOtherFrameNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = ExpressPoseInOtherFrame
+        ui.client = PyflowNode.node.create_client(
+            ExpressPoseInOtherFrame, "/manipulate_pose/express_pose_in_other_frame"
+        )
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = ExpressPoseInOtherFrame.Request()
+        request.pose = self.ui.get_data("pose")
+        request.target_frame = self.ui.get_data("target_frame")
+        response: ExpressPoseInOtherFrame.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
 
 
 class GetCameraInfo:
@@ -46,7 +88,7 @@ class GetCameraInfo:
         success, message = wait_for_message.wait_for_message(
             msg_type=CameraInfo,
             node=PyflowNode.node,
-            topic=self.ui.get_string("topic"),
+            topic=self.ui.get_data("topic"),
             time_to_wait=1,
         )
         if success:
@@ -65,11 +107,30 @@ class GetImageFromTopic:
         success, message = wait_for_message.wait_for_message(
             msg_type=Image,
             node=PyflowNode.node,
-            topic=self.ui.get_string("topic"),
+            topic=self.ui.get_data("topic"),
             time_to_wait=1,
         )
         if success:
             self.ui.set_data("image", message)
+            self.ui.success = True
+
+
+class GetRGBDFromTopic:
+    def __init__(self, ui: RosNode):
+        self.ui = ui
+        self.ui.input_dict = {"topic": str}
+        self.ui.output_dict = {"rgbd": RGBD}
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        success, message = wait_for_message.wait_for_message(
+            msg_type=RGBD,
+            node=PyflowNode.node,
+            topic=self.ui.get_data("topic"),
+            time_to_wait=1,
+        )
+        if success:
+            self.ui.set_data("rgbd", message)
             self.ui.success = True
 
 
@@ -81,8 +142,7 @@ class GetImageFromFile:
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        pin = self.ui.input_pins["path"]
-        cv2_image = cv2.imread(pin.getData())
+        cv2_image = cv2.imread(self.ui.get_data("path"))
         ros_image = cv2_image_to_ros_image(cv2_image, "rgb8")
         self.ui.set_data("image", ros_image)
         self.ui.success = True
@@ -96,10 +156,8 @@ class GetImageFromList:
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        succes, images = self.ui.get_data("images")
-        if not succes:
-            return
-        n = self.ui.input_pins["n"].getData()
+        images = self.ui.get_data("images")
+        n = self.ui.get_data("n")
         image = images[int(n)]
         self.ui.set_data("image", image)
         self.ui.success = True
@@ -114,8 +172,8 @@ class PublishImage:
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        succes, image = self.ui.get_data("image")
-        if not succes:
+        image = self.ui.get_data("image")
+        if not image:
             return
         self.pub.publish(image)
 
@@ -129,15 +187,23 @@ class Segment:
 
     def run_async(self) -> None:
         request = SegmentImage.Request()
-        succes, input_image = self.ui.get_data("input_image")
-        if not succes:
-            return
-        request.input_image = input_image
+        request.input_image = self.ui.get_data("input_image")
         response: SegmentImage.Response = self.ui.call_service(request)
-        if response is None:
-            return
-        self.ui.set_data("segmented_image", response.segmented_image)
-        self.ui.set_data("masks", response.masks)
+        self.ui.set_pins_based_on_response(response)
+
+
+class SplitRGBDNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = SplitRGBD
+        ui.client = PyflowNode.node.create_client(SplitRGBD, "/split_rgbd")
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = SplitRGBD.Request()
+        request.rgbd = self.ui.get_data("rgbd")
+        response: SplitRGBD.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
 
 
 class Filter:
@@ -149,15 +215,10 @@ class Filter:
 
     def run_async(self) -> None:
         request = FilterMasks.Request()
-        success, masks = self.ui.get_data("masks")
-        if not success:
-            return
-        request.masks = masks
+        request.masks = self.ui.get_data("masks")
         request.filter_method = "brick"
         response: FilterMasks.Response = self.ui.call_service(request)
-        if response is None:
-            return
-        self.ui.set_data("masks", response.masks)
+        self.ui.set_pins_based_on_response(response)
 
 
 class DefineCentroidNode:
@@ -169,38 +230,25 @@ class DefineCentroidNode:
 
     def run_async(self) -> None:
         request = DefineCentroid.Request()
-        success, image = self.ui.get_data("image")
-        if not success:
-            return
-        request.image = image
+        request.image = self.ui.get_data("image")
         response: DefineCentroid.Response = self.ui.call_service(request)
-        if response is None:
-            return
-        self.ui.set_data("image", response.image)
+        self.ui.set_pins_based_on_response(response)
 
 
-class PointFromPixelNode:
+class PoseFromPixelNode:
     def __init__(self, ui: RosService):
         self.ui = ui
-        ui.service = PointFromPixel
-        ui.client = PyflowNode.node.create_client(PointFromPixel, "/point_from_pixel")
+        ui.service = PoseFromPixel
+        ui.client = PyflowNode.node.create_client(PoseFromPixel, "/pose_from_pixel")
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        request = PointFromPixel.Request()
-        success, depth_image = self.ui.get_data("depth_image")
-        if not success:
-            return
-        success, camera_info = self.ui.get_data("camera_info")
-        if not success:
-            return
-        request.pixel = self.ui.get_message("pixel")
-        request.depth_image = depth_image
-        request.camera_info = camera_info
-        response: PointFromPixel.Response = self.ui.call_service(request)
-        if response is None:
-            return
-        self.ui.set_data("point", response.point)
+        request = PoseFromPixel.Request()
+        request.pixel = self.ui.get_data("pixel")
+        request.depth_image = self.ui.get_data("depth_image")
+        request.camera_info = self.ui.get_data("camera_info")
+        response: PoseFromPixel.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
 
 
 class MoveitMoveRobot:
@@ -214,7 +262,7 @@ class MoveitMoveRobot:
 
     def run_async(self) -> None:
         request = MoveRobot.Request()
-        request.goal_pose = self.ui.get_message("goal_pose")
+        request.goal_pose = self.ui.get_data("goal_pose")
         request.goal_pose.header.frame_id = "fr3_link0"
         self.ui.call_service(request)
 
@@ -230,7 +278,7 @@ class MoveitAddObject:
 
     def run_async(self) -> None:
         request = AddObject.Request()
-        request.object = self.ui.get_message("object")
+        request.object = self.ui.get_data("object")
         self.ui.call_service(request)
 
 

@@ -24,7 +24,7 @@ def launch_setup(context: LaunchContext) -> None:
     arguments = []
     if rviz_frame != "":
         arguments.extend(["-f", rviz_frame])
-    display_config = get_file_path("rcdt_utilities", ["rviz"], "general.rviz")
+    display_config = get_file_path("rcdt_utilities", ["rviz"], "markers.rviz")
     match moveit_mode:
         case "rviz":
             display_config = get_file_path("rcdt_utilities", ["rviz"], "moveit.rviz")

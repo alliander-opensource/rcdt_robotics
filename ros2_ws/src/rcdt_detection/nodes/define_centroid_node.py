@@ -9,11 +9,8 @@ import cv2
 from rclpy import logging
 from rclpy.node import Node
 from rcdt_detection_msgs.srv import DefineCentroid
-from rcdt_detection.image_manipulation import (
-    ros_image_to_cv2_image,
-    cv2_image_to_ros_image,
-    three_to_single_channel,
-)
+from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
+from rcdt_detection.image_manipulation import three_to_single_channel
 
 ros_logger = logging.get_logger(__name__)
 
