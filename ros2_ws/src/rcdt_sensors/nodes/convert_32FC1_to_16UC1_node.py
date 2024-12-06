@@ -9,10 +9,7 @@ import numpy as np
 from rclpy import logging
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from rcdt_detection.image_manipulation import (
-    ros_image_to_cv2_image,
-    cv2_image_to_ros_image,
-)
+from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
 
 ros_logger = logging.get_logger(__name__)
 

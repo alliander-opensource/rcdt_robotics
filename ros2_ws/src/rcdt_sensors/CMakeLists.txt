@@ -11,6 +11,7 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
+find_package(rcdt_utilities REQUIRED)
 
 # Install nodes
 install(PROGRAMS

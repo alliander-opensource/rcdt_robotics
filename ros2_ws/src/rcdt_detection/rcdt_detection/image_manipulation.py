@@ -6,22 +6,8 @@ import cv2
 from numpy import ndarray, uint8
 import torch
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
+from rcdt_utilities import cv_utils
 from math import floor, ceil
-
-cv_bridge = CvBridge()
-
-
-def ros_image_to_cv2_image(
-    image_message: Image, desired_encoding: str = "passthrough"
-) -> ndarray:
-    """Convert ROS image message to cv2 image."""
-    return cv_bridge.imgmsg_to_cv2(image_message, desired_encoding=desired_encoding)
-
-
-def cv2_image_to_ros_image(image: ndarray, encoding: str = "passthrough") -> Image:
-    """Convert cv2 image message to ROS image."""
-    return cv_bridge.cv2_to_imgmsg(image, encoding=encoding)
 
 
 def slice_image_to_stride(image: ndarray, stride: int = 32) -> ndarray:
@@ -39,9 +25,9 @@ def slice_image_to_stride(image: ndarray, stride: int = 32) -> ndarray:
 def ros_image_to_cv2_image_sliced(
     image_message: Image, desired_encoding: str = "passthrough", stride: int = 32
 ) -> ndarray:
-    """slice an image so that its dimensions are a multiple of stride"""
+    """Slice an image so that its dimensions are a multiple of stride"""
     return slice_image_to_stride(
-        ros_image_to_cv2_image(image_message, desired_encoding), stride
+        cv_utils.ros_image_to_cv2_image(image_message, desired_encoding), stride
     )
 
 

@@ -10,7 +10,7 @@ from rclpy import logging
 from rclpy.node import Node
 from sensor_msgs.msg import CameraInfo
 from rcdt_detection_msgs.srv import PoseFromPixel
-from rcdt_detection.image_manipulation import ros_image_to_cv2_image
+from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)
 
@@ -19,8 +19,8 @@ class PoseFromPixelNode(Node):
     """Converts a pixel to the corresponding pose in meters."""
 
     def __init__(self) -> None:
-        super().__init__("point_from_pixel")
-        self.create_service(PoseFromPixel, "/point_from_pixel", self.callback)
+        super().__init__("pose_from_pixel")
+        self.create_service(PoseFromPixel, "/pose_from_pixel", self.callback)
 
     def callback(
         self, request: PoseFromPixel.Request, response: PoseFromPixel.Response
@@ -61,22 +61,6 @@ def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
         ros_logger.warn(f"Pixel y={pixel[0]} while image height={height}.")
         valid = False
     return valid
-
-
-def realsense_435_intrinsics(width: int, height: int) -> rs2.intrinsics:
-    """Gives the intrinsics for a realsense 435."""
-    intrinsics = rs2.intrinsics()
-
-    intrinsics.width = int(width)
-    intrinsics.height = int(height)
-    intrinsics.ppx = 316.3547668457031
-    intrinsics.ppy = 243.0697021484375
-    intrinsics.fx = 387.0155334472656
-    intrinsics.fy = 387.0155334472656
-
-    intrinsics.model = rs2.distortion.brown_conrady
-
-    return intrinsics
 
 
 def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:

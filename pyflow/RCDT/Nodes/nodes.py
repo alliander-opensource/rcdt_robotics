@@ -9,7 +9,7 @@ from realsense2_camera_msgs.msg import RGBD
 from rclpy import wait_for_message
 import cv2
 
-from rcdt_detection.image_manipulation import cv2_image_to_ros_image
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image
 
 from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot, TransformPose
 from rcdt_detection_msgs.srv import (
@@ -215,7 +215,7 @@ class PoseFromPixelNode:
     def __init__(self, ui: RosService):
         self.ui = ui
         ui.service = PoseFromPixel
-        ui.client = PyflowNode.node.create_client(PoseFromPixel, "/point_from_pixel")
+        ui.client = PyflowNode.node.create_client(PoseFromPixel, "/pose_from_pixel")
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
