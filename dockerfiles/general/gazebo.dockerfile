@@ -2,11 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 # Instead of using https://gazebosim.org/docs/fortress/ros_installation/, 
 # we install ignition separately first, to obtain a newer version. Originally 
 # to have this issue fixed: https://github.com/gazebosim/gz-sensors/issues/454.
-
 
 # Install gazebo: https://gazebosim.org/docs/fortress/install_ubuntu/
 RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
@@ -17,3 +15,6 @@ RUN apt-get install -y ignition-fortress
 # Install ros-humble-ros-gz (which will now use the already installed ignition):
 RUN apt install -y ros-humble-ros-gz
 RUN apt install -y ros-humble-ign-ros2-control
+
+# Define IGN_IP to use gazebo with firewall enabled:
+ENV IGN_IP=127.0.0.1

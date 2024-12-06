@@ -19,5 +19,7 @@ RUN usermod -aG sudo,dialout $UNAME
 RUN apt update
 RUN apt full-upgrade -y
 
-RUN echo "if test -f ~/.bashrc.personal; then\nsource ~/.bashrc.personal\nfi" > /home/$UNAME/.bashrc
+#RUN touch /home/$UNAME/.bashrc
+RUN echo "if test -f ~/.personal.bashrc; then\nsource ~/.personal.bashrc\nfi" >> /home/$UNAME/.bashrc
+RUN echo "if test -f ~/.env; then\nsource ~/.env\nfi" >> /home/$UNAME/.bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/$UNAME/.bashrc

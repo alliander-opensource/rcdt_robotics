@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-world_arg = LaunchArgument("world", "")
+world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
@@ -18,9 +18,6 @@ def launch_setup(context: LaunchContext) -> List:
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = world_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
-
-    if world == "":
-        world = get_file_path("rcdt_utilities", ["sdf"], "empty.xml.sdf")
 
     gz_args = f" -r {world}"
     if not load_gazebo_ui:

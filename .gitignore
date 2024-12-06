@@ -11,7 +11,7 @@ ignore/
 .vscode/
 .data/
 
-.bashrc.personal
+.personal.bashrc
 .bash_history
 .bash_logout
 .bashrc

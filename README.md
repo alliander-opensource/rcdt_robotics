@@ -24,6 +24,10 @@ In case you cloned the repository, but forgot to pass the --recurse-submodules f
 
 This repository contains docker files to simplify the installation process of the required software. To install docker itself, please check: [docs/install_docker](docs/install_docker.md).
 
+## git lfs
+
+This repository uses git lfs for larger files, in particular for 3D simulation assets. To install git LFS please check: [git lfs](https://git-lfs.com/).
+
 ## Build/run an image
 
 To build and run one of our images, use the run script in root of the repository and follow the instructions:
@@ -42,7 +46,7 @@ Do not forget to source afterwards:
 
 `source /home/rcdt/ros2_ws/install/setup.bash`
 
-You can also automate this by adding the source command to the `.bashrc.personal` file, in the root of this repository.
+You can also automate this by adding the source command to the `.personal.bashrc` file, in the root of this repository.
 
 You should now be able to use the ROS2 packages. Check the package specific README files for further instructions.
 
