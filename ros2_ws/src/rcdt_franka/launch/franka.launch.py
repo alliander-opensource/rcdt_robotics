@@ -17,7 +17,7 @@ load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 moveit_mode_arg = LaunchArgument("moveit", "off", ["node", "rviz", "servo", "off"])
-world_arg = LaunchArgument("world", "table_brick.sdf")
+world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
 
 
 def launch_setup(context: LaunchContext) -> None:

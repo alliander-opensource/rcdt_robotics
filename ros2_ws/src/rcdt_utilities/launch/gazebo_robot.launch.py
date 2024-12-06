@@ -19,7 +19,8 @@ def launch_setup(context: LaunchContext) -> List:
     world = world_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
 
-    gz_args = f" -r {world}"
+    sdf_file = get_file_path("rcdt_gz_worlds", ["worlds"], world)
+    gz_args = f" -r {sdf_file}"
     if not load_gazebo_ui:
         gz_args += " -s"
     gazebo = IncludeLaunchDescription(

@@ -20,6 +20,7 @@ SPDX-License-Identifier: Apache-2.0
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
   <depend>realsense2_camera_msgs</depend>
+  <depend>rcdt_utilities</depend>
 
   <test_depend>ament_lint_auto</test_depend>
 

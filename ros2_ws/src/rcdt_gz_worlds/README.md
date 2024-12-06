@@ -22,10 +22,10 @@ ros2 launch rcdt_gz_worlds world.launch.py
 
 An empty world, with the plugins needed for simulating a RealSense.
 
-### Table with single brick (table_single_brick.sdf)
+### Table with single brick (table_with_1_brick.sdf)
 
 A world with a table with a single brick on top.
 
-### Table with multiple bricks (table_multiple_bricks.sdf)
+### Table with multiple bricks (table_with_4_bricks.sdf)
 
 A world with a table with multiple bricks on top.
