@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - dockerfiles/**
+      - .github/workflows/deploy-pr.yml
 
 jobs:
   docker:
@@ -33,3 +34,5 @@ jobs:
           tags: |
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-${{ github.sha }}
             rcdt/robotics:${{ env.MODIFIED_BRANCH_NAME }}-latest
+          cache-from: type=registry,ref=rcdt/robotics:build-cache
+          cache-to: type=registry,ref=rcdt/robotics:build-cache,mode=max
