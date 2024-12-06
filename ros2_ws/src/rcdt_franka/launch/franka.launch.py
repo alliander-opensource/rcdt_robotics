@@ -26,7 +26,7 @@ def launch_setup(context: LaunchContext) -> None:
     use_rviz = use_rviz_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
     moveit_mode = moveit_mode_arg.value(context)
-    world = world_arg.value(context)
+    world = str(world_arg.value(context))
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
     xacro_arguments = {}
@@ -47,7 +47,7 @@ def launch_setup(context: LaunchContext) -> None:
             launch_arguments={
                 "realsense": str(use_realsense),
                 "load_gazebo_ui": str(load_gazebo_ui),
-                "world": str(world),
+                "world": world,
             }.items(),
         )
     else:
