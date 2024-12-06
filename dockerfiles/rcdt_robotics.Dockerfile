@@ -7,6 +7,8 @@ INCLUDE ./general/pre_install.dockerfile
 
 INCLUDE ./general/dep_core.dockerfile
 
+INCLUDE ./general/gazebo.dockerfile
+
 INCLUDE ./general/moveit.dockerfile
 
 INCLUDE ./franka/main.dockerfile
