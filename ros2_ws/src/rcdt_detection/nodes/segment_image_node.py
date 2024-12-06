@@ -10,9 +10,8 @@ from rclpy.node import Node
 from rclpy import logging
 from rcdt_detection_msgs.srv import SegmentImage
 from rcdt_detection.segmentation import segment_image, load_segmentation_model
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_detection.image_manipulation import (
-    cv2_image_to_ros_image,
-    ros_image_to_cv2_image,
     segmentation_mask_to_binary_mask,
     single_to_three_channel,
 )

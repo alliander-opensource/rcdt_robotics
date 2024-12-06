@@ -34,6 +34,7 @@ install(TARGETS
 # Install python nodes:
 install(PROGRAMS
   nodes/joy_to_twist_node.py
+  nodes/manipulate_pose_node.py
   nodes/moveit_controller_node.py
   DESTINATION lib/${PROJECT_NAME}
 )

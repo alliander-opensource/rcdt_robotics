@@ -9,6 +9,7 @@ project(rcdt_detection)
 find_package(rclpy REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(rcdt_utilities REQUIRED)
 
 # Install project files
 install(DIRECTORY
@@ -23,9 +24,9 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   nodes/define_centroid_node.py
   nodes/filter_masks_node.py
-  nodes/object_detection.py
-  nodes/point_from_pixel_node.py
+  nodes/pose_from_pixel_node.py
   nodes/segment_image_node.py
+  nodes/split_rgbd_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
