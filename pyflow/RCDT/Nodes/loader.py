@@ -53,6 +53,13 @@ class TransformPoseNode(RosService):
         super().__init__(name)
 
 
+class ExpressPoseInOtherFrameNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.ExpressPoseInOtherFrameNode(self)
+        super().__init__(name)
+
+
 class GetCameraInfo(RosNode):
     def __init__(self, name: str):
         reload(nodes)

@@ -11,7 +11,13 @@ import cv2
 
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image
 
-from rcdt_utilities_msgs.srv import AddMarker, AddObject, MoveRobot, TransformPose
+from rcdt_utilities_msgs.srv import (
+    AddMarker,
+    AddObject,
+    MoveRobot,
+    TransformPose,
+    ExpressPoseInOtherFrame,
+)
 from rcdt_detection_msgs.srv import (
     SegmentImage,
     FilterMasks,
@@ -41,15 +47,33 @@ class TransformPoseNode:
     def __init__(self, ui: RosService):
         self.ui = ui
         ui.service = TransformPose
-        ui.client = PyflowNode.node.create_client(TransformPose, "/transform_pose")
+        ui.client = PyflowNode.node.create_client(
+            TransformPose, "/manipulate_pose/transform_pose_relative"
+        )
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
         request = TransformPose.Request()
-        request.pose_in = self.ui.get_data("pose_in")
+        request.pose = self.ui.get_data("pose")
         request.transform = self.ui.get_data("transform")
-        request.target_frame = self.ui.get_data("target_frame")
         response: TransformPose.Response = self.ui.call_service(request)
+        self.ui.set_pins_based_on_response(response)
+
+
+class ExpressPoseInOtherFrameNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = ExpressPoseInOtherFrame
+        ui.client = PyflowNode.node.create_client(
+            ExpressPoseInOtherFrame, "/manipulate_pose/express_pose_in_other_frame"
+        )
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = ExpressPoseInOtherFrame.Request()
+        request.pose = self.ui.get_data("pose")
+        request.target_frame = self.ui.get_data("target_frame")
+        response: ExpressPoseInOtherFrame.Response = self.ui.call_service(request)
         self.ui.set_pins_based_on_response(response)
 
 
