@@ -15,6 +15,9 @@ RUN if getent passwd $UID; then userdel $(id -nu $UID); else :; fi
 RUN useradd -m -u $UID -p "$(openssl passwd -1 $UNAME)" $UNAME
 RUN usermod -aG sudo,dialout $UNAME
 
+# Update apt:
+RUN apt update
+
 # Create bashrc file:
 RUN echo "if test -f ~/.personal.bashrc; then\nsource ~/.personal.bashrc\nfi" >> /home/$UNAME/.bashrc
 RUN echo "if test -f ~/.env; then\nset -a && source ~/.env && set +a\nfi" >> /home/$UNAME/.bashrc
