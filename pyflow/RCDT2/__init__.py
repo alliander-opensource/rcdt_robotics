@@ -3,31 +3,32 @@
 # SPDX-License-Identifier: Apache-2.0
 # ruff: noqa
 
+PACKAGE_NAME = "RCDT2"
+
 from PyFlow.UI.UIInterfaces import IPackage
 
 # Factories
-from RCDT.Factories.UIPinFactory import createUIPin
-from RCDT.Factories.PinInputWidgetFactory import getInputWidget
-from RCDT.Factories.UINodeFactory import createUINode
+from RCDT2.Factories.UIPinFactory import createUIPin
+from RCDT2.Factories.PinInputWidgetFactory import getInputWidget
+from RCDT2.Factories.UINodeFactory import createUINode
+
 
 # Nodes:
-# from RCDT.Nodes.loader import get_nodes
-
-PACKAGE_NAME = "RCDT"
+from RCDT2.Nodes.loader import get_pyflow_nodes_from_ros_services
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
-_NODES = {}
+_NODES = get_pyflow_nodes_from_ros_services()
 _PINS = {}
 _TOOLS = {}
 _PREFS_WIDGETS = {}
 
 
-class RCDT(IPackage):
-    """RCDT pyflow package"""
+class RCDT2(IPackage):
+    """RCDT2 pyflow package"""
 
     def __init__(self):
-        super(RCDT, self).__init__()
+        super().__init__()
 
     @staticmethod
     def GetExporters():
