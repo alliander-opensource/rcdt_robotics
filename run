@@ -4,45 +4,43 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-SCRIPT_DIR_PATH=$(
+SCRIPT_PATH=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
 
 images=()
-for dockerfile in $SCRIPT_DIR_PATH/dockerfiles/*.Dockerfile; do
+for dockerfile in $SCRIPT_PATH/dockerfiles/*.Dockerfile; do
     images+=("$(basename "${dockerfile%.*}")")
 done
 [[ -z $images ]] && echo "No Dockerfiles found" && return 1
-PS3="Which image do you want to run? (select with number): "
+echo "Select image #: "
 select image in "${images[@]}" ; do
-    selected_image=$image
-    [[ $selected_image ]] && break
+    [[ $image ]] && break
 done
 
-origins=(DockerHub local)
-PS3="What is the image origin? (select with number): "
-select origin in "${origins[@]}" ; do
-    selected_origin=$origin
-    [[ $selected_origin ]] && break
-done
+# origins=(DockerHub local)
+# echo "Image origin #: "
+# select origin in "${origins[@]}" ; do
+#     [[ $origin ]] && break
+# done
 
-if [[ $selected_origin == "DockerHub" ]]; then
+if [[ $origin == "DockerHub" ]]; then
     branch_name=$(git branch --show-current)
     if [[ $branch_name == main ]]; then
-        selected_tag=latest
+        img_tag=latest
     else
         modified_branch_name=${branch_name/\//-}
-        selected_tag=$modified_branch_name-latest
+        img_tag=$modified_branch_name-latest
     fi
 else
-    selected_tag=local
+    img_tag=$origin
 fi
-export IMAGE_TAG=$selected_tag
+export IMAGE_TAG=$img_tag
 
 mkdir -p ~/.vscode-server
 mkdir -p $SCRIPT_DIR_PATH/.config
 touch $SCRIPT_DIR_PATH/.personal.bashrc
 
-echo Running $selected_image:$IMAGE_TAG ...
-docker compose -f $SCRIPT_DIR_PATH/.devcontainer/docker-compose.yml run --rm $selected_image
+echo Running $image:$IMAGE_TAG ...
+docker compose -f $SCRIPT_PATH/.devcontainer/docker-compose.yml run --rm $image
