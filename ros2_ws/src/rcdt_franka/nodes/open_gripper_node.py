@@ -30,6 +30,13 @@ class OpenGripper(Node):
             self, Move, "/fr3_gripper/move", callback_group=cbg_client
         )
 
+        self.create_goal()
+
+    def create_goal(self) -> None:
+        self.goal = Move.Goal()
+        self.goal.width = 0.08
+        self.goal.speed = 0.03
+
     def callback(
         self, _request: Trigger.Request, response: Trigger.Response
     ) -> Trigger.Response:
@@ -37,15 +44,11 @@ class OpenGripper(Node):
         return response
 
     def open_gripper(self) -> bool:
-        goal = Move.Goal()
-        goal.width = 0.08
-        goal.speed = 0.03
-
         if not self.client.wait_for_server(timeout_sec=3):
             self.get_logger().error("Gripper move client not available.")
             return False
 
-        result: Move.Impl.GetResultService.Response = self.client.send_goal(goal)
+        result: Move.Impl.GetResultService.Response = self.client.send_goal(self.goal)
         if not result.result.success:
             self.get_logger().error("Opening gripper did not succeed.")
         return result.result.success
@@ -65,6 +68,7 @@ def main(args: str = None) -> None:
         raise e
     finally:
         node.destroy_node()
+        executor.shutdown()
 
 
 if __name__ == "__main__":

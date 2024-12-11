@@ -30,6 +30,15 @@ class CloseGripper(Node):
             self, Grasp, "/fr3_gripper/grasp", callback_group=cbg_client
         )
 
+        self.create_goal()
+
+    def create_goal(self) -> None:
+        self.goal = Grasp.Goal()
+        self.goal.width = 0.0
+        self.goal.epsilon.inner = self.goal.epsilon.outer = 0.08
+        self.goal.force = 100.0
+        self.goal.speed = 0.03
+
     def callback(
         self, _request: Trigger.Request, response: Trigger.Response
     ) -> Trigger.Response:
@@ -37,17 +46,11 @@ class CloseGripper(Node):
         return response
 
     def close_gripper(self) -> bool:
-        goal = Grasp.Goal()
-        goal.width = 0.0
-        goal.epsilon.inner = goal.epsilon.outer = 0.08
-        goal.force = 100.0
-        goal.speed = 0.03
-
-        if not self.client.wait_for_server(timeout_sec=2):
+        if not self.client.wait_for_server(timeout_sec=3):
             self.get_logger().error("Gripper grasp client not available.")
             return False
 
-        result: Grasp.Impl.GetResultService.Response = self.client.send_goal(goal)
+        result: Grasp.Impl.GetResultService.Response = self.client.send_goal(self.goal)
         if not result.result.success:
             self.get_logger().error("Closing gripper did not succeed.")
         return result.result.success
@@ -67,6 +70,7 @@ def main(args: str = None) -> None:
         raise e
     finally:
         node.destroy_node()
+        executor.shutdown()
 
 
 if __name__ == "__main__":

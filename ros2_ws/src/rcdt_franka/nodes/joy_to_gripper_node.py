@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from typing import Literal
+from threading import Thread
 from rclpy import logging
 from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
@@ -41,6 +43,8 @@ class JoyToGripper(Node):
         for button in self.button_actions:
             self.button_states[button] = None
 
+        self.busy = False
+
     def handle_input(self, sub_msg: Joy) -> None:
         for button, action in self.button_actions.items():
             state = sub_msg.buttons[button]
@@ -49,11 +53,21 @@ class JoyToGripper(Node):
             if state == self.button_states[button]:
                 continue
             self.button_states[button] = state
-            match action:
-                case "open_gripper":
-                    self.open_gripper.call(Trigger.Request())
-                case "close_gripper":
-                    self.close_gripper.call(Trigger.Request())
+            thread = Thread(target=self.perform_action_if_not_busy, args=[action])
+            thread.start()
+
+    def perform_action_if_not_busy(
+        self, action: Literal["open_gripper", "close_gripper"]
+    ) -> None:
+        if self.busy:
+            return
+        self.busy = True
+        match action:
+            case "open_gripper":
+                self.open_gripper.call(Trigger.Request())
+            case "close_gripper":
+                self.close_gripper.call(Trigger.Request())
+        self.busy = False
 
 
 def main(args: str = None) -> None:
@@ -70,6 +84,7 @@ def main(args: str = None) -> None:
         raise e
     finally:
         node.destroy_node()
+        executor.shutdown()
 
 
 if __name__ == "__main__":
