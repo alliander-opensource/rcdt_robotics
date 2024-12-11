@@ -14,7 +14,8 @@ from rcdt_utilities.cv_utils import cv2_image_to_ros_image
 from rcdt_utilities_msgs.srv import (
     AddMarker,
     AddObject,
-    MoveRobot,
+    MoveToPose,
+    MoveToConfiguration,
     TransformPose,
     ExpressPoseInOtherFrame,
 )
@@ -251,19 +252,34 @@ class PoseFromPixelNode:
         self.ui.set_pins_based_on_response(response)
 
 
-class MoveitMoveRobot:
+class MoveHandToPoseNode:
     def __init__(self, ui: RosService):
         self.ui = ui
-        ui.service = MoveRobot
+        ui.service = MoveToPose
         ui.client = PyflowNode.node.create_client(
-            MoveRobot, "/moveit_controller/move_robot"
+            MoveToPose, "/moveit_controller/move_hand_to_pose"
         )
         ui.run_async = self.run_async
 
     def run_async(self) -> None:
-        request = MoveRobot.Request()
-        request.goal_pose = self.ui.get_data("goal_pose")
-        request.goal_pose.header.frame_id = "fr3_link0"
+        request = MoveToPose.Request()
+        request.pose = self.ui.get_data("pose")
+        request.pose.header.frame_id = "fr3_link0"
+        self.ui.call_service(request)
+
+
+class MoveToConfigurationNode:
+    def __init__(self, ui: RosService):
+        self.ui = ui
+        ui.service = MoveToConfiguration
+        ui.client = PyflowNode.node.create_client(
+            MoveToConfiguration, "/moveit_controller/move_to_configuration"
+        )
+        ui.run_async = self.run_async
+
+    def run_async(self) -> None:
+        request = MoveToConfiguration.Request()
+        request.configuration = self.ui.get_data("configuration")
         self.ui.call_service(request)
 
 
