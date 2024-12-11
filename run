@@ -4,45 +4,29 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-SCRIPT_DIR_PATH=$(
+SCRIPT_DIR=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
 
-images=()
-for dockerfile in $SCRIPT_DIR_PATH/dockerfiles/*.Dockerfile; do
-    images+=("$(basename "${dockerfile%.*}")")
-done
-[[ -z $images ]] && echo "No Dockerfiles found" && return 1
-PS3="Which image do you want to run? (select with number): "
-select image in "${images[@]}" ; do
-    selected_image=$image
-    [[ $selected_image ]] && break
-done
-
-origins=(DockerHub local)
-PS3="What is the image origin? (select with number): "
-select origin in "${origins[@]}" ; do
-    selected_origin=$origin
-    [[ $selected_origin ]] && break
-done
-
-if [[ $selected_origin == "DockerHub" ]]; then
-    branch_name=$(git branch --show-current)
-    if [[ $branch_name == main ]]; then
-        selected_tag=latest
-    else
-        modified_branch_name=${branch_name/\//-}
-        selected_tag=$modified_branch_name-latest
-    fi
+branch_name=$(git branch --show-current)
+if [[ $branch_name == main ]]; then
+    image_tag="latest"
 else
-    selected_tag=local
+    image_tag="${branch_name/\//-}-latest"
 fi
-export IMAGE_TAG=$selected_tag
+
+export IMAGE_TAG=$image_tag
 
 mkdir -p ~/.vscode-server
-mkdir -p $SCRIPT_DIR_PATH/.config
-touch $SCRIPT_DIR_PATH/.personal.bashrc
+mkdir -p $SCRIPT_DIR/.config
+touch $SCRIPT_DIR/.personal.bashrc
 
 echo Running $selected_image:$IMAGE_TAG ...
-docker compose -f $SCRIPT_DIR_PATH/.devcontainer/docker-compose.yml run --rm $selected_image
+docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics
+if [ $? -ne 0 ]; then
+    export IMAGE_TAG="latest"
+    echo Error finding image. Running $selected_image:$IMAGE_TAG instead ...
+    docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics
+
+fi
