@@ -11,17 +11,19 @@ logger = getLogger(__name__)
 
 class PinManager:
     def __init__(self):
-        self.ipnut_names: list[str] = []
+        self.input_names: list[str] = []
         self.input_pins: list[PinBase] = []
 
         self.output_names: list[str] = []
         self.output_pins: list[PinBase] = []
 
-    def add_pin(
-        self, pin_type: Literal["input", "output"], name: str, pin: PinBase
-    ) -> None:
-        setattr(self, f"{pin_type}_names", name)
-        setattr(self, f"{pin_type}_pins", pin)
+    def add_input_pin(self, name: str, pin: PinBase) -> None:
+        self.input_names.append(name)
+        self.input_pins.append(pin)
+
+    def add_ouput_pin(self, name: str, pin: PinBase) -> None:
+        self.output_names.append(name)
+        self.output_pins.append(pin)
 
     def get_pin_names(self, pin_type: Literal["input", "output"]) -> list[str]:
         return getattr(self, f"{pin_type}_names")
@@ -73,19 +75,24 @@ class Service(PyflowExecutor):
         self.client = PyflowRosBridge.node.create_client(self.service, topic_name)
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
-        self.create_request()
+        point = Point()
+        point.x = 10.0
+        self.pin_manager.input_pins[0].setData(point)
+        data = self.pin_manager.input_pins[0].getData()
+        print(data)
 
     def create_data_pins(self) -> None:
-        service_parts = {"Request": "input", "Response": "output"}
-        for service_part, pin_type in service_parts.items():
+        service_parts = ["Request", "Response"]
+        for service_part in service_parts:
             msg: type = getattr(self.service, service_part)
             fields_and_field_types: dict = msg.get_fields_and_field_types()
             for field, _field_type in fields_and_field_types.items():
                 if msg.__name__ == self.service.__name__ + "_Request":
-                    pin = self.createInputPin(field, "StringPin", "")
+                    pin = self.createInputPin(field, _field_type)
+                    self.pin_manager.add_input_pin(field, pin)
                 elif msg.__name__ == self.service.__name__ + "_Response":
-                    pin = self.createOutputPin(field, "StringPin", "")
-                self.pin_manager.add_pin(pin_type, field, pin)
+                    pin = self.createOutputPin(field, "StringPin")
+                    self.pin_manager.add_ouput_pin(field, pin)
 
     def create_request(self) -> object:
         request = self.service.Request()
@@ -100,3 +107,7 @@ class Service(PyflowExecutor):
         response = self.client.call(request)
         logger.info("Finished. Response received.")
         return response
+
+    @staticmethod
+    def category() -> None:
+        return "Services"

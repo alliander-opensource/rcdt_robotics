@@ -15,11 +15,13 @@ from RCDT2.Factories.UINodeFactory import createUINode
 
 # Nodes:
 from RCDT2.Nodes.loader import get_pyflow_nodes_from_ros_services
+from RCDT2.Pins.pin_loader import get_pyflow_pins_from_ros_messages
+from RCDT2.Pins.DemoPin import DemoPin
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
 _NODES = get_pyflow_nodes_from_ros_services()
-_PINS = {}
+_PINS = get_pyflow_pins_from_ros_messages()
 _TOOLS = {}
 _PREFS_WIDGETS = {}
 
