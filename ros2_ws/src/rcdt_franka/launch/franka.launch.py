@@ -131,6 +131,14 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_franka",
         executable="joy_to_gripper_node.py",
     )
+    open_gripper = Node(
+        package="rcdt_franka",
+        executable="open_gripper_node.py",
+    )
+    close_gripper = Node(
+        package="rcdt_franka",
+        executable="close_gripper_node.py",
+    )
 
     skip = LaunchDescriptionEntity()
     return [
@@ -147,6 +155,8 @@ def launch_setup(context: LaunchContext) -> None:
         joy_topic_manager if moveit_mode == "servo" else skip,
         joy_to_twist_franka if moveit_mode == "servo" else skip,
         joy_to_gripper,
+        open_gripper,
+        close_gripper,
     ]
 
 
