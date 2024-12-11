@@ -252,12 +252,12 @@ class PoseFromPixelNode:
         self.ui.set_pins_based_on_response(response)
 
 
-class MoveToPoseNode:
+class MoveHandToPoseNode:
     def __init__(self, ui: RosService):
         self.ui = ui
         ui.service = MoveToPose
         ui.client = PyflowNode.node.create_client(
-            MoveToPose, "/moveit_controller/move_to_pose"
+            MoveToPose, "/moveit_controller/move_hand_to_pose"
         )
         ui.run_async = self.run_async
 

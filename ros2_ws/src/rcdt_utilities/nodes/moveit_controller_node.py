@@ -34,7 +34,7 @@ class MoveitControllerNode(Node):
         self.planner: PlanningComponent = self.robot.get_planning_component(group)
         self.monitor: PlanningSceneMonitor = self.robot.get_planning_scene_monitor()
 
-        self.create_service(MoveToPose, "~/move_to_pose", self.move_to_pose)
+        self.create_service(MoveToPose, "~/move_hand_to_pose", self.move_hand_to_pose)
         self.create_service(
             MoveToConfiguration, "~/move_to_configuration", self.move_to_configuration
         )
@@ -64,14 +64,15 @@ class MoveitControllerNode(Node):
         self.planner.set_start_state_to_current_state()
         self.state: RobotState = self.planner.get_start_state()
 
-    def move_to_pose(
+    def move_hand_to_pose(
         self, request: MoveToPose.Request, response: MoveToPose.Response
     ) -> MoveToPose.Response:
         if request.pose.header.frame_id not in self.links:
             self.get_logger().error(
                 f"frame_id '{request.pose.header.frame_id}' not one of links: {self.links}"
             )
-            return False
+            response.success = False
+            return response
 
         self.update_state()
         self.planner.set_goal_state(
