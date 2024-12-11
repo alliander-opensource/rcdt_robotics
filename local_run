@@ -18,8 +18,9 @@ echo "Select image #: "
 select image in "${images[@]}" ; do
     [[ $image ]] && break
 done
+image_slash="${image/_/\/}"
 
-if [ -z "$(docker images -q rcdt\/$image 2> /dev/null)" ]; then
+if [ -z "$(docker images -q $image_slash:local 2> /dev/null)" ]; then
 
     cache_options=(true false)
     echo "Build with cache?"
@@ -38,7 +39,7 @@ if [ -z "$(docker images -q rcdt\/$image 2> /dev/null)" ]; then
     docker build \
         $use_cache \
         --build-arg COLCON_BUILD_SEQUENTIAL="$COLCON_BUILD_SEQUENTIAL" \
-        -t "rcdt/$image:local" \
+        -t "$image_slash:local" \
         -f "$SCRIPT_PATH/dockerfiles/$image.Dockerfile" \
         "$SCRIPT_PATH/dockerfiles"
 fi

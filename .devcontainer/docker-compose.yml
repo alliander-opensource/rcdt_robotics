@@ -24,9 +24,9 @@ services:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
-  ros2:
+  rcdt_ros2:
     image: rcdt/ros2:${IMAGE_TAG}
-    container_name: ros2
+    container_name: rcdt_ros2
     runtime: nvidia
     network_mode: host
     privileged: true
