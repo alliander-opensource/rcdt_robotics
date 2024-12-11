@@ -8,25 +8,19 @@ SCRIPT_DIR=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
+SERVICE=rcdt_robotics
 
 branch_name=$(git branch --show-current)
-if [[ $branch_name == main ]]; then
-    image_tag="latest"
-else
+changed_files=($(git diff --name-only main))
+
+image_tag="latest"
+if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* || ${changed_files[@]} =~ .github/workflows/* ]]; then
     image_tag="${branch_name/\//-}-latest"
 fi
-
-export IMAGE_TAG=$image_tag
 
 mkdir -p ~/.vscode-server
 mkdir -p $SCRIPT_DIR/.config
 touch $SCRIPT_DIR/.personal.bashrc
 
-echo Running $selected_image:$IMAGE_TAG ...
-docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics
-if [ $? -ne 0 ]; then
-    export IMAGE_TAG="latest"
-    echo Error finding image. Running $selected_image:$IMAGE_TAG instead ...
-    docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics
-
-fi
+echo Running $SERVICE:$image_tag ...
+IMAGE_TAG=$image_tag docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics --dry-run
