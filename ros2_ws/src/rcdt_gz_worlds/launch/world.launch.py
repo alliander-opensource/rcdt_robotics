@@ -13,7 +13,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", True, [True, False])
-world_arg = LaunchArgument("world", "table_brick.sdf")
+world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
 
 
 def launch_setup(context: LaunchContext) -> List:
