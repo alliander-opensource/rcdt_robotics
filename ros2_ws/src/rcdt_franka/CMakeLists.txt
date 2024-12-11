@@ -18,8 +18,10 @@ install(
 
 # Install nodes
 install(PROGRAMS
+  nodes/close_gripper_node.py
   nodes/franka_gripper_simulation_node.py
   nodes/joy_to_gripper_node.py
+  nodes/open_gripper_node.py
   nodes/settings_setter_node.py
   DESTINATION lib/${PROJECT_NAME}
 )

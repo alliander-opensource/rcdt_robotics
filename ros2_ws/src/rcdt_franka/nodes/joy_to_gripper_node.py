@@ -5,60 +5,30 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from rclpy import logging
 from rclpy.node import Node
-from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from sensor_msgs.msg import Joy
-from franka_msgs.action import Move, Grasp
+from std_srvs.srv import Trigger
 from rcdt_utilities.launch_utils import get_yaml, get_file_path
 
-
-class Fr3GripperClient(Node):
-    def __init__(self):
-        super().__init__("fr3_gripper_client")
-        self.move_client = ActionClient(self, Move, "/fr3_gripper/move")
-        self.grasp_client = ActionClient(self, Grasp, "/fr3_gripper/grasp")
-        self.is_gripped = False
-
-    def open_gripper(self) -> None:
-        if not self.is_gripped:
-            return
-        goal = Move.Goal()
-        goal.width = 0.08
-        goal.speed = 0.03
-
-        if not self.move_client.wait_for_server(timeout_sec=2):
-            self.get_logger().warn("Gripper move client not available.")
-            return
-
-        result: Move.Impl.GetResultService.Response = self.move_client.send_goal(goal)
-        if not result.result.success:
-            self.get_logger().warn("Opening gripper did not succeed.")
-        self.is_gripped = False
-
-    def close_gripper(self) -> None:
-        if self.is_gripped:
-            return
-        goal = Grasp.Goal()
-        goal.width = 0.0
-        goal.epsilon.inner = goal.epsilon.outer = 0.08
-        goal.force = 100.0
-        goal.speed = 0.03
-
-        if not self.grasp_client.wait_for_server(timeout_sec=2):
-            self.get_logger().warn("Gripper grasp client not available.")
-            return
-
-        result: Grasp.Impl.GetResultService.Response = self.grasp_client.send_goal(goal)
-        if not result.result.success:
-            self.get_logger().warn("Closing gripper did not succeed.")
-        self.is_gripped = True
+ros_logger = logging.get_logger(__name__)
 
 
 class JoyToGripper(Node):
-    def __init__(self, gripper_client: Fr3GripperClient):
+    def __init__(self):
         super().__init__("joy_to_gripper")
-        self.gripper_client = gripper_client
+
+        cbg_open_gripper = MutuallyExclusiveCallbackGroup()
+        self.open_gripper = self.create_client(
+            Trigger, "open_gripper", callback_group=cbg_open_gripper
+        )
+
+        cbg_close_gripper = MutuallyExclusiveCallbackGroup()
+        self.close_gripper = self.create_client(
+            Trigger, "close_gripper", callback_group=cbg_close_gripper
+        )
 
         self.declare_parameter("sub_topic", value="/joy")
         sub_topic = self.get_parameter("sub_topic").get_parameter_value().string_value
@@ -81,23 +51,25 @@ class JoyToGripper(Node):
             self.button_states[button] = state
             match action:
                 case "open_gripper":
-                    self.gripper_client.open_gripper()
+                    self.open_gripper.call(Trigger.Request())
                 case "close_gripper":
-                    self.gripper_client.close_gripper()
+                    self.close_gripper.call(Trigger.Request())
 
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
+    node = JoyToGripper()
+    executor.add_node(node)
 
-    gripper_client = Fr3GripperClient()
-    executor.add_node(gripper_client)
-
-    joy_to_gripper = JoyToGripper(gripper_client)
-    executor.add_node(joy_to_gripper)
-
-    executor.spin()
-    rclpy.shutdown()
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        ros_logger.info("Keyboard interrupt, shutting down.\n")
+    except Exception as e:
+        raise e
+    finally:
+        node.destroy_node()
 
 
 if __name__ == "__main__":
