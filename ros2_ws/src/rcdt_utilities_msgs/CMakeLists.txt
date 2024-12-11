@@ -17,7 +17,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AddMarker.srv"
   "srv/AddObject.srv"
   "srv/ExpressPoseInOtherFrame.srv"
-  "srv/MoveRobot.srv"
+  "srv/MoveToConfiguration.srv"
+  "srv/MoveToPose.srv"
   "srv/TransformPose.srv"
   DEPENDENCIES std_msgs geometry_msgs moveit_msgs
 )
