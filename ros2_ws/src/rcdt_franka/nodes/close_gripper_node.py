@@ -16,7 +16,7 @@ from std_srvs.srv import Trigger
 ros_logger = logging.get_logger(__name__)
 
 
-class OpenGripper(Node):
+class CloseGripper(Node):
     def __init__(self) -> None:
         super().__init__("close_gripper")
 
@@ -56,7 +56,7 @@ class OpenGripper(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
-    node = OpenGripper()
+    node = CloseGripper()
     executor.add_node(node)
 
     try:
