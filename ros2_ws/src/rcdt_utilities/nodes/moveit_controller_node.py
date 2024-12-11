@@ -16,9 +16,8 @@ from moveit.core.planning_interface import MotionPlanResponse
 from moveit.core.controller_manager import ExecutionStatus
 from moveit.core.planning_scene import PlanningScene
 
-from geometry_msgs.msg import PoseStamped
 from moveit_msgs.msg import CollisionObject
-from rcdt_utilities_msgs.srv import AddObject, MoveRobot
+from rcdt_utilities_msgs.srv import AddObject, MoveToPose, MoveToConfiguration
 from std_srvs.srv import Trigger
 
 
@@ -35,7 +34,10 @@ class MoveitControllerNode(Node):
         self.planner: PlanningComponent = self.robot.get_planning_component(group)
         self.monitor: PlanningSceneMonitor = self.robot.get_planning_scene_monitor()
 
-        self.create_service(MoveRobot, "~/move_robot", self.move_robot)
+        self.create_service(MoveToPose, "~/move_to_pose", self.move_to_pose)
+        self.create_service(
+            MoveToConfiguration, "~/move_to_configuration", self.move_to_configuration
+        )
         self.create_service(AddObject, "~/add_object", self.add_object)
         self.create_service(Trigger, "~/clear_objects", self.clear_objects)
 
@@ -62,12 +64,40 @@ class MoveitControllerNode(Node):
         self.planner.set_start_state_to_current_state()
         self.state: RobotState = self.planner.get_start_state()
 
-    def move_robot(
-        self, request: MoveRobot.Request, response: MoveRobot.Response
-    ) -> None:
-        self.update_state()
-        response.success = self.move_to_pose(request.goal_pose)
+    def move_to_pose(
+        self, request: MoveToPose.Request, response: MoveToPose.Response
+    ) -> MoveToPose.Response:
+        if request.pose.header.frame_id not in self.links:
+            self.get_logger().error(
+                f"frame_id '{request.pose.header.frame_id}' not one of links: {self.links}"
+            )
+            return False
 
+        self.update_state()
+        self.planner.set_goal_state(
+            pose_stamped_msg=request.pose, pose_link=self.ee_link
+        )
+        response.success = self.plan_and_execute()
+        return response
+
+    def move_to_configuration(
+        self,
+        request: MoveToConfiguration.Request,
+        response: MoveToConfiguration.Response,
+    ) -> MoveToConfiguration.Response:
+        target_values: dict = self.planner.get_named_target_state_values(
+            request.configuration
+        )
+        if not target_values:
+            self.get_logger().error(
+                f"Configuration {request.configuration} is unknown."
+            )
+            response.success = False
+            return response
+
+        self.update_state()
+        self.planner.set_goal_state(configuration_name=request.configuration)
+        response.success = self.plan_and_execute()
         return response
 
     def plan_and_execute(self) -> bool:
@@ -82,15 +112,6 @@ class MoveitControllerNode(Node):
         else:
             self.get_logger().error(f"Execution resulted in status `{status.status}`.")
             return False
-
-    def move_to_pose(self, pose: PoseStamped) -> bool:
-        if pose.header.frame_id not in self.links:
-            self.get_logger().error(
-                f"frame_id '{pose.header.frame_id}' not one of links: {self.links}"
-            )
-            return False
-        self.planner.set_goal_state(pose_stamped_msg=pose, pose_link=self.ee_link)
-        return self.plan_and_execute()
 
     def add_object(
         self, request: AddObject.Request, response: AddObject.Response

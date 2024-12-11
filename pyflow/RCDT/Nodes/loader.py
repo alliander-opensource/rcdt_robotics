@@ -137,10 +137,17 @@ class PoseFromPixelNode(RosService):
         super().__init__(name)
 
 
-class MoveitMoveRobot(RosService):
+class MoveToPoseNode(RosService):
     def __init__(self, name: str):
         reload(nodes)
-        nodes.MoveitMoveRobot(self)
+        nodes.MoveToPoseNode(self)
+        super().__init__(name)
+
+
+class MoveToConfigurationNode(RosService):
+    def __init__(self, name: str):
+        reload(nodes)
+        nodes.MoveToConfigurationNode(self)
         super().__init__(name)
 
 
