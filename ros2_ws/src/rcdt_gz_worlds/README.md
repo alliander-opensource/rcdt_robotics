@@ -18,14 +18,18 @@ ros2 launch rcdt_gz_worlds world.launch.py
 
 ## Available worlds
 
+
 ### Empty world fit for camera (empty_camera.sdf)
 
-An empty world, with the plugins needed for simulating a RealSense.
+![drawing](img/empty_camera.jpeg)  
+An empty world, with the plugins needed for simulating sensors.
 
 ### Table with single brick (table_with_1_brick.sdf)
 
+![drawing](img/table_1_world.jpeg)  
 A world with a table with a single brick on top.
 
 ### Table with multiple bricks (table_with_4_bricks.sdf)
 
+![drawing](img/table_4_world.jpeg)  
 A world with a table with multiple bricks on top.
