@@ -14,9 +14,7 @@ find_package(realsense2_camera_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  msg/PointList.msg
   srv/DefineCentroid.srv
-  srv/DetectObjects.srv
   srv/FilterMasks.srv
   srv/PoseFromPixel.srv
   srv/SegmentImage.srv
