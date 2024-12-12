@@ -25,6 +25,7 @@ install(PROGRAMS
   nodes/define_centroid_node.py
   nodes/filter_masks_node.py
   nodes/is_correct_hue_node.py
+  nodes/is_rectangle_shape_node.py
   nodes/pose_from_pixel_node.py
   nodes/segment_image_node.py
   nodes/split_rgbd_node.py
