@@ -98,7 +98,8 @@ class Service(PyflowParallelExecutor):
                 f"Call to {self.topic_name} with type {self.service_type.__name__} was unsuccessfull."
             )
             return
-        self.set_response_to_pins()
+        logger.info("Response was succesfull.")
+        self.set_response_to_pins(response)
         self.exec_out.call()
 
     def create_data_pins(self, service_part: str) -> None:
