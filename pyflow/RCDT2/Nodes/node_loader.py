@@ -1,12 +1,7 @@
-import inspect
 from RCDT2.Nodes.core import Service
 
-from rcdt_detection_msgs import srv
 
-services = inspect.getmembers(srv, predicate=inspect.isclass)
-
-
-def get_pyflow_nodes_from_ros_services() -> dict:
+def get_pyflow_nodes_from_ros_services(services: list[tuple[str, str]]) -> dict:
     pyflow_nodes = {}
     for service in services:
         service_name = service[0]

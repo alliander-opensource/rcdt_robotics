@@ -6,6 +6,8 @@ from threading import Thread
 from logging import getLogger
 from inflection import underscore
 
+from sensor_msgs.msg import Image
+
 logger = getLogger(__name__)
 
 
@@ -75,28 +77,26 @@ class Service(PyflowExecutor):
         self.client = PyflowRosBridge.node.create_client(self.service, topic_name)
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
-        point = Point()
-        point.x = 10.0
-        self.pin_manager.input_pins[0].setData(point)
-        data = self.pin_manager.input_pins[0].getData()
-        print(data)
+        # Simple test on data passing:
+        data: Image = self.pin_manager.input_pins[0].getData()
+        logger.info(f"input = {data.header.frame_id}")
+        data = Image()
+        data.header.frame_id = "TEST"
+        self.pin_manager.output_pins[0].setData(data)
 
     def create_data_pins(self) -> None:
         service_parts = ["Request", "Response"]
         for service_part in service_parts:
             msg: type = getattr(self.service, service_part)
-            fields_and_field_types: dict = msg.get_fields_and_field_types()
+            fields_and_field_types: dict[str, str] = msg.get_fields_and_field_types()
             for field, _field_type in fields_and_field_types.items():
+                pin_type = get_pin_type(_field_type)
                 if msg.__name__ == self.service.__name__ + "_Request":
-                    pin = self.createInputPin(field, _field_type)
+                    pin = self.createInputPin(field, pin_type)
                     self.pin_manager.add_input_pin(field, pin)
                 elif msg.__name__ == self.service.__name__ + "_Response":
-                    pin = self.createOutputPin(field, "StringPin")
+                    pin = self.createOutputPin(field, pin_type)
                     self.pin_manager.add_ouput_pin(field, pin)
-
-    def create_request(self) -> object:
-        request = self.service.Request()
-        logger.info(self.pin_manager.get_pin_names("input"))
 
     def call_service(self, request: object) -> object | None:
         logger.info("Connecting to service...")
@@ -111,3 +111,17 @@ class Service(PyflowExecutor):
     @staticmethod
     def category() -> None:
         return "Services"
+
+
+def get_pin_type(_field_type: str) -> str:
+    if _field_type.startswith("sequence"):
+        data_type = _field_type.removeprefix("sequence<").removesuffix(">")
+        print(f"Sequence of {data_type} is not supported yet. Fallback to StringPin.")
+        return "StringPin"
+    match _field_type:
+        case "string":
+            return "StringPin"
+        case "boolean":
+            return "BoolPin"
+        case _:
+            return _field_type
