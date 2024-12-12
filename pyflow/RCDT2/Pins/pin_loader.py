@@ -1,6 +1,14 @@
+from dataclasses import dataclass
 import distinctipy
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import PinOptions
+
+
+@dataclass
+class PinData:
+    register_name: str = None
+    data_type: type = None
+    color: tuple = None
 
 
 def get_pyflow_pins_from_ros_services(services: list[tuple[str, str]]) -> dict:
@@ -20,22 +28,24 @@ def create_pyflow_pins_from_message_types(
     message_types: set[type], colors: list[tuple], pyflow_pins: dict
 ) -> None:
     for message_type in message_types:
+        pin_data = PinData()
         name = message_type.__name__
         module = message_type.__module__
-        pin_class = module.split(".")[0] + "/" + name
-        pin_color = colors.pop()
-        pyflow_pins[pin_class] = create_pin_from_message_type(message_type, pin_color)
+        pin_data.register_name = module.split(".")[0] + "/" + name
+        pin_data.data_type = message_type
+        pin_data.color = colors.pop()
+        pyflow_pins[pin_data.register_name] = create_pin_from_pin_data(pin_data)
 
 
 def create_pyflow_pins_from_sequence_types(
     sequence_types: set[str], colors: list[tuple], pyflow_pins: dict
 ) -> None:
     for sequence_type in sequence_types:
-        pin_color = colors.pop()
-        print(sequence_type)
-        pyflow_pins[sequence_type] = create_pin_from_sequence_type(
-            sequence_type, pin_color
-        )
+        pin_data = PinData()
+        pin_data.register_name = sequence_type
+        pin_data.data_type = list
+        pin_data.color = colors.pop()
+        pyflow_pins[pin_data.register_name] = create_pin_from_pin_data(pin_data)
 
 
 def get_distinct_colors(n_colors: int) -> list[tuple[float, float, float, float]]:
@@ -76,33 +86,17 @@ def get_types_from_message(
             message_types.add(message_type)
 
 
-def create_pin_from_message_type(message_type: type, pin_color: tuple) -> type:
+def create_pin_from_pin_data(pin_data: PinData) -> type:
     return type(
-        message_type.__name__,
+        pin_data.register_name,
         (PinBase,),
         {
             "__init__": init,
             "IsValuePin": IsValuePin,
-            "supportedDataTypes": lambda *args: supportedDataTypes(message_type, *args),
-            "pinDataTypeHint": lambda: pinDataTypeHint(message_type),
-            "color": lambda *args: color(pin_color, *args),
-            "internalDataStructure": lambda: internalDataStructure(message_type),
-            "processData": processData,
-        },
-    )
-
-
-def create_pin_from_sequence_type(sequence_type: str, pin_color: tuple) -> type:
-    return type(
-        sequence_type,
-        (PinBase,),
-        {
-            "__init__": init,
-            "IsValuePin": IsValuePin,
-            "supportedDataTypes": lambda *args: supportedDataTypes(list, *args),
-            "pinDataTypeHint": lambda: pinDataTypeHint(list),
-            "color": lambda *args: color(pin_color, *args),
-            "internalDataStructure": lambda: internalDataStructure(list),
+            "supportedDataTypes": lambda *args: supportedDataTypes(pin_data, *args),
+            "pinDataTypeHint": lambda: pinDataTypeHint(pin_data),
+            "color": lambda *args: color(pin_data, *args),
+            "internalDataStructure": lambda: internalDataStructure(pin_data),
             "processData": processData,
         },
     )
@@ -118,20 +112,20 @@ def IsValuePin(*args):
     return True
 
 
-def supportedDataTypes(message: type, *args):
-    return (message.__name__,)
+def supportedDataTypes(pin_data: PinData, *args):
+    return (pin_data.register_name,)
 
 
-def pinDataTypeHint(message: type) -> tuple:
-    return message.__name__, message()
+def pinDataTypeHint(pin_data: PinData) -> tuple:
+    return pin_data.register_name, pin_data.data_type()
 
 
-def color(pin_color: tuple, *args):
-    return pin_color
+def color(pin_data: PinData, *args):
+    return pin_data.color
 
 
-def internalDataStructure(message: type) -> type:
-    return message
+def internalDataStructure(pin_data: PinData) -> type:
+    return pin_data.data_type
 
 
 def processData(data):

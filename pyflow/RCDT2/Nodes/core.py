@@ -78,10 +78,9 @@ class Service(PyflowExecutor):
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
         # Simple test on data passing:
-        data: Image = self.pin_manager.input_pins[0].getData()
-        logger.info(f"input = {data.header.frame_id}")
-        data = Image()
-        data.header.frame_id = "TEST"
+        data: list[Image] = self.pin_manager.input_pins[0].getData()
+        logger.info(f"input = {data}")
+        data = [Image()]
         self.pin_manager.output_pins[0].setData(data)
 
     def create_data_pins(self) -> None:
