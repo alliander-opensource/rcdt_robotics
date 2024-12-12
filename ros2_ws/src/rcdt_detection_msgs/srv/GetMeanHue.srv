@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 sensor_msgs/Image image
-float32 threshold
 ---
-sensor_msgs/Image image
-bool is_rectangle_shape
+float32 hue
 bool success

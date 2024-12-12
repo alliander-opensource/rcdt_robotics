@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 sensor_msgs/Image image
-uint8 lower_limit
-uint8 upper_limit
 ---
-bool is_correct_hue
+sensor_msgs/Image image
+float32 factor
 bool success
