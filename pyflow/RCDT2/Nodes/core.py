@@ -114,10 +114,6 @@ class Service(PyflowExecutor):
 
 
 def get_pin_type(_field_type: str) -> str:
-    if _field_type.startswith("sequence"):
-        data_type = _field_type.removeprefix("sequence<").removesuffix(">")
-        print(f"Sequence of {data_type} is not supported yet. Fallback to StringPin.")
-        return "StringPin"
     match _field_type:
         case "string":
             return "StringPin"
