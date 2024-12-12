@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Detects objects with camera, takes no input and returns centroids
+string topic
+sensor_msgs/Image image
 ---
-PointList objects
+bool success

@@ -3,31 +3,38 @@
 # SPDX-License-Identifier: Apache-2.0
 # ruff: noqa
 
+PACKAGE_NAME = "RCDT2"
+
 from PyFlow.UI.UIInterfaces import IPackage
 
 # Factories
-from RCDT.Factories.UIPinFactory import createUIPin
-from RCDT.Factories.PinInputWidgetFactory import getInputWidget
-from RCDT.Factories.UINodeFactory import createUINode
+from RCDT2.Factories.UIPinFactory import createUIPin
+from RCDT2.Factories.PinInputWidgetFactory import getInputWidget
+from RCDT2.Factories.UINodeFactory import createUINode
 
-# Nodes:
-# from RCDT.Nodes.loader import get_nodes
 
-PACKAGE_NAME = "RCDT"
+# Load dynamically from services:
+import inspect
+from RCDT2.Nodes.node_loader import get_pyflow_nodes_from_ros_services
+from RCDT2.Pins.pin_loader import get_pyflow_pins_from_ros_services
+from rcdt_detection_msgs import srv
+
+# Right now, the services are the services defined in the rcdt_detection_msgs package:
+services = inspect.getmembers(srv, predicate=inspect.isclass)
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
-_NODES = {}
-_PINS = {}
+_NODES = get_pyflow_nodes_from_ros_services(services)
+_PINS = get_pyflow_pins_from_ros_services(services)
 _TOOLS = {}
 _PREFS_WIDGETS = {}
 
 
-class RCDT(IPackage):
-    """RCDT pyflow package"""
+class RCDT2(IPackage):
+    """RCDT2 pyflow package"""
 
     def __init__(self):
-        super(RCDT, self).__init__()
+        super().__init__()
 
     @staticmethod
     def GetExporters():

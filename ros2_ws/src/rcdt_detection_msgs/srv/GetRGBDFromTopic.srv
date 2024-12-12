@@ -2,5 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# array of Points
-geometry_msgs/Point[] points
+string topic
+---
+realsense2_camera_msgs/RGBD rgbd
+bool success
