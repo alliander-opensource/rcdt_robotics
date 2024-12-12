@@ -8,7 +8,8 @@ SCRIPT_DIR=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
-SERVICE=rcdt_robotics
+IMAGE=rcdt/robotics
+SERVICE=${image/rcdt\//rcdt_}
 
 branch_name=$(git branch --show-current)
 changed_files=($(git diff --name-only main))
@@ -16,13 +17,13 @@ changed_files=($(git diff --name-only main))
 image_tag="latest"
 if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* || ${changed_files[@]} =~ .github/workflows/* ]]; then
     image_tag="${branch_name/\//-}-latest"
-else
-    docker pull ${image/rcdt_/rcdt\/}:$image_tag
 fi
 
 mkdir -p ~/.vscode-server
 mkdir -p $SCRIPT_DIR/.config
 touch $SCRIPT_DIR/.personal.bashrc
 
-echo Running $SERVICE:$image_tag ...
-IMAGE_TAG=$image_tag docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm rcdt_robotics
+docker pull $IMAGE:$image_tag
+
+echo Running $IMAGE:$image_tag ...
+IMAGE_TAG=$image_tag docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm $SERVICE
