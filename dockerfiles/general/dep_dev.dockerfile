@@ -29,4 +29,5 @@ RUN echo "source /home/$UNAME/rosboard_ws/install/setup.bash" >> /home/$UNAME/.b
 RUN pip install git+https://github.com/alliander-opensource/PyFlow.git@master
 RUN apt install -y libxcb-cursor-dev
 RUN pip install inflection
+RUN pip install distinctipy
 ENV QT_API=pyside6
