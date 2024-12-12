@@ -1,122 +1,162 @@
-from typing import Literal
 from PyFlow.Core import NodeBase, PinBase
 import rclpy
 from rclpy.node import Node
 from threading import Thread
+from time import sleep
 from logging import getLogger
 from inflection import underscore
-
-from sensor_msgs.msg import Image
 
 logger = getLogger(__name__)
 
 
 class PinManager:
     def __init__(self):
-        self.input_names: list[str] = []
-        self.input_pins: list[PinBase] = []
+        self.input_pins: dict[str, PinBase] = {}
+        self.output_pins: dict[str, PinBase] = {}
 
-        self.output_names: list[str] = []
-        self.output_pins: list[PinBase] = []
+    def add_input_pin(self, pin_name: str, pin: PinBase) -> None:
+        self.input_pins[pin_name] = pin
 
-    def add_input_pin(self, name: str, pin: PinBase) -> None:
-        self.input_names.append(name)
-        self.input_pins.append(pin)
+    def add_output_pin(self, pin_name: str, pin: PinBase) -> None:
+        self.output_pins[pin_name] = pin
 
-    def add_ouput_pin(self, name: str, pin: PinBase) -> None:
-        self.output_names.append(name)
-        self.output_pins.append(pin)
+    def get_data(self, pin_name: str) -> object:
+        return self.input_pins[pin_name].getData()
 
-    def get_pin_names(self, pin_type: Literal["input", "output"]) -> list[str]:
-        return getattr(self, f"{pin_type}_names")
+    def set_data(self, pin_name: str, data: object) -> object:
+        return self.output_pins[pin_name].setData(data)
+
+    def get_input_pin_names(self) -> list[str]:
+        return self.input_pins.keys()
+
+    def get_output_pin_names(self) -> list[str]:
+        return self.output_pins.keys()
 
 
 class PyflowRosBridge:
     rclpy.init()
     node = Node("pyflow")
     Thread(target=rclpy.spin, args=[node], daemon=True).start()
-    node.get_logger().info("Node started!")
+    node.get_logger().info("PyFlow ROS Node started!")
 
 
 class PyflowBase(NodeBase):
     def __init__(self, name: str):
         super().__init__(name)
-
         self.pin_manager = PinManager()
-
-    def get_data(self, pin_name: str) -> object:
-        self.pin_manager.get_pin(pin_name)
 
 
 class PyflowComputer(PyflowBase):
-    def __init__(self, name: str):
-        super().__init__(name)
-
     def compute(self, *_args: any, **_kwargs: any) -> None:
         raise NotImplementedError
 
 
 class PyflowExecutor(PyflowBase):
-    def __init__(self, name: str):
-        super().__init__(name)
-
     def execute(self, *_args: any, **_kwargs: any) -> None:
         raise NotImplementedError
 
 
-class Service(PyflowExecutor):
+class PyflowParallelExecutor(PyflowExecutor):
     def __init__(self, name: str):
         super().__init__(name)
-        self.service: type
+        self.parallel_executor_is_active = False
 
-        self.createInputPin("In", "ExecPin", callback=self.execute)
-        self.createOutputPin("Out", "ExecPin")
-        self.create_data_pins()
+    def execute_parallel(self, *_args: any, **_kwargs: any) -> None:
+        if self.parallel_executor_is_active:
+            logger.error("Executor is already working. Rejected.")
+            return
+        thread = Thread(target=self.execution_steps)
+        thread.start()
 
-        topic_name = underscore(self.service.__name__)
-        self.client = PyflowRosBridge.node.create_client(self.service, topic_name)
+    def execution_steps(self) -> None:
+        self.parallel_executor_is_active = True
+        self.execute()
+        self.parallel_executor_is_active = False
+
+
+class Service(PyflowParallelExecutor):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.service_type: type
+
+        self.createInputPin("In", "ExecPin", callback=self.execute_parallel)
+        self.exec_out: PinBase = self.createOutputPin("Out", "ExecPin")
+
+        for service_part in ["Request", "Response"]:
+            self.create_data_pins(service_part)
+
+        self.topic_name = underscore(self.service_type.__name__)
+        self.client = PyflowRosBridge.node.create_client(
+            self.service_type, self.topic_name
+        )
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
-        # Simple test on data passing:
-        data: list[Image] = self.pin_manager.input_pins[0].getData()
-        logger.info(f"input = {data}")
-        data = [Image()]
-        self.pin_manager.output_pins[0].setData(data)
+        request = self.create_request_from_pins()
+        response = self.call_service(request)
+        if not response.success:
+            logger.error(
+                f"Call to {self.topic_name} with type {self.service_type.__name__} was unsuccessfull."
+            )
+            return
+        self.set_response_to_pins()
+        self.exec_out.call()
 
-    def create_data_pins(self) -> None:
-        service_parts = ["Request", "Response"]
-        for service_part in service_parts:
-            msg: type = getattr(self.service, service_part)
-            fields_and_field_types: dict[str, str] = msg.get_fields_and_field_types()
-            for field, _field_type in fields_and_field_types.items():
-                pin_type = get_pin_type(_field_type)
-                if msg.__name__ == self.service.__name__ + "_Request":
-                    pin = self.createInputPin(field, pin_type)
-                    self.pin_manager.add_input_pin(field, pin)
-                elif msg.__name__ == self.service.__name__ + "_Response":
-                    pin = self.createOutputPin(field, pin_type)
-                    self.pin_manager.add_ouput_pin(field, pin)
+    def create_data_pins(self, service_part: str) -> None:
+        msg: type = getattr(self.service_type, service_part)
+        fields_and_field_types: dict[str, str] = msg.get_fields_and_field_types()
+        for field, field_type in fields_and_field_types.items():
+            pin_type = get_pin_type(field_type)
+            if msg.__name__ == self.service_type.__name__ + "_Request":
+                pin = self.createInputPin(field, pin_type)
+                self.pin_manager.add_input_pin(field, pin)
+            elif msg.__name__ == self.service_type.__name__ + "_Response":
+                pin = self.createOutputPin(field, pin_type)
+                self.pin_manager.add_output_pin(field, pin)
+            else:
+                logger.warning("Message is not a Request or a Response. Skip.")
 
-    def call_service(self, request: object) -> object | None:
-        logger.info("Connecting to service...")
+    def create_request_from_pins(self) -> object:
+        request = self.service_type.Request()
+        for pin_name in self.pin_manager.get_input_pin_names():
+            data = self.pin_manager.get_data(pin_name)
+            setattr(request, pin_name, data)
+        return request
+
+    def set_response_to_pins(self, response: object) -> None:
+        for pin_name in self.pin_manager.get_output_pin_names():
+            data = getattr(response, pin_name)
+            self.pin_manager.set_data(pin_name, data)
+
+    def call_service(self, request: object) -> object:
+        logger.info("Calling service...")
+        response = self.service_type.Response()
+        response.success = False
         if not self.client.wait_for_service(3):
             logger.error("Service not available. Exit.")
-            return
-        logger.info("Connected. Sending request.")
-        response = self.client.call(request)
-        logger.info("Finished. Response received.")
-        return response
+            return response
+
+        future = self.client.call_async(request)
+        timeout = 10
+        waited = 0
+        while not future.done():
+            if waited >= timeout:
+                future.cancel()
+                logger.error("No response from service. Exit.")
+                return response
+            sleep(1)
+            waited += 1
+        return future.result()
 
     @staticmethod
     def category() -> None:
         return "Services"
 
 
-def get_pin_type(_field_type: str) -> str:
-    match _field_type:
+def get_pin_type(field_type: str) -> str:
+    match field_type:
         case "string":
             return "StringPin"
         case "boolean":
             return "BoolPin"
         case _:
-            return _field_type
+            return field_type

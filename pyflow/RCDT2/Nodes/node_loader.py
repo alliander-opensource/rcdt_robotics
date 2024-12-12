@@ -11,7 +11,9 @@ def get_pyflow_nodes_from_ros_services(services: list[tuple[str, str]]) -> dict:
 
 
 def create_class_from_service(service: type) -> type:
-    return type(service.__name__, (Service,), {"__init__": init, "service": service})
+    return type(
+        service.__name__, (Service,), {"__init__": init, "service_type": service}
+    )
 
 
 def init(self: object, name: str) -> None:
