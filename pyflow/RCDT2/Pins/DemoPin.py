@@ -1,23 +1,18 @@
 from PyFlow.Core import PinBase
-from PyFlow.Core.Common import PinOptions
+from PyFlow.Core.Common import *
 
-
-class DataWrapper:
-    def __init__(self, data: object = None):
-        self.data = data
+class FakeTypeUXDYT(object):
+    """docstring for FakeTypeUXDYT"""
+    def __init__(self, value=None):
+        super(FakeTypeUXDYT, self).__init__()
+        self.value = value
 
 
 class DemoPin(PinBase):
     """doc string for DemoPin"""
-
     def __init__(self, name, parent, direction, **kwargs):
         super(DemoPin, self).__init__(name, parent, direction, **kwargs)
-        self.setDefaultValue(DataWrapper())
-        self.disableOptions(PinOptions.Storable)
-
-    def getData(self):
-        data_wrapper: DataWrapper = super().getData()
-        return data_wrapper.data
+        self.setDefaultValue(False)
 
     @staticmethod
     def IsValuePin():
@@ -25,11 +20,11 @@ class DemoPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ("DemoPin",)
+        return ('DemoPin',)
 
     @staticmethod
     def pinDataTypeHint():
-        return "DemoPin", DataWrapper()
+        return 'DemoPin', False
 
     @staticmethod
     def color():
@@ -37,7 +32,7 @@ class DemoPin(PinBase):
 
     @staticmethod
     def internalDataStructure():
-        return DataWrapper
+        return FakeTypeUXDYT
 
     @staticmethod
     def processData(data):
