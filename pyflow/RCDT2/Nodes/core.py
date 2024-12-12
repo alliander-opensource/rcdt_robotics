@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PyFlow.Core import NodeBase, PinBase
 import rclpy
 from rclpy.node import Node

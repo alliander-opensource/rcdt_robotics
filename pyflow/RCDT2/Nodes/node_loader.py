@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from RCDT2.Nodes.core import Service
 
 
