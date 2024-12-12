@@ -49,7 +49,7 @@ jobs:
         with:
           push: true
           context: ./dockerfiles
-          file: ./dockerfiles/franka.Dockerfile
+          file: ./dockerfiles/rcdt_robotics.Dockerfile
           tags: |
             rcdt/robotics:main-${{ github.sha }}
             rcdt/robotics:latest
