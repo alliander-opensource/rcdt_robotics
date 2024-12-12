@@ -18,6 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/DefineCentroid.srv
   srv/DetectObjects.srv
   srv/FilterMasks.srv
+  srv/IsCorrectHue.srv
   srv/PoseFromPixel.srv
   srv/SegmentImage.srv
   srv/SplitRGBD.srv
