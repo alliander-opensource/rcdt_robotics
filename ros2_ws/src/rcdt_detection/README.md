@@ -6,22 +6,23 @@ SPDX-License-Identifier: Apache-2.0
 
 # RCDT Detection
 
-This repository can be used for detecting objects with an RGBD-camera, currently a RealSense-camera. It is intended to be used alongside [other RCDT robotics projects](<Link to RCDT robotics repo>).
-
-It contains two ROS packages: one for the actual detection, and one containing required custom message- and service definitions.
+This repository can be used for detecting objects using a camera, currently a RealSense.
 
 # Usage
 
-This repository contains two services: `/detect_objects` and `/segment_image`.
+This repository contains multiple services:
+- DefineCentroid
+- FilterMasks
+- GetMeanHue
+- GetRectangleFactor
+- PoseFromPixel
+- SegmentImage
+- SplitRGBD
 
-You can launch this service, and the required RealSense-node, using:
-```bash
-ros2 launch rcdt_detection detect.launch.py
-```
+You can launch these services by running the following in a sourced terminal:
 
-Once the service is running, you can call it using:
 ```bash
-ros2 service call /detect_objects rcdt_detection_msgs/srv/DetectObjects {}
+ros2 run rcdt_detection <node_file_name.py>
 ```
 
 # License
