@@ -36,7 +36,9 @@ class GetRectangleFactorNode(Node):
         cv2_image = ros_image_to_cv2_image(request.image)
         single_channel = three_to_single_channel(cv2_image)
 
-        contours, _ = cv2.findContours(single_channel, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(
+            single_channel, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
         if not contours:
             ros_logger.error("No contours found.")
             response.success = False

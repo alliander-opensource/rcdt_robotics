@@ -25,13 +25,15 @@ class GetMeanHueNode(Node):
         self, request: GetMeanHue.Request, response: GetMeanHue.Response
     ) -> GetMeanHue.Response:
         """Determines average hue of image.
-        
+
         Always returns success=True.
 
         """
         cv2_image = ros_image_to_cv2_image(request.image)
 
-        b_mean, g_mean, r_mean = np.nanmean(np.where(cv2_image==0.0, np.nan, cv2_image), axis=(0,1))
+        b_mean, g_mean, r_mean = np.nanmean(
+            np.where(cv2_image == 0.0, np.nan, cv2_image), axis=(0, 1)
+        )
         hue_mean, *_ = colorsys.rgb_to_hsv(r_mean, g_mean, b_mean)
         hue_mean = hue_mean * 360
         ros_logger.info(f"Mean hue calculated: {hue_mean}")
