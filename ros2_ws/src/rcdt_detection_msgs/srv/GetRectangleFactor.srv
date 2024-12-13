@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-sensor_msgs/Image image
+vision_msgs/Point2D[] mask_contour
+vision_msgs/Point2D[] bounding_box_contour
 ---
-sensor_msgs/Image image
 float32 factor
 bool success
