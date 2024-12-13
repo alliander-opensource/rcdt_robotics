@@ -13,8 +13,9 @@ This repository can be used for detecting objects using a camera, currently a Re
 This repository contains multiple services:
 - DefineCentroid
 - FilterMasks
+- GetBoundingBox2D
+- GetLargestContour
 - GetMeanHue
-- GetRectangleFactor
 - PoseFromPixel
 - SegmentImage
 - SplitRGBD

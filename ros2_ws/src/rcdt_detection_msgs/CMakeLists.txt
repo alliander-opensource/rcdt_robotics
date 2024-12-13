@@ -18,6 +18,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/DefineCentroid.srv
   srv/DetectObjects.srv
   srv/FilterMasks.srv
+  srv/GetBoundingBox2D.srv
+  srv/GetLargestContour.srv
   srv/GetMeanHue.srv
   srv/GetRectangleFactor.srv
   srv/PoseFromPixel.srv

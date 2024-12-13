@@ -24,6 +24,8 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   nodes/define_centroid_node.py
   nodes/filter_masks_node.py
+  nodes/get_bounding_box_2d_node.py
+  nodes/get_largest_contour_node.py
   nodes/get_mean_hue_node.py
   nodes/get_rectangle_factor_node.py
   nodes/pose_from_pixel_node.py
