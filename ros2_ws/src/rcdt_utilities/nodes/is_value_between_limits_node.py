@@ -8,19 +8,19 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 
-from rcdt_utilities_msgs.srv import IsBetween
+from rcdt_utilities_msgs.srv import IsValueBetweenLimits
 
 ros_logger = logging.get_logger(__name__)
 
 
-class IsBetweenNode(Node):
+class IsValueBetweenLimitsNode(Node):
     def __init__(self) -> None:
-        super().__init__("is_between")
-        self.create_service(IsBetween, "/is_between", self.callback)
+        super().__init__("is_value_between_limits")
+        self.create_service(IsValueBetweenLimits, "/is_value_between_limits", self.callback)
 
     def callback(
-        self, request: IsBetween.Request, response: IsBetween.Response
-    ) -> IsBetween.Response:
+        self, request: IsValueBetweenLimits.Request, response: IsValueBetweenLimits.Response
+    ) -> IsValueBetweenLimits.Response:
         """Determines if given value is between lower and upper limit.
 
         Always returns success=True.
@@ -37,7 +37,7 @@ class IsBetweenNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     try:
-        node = IsBetweenNode()
+        node = IsValueBetweenLimitsNode()
         rclpy.spin(node)
     except Exception as e:
         ros_logger.error(e)

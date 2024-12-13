@@ -68,15 +68,15 @@ class GetBoundingBox2DNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
+    node = GetBoundingBox2DNode()
     try:
-        node = GetBoundingBox2DNode()
         rclpy.spin(node)
+    except KeyboardInterrupt:
+        ros_logger.info("Keyboard interrupt, shutting down.\n")
     except Exception as e:
-        ros_logger.error(e)
         raise e
     finally:
         node.destroy_node()
-        rclpy.shutdown()
 
 
 if __name__ == "__main__":

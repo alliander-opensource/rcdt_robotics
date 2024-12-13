@@ -17,7 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/AddMarker.srv
   srv/AddObject.srv
   srv/ExpressPoseInOtherFrame.srv
-  srv/IsBetween.srv
+  srv/IsValueBetweenLimits.srv
   srv/MoveToConfiguration.srv
   srv/MoveToPose.srv
   srv/TransformPose.srv
