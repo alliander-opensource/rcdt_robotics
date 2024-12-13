@@ -78,7 +78,7 @@ def get_types_from_services(
 def get_types_from_message(
     message: type, message_types: set[type], sequence_types: set[str]
 ) -> None:
-    exclude = ["bool", "str", "int"]
+    exclude = ["bool", "str", "int", "float"]
     fields_and_field_types: dict[str, str] = message.get_fields_and_field_types()
     for field, _field_type in fields_and_field_types.items():
         message_type = type(getattr(message, field))
@@ -107,30 +107,32 @@ def create_pin_from_pin_data(pin_data: PinData) -> type:
 
 
 # Class methods based on DemoPin:
-def init(self: PinBase, name, parent, direction, **kwargs) -> None:
+def init(
+    self: PinBase, name: str, parent: type, direction: enumerate, **kwargs: any
+) -> None:
     super(type(self), self).__init__(name, parent, direction, **kwargs)
     self.disableOptions(PinOptions.Storable)
 
 
-def IsValuePin(*args):
+def IsValuePin(*_args: any) -> bool:  # noqa: N802
     return True
 
 
-def supportedDataTypes(pin_data: PinData, *args):
+def supportedDataTypes(pin_data: PinData, *_args: any) -> tuple:  # noqa: N802
     return (pin_data.register_name,)
 
 
-def pinDataTypeHint(pin_data: PinData) -> tuple:
+def pinDataTypeHint(pin_data: PinData) -> tuple:  # noqa: N802
     return pin_data.register_name, pin_data.data_type()
 
 
-def color(pin_data: PinData, *args):
+def color(pin_data: PinData, *_args: any) -> tuple:
     return pin_data.color
 
 
-def internalDataStructure(pin_data: PinData) -> type:
+def internalDataStructure(pin_data: PinData) -> type:  # noqa: N802
     return pin_data.data_type
 
 
-def processData(data):
+def processData(data: object) -> object:  # noqa: N802
     return data

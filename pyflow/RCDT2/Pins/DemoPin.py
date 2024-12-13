@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
+# ruff: noqa
 
 from PyFlow.Core import PinBase
 from PyFlow.Core.Common import *
 
+
 class FakeTypeUXDYT(object):
     """docstring for FakeTypeUXDYT"""
+
     def __init__(self, value=None):
         super(FakeTypeUXDYT, self).__init__()
         self.value = value
@@ -14,6 +17,7 @@ class FakeTypeUXDYT(object):
 
 class DemoPin(PinBase):
     """doc string for DemoPin"""
+
     def __init__(self, name, parent, direction, **kwargs):
         super(DemoPin, self).__init__(name, parent, direction, **kwargs)
         self.setDefaultValue(False)
@@ -24,11 +28,11 @@ class DemoPin(PinBase):
 
     @staticmethod
     def supportedDataTypes():
-        return ('DemoPin',)
+        return ("DemoPin",)
 
     @staticmethod
     def pinDataTypeHint():
-        return 'DemoPin', False
+        return "DemoPin", False
 
     @staticmethod
     def color():
