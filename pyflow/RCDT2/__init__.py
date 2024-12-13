@@ -15,7 +15,10 @@ from RCDT2.Factories.UINodeFactory import createUINode
 
 # Load dynamically from services:
 import inspect
-from RCDT2.Nodes.node_loader import get_pyflow_nodes_from_ros_services
+from RCDT2.Nodes.node_loader import (
+    get_pyflow_nodes_from_ros_services,
+    get_pyflow_nodes_from_ros_messages,
+)
 from RCDT2.Pins.pin_loader import get_pyflow_pins_from_ros_services
 from rcdt_detection_msgs import srv as rcdt_detection_services
 from rcdt_utilities_msgs import srv as rcdt_utilities_services
@@ -28,6 +31,7 @@ services.extend(inspect.getmembers(rcdt_utilities_services, predicate=inspect.is
 _EXPORTERS = {}
 _FOO_LIBS = {}
 _NODES = get_pyflow_nodes_from_ros_services(services)
+_NODES.update(get_pyflow_nodes_from_ros_messages())
 _PINS = get_pyflow_pins_from_ros_services(services)
 _TOOLS = {}
 _PREFS_WIDGETS = {}

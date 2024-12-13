@@ -32,11 +32,6 @@ class ManipulatePoseNode(Node):
         self.create_service(
             TransformPose,
             "/transform_pose",
-            self.transform_pose,
-        )
-        self.create_service(
-            TransformPose,
-            "/transform_pose_relative",
             self.transform_pose_relative,
         )
 
