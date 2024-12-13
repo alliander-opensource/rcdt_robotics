@@ -9,7 +9,7 @@ SCRIPT_DIR=$(
     pwd -P
 )
 IMAGE=rcdt/robotics
-SERVICE=${image/rcdt\//rcdt_}
+SERVICE="${IMAGE/rcdt\//rcdt_}"
 
 branch_name=$(git branch --show-current)
 changed_files=($(git diff --name-only main))
