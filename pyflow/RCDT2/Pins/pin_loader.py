@@ -47,7 +47,7 @@ def create_pyflow_pins_from_sequence_types(
     for sequence_type in sequence_types:
         pin_data = PinData()
         pin_data.register_name = sequence_type
-        pin_data.data_type = list
+        pin_data.data_type = type(sequence_type, (list,), {})
         pin_data.color = colors.pop()
         pyflow_pins[pin_data.register_name] = create_pin_from_pin_data(pin_data)
 
