@@ -22,6 +22,10 @@ class GetRGBDFromTopicNode(Node):
     def callback(
         self, request: GetRGBDFromTopic.Request, response: GetRGBDFromTopic.Response
     ) -> GetRGBDFromTopic.Response:
+        if request.topic == "":
+            ros_logger.error("No topic was specified. Exit.")
+            response.success = False
+            return response
         response.success, message = wait_for_message.wait_for_message(
             RGBD, self, request.topic, time_to_wait=1
         )
