@@ -26,17 +26,17 @@ class ManipulatePoseNode(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.create_service(
             ExpressPoseInOtherFrame,
-            "~/express_pose_in_other_frame",
+            "/express_pose_in_other_frame",
             self.express_pose_in_other_frame,
         )
         self.create_service(
             TransformPose,
-            "~/transform_pose",
+            "/transform_pose",
             self.transform_pose,
         )
         self.create_service(
             TransformPose,
-            "~/transform_pose_relative",
+            "/transform_pose_relative",
             self.transform_pose_relative,
         )
 
