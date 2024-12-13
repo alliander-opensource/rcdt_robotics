@@ -86,15 +86,16 @@ def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
+    node = PoseFromPixelNode()
+
     try:
-        node = PoseFromPixelNode()
         rclpy.spin(node)
+    except KeyboardInterrupt:
+        ros_logger.info("Keyboard interrupt, shutting down.\n")
     except Exception as e:
-        ros_logger.error(e)
         raise e
     finally:
         node.destroy_node()
-        rclpy.shutdown()
 
 
 if __name__ == "__main__":

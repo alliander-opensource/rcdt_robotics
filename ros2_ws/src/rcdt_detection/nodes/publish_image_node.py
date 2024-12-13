@@ -7,30 +7,29 @@
 import rclpy
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_detection_msgs.srv import SplitRGBD
+from rcdt_detection_msgs.srv import PublishImage
+from sensor_msgs.msg import Image
 
 ros_logger = logging.get_logger(__name__)
 
 
-class SplitRGBDNode(Node):
+class PublishImageNode(Node):
     def __init__(self) -> None:
-        super().__init__("split_rgbd")
-        self.create_service(SplitRGBD, "/split_rgbd", self.callback)
+        super().__init__("publish_image")
+        self.create_service(PublishImage, "/publish_image", self.callback)
 
     def callback(
-        self, request: SplitRGBD.Request, response: SplitRGBD.Response
-    ) -> SplitRGBD.Response:
-        response.rgb_image = request.rgbd.rgb
-        response.depth_image = request.rgbd.depth
-        response.rgb_info = request.rgbd.rgb_camera_info
-        response.depth_info = request.rgbd.depth_camera_info
+        self, request: PublishImage.Request, response: PublishImage.Response
+    ) -> PublishImage.Response:
+        publisher = self.create_publisher(Image, request.topic, 10)
+        publisher.publish(request.image)
         response.success = True
         return response
 
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = SplitRGBDNode()
+    node = PublishImageNode()
 
     try:
         rclpy.spin(node)

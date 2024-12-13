@@ -11,13 +11,13 @@ from RCDT.Factories.PinInputWidgetFactory import getInputWidget
 from RCDT.Factories.UINodeFactory import createUINode
 
 # Nodes:
-from RCDT.Nodes.loader import get_nodes
+# from RCDT.Nodes.loader import get_nodes
 
 PACKAGE_NAME = "RCDT"
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
-_NODES = get_nodes()
+_NODES = {}
 _PINS = {}
 _TOOLS = {}
 _PREFS_WIDGETS = {}
