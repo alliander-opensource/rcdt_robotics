@@ -26,13 +26,18 @@ class GetBoundingBox2DNode(Node):
     def callback(
         self, request: GetBoundingBox2D.Request, response: GetBoundingBox2D.Response
     ) -> GetBoundingBox2D.Response:
-        """Get closest fitting 2D bounding box of given contour."""
+        """Get closest fitting 2D bounding box of given contour.
+
+        The returned angle (theta in bounding box center) is in degrees. This is because
+        we use opencv and that uses degrees instead of radians.
+
+        """
         given_contour = np.array(
             [[[point.x, point.y]] for point in request.contour], dtype=np.int32
         )
         (x, y), (w, h), angle = cv2.minAreaRect(given_contour)
         ros_logger.info(
-            f"Found bounding box with: {x=:.1f} {y=:.1f} {w=:.1f} {h=:.1f} {angle=:.1f}"
+            f"Found bounding box with: {x=:.1f}px {y=:.1f}px {w=:.1f}px {h=:.1f}px {angle=:.1f}°"
         )
 
         box = np.int32(cv2.boxPoints(((x, y), (w, h), angle)))
