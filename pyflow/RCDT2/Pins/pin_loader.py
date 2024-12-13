@@ -91,48 +91,34 @@ def get_types_from_message(
 
 
 def create_pin_from_pin_data(pin_data: PinData) -> type:
+    def init(
+        self: PinBase, name: str, parent: type, direction: enumerate, **kwargs: any
+    ) -> None:
+        super(type(self), self).__init__(name, parent, direction, **kwargs)
+        self.disableOptions(PinOptions.Storable)
+
+    def supported_data_types(pin_data: PinData, *_args: any) -> tuple:
+        return (pin_data.register_name,)
+
+    def pin_data_type_hint(pin_data: PinData) -> tuple:
+        return pin_data.register_name, pin_data.data_type()
+
+    def color(pin_data: PinData, *_args: any) -> tuple:
+        return pin_data.color
+
+    def internal_data_structure(pin_data: PinData) -> type:
+        return pin_data.data_type
+
     return type(
         pin_data.register_name,
         (PinBase,),
         {
             "__init__": init,
-            "IsValuePin": IsValuePin,
-            "supportedDataTypes": lambda *args: supportedDataTypes(pin_data, *args),
-            "pinDataTypeHint": lambda: pinDataTypeHint(pin_data),
+            "IsValuePin": lambda *_args: True,
+            "supportedDataTypes": lambda *args: supported_data_types(pin_data, *args),
+            "pinDataTypeHint": lambda: pin_data_type_hint(pin_data),
             "color": lambda *args: color(pin_data, *args),
-            "internalDataStructure": lambda: internalDataStructure(pin_data),
-            "processData": processData,
+            "internalDataStructure": lambda: internal_data_structure(pin_data),
+            "processData": lambda data: data,
         },
     )
-
-
-# Class methods based on DemoPin:
-def init(
-    self: PinBase, name: str, parent: type, direction: enumerate, **kwargs: any
-) -> None:
-    super(type(self), self).__init__(name, parent, direction, **kwargs)
-    self.disableOptions(PinOptions.Storable)
-
-
-def IsValuePin(*_args: any) -> bool:  # noqa: N802
-    return True
-
-
-def supportedDataTypes(pin_data: PinData, *_args: any) -> tuple:  # noqa: N802
-    return (pin_data.register_name,)
-
-
-def pinDataTypeHint(pin_data: PinData) -> tuple:  # noqa: N802
-    return pin_data.register_name, pin_data.data_type()
-
-
-def color(pin_data: PinData, *_args: any) -> tuple:
-    return pin_data.color
-
-
-def internalDataStructure(pin_data: PinData) -> type:  # noqa: N802
-    return pin_data.data_type
-
-
-def processData(data: object) -> object:  # noqa: N802
-    return data
