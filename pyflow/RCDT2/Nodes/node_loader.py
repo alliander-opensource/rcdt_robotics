@@ -6,19 +6,22 @@ from RCDT2.Nodes.core import Service
 
 
 def get_pyflow_nodes_from_ros_services(services: list[tuple[str, str]]) -> dict:
-    pyflow_nodes = {}
-    for service in services:
-        service_name = service[0]
-        service_type = service[1]
-        pyflow_nodes[service_name] = create_class_from_service(service_type)
-    return pyflow_nodes
+    return {
+        service_name: create_class_from_service(service_type)
+        for service_name, service_type in services
+    }
 
 
 def create_class_from_service(service: type) -> type:
+    def init(self: object, name: str) -> None:
+        """Dynamically creates an  __init__(), with correct arguments.
+
+        A call to super() is needed, similar to:
+            super(ClassTypeOfSelf, self).__init__(name)
+
+        """
+        super(type(self), self).__init__(name)
+
     return type(
         service.__name__, (Service,), {"__init__": init, "service_type": service}
     )
-
-
-def init(self: object, name: str) -> None:
-    super(type(self), self).__init__(name)

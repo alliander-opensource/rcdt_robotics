@@ -6,9 +6,12 @@ from PyFlow.Core import NodeBase, PinBase
 import rclpy
 from rclpy.node import Node
 from threading import Thread
-from time import sleep
+from time import time, sleep
 from logging import getLogger
 from inflection import underscore
+
+SERVICE_AVAILABLE_TIMEOUT = 3
+SERVICE_RESPONSE_TIMEOUT = 20
 
 logger = getLogger(__name__)
 
@@ -60,25 +63,25 @@ class PyflowExecutor(PyflowBase):
         raise NotImplementedError
 
 
-class PyflowParallelExecutor(PyflowExecutor):
+class PyflowNonBlockingExecutor(PyflowExecutor):
     def __init__(self, name: str):
         super().__init__(name)
-        self.parallel_executor_is_active = False
+        self.non_blocking_executor_is_active = False
 
     def execute_parallel(self, *_args: any, **_kwargs: any) -> None:
-        if self.parallel_executor_is_active:
+        if self.non_blocking_executor_is_active:
             logger.error("Executor is already working. Rejected.")
             return
         thread = Thread(target=self.execution_steps)
         thread.start()
 
     def execution_steps(self) -> None:
-        self.parallel_executor_is_active = True
+        self.non_blocking_executor_is_active = True
         self.execute()
-        self.parallel_executor_is_active = False
+        self.non_blocking_executor_is_active = False
 
 
-class Service(PyflowParallelExecutor):
+class Service(PyflowNonBlockingExecutor):
     def __init__(self, name: str):
         super().__init__(name)
         self.service_type: type
@@ -89,9 +92,9 @@ class Service(PyflowParallelExecutor):
         for service_part in ["Request", "Response"]:
             self.create_data_pins(service_part)
 
-        self.topic_name = underscore(self.service_type.__name__)
+        self.service_name = underscore(self.service_type.__name__)
         self.client = PyflowRosBridge.node.create_client(
-            self.service_type, self.topic_name
+            self.service_type, self.service_name
         )
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
@@ -99,7 +102,7 @@ class Service(PyflowParallelExecutor):
         response = self.call_service(request)
         if not response.success:
             logger.error(
-                f"Call to {self.topic_name} with type {self.service_type.__name__} was unsuccessfull."
+                f"Call to {self.service_name} with type {self.service_type.__name__} was unsuccessfull."
             )
             return
         logger.info("Response was succesfull.")
@@ -133,23 +136,23 @@ class Service(PyflowParallelExecutor):
             self.pin_manager.set_data(pin_name, data)
 
     def call_service(self, request: object) -> object:
-        logger.info("Calling service...")
+        logger.info(f"Calling service {self.service_name}...")
         response = self.service_type.Response()
         response.success = False
-        if not self.client.wait_for_service(3):
+        if not self.client.wait_for_service(SERVICE_AVAILABLE_TIMEOUT):
             logger.error("Service not available. Exit.")
             return response
 
         future = self.client.call_async(request)
-        timeout = 20
-        waited = 0
-        while not future.done():
-            if waited >= timeout:
-                future.cancel()
-                logger.error("No response from service. Exit.")
-                return response
+        start_time = time()
+        while time() - start_time < SERVICE_RESPONSE_TIMEOUT:
+            if future.done():
+                break
             sleep(1)
-            waited += 1
+        else:
+            future.cancel()
+            logger.error("No response from service. Exit.")
+            return response
         return future.result()
 
     @staticmethod
@@ -163,22 +166,23 @@ def get_pin_type(field_type: str) -> str:
     https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html#field-types
     Otherwise field_type is a ROS message, of which a pin should be made automatically.
     """
-    if field_type == "boolean":
-        return "BoolPin"
-    if field_type in ["string", "wstring"]:
-        return "StringPin"
-    if field_type in ["float", "float32", "float64"]:
-        return "FloatPin"
-    if field_type in [
-        "int",
-        "int8",
-        "uint8",
-        "int16",
-        "uint16",
-        "int32",
-        "uint32",
-        "int64",
-        "uint64",
-    ]:
-        return "IntPin"
-    return field_type
+    return field_type_to_pin_type.get(field_type, field_type)
+
+
+field_type_to_pin_type: dict[str, str] = {
+    "boolean": "BoolPin",
+    "string": "StringPin",
+    "wstring": "StringPin",
+    "float": "FloatPin",
+    "float32": "FloatPin",
+    "float64": "FloatPin",
+    "int": "IntPin",
+    "int8": "IntPin",
+    "uint8": "IntPin",
+    "int16": "IntPin",
+    "uint16": "IntPin",
+    "int32": "IntPin",
+    "uint32": "IntPin",
+    "int64": "IntPin",
+    "uint64": "IntPin",
+}
