@@ -17,10 +17,13 @@ from RCDT2.Factories.UINodeFactory import createUINode
 import inspect
 from RCDT2.Nodes.node_loader import get_pyflow_nodes_from_ros_services
 from RCDT2.Pins.pin_loader import get_pyflow_pins_from_ros_services
-from rcdt_detection_msgs import srv
+from rcdt_detection_msgs import srv as rcdt_detection_services
+from rcdt_utilities_msgs import srv as rcdt_utilities_services
 
 # Right now, the services are the services defined in the rcdt_detection_msgs package:
-services = inspect.getmembers(srv, predicate=inspect.isclass)
+services: list[tuple[str, str]] = []
+services.extend(inspect.getmembers(rcdt_detection_services, predicate=inspect.isclass))
+services.extend(inspect.getmembers(rcdt_utilities_services, predicate=inspect.isclass))
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
