@@ -28,10 +28,15 @@ class GetRectangleFactorNode(Node):
         Always returns success=True.
 
         """
-        ros_logger.info(f"{request.mask_contour}")
+        mask_contour = np.array(
+            [[[point.x, point.y]] for point in request.mask_contour], dtype=np.int32
+        )
+        bounding_box_contour = np.array(
+            [[[point.x, point.y]] for point in request.bounding_box_contour], dtype=np.int32
+        )
 
-        mask_area = cv2.contourArea(request.mask_contour)
-        bounding_box_area = cv2.contourArea(request.bounding_box_contour)
+        mask_area = cv2.contourArea(mask_contour)
+        bounding_box_area = cv2.contourArea(bounding_box_contour)
         rectangle_factor = 100 / mask_area * bounding_box_area
         ros_logger.info(f"Rectangle factor: {rectangle_factor}")
 
