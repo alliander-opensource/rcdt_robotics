@@ -78,7 +78,7 @@ def get_types_from_services(
 def get_types_from_message(
     message: type, message_types: set[type], sequence_types: set[str]
 ) -> None:
-    exclude = ["bool", "str"]
+    exclude = ["bool", "str", "int"]
     fields_and_field_types: dict[str, str] = message.get_fields_and_field_types()
     for field, _field_type in fields_and_field_types.items():
         message_type = type(getattr(message, field))

@@ -141,7 +141,7 @@ class Service(PyflowParallelExecutor):
             return response
 
         future = self.client.call_async(request)
-        timeout = 10
+        timeout = 20
         waited = 0
         while not future.done():
             if waited >= timeout:
@@ -158,10 +158,26 @@ class Service(PyflowParallelExecutor):
 
 
 def get_pin_type(field_type: str) -> str:
-    match field_type:
-        case "string":
-            return "StringPin"
-        case "boolean":
-            return "BoolPin"
-        case _:
-            return field_type
+    """
+    Connect ROS built-in-types to default pins.
+    https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html#field-types
+    Otherwise field_type is a ROS message, of which a pin should be made automatically.
+    """
+    if field_type == "boolean":
+        return "BoolPin"
+    if field_type in ["string", "wstring"]:
+        return "StringPin"
+    if field_type in ["float32", "float64"]:
+        return "FloatPin"
+    if field_type in [
+        "int8",
+        "uint8",
+        "int16",
+        "uint16",
+        "int32",
+        "uint32",
+        "int64",
+        "uint64",
+    ]:
+        return "IntPin"
+    return field_type
