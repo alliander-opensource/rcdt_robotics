@@ -4,85 +4,26 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-MENU_HEIGHT=$(($LINES - 3))
-if (( $MENU_HEIGHT < 0 )); then
-    MENU_HEIGHT=20
-fi
-MENU_WIDTH=$(($COLUMNS - 60))
-if (( $MENU_WIDTH < 0 )); then
-    MENU_WIDTH=50
-fi
-OPTION_HEIGHT=$(($MENU_HEIGHT - 10))
-if (( $OPTION_HEIGHT < 0 )); then
-    OPTION_HEIGHT=10
-fi
-DOCKER_BUILDER_NAME=ram-constrained-builder
-SCRIPT_DIR_PATH=$(
+SCRIPT_DIR=$(
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit
     pwd -P
 )
+IMAGE=rcdt/robotics
+SERVICE="${IMAGE/rcdt\//rcdt_}"
 
-# If required files/directories do not exist, create them
-mkdir -p ~/.vscode-server
-mkdir -p $SCRIPT_DIR_PATH/.config
-touch $SCRIPT_DIR_PATH/.personal.bashrc
+branch_name=$(git branch --show-current)
+changed_files=($(git diff --name-only main))
 
-# Define image options based on dockerfiles in dockerfiles directory
-options=()
-for dockerfile in "$SCRIPT_DIR_PATH"/dockerfiles/*.Dockerfile; do
-    name=${dockerfile%.*}
-    options+=("$(basename "$name")")
-    options+=("")
-done
-
-# Ask user for image option
-image=$(whiptail --clear \
-    --title "RCDT Docker Launcher" \
-    --menu "Which docker image would you like to run?" \
-    $MENU_HEIGHT $MENU_WIDTH $OPTION_HEIGHT \
-    "${options[@]}" \
-    2>&1 >/dev/tty)
-[[ -z "$image" ]] && return 1
-
-if [ -z "$(docker images -q $image 2> /dev/null)" ]; then
-    use_cache=$(whiptail --clear \
-        --title "Build with cache?" \
-        --menu "Image '$image' is not found. Do you want to build it with or without cache?" \
-        $MENU_HEIGHT $MENU_WIDTH $OPTION_HEIGHT \
-        "with cache" "" \
-        "without cache" "" \
-        2>&1 >/dev/tty)
-    [[ -z "$use_cache" ]] && return 1
-
-    colcon_build_sequential=$(whiptail --clear \
-        --title "Build?" \
-        --menu "Image '$image' is not found. Do you want to build it parallel (higher load) or sequential (slower)?" \
-        $MENU_HEIGHT $MENU_WIDTH $OPTION_HEIGHT \
-        "parallel" "" \
-        "sequential" "" \
-        2>&1 >/dev/tty)
-    [[ -z "$colcon_build_sequential" ]] && return 1
-
-    ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-    RAM_CONSTRAINED=$([ $ram_kb -lt 16000000 ] && echo "true" || echo "")
-    if [ ! "$(docker buildx inspect $DOCKER_BUILDER_NAME 2> /dev/null)" ] && [ $RAM_CONSTRAINED = "true" ]; then
-        docker buildx create \
-          --name $DOCKER_BUILDER_NAME \
-          --driver=docker-container \
-          --driver-opt memory=14g \
-          --driver-opt default-load=true
-    fi
-
-    NO_CACHE=$([ "$use_cache" == "without cache" ] && echo "true" || echo "")
-    COLCON_BUILD_SEQUENTIAL=$([ "$colcon_build_sequential" == "sequential" ] && echo "true" || echo "")
-    docker build \
-      ${NO_CACHE:+--no-cache} \
-      ${RAM_CONSTRAINED:+--builder=$DOCKER_BUILDER_NAME} \
-      --build-arg COLCON_BUILD_SEQUENTIAL="$COLCON_BUILD_SEQUENTIAL" \
-      -t "$image" \
-      -f "$SCRIPT_DIR_PATH/dockerfiles/$image.Dockerfile" \
-      "$SCRIPT_DIR_PATH/dockerfiles"
+image_tag="latest"
+if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* || ${changed_files[@]} =~ .github/workflows/* ]]; then
+    image_tag="${branch_name/\//-}-latest"
 fi
 
-echo Running $image ...
-docker compose -f $SCRIPT_DIR_PATH/.devcontainer/docker-compose.yml run --rm $image
+mkdir -p ~/.vscode-server
+mkdir -p $SCRIPT_DIR/.config
+touch $SCRIPT_DIR/.personal.bashrc
+
+docker pull $IMAGE:$image_tag
+
+echo Running $IMAGE:$image_tag ...
+IMAGE_TAG=$image_tag docker compose -f $SCRIPT_DIR/.devcontainer/docker-compose.yml run --rm $SERVICE
