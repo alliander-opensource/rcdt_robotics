@@ -99,7 +99,8 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     realsense = IncludeLaunchDescription(
-        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py")
+        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py"),
+        launch_arguments={"simulation": str(use_sim)}.items(),
     )
 
     joy = Node(
@@ -150,7 +151,7 @@ def launch_setup(context: LaunchContext) -> None:
         controllers,
         rviz if use_rviz else skip,
         moveit if moveit_mode != "off" else skip,
-        realsense if (use_realsense and not use_sim) else skip,
+        realsense if use_realsense else skip,
         joy,
         joy_topic_manager if moveit_mode == "servo" else skip,
         joy_to_twist_franka if moveit_mode == "servo" else skip,
