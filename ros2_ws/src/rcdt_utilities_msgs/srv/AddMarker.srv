@@ -4,3 +4,4 @@
 
 geometry_msgs/PoseStamped marker_pose
 ---
+bool success

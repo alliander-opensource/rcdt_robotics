@@ -17,9 +17,9 @@ public:
   {
     visual_tools_.reset(new rviz_visual_tools::RvizVisualTools("world", "/rviz_markers", this));
     srv_add_marker_ = create_service<rcdt_utilities_msgs::srv::AddMarker>(
-        "~/add_marker", std::bind(&MinimalPublisher::add_marker, this, std::placeholders::_1, std::placeholders::_2));
+        "/add_marker", std::bind(&MinimalPublisher::add_marker, this, std::placeholders::_1, std::placeholders::_2));
     srv_clear_all_ = create_service<std_srvs::srv::Trigger>(
-        "~/clear_all", std::bind(&MinimalPublisher::clear_all, this, std::placeholders::_1, std::placeholders::_2));
+        "/clear_all", std::bind(&MinimalPublisher::clear_all, this, std::placeholders::_1, std::placeholders::_2));
   }
 
 private:
@@ -32,6 +32,7 @@ private:
   {
     visual_tools_->publishAxis(request->marker_pose.pose);
     visual_tools_->trigger();
+    response->success = true;
   }
 
   void clear_all(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
