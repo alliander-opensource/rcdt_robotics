@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/PoseFromPixel.srv
   srv/PublishImage.srv
   srv/SegmentImage.srv
+  srv/SelectImageFromList.srv
   srv/SplitRGBD.srv
   DEPENDENCIES geometry_msgs sensor_msgs vision_msgs realsense2_camera_msgs
 )

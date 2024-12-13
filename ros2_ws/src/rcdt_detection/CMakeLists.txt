@@ -28,6 +28,7 @@ install(PROGRAMS
   nodes/pose_from_pixel_node.py
   nodes/publish_image_node.py
   nodes/segment_image_node.py
+  nodes/select_image_from_list_node.py
   nodes/split_rgbd_node.py
   DESTINATION lib/${PROJECT_NAME}
 )

@@ -25,6 +25,9 @@ def generate_launch_description() -> LaunchDescription:
     segment_image_node = Node(
         package="rcdt_detection", executable="segment_image_node.py"
     )
+    select_image_from_list_node = Node(
+        package="rcdt_detection", executable="select_image_from_list_node.py"
+    )
     split_rgbd_node = Node(package="rcdt_detection", executable="split_rgbd_node.py")
 
     return LaunchDescription(
@@ -35,6 +38,7 @@ def generate_launch_description() -> LaunchDescription:
             pose_from_pixel_node,
             publish_image_node,
             segment_image_node,
+            select_image_from_list_node,
             split_rgbd_node,
         ]
     )
