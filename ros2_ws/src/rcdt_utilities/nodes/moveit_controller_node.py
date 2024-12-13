@@ -17,7 +17,7 @@ from moveit.core.controller_manager import ExecutionStatus
 from moveit.core.planning_scene import PlanningScene
 
 from moveit_msgs.msg import CollisionObject
-from rcdt_utilities_msgs.srv import AddObject, MoveToPose, MoveToConfiguration
+from rcdt_utilities_msgs.srv import AddObject, MoveHandToPose, MoveToConfiguration
 from std_srvs.srv import Trigger
 
 
@@ -34,12 +34,14 @@ class MoveitControllerNode(Node):
         self.planner: PlanningComponent = self.robot.get_planning_component(group)
         self.monitor: PlanningSceneMonitor = self.robot.get_planning_scene_monitor()
 
-        self.create_service(MoveToPose, "~/move_hand_to_pose", self.move_hand_to_pose)
         self.create_service(
-            MoveToConfiguration, "~/move_to_configuration", self.move_to_configuration
+            MoveHandToPose, "/move_hand_to_pose", self.move_hand_to_pose
         )
-        self.create_service(AddObject, "~/add_object", self.add_object)
-        self.create_service(Trigger, "~/clear_objects", self.clear_objects)
+        self.create_service(
+            MoveToConfiguration, "/move_to_configuration", self.move_to_configuration
+        )
+        self.create_service(AddObject, "/add_object", self.add_object)
+        self.create_service(Trigger, "/clear_objects", self.clear_objects)
 
     def init_links(self, group: str) -> bool:
         robot_model: RobotModel = self.robot.get_robot_model()
@@ -65,8 +67,8 @@ class MoveitControllerNode(Node):
         self.state: RobotState = self.planner.get_start_state()
 
     def move_hand_to_pose(
-        self, request: MoveToPose.Request, response: MoveToPose.Response
-    ) -> MoveToPose.Response:
+        self, request: MoveHandToPose.Request, response: MoveHandToPose.Response
+    ) -> MoveHandToPose.Response:
         if request.pose.header.frame_id not in self.links:
             self.get_logger().error(
                 f"frame_id '{request.pose.header.frame_id}' not one of links: {self.links}"

@@ -14,16 +14,17 @@ find_package(realsense2_camera_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  msg/PointList.msg
   srv/DefineCentroid.srv
-  srv/DetectObjects.srv
   srv/FilterMasks.srv
   srv/GetBoundingBox2D.srv
   srv/GetLargestContour.srv
   srv/GetMeanHue.srv
   srv/GetRectangleFactor.srv
+  srv/GetRGBDFromTopic.srv
   srv/PoseFromPixel.srv
+  srv/PublishImage.srv
   srv/SegmentImage.srv
+  srv/SelectImageFromList.srv
   srv/SplitRGBD.srv
   DEPENDENCIES geometry_msgs sensor_msgs vision_msgs realsense2_camera_msgs
 )

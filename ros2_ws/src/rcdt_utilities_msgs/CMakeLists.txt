@@ -18,8 +18,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   srv/AddObject.srv
   srv/ExpressPoseInOtherFrame.srv
   srv/IsValueBetweenLimits.srv
+  srv/MoveHandToPose.srv
   srv/MoveToConfiguration.srv
-  srv/MoveToPose.srv
   srv/TransformPose.srv
   DEPENDENCIES std_msgs geometry_msgs moveit_msgs
 )
