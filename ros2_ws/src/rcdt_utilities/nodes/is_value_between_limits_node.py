@@ -16,10 +16,14 @@ ros_logger = logging.get_logger(__name__)
 class IsValueBetweenLimitsNode(Node):
     def __init__(self) -> None:
         super().__init__("is_value_between_limits")
-        self.create_service(IsValueBetweenLimits, "/is_value_between_limits", self.callback)
+        self.create_service(
+            IsValueBetweenLimits, "/is_value_between_limits", self.callback
+        )
 
     def callback(
-        self, request: IsValueBetweenLimits.Request, response: IsValueBetweenLimits.Response
+        self,
+        request: IsValueBetweenLimits.Request,
+        response: IsValueBetweenLimits.Response,
     ) -> IsValueBetweenLimits.Response:
         """Determines if given value is between lower and upper limit.
 
