@@ -32,7 +32,8 @@ class GetRectangleFactorNode(Node):
             [[[point.x, point.y]] for point in request.mask_contour], dtype=np.int32
         )
         bounding_box_contour = np.array(
-            [[[point.x, point.y]] for point in request.bounding_box_contour], dtype=np.int32
+            [[[point.x, point.y]] for point in request.bounding_box_contour],
+            dtype=np.int32,
         )
 
         mask_area = cv2.contourArea(mask_contour)

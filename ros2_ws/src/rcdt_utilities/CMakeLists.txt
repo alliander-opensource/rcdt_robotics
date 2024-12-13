@@ -33,6 +33,7 @@ install(TARGETS
 
 # Install python nodes:
 install(PROGRAMS
+  nodes/is_between_node.py
   nodes/joy_to_twist_node.py
   nodes/manipulate_pose_node.py
   nodes/moveit_controller_node.py
