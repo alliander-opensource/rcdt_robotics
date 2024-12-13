@@ -8,25 +8,26 @@ SPDX-License-Identifier: Apache-2.0
 
 This repository can be used for detecting objects using a camera, currently a RealSense.
 
-# Usage
+## Usage
 
 This repository contains multiple services:
-- DefineCentroid
-- FilterMasks
-- GetBoundingBox2D
-- GetLargestContour
-- GetMeanHue
-- PoseFromPixel
-- SegmentImage
-- SplitRGBD
+- /define_centroid
+- /filter_masks
+- /get_bounding_box_2d
+- /get_largest_contour
+- /get_mean_hue
+- /get_rectangle_factor
+- /pose_from_pixel
+- /segment_image
+- /split_rgbd
 
-You can launch these services by running the following in a sourced terminal:
+You can run these services by running the following in a sourced terminal:
 
 ```bash
-ros2 run rcdt_detection <node_file_name.py>
+ros2 run rcdt_detection <node_name>_node.py
 ```
 
-# License
+## License
 
 This project is licensed under the Apache License Version 2.0 - see [LICENSE](LICENSE) for details.
 
