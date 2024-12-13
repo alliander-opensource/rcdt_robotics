@@ -14,12 +14,13 @@ find_package(geometry_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/AddMarker.srv"
-  "srv/AddObject.srv"
-  "srv/ExpressPoseInOtherFrame.srv"
-  "srv/MoveHandToPose.srv"
-  "srv/MoveToConfiguration.srv"
-  "srv/TransformPose.srv"
+  srv/AddMarker.srv
+  srv/AddObject.srv
+  srv/ExpressPoseInOtherFrame.srv
+  srv/IsBetween.srv
+  srv/MoveHandToPose.srv
+  srv/MoveToConfiguration.srv
+  srv/TransformPose.srv
   DEPENDENCIES std_msgs geometry_msgs moveit_msgs
 )
 

@@ -16,6 +16,10 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   srv/DefineCentroid.srv
   srv/FilterMasks.srv
+  srv/GetBoundingBox2D.srv
+  srv/GetLargestContour.srv
+  srv/GetMeanHue.srv
+  srv/GetRectangleFactor.srv
   srv/GetRGBDFromTopic.srv
   srv/PoseFromPixel.srv
   srv/PublishImage.srv
