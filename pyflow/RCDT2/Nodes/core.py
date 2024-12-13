@@ -167,9 +167,10 @@ def get_pin_type(field_type: str) -> str:
         return "BoolPin"
     if field_type in ["string", "wstring"]:
         return "StringPin"
-    if field_type in ["float32", "float64"]:
+    if field_type in ["float", "float32", "float64"]:
         return "FloatPin"
     if field_type in [
+        "int",
         "int8",
         "uint8",
         "int16",
