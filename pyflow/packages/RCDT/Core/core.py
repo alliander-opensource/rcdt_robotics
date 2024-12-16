@@ -175,6 +175,8 @@ class Message(PyflowComputer):
         super().__init__(name)
         self.message_type: type
 
+        self.unique_input_names: list[str] = []
+
         self.create_output_pin()
         self.create_input_pins()
 
@@ -207,12 +209,13 @@ class Message(PyflowComputer):
                 self.create_pin_for_basetype(message_field)
 
     def create_pin_for_basetype(self, message_field: MessageField) -> None:
-        pin_name = message_field.name
+        name = message_field.name
+        pin_name = self.make_unique(name)
         pin_type = message_field.pin_type
         group = message_field.parents.strip("/")
         pin = self.createInputPin(pin_name, pin_type, group=group)
 
-        register_name = group + "/" + pin_name
+        register_name = group + "/" + name
         self.pin_manager.add_input_pin(register_name, pin)
 
     def get_subfields(self, message_field: MessageField) -> list[MessageField]:
@@ -227,6 +230,12 @@ class Message(PyflowComputer):
             parent = message_field.parents + "/" + message_field.name
             subfields.append(MessageField(data, field, parent, pin_type))
         return subfields
+
+    def make_unique(self, name: str) -> str:
+        while name in self.unique_input_names:
+            name += " "
+        self.unique_input_names.append(name)
+        return name
 
     @staticmethod
     def category() -> None:
