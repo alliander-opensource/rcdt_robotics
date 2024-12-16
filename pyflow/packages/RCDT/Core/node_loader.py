@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from PyFlow.Core import PinBase
-from RCDT2.Nodes.core import Service, PyflowComputer
+from RCDT.Core.core import Service, PyflowComputer
 from geometry_msgs.msg import Transform
+from RCDT.Core.definitions import ServiceDefinition
 
 
 def get_pyflow_nodes_from_ros_messages() -> dict:
@@ -32,14 +33,18 @@ def get_pyflow_nodes_from_ros_messages() -> dict:
     return {TranfromMessage.__name__: TranfromMessage}
 
 
-def get_pyflow_nodes_from_ros_services(services: list[tuple[str, str]]) -> dict:
+def get_pyflow_nodes_from_ros_services(
+    service_definitions: list[ServiceDefinition],
+) -> dict:
     return {
-        service_name: create_class_from_service(service_type)
-        for service_name, service_type in services
+        service_definition.service_type.__name__: create_class_from_service(
+            service_definition
+        )
+        for service_definition in service_definitions
     }
 
 
-def create_class_from_service(service: type) -> type:
+def create_class_from_service(service_definition: ServiceDefinition) -> type:
     def init(self: object, name: str) -> None:
         """Dynamically creates an  __init__(), with correct arguments.
 
@@ -50,5 +55,11 @@ def create_class_from_service(service: type) -> type:
         super(type(self), self).__init__(name)
 
     return type(
-        service.__name__, (Service,), {"__init__": init, "service_type": service}
+        service_definition.service_type.__name__,
+        (Service,),
+        {
+            "__init__": init,
+            "service_name": service_definition.service_name,
+            "service_type": service_definition.service_type,
+        },
     )

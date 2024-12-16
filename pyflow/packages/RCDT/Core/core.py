@@ -8,7 +8,6 @@ from rclpy.node import Node
 from threading import Thread
 from time import time, sleep
 from logging import getLogger
-from inflection import underscore
 
 SERVICE_AVAILABLE_TIMEOUT = 3
 SERVICE_RESPONSE_TIMEOUT = 20
@@ -85,6 +84,7 @@ class Service(PyflowNonBlockingExecutor):
     def __init__(self, name: str):
         super().__init__(name)
         self.service_type: type
+        self.service_name: str
 
         self.createInputPin("In", "ExecPin", callback=self.execute_parallel)
         self.exec_out: PinBase = self.createOutputPin("Out", "ExecPin")
@@ -92,7 +92,6 @@ class Service(PyflowNonBlockingExecutor):
         for service_part in ["Request", "Response"]:
             self.create_data_pins(service_part)
 
-        self.service_name = underscore(self.service_type.__name__)
         self.client = PyflowRosBridge.node.create_client(
             self.service_type, self.service_name
         )

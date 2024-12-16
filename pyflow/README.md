@@ -10,7 +10,7 @@ To simplify test and usage of the ROS2 package, it is possible to use PyFlow. Py
 
 `pyflow`
 
-This should open the PyFlow application. If you use pyflow for the first time, open the preferences using *Edit -> Preferences*. Set the *Additional package locations* to `/home/rcdt/rcdt_robotics/pyflow`, so that PyFlow can find our packages (and don't forget to click on *SaveAndClose* !):
+This should open the PyFlow application. If you use pyflow for the first time, open the preferences using *Edit -> Preferences*. Set the *Additional package locations* to `/home/rcdt/rcdt_robotics/pyflow/packages`, so that PyFlow can find our packages (and don't forget to click on *SaveAndClose* !):
 
 ![pyflow](../img/pyflow/settings.png)
 

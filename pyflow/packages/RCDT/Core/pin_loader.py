@@ -15,10 +15,24 @@ class PinData:
     color: tuple = None
 
 
-def get_pyflow_pins_from_ros_services(services: list[tuple[str, str]]) -> dict:
-    message_types: set[type] = set()
-    sequence_types: set[str] = set()
-    get_types_from_services(services, message_types, sequence_types)
+class MessagePin:
+    unique_types: set[type] = set()
+
+    def __init__(self, message_type: type):
+        MessagePin.unique_types.add(message_type)
+
+
+class SequencePin:
+    unique_types: set[str] = set()
+
+    def __init__(self, sequence_type: type):
+        SequencePin.unique_types.add(sequence_type)
+
+
+def get_pyflow_pins_from_ros_services(services: set[type]) -> dict:
+    get_types_from_services(services)
+    message_types = MessagePin.unique_types
+    sequence_types = SequencePin.unique_types
 
     colors = get_distinct_colors(len(message_types) + len(sequence_types))
 
@@ -64,20 +78,15 @@ def get_distinct_colors(n_colors: int) -> list[tuple[float, float, float, float]
     return rgba_colors
 
 
-def get_types_from_services(
-    services: list[tuple[str, str]], message_types: set[type], sequence_types: set[str]
-) -> None:
-    for service in services:
-        service_type = service[1]
+def get_types_from_services(service_types: set[type]) -> None:
+    for service_type in service_types:
         service_parts = ["Request", "Response"]
         for service_part in service_parts:
             message: type = getattr(service_type, service_part)()
-            get_types_from_message(message, message_types, sequence_types)
+            get_types_from_message(message)
 
 
-def get_types_from_message(
-    message: type, message_types: set[type], sequence_types: set[str]
-) -> None:
+def get_types_from_message(message: type) -> None:
     exclude = ["bool", "str", "int", "float"]
     fields_and_field_types: dict[str, str] = message.get_fields_and_field_types()
     for field, _field_type in fields_and_field_types.items():
@@ -85,9 +94,9 @@ def get_types_from_message(
         if message_type.__name__ in exclude:
             continue
         if message_type.__name__ == "list":
-            sequence_types.add(_field_type)
+            SequencePin(_field_type)
         else:
-            message_types.add(message_type)
+            MessagePin(message_type)
 
 
 def create_pin_from_pin_data(pin_data: PinData) -> type:
