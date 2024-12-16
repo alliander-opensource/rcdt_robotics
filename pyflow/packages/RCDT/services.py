@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import rcdt_detection_msgs.srv as detection
 import rcdt_utilities_msgs.srv as utilities
 from RCDT.Core.definitions import ServiceDefinition
