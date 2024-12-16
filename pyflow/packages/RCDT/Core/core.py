@@ -163,7 +163,7 @@ class Service(PyflowNonBlockingExecutor):
 
 
 @dataclass
-class Submessage:
+class MessageField:
     data: object
     name: str = ""
     parents: str = ""
@@ -186,7 +186,6 @@ class Message(PyflowComputer):
             attribute_str = ".".join(levels[:-1])
             attribute = attrgetter(attribute_str)(message)
             setattr(attribute, levels[-1], data)
-        print(message)
         output_pin = self.pin_manager.get_output_pin_names()[0]
         self.pin_manager.set_data(output_pin, message)
 
@@ -198,34 +197,36 @@ class Message(PyflowComputer):
         self.pin_manager.add_output_pin(pin_name, pin)
 
     def create_input_pins(self) -> None:
-        submessages = [Submessage(self.message_type())]
+        message_fields = [MessageField(self.message_type())]
 
-        while len(submessages) > 0:
-            submessage = submessages.pop(0)
-            if not hasattr(submessage.data, "get_fields_and_field_types"):
-                pin_name = submessage.name
-                pin_type = submessage.pin_type
-                group = submessage.parents.strip("/")
-                pin = self.createInputPin(pin_name, pin_type, group=group)
-
-                register_name = group + "/" + pin_name
-                self.pin_manager.add_input_pin(register_name, pin)
+        while len(message_fields) > 0:
+            message_field = message_fields.pop(0)
+            if hasattr(message_field.data, "get_fields_and_field_types"):
+                message_fields.extend(self.get_subfields(message_field))
             else:
-                submessages.extend(self.get_fields_to_check(submessage))
+                self.create_pin_for_basetype(message_field)
 
-    def get_fields_to_check(self, submessage: Submessage) -> list[Submessage]:
+    def create_pin_for_basetype(self, message_field: MessageField) -> None:
+        pin_name = message_field.name
+        pin_type = message_field.pin_type
+        group = message_field.parents.strip("/")
+        pin = self.createInputPin(pin_name, pin_type, group=group)
+
+        register_name = group + "/" + pin_name
+        self.pin_manager.add_input_pin(register_name, pin)
+
+    def get_subfields(self, message_field: MessageField) -> list[MessageField]:
         fields_and_field_types: dict[str, str] = (
-            submessage.data.get_fields_and_field_types()
+            message_field.data.get_fields_and_field_types()
         )
-        submessages = []
+        subfields = []
         for field, field_type in fields_and_field_types.items():
-            python_type = str(type(getattr(submessage.data, field)))
+            python_type = str(type(getattr(message_field.data, field)))
             pin_type = get_pin_type(python_type, field_type)
-            data = getattr(submessage.data, field)
-            parent = submessage.parents + "/" + submessage.name
-            pin = Submessage(data, field, parent, pin_type)
-            submessages.append(pin)
-        return submessages
+            data = getattr(message_field.data, field)
+            parent = message_field.parents + "/" + message_field.name
+            subfields.append(MessageField(data, field, parent, pin_type))
+        return subfields
 
     @staticmethod
     def category() -> None:
