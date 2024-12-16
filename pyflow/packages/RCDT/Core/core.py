@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from dataclasses import dataclass
+from operator import attrgetter
 from PyFlow.Core import NodeBase, PinBase
 import rclpy
 from rclpy.node import Node
@@ -33,10 +35,10 @@ class PinManager:
         return self.output_pins[pin_name].setData(data)
 
     def get_input_pin_names(self) -> list[str]:
-        return self.input_pins.keys()
+        return list(self.input_pins.keys())
 
     def get_output_pin_names(self) -> list[str]:
-        return self.output_pins.keys()
+        return list(self.output_pins.keys())
 
 
 class PyflowRosBridge:
@@ -109,14 +111,15 @@ class Service(PyflowNonBlockingExecutor):
         self.exec_out.call()
 
     def create_data_pins(self, service_part: str) -> None:
-        msg: type = getattr(self.service_type, service_part)
-        fields_and_field_types: dict[str, str] = msg.get_fields_and_field_types()
+        msg_type: type = getattr(self.service_type, service_part)
+        fields_and_field_types: dict[str, str] = msg_type.get_fields_and_field_types()
         for field, field_type in fields_and_field_types.items():
-            pin_type = get_pin_type(field_type)
-            if msg.__name__ == self.service_type.__name__ + "_Request":
+            python_type = str(type(getattr(msg_type(), field)))
+            pin_type = get_pin_type(python_type, field_type)
+            if msg_type.__name__ == self.service_type.__name__ + "_Request":
                 pin = self.createInputPin(field, pin_type)
                 self.pin_manager.add_input_pin(field, pin)
-            elif msg.__name__ == self.service_type.__name__ + "_Response":
+            elif msg_type.__name__ == self.service_type.__name__ + "_Response":
                 pin = self.createOutputPin(field, pin_type)
                 self.pin_manager.add_output_pin(field, pin)
             else:
@@ -159,29 +162,85 @@ class Service(PyflowNonBlockingExecutor):
         return "Services"
 
 
-def get_pin_type(field_type: str) -> str:
-    """
-    Connect ROS built-in-types to default pins.
-    https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html#field-types
-    Otherwise field_type is a ROS message, of which a pin should be made automatically.
-    """
-    return field_type_to_pin_type.get(field_type, field_type)
+@dataclass
+class Submessage:
+    data: object
+    name: str = ""
+    parents: str = ""
+    pin_type: str = None
 
 
-field_type_to_pin_type: dict[str, str] = {
-    "boolean": "BoolPin",
-    "string": "StringPin",
-    "wstring": "StringPin",
-    "float": "FloatPin",
-    "float32": "FloatPin",
-    "float64": "FloatPin",
-    "int": "IntPin",
-    "int8": "IntPin",
-    "uint8": "IntPin",
-    "int16": "IntPin",
-    "uint16": "IntPin",
-    "int32": "IntPin",
-    "uint32": "IntPin",
-    "int64": "IntPin",
-    "uint64": "IntPin",
-}
+class Message(PyflowComputer):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.message_type: type
+
+        self.create_output_pin()
+        self.create_input_pins()
+
+    def compute(self, *_args: any, **_kwargs: any) -> None:
+        message = self.message_type()
+        for pin_name in self.pin_manager.get_input_pin_names():
+            data = self.pin_manager.get_data(pin_name)
+            levels = pin_name.split("/")
+            attribute_str = ".".join(levels[:-1])
+            attribute = attrgetter(attribute_str)(message)
+            setattr(attribute, levels[-1], data)
+        print(message)
+        output_pin = self.pin_manager.get_output_pin_names()[0]
+        self.pin_manager.set_data(output_pin, message)
+
+    def create_output_pin(self) -> None:
+        pin_name = self.message_type.__name__
+        module = self.message_type.__module__
+        pin_type = module.split(".")[0] + "/" + pin_name
+        pin = self.createOutputPin(pin_name, pin_type)
+        self.pin_manager.add_output_pin(pin_name, pin)
+
+    def create_input_pins(self) -> None:
+        submessages = [Submessage(self.message_type())]
+
+        while len(submessages) > 0:
+            submessage = submessages.pop(0)
+            if not hasattr(submessage.data, "get_fields_and_field_types"):
+                pin_name = submessage.name
+                pin_type = submessage.pin_type
+                group = submessage.parents.strip("/")
+                pin = self.createInputPin(pin_name, pin_type, group=group)
+
+                register_name = group + "/" + pin_name
+                self.pin_manager.add_input_pin(register_name, pin)
+            else:
+                submessages.extend(self.get_fields_to_check(submessage))
+
+    def get_fields_to_check(self, submessage: Submessage) -> list[Submessage]:
+        fields_and_field_types: dict[str, str] = (
+            submessage.data.get_fields_and_field_types()
+        )
+        submessages = []
+        for field, field_type in fields_and_field_types.items():
+            python_type = str(type(getattr(submessage.data, field)))
+            pin_type = get_pin_type(python_type, field_type)
+            data = getattr(submessage.data, field)
+            parent = submessage.parents + "/" + submessage.name
+            pin = Submessage(data, field, parent, pin_type)
+            submessages.append(pin)
+        return submessages
+
+    @staticmethod
+    def category() -> None:
+        return "Messages"
+
+
+def get_pin_type(python_type: str, field_type: str) -> str:
+    match python_type:
+        case "<class 'bool'>":
+            return "BoolPin"
+        case "<class 'str'>":
+            return "StringPin"
+        case "<class 'int'>":
+            return "IntPin"
+        case "<class 'float'>":
+            return "FloatPin"
+        case _:
+            return field_type
