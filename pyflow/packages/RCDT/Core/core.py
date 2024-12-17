@@ -185,9 +185,12 @@ class Message(PyflowComputer):
         for pin_name in self.pin_manager.get_input_pin_names():
             data = self.pin_manager.get_data(pin_name)
             levels = pin_name.split("/")
-            attribute_str = ".".join(levels[:-1])
-            attribute = attrgetter(attribute_str)(message)
-            setattr(attribute, levels[-1], data)
+            if levels[0] == "":
+                setattr(message, levels[-1], data)
+            else:
+                attribute_str = ".".join(levels[:-1])
+                attribute = attrgetter(attribute_str)(message)
+                setattr(attribute, levels[-1], data)
         output_pin = self.pin_manager.get_output_pin_names()[0]
         self.pin_manager.set_data(output_pin, message)
 
@@ -213,7 +216,6 @@ class Message(PyflowComputer):
         pin_name = self.make_unique(name)
         pin_type = message_field.pin_type
         group = message_field.parents.strip("/")
-        pin = self.createInputPin(pin_name, pin_type, group=group)
 
         register_name = group + "/" + name
         try:
