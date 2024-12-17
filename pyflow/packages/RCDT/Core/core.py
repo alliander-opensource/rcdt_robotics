@@ -2,13 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from dataclasses import dataclass
+from operator import attrgetter
 from PyFlow.Core import NodeBase, PinBase
 import rclpy
 from rclpy.node import Node
 from threading import Thread
 from time import time, sleep
 from logging import getLogger
-from inflection import underscore
 
 SERVICE_AVAILABLE_TIMEOUT = 3
 SERVICE_RESPONSE_TIMEOUT = 20
@@ -34,10 +35,10 @@ class PinManager:
         return self.output_pins[pin_name].setData(data)
 
     def get_input_pin_names(self) -> list[str]:
-        return self.input_pins.keys()
+        return list(self.input_pins.keys())
 
     def get_output_pin_names(self) -> list[str]:
-        return self.output_pins.keys()
+        return list(self.output_pins.keys())
 
 
 class PyflowRosBridge:
@@ -85,6 +86,7 @@ class Service(PyflowNonBlockingExecutor):
     def __init__(self, name: str):
         super().__init__(name)
         self.service_type: type
+        self.service_name: str
 
         self.createInputPin("In", "ExecPin", callback=self.execute_parallel)
         self.exec_out: PinBase = self.createOutputPin("Out", "ExecPin")
@@ -92,7 +94,6 @@ class Service(PyflowNonBlockingExecutor):
         for service_part in ["Request", "Response"]:
             self.create_data_pins(service_part)
 
-        self.service_name = underscore(self.service_type.__name__)
         self.client = PyflowRosBridge.node.create_client(
             self.service_type, self.service_name
         )
@@ -110,14 +111,15 @@ class Service(PyflowNonBlockingExecutor):
         self.exec_out.call()
 
     def create_data_pins(self, service_part: str) -> None:
-        msg: type = getattr(self.service_type, service_part)
-        fields_and_field_types: dict[str, str] = msg.get_fields_and_field_types()
+        msg_type: type = getattr(self.service_type, service_part)
+        fields_and_field_types: dict[str, str] = msg_type.get_fields_and_field_types()
         for field, field_type in fields_and_field_types.items():
-            pin_type = get_pin_type(field_type)
-            if msg.__name__ == self.service_type.__name__ + "_Request":
+            python_type = str(type(getattr(msg_type(), field)))
+            pin_type = get_pin_type(python_type, field_type)
+            if msg_type.__name__ == self.service_type.__name__ + "_Request":
                 pin = self.createInputPin(field, pin_type)
                 self.pin_manager.add_input_pin(field, pin)
-            elif msg.__name__ == self.service_type.__name__ + "_Response":
+            elif msg_type.__name__ == self.service_type.__name__ + "_Response":
                 pin = self.createOutputPin(field, pin_type)
                 self.pin_manager.add_output_pin(field, pin)
             else:
@@ -160,29 +162,102 @@ class Service(PyflowNonBlockingExecutor):
         return "Services"
 
 
-def get_pin_type(field_type: str) -> str:
-    """
-    Connect ROS built-in-types to default pins.
-    https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html#field-types
-    Otherwise field_type is a ROS message, of which a pin should be made automatically.
-    """
-    return field_type_to_pin_type.get(field_type, field_type)
+@dataclass
+class MessageField:
+    data: object
+    name: str = ""
+    parents: str = ""
+    pin_type: str = None
 
 
-field_type_to_pin_type: dict[str, str] = {
-    "boolean": "BoolPin",
-    "string": "StringPin",
-    "wstring": "StringPin",
-    "float": "FloatPin",
-    "float32": "FloatPin",
-    "float64": "FloatPin",
-    "int": "IntPin",
-    "int8": "IntPin",
-    "uint8": "IntPin",
-    "int16": "IntPin",
-    "uint16": "IntPin",
-    "int32": "IntPin",
-    "uint32": "IntPin",
-    "int64": "IntPin",
-    "uint64": "IntPin",
-}
+class Message(PyflowComputer):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.message_type: type
+
+        self.unique_input_names: list[str] = []
+
+        self.create_output_pin()
+        self.create_input_pins()
+
+    def compute(self, *_args: any, **_kwargs: any) -> None:
+        message = self.message_type()
+        for pin_name in self.pin_manager.get_input_pin_names():
+            data = self.pin_manager.get_data(pin_name)
+            levels = pin_name.split("/")
+            if levels[0] == "":
+                setattr(message, levels[-1], data)
+            else:
+                attribute_str = ".".join(levels[:-1])
+                attribute = attrgetter(attribute_str)(message)
+                setattr(attribute, levels[-1], data)
+        output_pin = self.pin_manager.get_output_pin_names()[0]
+        self.pin_manager.set_data(output_pin, message)
+
+    def create_output_pin(self) -> None:
+        pin_name = self.message_type.__name__
+        module = self.message_type.__module__
+        pin_type = module.split(".")[0] + "/" + pin_name
+        pin = self.createOutputPin(pin_name, pin_type)
+        self.pin_manager.add_output_pin(pin_name, pin)
+
+    def create_input_pins(self) -> None:
+        message_fields = [MessageField(self.message_type())]
+
+        while len(message_fields) > 0:
+            message_field = message_fields.pop(0)
+            if hasattr(message_field.data, "get_fields_and_field_types"):
+                message_fields.extend(self.get_subfields(message_field))
+            else:
+                self.create_pin_for_basetype(message_field)
+
+    def create_pin_for_basetype(self, message_field: MessageField) -> None:
+        name = message_field.name
+        pin_name = self.make_unique(name)
+        pin_type = message_field.pin_type
+        group = message_field.parents.strip("/")
+
+        register_name = group + "/" + name
+        try:
+            pin = self.createInputPin(pin_name, pin_type, group=group)
+        except AttributeError:
+            logger.warning(f"pin_type {pin_type} for {register_name} is unknown. Skip")
+            return
+        self.pin_manager.add_input_pin(register_name, pin)
+
+    def get_subfields(self, message_field: MessageField) -> list[MessageField]:
+        fields_and_field_types: dict[str, str] = (
+            message_field.data.get_fields_and_field_types()
+        )
+        subfields = []
+        for field, field_type in fields_and_field_types.items():
+            python_type = str(type(getattr(message_field.data, field)))
+            pin_type = get_pin_type(python_type, field_type)
+            data = getattr(message_field.data, field)
+            parent = message_field.parents + "/" + message_field.name
+            subfields.append(MessageField(data, field, parent, pin_type))
+        return subfields
+
+    def make_unique(self, name: str) -> str:
+        while name in self.unique_input_names:
+            name += " "
+        self.unique_input_names.append(name)
+        return name
+
+    @staticmethod
+    def category() -> None:
+        return "Messages"
+
+
+def get_pin_type(python_type: str, field_type: str) -> str:
+    match python_type:
+        case "<class 'bool'>":
+            return "BoolPin"
+        case "<class 'str'>":
+            return "StringPin"
+        case "<class 'int'>":
+            return "IntPin"
+        case "<class 'float'>":
+            return "FloatPin"
+        case _:
+            return field_type

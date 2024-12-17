@@ -13,6 +13,18 @@ def generate_launch_description() -> LaunchDescription:
     filter_masks_node = Node(
         package="rcdt_detection", executable="filter_masks_node.py"
     )
+    get_bounding_box_2d_node = Node(
+        package="rcdt_detection", executable="get_bounding_box_2d_node.py"
+    )
+    get_largest_contour_node = Node(
+        package="rcdt_detection", executable="get_largest_contour_node.py"
+    )
+    get_mean_hue_node = Node(
+        package="rcdt_detection", executable="get_mean_hue_node.py"
+    )
+    get_rectangle_factor_node = Node(
+        package="rcdt_detection", executable="get_rectangle_factor_node.py"
+    )
     get_rgbd_from_topic_node = Node(
         package="rcdt_detection", executable="get_rgbd_from_topic_node.py"
     )
@@ -34,6 +46,10 @@ def generate_launch_description() -> LaunchDescription:
         [
             define_centroid_node,
             filter_masks_node,
+            get_bounding_box_2d_node,
+            get_largest_contour_node,
+            get_mean_hue_node,
+            get_rectangle_factor_node,
             get_rgbd_from_topic_node,
             pose_from_pixel_node,
             publish_image_node,

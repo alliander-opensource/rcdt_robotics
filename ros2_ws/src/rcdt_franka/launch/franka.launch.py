@@ -141,6 +141,10 @@ def launch_setup(context: LaunchContext) -> None:
         executable="close_gripper_node.py",
     )
 
+    manipulate_pose = Node(
+        package="rcdt_utilities", executable="manipulate_pose_node.py"
+    )
+
     skip = LaunchDescriptionEntity()
     return [
         SetParameter(name="use_sim_time", value=use_sim),
@@ -158,6 +162,7 @@ def launch_setup(context: LaunchContext) -> None:
         joy_to_gripper,
         open_gripper,
         close_gripper,
+        manipulate_pose,
     ]
 
 
