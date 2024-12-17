@@ -216,6 +216,11 @@ class Message(PyflowComputer):
         pin = self.createInputPin(pin_name, pin_type, group=group)
 
         register_name = group + "/" + name
+        try:
+            pin = self.createInputPin(pin_name, pin_type, group=group)
+        except AttributeError:
+            logger.warning(f"pin_type {pin_type} for {register_name} is unknown. Skip")
+            return
         self.pin_manager.add_input_pin(register_name, pin)
 
     def get_subfields(self, message_field: MessageField) -> list[MessageField]:
