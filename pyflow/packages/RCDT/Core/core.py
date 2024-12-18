@@ -158,7 +158,7 @@ class Service(PyflowNonBlockingExecutor):
         return future.result()
 
     @staticmethod
-    def category() -> None:
+    def category() -> str:
         return "Services"
 
 

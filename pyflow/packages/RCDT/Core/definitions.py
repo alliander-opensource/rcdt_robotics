@@ -9,3 +9,5 @@ from dataclasses import dataclass
 class ServiceDefinition:
     service_name: str
     service_type: type
+    pyflow_name: str
+    pyflow_group: str
