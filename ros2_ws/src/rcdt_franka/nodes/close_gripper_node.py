@@ -12,7 +12,7 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy import logging
 from franka_msgs.action import Grasp
 from std_srvs.srv import Trigger
-from rcdt_utilities.launch_utils import start_executor
+from rcdt_utilities.launch_utils import spin_executor
 
 ros_logger = logging.get_logger(__name__)
 
@@ -62,7 +62,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = CloseGripper()
     executor.add_node(node)
-    start_executor(executor)
+    spin_executor(executor)
 
 
 if __name__ == "__main__":

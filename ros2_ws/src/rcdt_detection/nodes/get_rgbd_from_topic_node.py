@@ -10,7 +10,7 @@ from rclpy.node import Node
 from rclpy import wait_for_message
 from rcdt_detection_msgs.srv import GetRGBDFromTopic
 from realsense2_camera_msgs.msg import RGBD
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 ros_logger = logging.get_logger(__name__)
 
@@ -40,7 +40,7 @@ class GetRGBDFromTopicNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = GetRGBDFromTopicNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

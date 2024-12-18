@@ -9,7 +9,7 @@ from rclpy import logging
 from rclpy.node import Node
 from sensor_msgs.msg import Image, CameraInfo
 from realsense2_camera_msgs.msg import RGBD
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 ros_logger = logging.get_logger(__name__)
 
@@ -57,7 +57,7 @@ class CombineCameraTopicsNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = CombineCameraTopicsNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

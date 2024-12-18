@@ -8,7 +8,7 @@ from typing import List
 
 import rclpy
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 from moveit.planning import MoveItPy, PlanningComponent, PlanningSceneMonitor
 from moveit.core.robot_state import RobotState
@@ -146,7 +146,7 @@ class MoveitControllerNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = MoveitControllerNode("fr3_arm")
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

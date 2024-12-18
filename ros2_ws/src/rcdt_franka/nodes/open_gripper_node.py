@@ -6,7 +6,7 @@
 
 import rclpy
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import start_executor
+from rcdt_utilities.launch_utils import spin_executor
 from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
@@ -60,7 +60,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = OpenGripper()
     executor.add_node(node)
-    start_executor(executor)
+    spin_executor(executor)
 
 
 if __name__ == "__main__":

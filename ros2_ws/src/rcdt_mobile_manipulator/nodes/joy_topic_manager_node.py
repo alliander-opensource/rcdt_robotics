@@ -8,7 +8,7 @@ from typing import List
 import rclpy
 from rclpy.node import Node, Publisher
 from sensor_msgs.msg import Joy
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 from rcdt_utilities.launch_utils import get_yaml, get_file_path
 
 
@@ -70,7 +70,7 @@ class JoyTopicManager(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = JoyTopicManager()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

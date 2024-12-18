@@ -8,7 +8,7 @@ import rclpy
 from copy import copy
 from rclpy import time, logging
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
@@ -93,7 +93,7 @@ def apply_transform_relative(pose: PoseStamped, transform: Transform) -> PoseSta
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = ManipulatePoseNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

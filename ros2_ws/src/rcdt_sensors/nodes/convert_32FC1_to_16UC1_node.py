@@ -8,7 +8,7 @@ import rclpy
 import numpy as np
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import Image
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
 
@@ -37,7 +37,7 @@ class Convert32FC1to16UC1Node(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = Convert32FC1to16UC1Node()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

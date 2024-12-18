@@ -64,7 +64,7 @@ def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
     return {"robot_description": robot_description_config.toxml()}
 
 
-def start_node(node: Node) -> None:
+def spin_node(node: Node) -> None:
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
@@ -73,7 +73,7 @@ def start_node(node: Node) -> None:
         raise e
 
 
-def start_executor(executor: Executor) -> None:
+def spin_executor(executor: Executor) -> None:
     try:
         executor.spin()
     except KeyboardInterrupt:

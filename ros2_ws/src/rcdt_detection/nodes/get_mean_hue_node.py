@@ -9,7 +9,7 @@ import rclpy
 import numpy as np
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 from rcdt_detection_msgs.srv import GetMeanHue
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
@@ -47,7 +47,7 @@ class GetMeanHueNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = GetMeanHueNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

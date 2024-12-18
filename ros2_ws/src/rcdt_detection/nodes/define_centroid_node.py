@@ -11,7 +11,7 @@ from rclpy.node import Node
 from rcdt_detection_msgs.srv import DefineCentroid
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
 from rcdt_detection.image_manipulation import three_to_single_channel
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 ros_logger = logging.get_logger(__name__)
 
@@ -43,7 +43,7 @@ class DefineCentroidNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = DefineCentroidNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":

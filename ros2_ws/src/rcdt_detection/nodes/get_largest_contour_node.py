@@ -9,7 +9,7 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from vision_msgs.msg import Point2D
-from rcdt_utilities.launch_utils import start_node
+from rcdt_utilities.launch_utils import spin_node
 
 from rcdt_detection_msgs.srv import GetLargestContour
 from rcdt_detection.image_manipulation import three_to_single_channel
@@ -64,7 +64,7 @@ class GetLargestContourNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = GetLargestContourNode()
-    start_node(node)
+    spin_node(node)
 
 
 if __name__ == "__main__":
