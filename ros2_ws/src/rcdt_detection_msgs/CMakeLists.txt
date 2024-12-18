@@ -13,19 +13,18 @@ find_package(vision_msgs REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
+# grab all .srv files in /srv, and pass them to rosidl_generate_interfaces
+# Note that this is actually against cmake guidelines.
+# because cmake is unable to identify when srv files have changed.
+file(GLOB SRVS srv/*.srv*)
+
+foreach(file IN LISTS SRVS)
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" file_relative ${file})
+    list(APPEND SRVS_STRIPPED ${file_relative})
+endforeach()
+
 rosidl_generate_interfaces(${PROJECT_NAME}
-  srv/DefineCentroid.srv
-  srv/FilterMasks.srv
-  srv/GetBoundingBox2D.srv
-  srv/GetLargestContour.srv
-  srv/GetMeanHue.srv
-  srv/GetRectangleFactor.srv
-  srv/GetRGBDFromTopic.srv
-  srv/PoseFromPixel.srv
-  srv/PublishImage.srv
-  srv/SegmentImage.srv
-  srv/SelectImageFromList.srv
-  srv/SplitRGBD.srv
+  ${SRVS_STRIPPED}
   DEPENDENCIES geometry_msgs sensor_msgs vision_msgs realsense2_camera_msgs
 )
 
