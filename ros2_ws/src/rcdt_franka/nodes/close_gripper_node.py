@@ -62,7 +62,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = CloseGripper()
     executor.add_node(node)
-    start_executor(node)
+    start_executor(executor)
 
 
 if __name__ == "__main__":
