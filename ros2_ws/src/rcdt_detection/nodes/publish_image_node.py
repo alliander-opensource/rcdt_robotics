@@ -7,6 +7,7 @@
 import rclpy
 from rclpy import logging
 from rclpy.node import Node
+from rcdt_utilities.launch_utils import start_node
 from rcdt_detection_msgs.srv import PublishImage
 from sensor_msgs.msg import Image
 
@@ -30,15 +31,7 @@ class PublishImageNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = PublishImageNode()
-
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
+    start_node(node)
 
 
 if __name__ == "__main__":

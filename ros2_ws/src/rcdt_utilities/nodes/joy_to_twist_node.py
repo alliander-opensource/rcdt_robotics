@@ -5,10 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from rclpy import logging
 from rclpy.node import Node
+from rcdt_utilities.launch_utils import start_node
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import TwistStamped
 from rcdt_utilities.launch_utils import get_yaml, get_file_path
+
+ros_logger = logging.get_logger(__name__)
 
 
 class JoyToTwistNode(Node):
@@ -48,10 +52,6 @@ class JoyToTwistNode(Node):
         self.pub_msg = TwistStamped()
         self.pub_msg.header.frame_id = pub_frame
         self.profile = "A"
-        self.run()
-
-    def run(self) -> None:
-        rclpy.spin(self)
 
     def handle_input(self, sub_msg: Joy) -> None:
         for idx in range(len(sub_msg.axes)):
@@ -81,8 +81,8 @@ class JoyToTwistNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    JoyToTwistNode()
-    rclpy.shutdown()
+    node = JoyToTwistNode()
+    start_node(node)
 
 
 if __name__ == "__main__":

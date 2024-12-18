@@ -8,6 +8,7 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from rcdt_detection_msgs.srv import SplitRGBD
+from rcdt_utilities.launch_utils import start_node
 
 ros_logger = logging.get_logger(__name__)
 
@@ -31,15 +32,7 @@ class SplitRGBDNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = SplitRGBDNode()
-
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
+    start_node(node)
 
 
 if __name__ == "__main__":

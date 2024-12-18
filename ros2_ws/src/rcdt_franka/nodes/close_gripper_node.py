@@ -12,6 +12,7 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy import logging
 from franka_msgs.action import Grasp
 from std_srvs.srv import Trigger
+from rcdt_utilities.launch_utils import start_executor
 
 ros_logger = logging.get_logger(__name__)
 
@@ -61,16 +62,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = CloseGripper()
     executor.add_node(node)
-
-    try:
-        executor.spin()
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
-        executor.shutdown()
+    start_executor(node)
 
 
 if __name__ == "__main__":

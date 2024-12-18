@@ -13,7 +13,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
-from rcdt_utilities.launch_utils import get_yaml, get_file_path
+from rcdt_utilities.launch_utils import get_yaml, get_file_path, start_executor
 
 ros_logger = logging.get_logger(__name__)
 
@@ -75,16 +75,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = JoyToGripper()
     executor.add_node(node)
-
-    try:
-        executor.spin()
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
-        executor.shutdown()
+    start_executor(executor)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@
 
 import rclpy
 from rclpy.node import Node
+from rcdt_utilities.launch_utils import start_executor
 from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
@@ -59,16 +60,7 @@ def main(args: str = None) -> None:
     executor = MultiThreadedExecutor()
     node = OpenGripper()
     executor.add_node(node)
-
-    try:
-        executor.spin()
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
-        executor.shutdown()
+    start_executor(executor)
 
 
 if __name__ == "__main__":
