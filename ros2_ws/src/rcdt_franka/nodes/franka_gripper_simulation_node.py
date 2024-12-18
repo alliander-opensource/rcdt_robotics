@@ -10,6 +10,7 @@ from rclpy.node import Node
 from franka_msgs.action import Grasp, Homing, Move
 from control_msgs.action import GripperCommand
 from rclpy.executors import MultiThreadedExecutor
+from rcdt_utilities.launch_utils import spin_executor
 
 MAX = 0.039
 MIN = 0.001
@@ -83,8 +84,7 @@ def main(args: str = None) -> None:
     fr3_gripper = FrankaGripperSimulation(gripper_action_controller_client)
     executor.add_node(fr3_gripper)
 
-    executor.spin()
-    rclpy.shutdown()
+    spin_executor(executor)
 
 
 if __name__ == "__main__":

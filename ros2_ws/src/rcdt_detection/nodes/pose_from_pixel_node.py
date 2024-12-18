@@ -8,6 +8,7 @@ import rclpy
 import pyrealsense2 as rs2
 from rclpy import logging
 from rclpy.node import Node
+from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import CameraInfo
 from rcdt_detection_msgs.srv import PoseFromPixel
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
@@ -87,15 +88,7 @@ def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     node = PoseFromPixelNode()
-
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        ros_logger.info("Keyboard interrupt, shutting down.\n")
-    except Exception as e:
-        raise e
-    finally:
-        node.destroy_node()
+    spin_node(node)
 
 
 if __name__ == "__main__":

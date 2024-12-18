@@ -8,6 +8,9 @@ import yaml
 import xacro
 import ast
 
+import rclpy
+from rclpy.node import Node
+from rclpy.executors import Executor
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchContext
 from launch.substitutions import LaunchConfiguration
@@ -59,6 +62,24 @@ def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
         xacro_arguments = {}
     robot_description_config = xacro.process_file(xacro_path, mappings=xacro_arguments)
     return {"robot_description": robot_description_config.toxml()}
+
+
+def spin_node(node: Node) -> None:
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        raise e
+
+
+def spin_executor(executor: Executor) -> None:
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        raise e
 
 
 def get_moveit_parameters(
