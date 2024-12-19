@@ -5,15 +5,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+import numpy as np
 import pyrealsense2 as rs2
 from rclpy import logging
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import CameraInfo
-from rcdt_detection_msgs.srv import PoseFromPixel
+from vision_msgs.msg import Point2D
+from geometry_msgs.msg import PointStamped, Point
+from rcdt_detection_msgs.srv import PoseFromPixel, ContourTo3D
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)
+Pixel = list[int, int]
 
 
 class PoseFromPixelNode(Node):
@@ -21,45 +25,68 @@ class PoseFromPixelNode(Node):
 
     def __init__(self) -> None:
         super().__init__("pose_from_pixel")
-        self.create_service(PoseFromPixel, "/pose_from_pixel", self.callback)
+        self.create_service(PoseFromPixel, "/pose_from_pixel", self.pose_from_pixel)
+        self.create_service(ContourTo3D, "/contour_to_3d", self.contour_to_3d)
 
-    def callback(
+    def pose_from_pixel(
         self, request: PoseFromPixel.Request, response: PoseFromPixel.Response
     ) -> PoseFromPixel.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
-        height, width = cv2_image.shape
-        intr = calculate_intrinsics(request.camera_info)
-        x_pixel = int(request.pixel.x)
-        y_pixel = int(request.pixel.y)
+        intrinsics = calculate_intrinsics(request.camera_info)
 
-        if not is_pixel_valid(width, height, [x_pixel, y_pixel]):
+        if not is_point_valid(cv2_image, request.pixel):
             ros_logger.error("Requested pixel location is invalid. Exiting.")
             response.success = False
             return response
 
-        depth_value = cv2_image[y_pixel, x_pixel]
-        x_mm, y_mm, z_mm = rs2.rs2_deproject_pixel_to_point(
-            intr, [x_pixel, y_pixel], depth_value
-        )
-        x_m, y_m, z_m = x_mm / 1000, y_mm / 1000, z_mm / 1000
-        self.get_logger().info(
-            f"Pixel ({x_pixel}, {y_pixel}) corresponds to Point ({x_m:.3f}, {y_m:.3f}, {z_m:.3f})."
-        )
-        response.pose.pose.position.x = float(x_m)
-        response.pose.pose.position.y = float(y_m)
-        response.pose.pose.position.z = float(z_m)
-        response.pose.header.frame_id = "camera_depth_optical_frame"
+        # TODO: make this neater
+        point_stamped = get_point_3d(cv2_image, intrinsics, request.pixel)
+        response.pose.pose.position = point_stamped.point
+        response.pose.header = point_stamped.header
+        response.success = True
+        return response
+
+    def contour_to_3d(
+        self, request: ContourTo3D.Request, response: ContourTo3D.Response
+    ) -> ContourTo3D.Response:
+        cv2_image = ros_image_to_cv2_image(request.depth_image)
+
+        if not all(is_point_valid(cv2_image, point) for point in request.contour_2d):
+            ros_logger.error("Not all points are valid. Exiting.")
+            response.success = False
+            return response
+
+        intrinsics = calculate_intrinsics(request.camera_info)
+
+        for point in request.contour_2d:
+            response.contour_3d.append(get_point_3d(cv2_image, intrinsics, point))
         response.success = True
         return response
 
 
-def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
+def get_point_3d(
+    image: np.ndarray, intrinsics: rs2.intrinsics, point_2d: Point2D
+) -> PointStamped:
+    x = int(point_2d.x)
+    y = int(point_2d.y)
+    depth_value = image[y, x]
+    x_mm, y_mm, z_mm = rs2.rs2_deproject_pixel_to_point(intrinsics, [x, y], depth_value)
+    x_m, y_m, z_m = x_mm / 1000.0, y_mm / 1000.0, z_mm / 1000.0
+    point = Point(x=x_m, y=y_m, z=z_m)
+    point_stamped = PointStamped(point=point)
+    point_stamped.header.frame_id = "camera_depth_optical_frame"
+    ros_logger.info(f"point: {point_2d} was transformed to: {[point]}")
+    return point_stamped
+
+
+def is_point_valid(image: np.ndarray, point: Point2D) -> bool:
+    height, width = image.shape
     valid = True
-    if not 0 <= pixel[0] < width:
-        ros_logger.warn(f"Pixel x={pixel[0]} while image width={width}.")
+    if not 0 <= point.x < width:
+        ros_logger.warn(f"point x={point.x} while image width={width}.")
         valid = False
-    if not 0 <= pixel[1] < height:
-        ros_logger.warn(f"Pixel y={pixel[0]} while image height={height}.")
+    if not 0 <= point.y < height:
+        ros_logger.warn(f"point y={point.y} while image height={height}.")
         valid = False
     return valid
 

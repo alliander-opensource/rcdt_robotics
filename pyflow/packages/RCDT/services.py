@@ -26,7 +26,7 @@ group = "Detection"
 add("DefineCentroid", "/define_centroid", detection.DefineCentroid, group)
 add("FilterMasks", "/filter_masks", detection.FilterMasks, group)
 add("GetBoundingBox2D", "/get_bounding_box_2d", detection.GetBoundingBox2D, group)
-add("GetLargestContour", "/get_largetst_contour", detection.GetLargestContour, group)
+add("GetLargestContour", "/get_largest_contour", detection.GetLargestContour, group)
 add("GetMeanHue", "/get_mean_hue", detection.GetMeanHue, group)
 add("GetRGBDFromTopic", "/get_rgbd_from_topic", detection.GetRGBDFromTopic, group)
 add("GetRectangleFactor", "/get_rectangle_factor", detection.GetRectangleFactor, group)
@@ -35,6 +35,7 @@ add("PublishImage", "/publish_image", detection.PublishImage, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
 add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
+add("ContourTo3D","/contour_to_3d", detection.ContourTo3D, group)
 
 group = "Utilities"
 add("AddMarker", "/add_marker", utilities.AddMarker, group)

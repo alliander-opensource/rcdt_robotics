@@ -14,6 +14,7 @@ find_package(realsense2_camera_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  srv/ContourTo3D.srv
   srv/DefineCentroid.srv
   srv/FilterMasks.srv
   srv/GetBoundingBox2D.srv
