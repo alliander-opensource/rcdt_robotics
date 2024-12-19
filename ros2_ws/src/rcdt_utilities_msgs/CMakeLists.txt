@@ -16,7 +16,7 @@ find_package(moveit_msgs REQUIRED)
 # grab all .srv files in /srv, and pass them to rosidl_generate_interfaces
 # Note that this is actually against cmake guidelines 
 # because cmake is unable to identify when srv files have changed.
-file(GLOB SRVS srv/*.srv*)
+file(GLOB SRVS CONFIGURE_DEPENDS srv/*.srv*)
 
 foreach(file IN LISTS SRVS)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" file_relative ${file})

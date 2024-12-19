@@ -15,8 +15,7 @@ find_package(rcdt_utilities REQUIRED)
 
 # Install nodes
 install(PROGRAMS
-  nodes/combine_camera_topics_node.py
-  nodes/convert_32FC1_to_16UC1_node.py
+  nodes
   DESTINATION lib/${PROJECT_NAME}
 )
 
