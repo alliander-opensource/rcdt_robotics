@@ -31,3 +31,11 @@ RUN apt install -y libxcb-cursor-dev
 RUN pip install inflection
 RUN pip install distinctipy
 ENV QT_API=pyside6
+
+# Bio_ik (https://github.com/PickNikRobotics/bio_ik):
+RUN mkdir -p /home/$UNAME/bio_ik_ws/src
+WORKDIR /home/$UNAME/bio_ik_ws/src
+RUN git clone https://github.com/PickNikRobotics/bio_ik.git -b ros2
+WORKDIR /home/$UNAME/bio_ik_ws/
+RUN . /opt/ros/humble/setup.sh && . /home/$UNAME/moveit_ws/install/setup.sh && colcon build
+RUN echo "source /home/$UNAME/bio_ik_ws/install/setup.bash" >> /home/$UNAME/.bashrc
