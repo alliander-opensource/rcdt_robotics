@@ -8,11 +8,13 @@ import rclpy
 from rclpy.node import Node
 from rclpy import logging
 from rcdt_detection_msgs.srv import FilterMasks
-from rcdt_detection.object_detectors import is_brick
-from rcdt_utilities.cv_utils import ros_image_to_cv2_image
+from rcdt_utilities.cv_utils import ros_image_to_cv2_image, camera_info_to_intrinsics
 from rcdt_utilities.launch_utils import spin_node
+from rcdt_detection.mask_properties import MaskProperties
 
 ros_logger = logging.get_logger(__name__)
+
+BRICK = {"min_width": 0.04, "max_width": 0.065, "min_length": 0.20, "max_length": 0.25}
 
 
 class FilterMasksNode(Node):
@@ -23,25 +25,25 @@ class FilterMasksNode(Node):
     def callback(
         self, request: FilterMasks.Request, response: FilterMasks.Response
     ) -> FilterMasks.Response:
-        match request.filter_method:
-            case "brick":
-                is_selected = is_brick
-            case _:
-                ros_logger.warn(
-                    f"Selected filter_method '{request.filter_method}' unknown. Exiting."
-                )
-                response.success = False
-                return response
+        depth_image = ros_image_to_cv2_image(request.depth_image)
+        intrinsics = camera_info_to_intrinsics(request.camera_info)
 
         for mask_ros in request.masks:
             mask_cv2 = ros_image_to_cv2_image(mask_ros)
-            if is_selected(mask_cv2):
+            mask_properties = MaskProperties(mask_cv2, depth_image, intrinsics)
+            if is_brick(mask_properties):
                 response.masks.append(mask_ros)
-        ros_logger.info(
-            f"Checked {len(request.masks)} masks, of which {len(response.masks)} are selected."
-        )
+
+        ros_logger.info(f"{len(response.masks)} masks matched the filter criteria.")
         response.success = True
         return response
+
+
+def is_brick(mask_properties: MaskProperties) -> bool:
+    shape = mask_properties.box_shape_3d
+    correct_width = BRICK["min_width"] < shape[0] < BRICK["max_width"]
+    correct_length = BRICK["min_length"] < shape[1] < BRICK["max_length"]
+    return correct_width and correct_length
 
 
 def main(args: str = None) -> None:
