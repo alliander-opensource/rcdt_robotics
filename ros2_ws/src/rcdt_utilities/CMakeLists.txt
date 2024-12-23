@@ -32,8 +32,8 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME})
 
 # Install python nodes:
-install(PROGRAMS
-  nodes
+install(
+  DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
 )
 

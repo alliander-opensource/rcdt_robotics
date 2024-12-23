@@ -17,8 +17,8 @@ install(
 )
 
 # Install nodes
-install(PROGRAMS
-  nodes
+install(
+  DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
 )
 
