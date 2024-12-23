@@ -35,6 +35,7 @@ add("PublishImage", "/publish_image", detection.PublishImage, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
 add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
+add("GetMaskProperties","/get_mask_properties", detection.GetMaskProperties, group)
 
 group = "Utilities"
 add("AddMarker", "/add_marker", utilities.AddMarker, group)

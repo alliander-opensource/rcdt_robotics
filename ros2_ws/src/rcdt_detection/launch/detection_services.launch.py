@@ -19,6 +19,9 @@ def generate_launch_description() -> LaunchDescription:
     get_largest_contour_node = Node(
         package="rcdt_detection", executable="get_largest_contour_node.py"
     )
+    get_mask_properties = Node(
+        package="rcdt_detection", executable="get_mask_properties.py"
+    )
     get_mean_hue_node = Node(
         package="rcdt_detection", executable="get_mean_hue_node.py"
     )
@@ -48,6 +51,7 @@ def generate_launch_description() -> LaunchDescription:
             filter_masks_node,
             get_bounding_box_2d_node,
             get_largest_contour_node,
+            get_mask_properties,
             get_mean_hue_node,
             get_rectangle_factor_node,
             get_rgbd_from_topic_node,

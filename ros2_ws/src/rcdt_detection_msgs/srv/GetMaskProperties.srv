@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+sensor_msgs/Image mask
+sensor_msgs/Image depth_image
+sensor_msgs/CameraInfo camera_info
+---
+vision_msgs/Point2D[] contour
+vision_msgs/Point2D[] box_contour_2d
+geometry_msgs/PointStamped[] box_contour_3d
+float32[] box_shape_3d
+bool success

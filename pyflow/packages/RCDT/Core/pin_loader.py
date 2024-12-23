@@ -93,7 +93,7 @@ def get_types_from_message(message: type) -> None:
         message_type = type(getattr(message, field))
         if message_type.__name__ in exclude:
             continue
-        if message_type.__name__ == "list":
+        if message_type.__name__ in ["list", "array"]:
             SequencePin(_field_type)
         else:
             MessagePin(message_type)
