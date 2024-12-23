@@ -14,3 +14,4 @@ RUN apt install -y ros-humble-xacro
 RUN apt install -y ros-humble-rqt-tf-tree
 RUN apt install -y htop
 RUN apt install -y python3-pip
+RUN apt install -y git-lfs
