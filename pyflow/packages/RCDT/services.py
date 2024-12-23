@@ -32,6 +32,7 @@ add("GetRGBDFromTopic", "/get_rgbd_from_topic", detection.GetRGBDFromTopic, grou
 add("GetRectangleFactor", "/get_rectangle_factor", detection.GetRectangleFactor, group)
 add("PoseFromPixel", "/pose_from_pixel", detection.PoseFromPixel, group)
 add("PublishImage", "/publish_image", detection.PublishImage, group)
+add("PublishMasks", "/publish_masks", detection.PublishMasks, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
 add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
