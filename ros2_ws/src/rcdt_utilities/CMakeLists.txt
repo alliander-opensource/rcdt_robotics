@@ -16,22 +16,13 @@ find_package(rcdt_utilities_msgs REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
 find_package(tf2_eigen REQUIRED)
 
-# Install project files
+# Install project files:
 install(
-  DIRECTORY
-  launch rviz
+  DIRECTORY launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install cpp:
-add_executable(rviz_controller_node src/rviz_controller_node.cpp)
-ament_target_dependencies(rviz_controller_node rclcpp std_srvs rcdt_utilities_msgs rviz_visual_tools tf2_eigen)
-
-install(TARGETS
-  rviz_controller_node
-  DESTINATION lib/${PROJECT_NAME})
-
-# Install python nodes:
+# Install python executables:
 install(
   DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
@@ -39,6 +30,14 @@ install(
 
 # Install python package
 ament_python_install_package(${PROJECT_NAME})
+
+# Install cpp executables:
+add_executable(rviz_controller_node src/rviz_controller_node.cpp)
+ament_target_dependencies(rviz_controller_node rclcpp std_srvs rcdt_utilities_msgs rviz_visual_tools tf2_eigen)
+install(
+  TARGETS rviz_controller_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

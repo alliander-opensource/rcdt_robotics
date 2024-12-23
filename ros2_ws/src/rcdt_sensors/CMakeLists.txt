@@ -13,17 +13,16 @@ find_package(sensor_msgs REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
 find_package(rcdt_utilities REQUIRED)
 
-# Install nodes
+# Install project files:
+install(
+  DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install python executables:
 install(
   DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
-)
-
-# Install project files
-install(
-  DIRECTORY
-  urdf
-  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

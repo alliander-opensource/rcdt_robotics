@@ -9,14 +9,13 @@ project(rcdt_mobile_manipulator)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
-# Install project files
+# Install project files:
 install(
-  DIRECTORY
-  launch config urdf
+  DIRECTORY launch config urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install nodes
+# Install python executables:
 install(
   DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}

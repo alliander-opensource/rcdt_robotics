@@ -11,20 +11,20 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rcdt_utilities REQUIRED)
 
-# Install project files
-install(DIRECTORY
-  launch
+# Install project files:
+install(
+  DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install python package
-ament_python_install_package(${PROJECT_NAME})
-
-# Install nodes
+# Install python executables:
 install(
   DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Install python package:
+ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
