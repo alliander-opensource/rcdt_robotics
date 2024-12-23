@@ -13,18 +13,16 @@ find_package(sensor_msgs REQUIRED)
 find_package(realsense2_camera_msgs REQUIRED)
 find_package(rcdt_utilities REQUIRED)
 
-# Install nodes
-install(PROGRAMS
-  nodes/combine_camera_topics_node.py
-  nodes/convert_32FC1_to_16UC1_node.py
-  DESTINATION lib/${PROJECT_NAME}
+# Install project files:
+install(
+  DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
 )
 
-# Install project files
+# Install python executables:
 install(
-  DIRECTORY
-  urdf
-  DESTINATION share/${PROJECT_NAME}
+  DIRECTORY nodes/
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

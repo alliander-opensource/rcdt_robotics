@@ -2,15 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.8)
-project(rcdt_gz_worlds)
+cmake_minimum_required(VERSION 3.5)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+project(rcdt_gz_worlds)
 
 find_package(ament_cmake REQUIRED)
 
+# Install project files:
 install(
   DIRECTORY launch worlds
   DESTINATION share/${PROJECT_NAME}

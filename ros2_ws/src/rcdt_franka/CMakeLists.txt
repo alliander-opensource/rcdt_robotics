@@ -9,20 +9,15 @@ project(rcdt_franka)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
-# Install project files
+# Install project files:
 install(
-  DIRECTORY
-  launch config urdf
+  DIRECTORY launch config urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install nodes
-install(PROGRAMS
-  nodes/close_gripper_node.py
-  nodes/franka_gripper_simulation_node.py
-  nodes/joy_to_gripper_node.py
-  nodes/open_gripper_node.py
-  nodes/settings_setter_node.py
+# Install python executables:
+install(
+  DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
 )
 
