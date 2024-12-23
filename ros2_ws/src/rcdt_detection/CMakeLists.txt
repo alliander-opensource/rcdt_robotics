@@ -11,31 +11,20 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rcdt_utilities REQUIRED)
 
-# Install project files
-install(DIRECTORY
-  launch
+# Install project files:
+install(
+  DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install python package
-ament_python_install_package(${PROJECT_NAME})
-
-# Install nodes
-install(PROGRAMS
-  nodes/define_centroid_node.py
-  nodes/filter_masks_node.py
-  nodes/get_bounding_box_2d_node.py
-  nodes/get_largest_contour_node.py
-  nodes/get_mean_hue_node.py
-  nodes/get_rectangle_factor_node.py
-  nodes/get_rgbd_from_topic_node.py
-  nodes/pose_from_pixel_node.py
-  nodes/publish_image_node.py
-  nodes/segment_image_node.py
-  nodes/select_image_from_list_node.py
-  nodes/split_rgbd_node.py
+# Install python executables:
+install(
+  DIRECTORY nodes/
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Install python package:
+ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
