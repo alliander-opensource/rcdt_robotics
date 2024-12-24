@@ -6,5 +6,6 @@ sensor_msgs/Image[] masks
 sensor_msgs/Image depth_image
 sensor_msgs/CameraInfo camera_info
 ---
-sensor_msgs/Image[] masks
+sensor_msgs/Image check_result
+vision_msgs/Point2D gripper_location
 bool success
