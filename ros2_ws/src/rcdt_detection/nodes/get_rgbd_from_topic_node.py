@@ -27,11 +27,15 @@ class GetRGBDFromTopicNode(Node):
             ros_logger.error("No topic was specified. Exit.")
             response.success = False
             return response
-        response.success, message = wait_for_message.wait_for_message(
+        response.success, rgbd = wait_for_message.wait_for_message(
             RGBD, self, request.topic, time_to_wait=1
         )
+        rgbd: RGBD
         if response.success:
-            response.rgbd = message
+            response.rgb_image = rgbd.rgb
+            response.depth_image = rgbd.depth
+            response.rgb_info = rgbd.rgb_camera_info
+            response.depth_info = rgbd.depth_camera_info
         else:
             ros_logger.error(f"No RGBD message received on {request.topic}.")
         return response

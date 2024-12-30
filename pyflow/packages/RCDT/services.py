@@ -35,7 +35,6 @@ add("PublishMasks", "/publish_masks", detection.PublishMasks, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
 add("SelectPickLocation", "/select_pick_location", detection.SelectPickLocation, group)
-add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
 add("GetMaskProperties","/get_mask_properties", detection.GetMaskProperties, group)
 
 group = "Utilities"

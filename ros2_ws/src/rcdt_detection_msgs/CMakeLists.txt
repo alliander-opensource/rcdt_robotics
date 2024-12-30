@@ -10,7 +10,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 find_package(geometry_msgs REQUIRED)
-find_package(realsense2_camera_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
 
@@ -26,7 +25,7 @@ endforeach()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${SRVS_STRIPPED}
-  DEPENDENCIES geometry_msgs sensor_msgs vision_msgs realsense2_camera_msgs
+  DEPENDENCIES geometry_msgs sensor_msgs vision_msgs
 )
 
 if(BUILD_TESTING)
