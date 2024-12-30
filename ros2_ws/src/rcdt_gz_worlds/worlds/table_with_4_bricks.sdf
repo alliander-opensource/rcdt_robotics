@@ -43,25 +43,25 @@ SPDX-License-Identifier: Apache-2.0
     </model>
 
     <model name='brick0'>
-      <pose>0.3 0 .04 0 0 0</pose>
+      <pose>0.4 0 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
     <model name='brick1'>
-      <pose>0.5 0 .04 0 0 0</pose>
+      <pose>0.6 0 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
     <model name='brick2'>
-      <pose>0.4 -0.05 .04 0 0 0</pose>
+      <pose>0.5 -0.05 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
     </model>
     <model name='brick3'>
-      <pose>0.4 0.05 .04 0 0 0</pose>
+      <pose>0.5 0.05 .04 0 0 0</pose>
       <include>
         <uri>model://brick</uri>
       </include>
