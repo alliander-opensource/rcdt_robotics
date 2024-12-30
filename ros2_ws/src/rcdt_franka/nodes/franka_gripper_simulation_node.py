@@ -23,14 +23,22 @@ class GripperActionControllerClient(Node):
             self, GripperCommand, "/gripper_action_controller/gripper_cmd"
         )
 
-    def move(self, width: float, max_effort: float = 0.0) -> bool:
+    def move(self, width: float) -> bool:
+        goal = GripperCommand.Goal()
+        goal.command.position = self.respect_limits(width)
+        self.client.wait_for_server()
+        result = self.client.send_goal(goal)
+        result: GripperCommand.Impl.GetResultService.Response
+        return result.result.reached_goal
+
+    def grasp(self, width: float, max_effort: float) -> bool:
         goal = GripperCommand.Goal()
         goal.command.position = self.respect_limits(width)
         goal.command.max_effort = max_effort
         self.client.wait_for_server()
         result = self.client.send_goal(goal)
         result: GripperCommand.Impl.GetResultService.Response
-        return result.result.reached_goal
+        return result.result.reached_goal or result.result.stalled
 
     def respect_limits(self, width: float) -> float:
         return min(MAX, max(MIN, width))
@@ -48,7 +56,7 @@ class FrankaGripperSimulation(Node):
         self.get_logger().info("Gripper Grasping...")
         request: Grasp.Goal = goal_handle.request
         result = Grasp.Result()
-        if self.gripper_action_client.move(0, request.force):
+        if self.gripper_action_client.grasp(0, request.force):
             goal_handle.succeed()
             result.success = True
             self.get_logger().info("Gripper Grasping succeeded")
