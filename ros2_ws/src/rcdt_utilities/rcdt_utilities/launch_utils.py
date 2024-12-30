@@ -11,7 +11,7 @@ import ast
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import Executor
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 from launch import LaunchContext
 from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
@@ -42,6 +42,11 @@ class LaunchArgument:
 
 def get_package_path(package: str) -> str:
     return get_package_share_directory(package)
+
+
+def get_lib_path(package: str) -> str:
+    package_prefix = get_package_prefix(package) + ""
+    return os.path.join(package_prefix, "lib", package)
 
 
 def get_file_path(package: str, folders: List[str], file: str) -> str:
