@@ -55,6 +55,8 @@ class SelectPickLocationNode(Node):
         point = points_3d[index]
 
         response.pick_location.pose.position = Point(x=point.x, y=point.y, z=point.z)
+        response.pick_location.pose.orientation.z = 0.707
+        response.pick_location.pose.orientation.w = -0.707
         response.pick_location.header.frame_id = "camera_depth_optical_frame"
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
         response.success = True
