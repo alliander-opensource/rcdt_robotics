@@ -43,10 +43,12 @@ add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.Express
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 add("IsValueBetweenLimits", "/is_value_betwee_limits", utilities.IsValueBetweenLimits, group)
 
-group = "MoveIt"
-add("AddObject", "/add_object", utilities.AddObject, group)
-add("MoveHandToPose", "/move_hand_to_pose", utilities.MoveHandToPose, group)
-add("MoveToConfiguration", "/move_to_configuration", utilities.MoveToConfiguration, group)
+group = "moveit_controller"
+add("AddObject", f"{group}/add_object", utilities.AddObject, group)
+add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
+add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
+add("PickAtPose", f"{group}/pick_at_pose", utilities.MoveHandToPose, group)
+add("Drop", f"{group}/drop", Trigger, group)
 
 group = "Gripper"
 add("OpenGripper", "/open_gripper", Trigger, group)
