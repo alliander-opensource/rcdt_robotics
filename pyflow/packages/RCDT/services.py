@@ -24,7 +24,6 @@ def add(
 # fmt: off
 group = "Detection"
 add("DefineCentroid", "/define_centroid", detection.DefineCentroid, group)
-add("FilterMasks", "/filter_masks", detection.FilterMasks, group)
 add("GetBoundingBox2D", "/get_bounding_box_2d", detection.GetBoundingBox2D, group)
 add("GetLargestContour", "/get_largetst_contour", detection.GetLargestContour, group)
 add("GetMeanHue", "/get_mean_hue", detection.GetMeanHue, group)
@@ -35,6 +34,7 @@ add("PublishImage", "/publish_image", detection.PublishImage, group)
 add("PublishMasks", "/publish_masks", detection.PublishMasks, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
+add("SelectPickLocation", "/select_pick_location", detection.SelectPickLocation, group)
 add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
 add("GetMaskProperties","/get_mask_properties", detection.GetMaskProperties, group)
 

@@ -14,13 +14,21 @@ class Point2D:
     array: np.ndarray
 
     @property
+    def x(self) -> int:
+        return int(self.array[0])
+
+    @property
+    def y(self) -> int:
+        return int(self.array[1])
+
+    @property
     def tuple(self) -> tuple:
         """Return point as tuple."""
-        return int(self.array[0]), int(self.array[1])
+        return self.x, self.y
 
     def depth_value(self, depth_image: np.ndarray) -> float:
         """Return the depth value in meters."""
-        return depth_image[self.array[1], self.array[0]] / 1000
+        return depth_image[self.y, self.x] / 1000
 
     def surrounding_points(self, d: np.ndarray) -> "Point2DGroup":
         """Return a list of 2D points around self with distance d."""
@@ -52,6 +60,18 @@ class Point2D:
 class Point3D:
     array: np.ndarray
 
+    @property
+    def x(self) -> int:
+        return float(self.array[0])
+
+    @property
+    def y(self) -> int:
+        return float(self.array[1])
+
+    @property
+    def z(self) -> int:
+        return float(self.array[2])
+
 
 @dataclass
 class Point2DGroup:
@@ -69,9 +89,9 @@ class Point2DGroup:
         """Return whether all points in group are in given image."""
         return all(point.is_valid(image) for point in self.points)
 
-    def is_space(self, depth_image: np.ndarray, object_depth: float) -> list[bool]:
-        """Return whether there is space, for every point in the group."""
-        return [point.is_space(depth_image, object_depth) for point in self.points]
+    def is_space(self, depth_image: np.ndarray, object_depth: float) -> bool:
+        """Return whether there is space for all points in the group."""
+        return all(point.is_space(depth_image, object_depth) for point in self.points)
 
 
 @dataclass
@@ -175,29 +195,50 @@ class MaskProperties:
         return average_depth_mm / 1000
 
     @property
-    def suitable_pick_locations(self) -> tuple[np.ndarray, list[np.ndarray]]:
+    def pick_locations(self) -> tuple[Point2DGroup, Point2DGroup]:
         OFFSET_FACTOR = 1.4
         POINTS = 5
 
-        image = self.mask.copy()
-        suitable_pick_locations = []
-
         sides = self.bounding_box.long_sides(OFFSET_FACTOR)
         groups = sides.point_groups(POINTS)
-        space = [group.is_space(self.img_depth, self.avg_depth) for group in groups]
+        space = np.array(
+            [group.is_space(self.img_depth, self.avg_depth) for group in groups]
+        )
 
-        for n in range(POINTS):
-            point = groups[n].mean
-            if all(space[n]):
-                suitable_pick_locations.append(point.array)
-                cv2.circle(image, point.tuple, 3, (0, 255, 0), -1)
-            else:
-                cv2.circle(image, point.tuple, 3, (255, 0, 0), -1)
+        centers = np.array([groups[n].mean for n in range(POINTS)])
+        suitable = Point2DGroup(centers[space])
+        non_suitable = Point2DGroup(centers[~space])
 
-        return image, suitable_pick_locations
+        return suitable, non_suitable
+
+    @property
+    def pick_location(self) -> Point2D | None:
+        suitable, non_suitable = self.pick_locations
+
+        if len(suitable.points) == 0:
+            return None
+
+        middle = suitable.points[len(suitable.points) // 2]
+        return middle
+
+    @property
+    def filter_visualization(self) -> np.ndarray:
+        image = self.mask.copy()
+
+        suitable, non_suitable = self.pick_locations
+        for point in suitable.points:
+            cv2.circle(image, point.tuple, 3, (0, 0, 255), -1)
+        for point in non_suitable.points:
+            cv2.circle(image, point.tuple, 3, (255, 0, 0), -1)
+
+        point = self.pick_location
+        if point is not None:
+            cv2.circle(image, point.tuple, 3, (0, 255, 0), -1)
+
+        return image
 
     def point_2d_to_3d(self, point: Point2D) -> Point3D:
         x, y, z = rs2.rs2_deproject_pixel_to_point(
-            self.intrinsics, point, point.depth_value(self.img_depth)
+            self.intrinsics, point.array, point.depth_value(self.img_depth)
         )
         return Point3D(np.array([x, y, z]))

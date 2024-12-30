@@ -10,9 +10,6 @@ def generate_launch_description() -> LaunchDescription:
     define_centroid_node = Node(
         package="rcdt_detection", executable="define_centroid_node.py"
     )
-    filter_masks_node = Node(
-        package="rcdt_detection", executable="filter_masks_node.py"
-    )
     get_bounding_box_2d_node = Node(
         package="rcdt_detection", executable="get_bounding_box_2d_node.py"
     )
@@ -46,12 +43,14 @@ def generate_launch_description() -> LaunchDescription:
     select_image_from_list_node = Node(
         package="rcdt_detection", executable="select_image_from_list_node.py"
     )
+    select_pick_location = Node(
+        package="rcdt_detection", executable="select_pick_location_node.py"
+    )
     split_rgbd_node = Node(package="rcdt_detection", executable="split_rgbd_node.py")
 
     return LaunchDescription(
         [
             define_centroid_node,
-            filter_masks_node,
             get_bounding_box_2d_node,
             get_largest_contour_node,
             get_mask_properties,
@@ -63,6 +62,7 @@ def generate_launch_description() -> LaunchDescription:
             publish_masks_node,
             segment_image_node,
             select_image_from_list_node,
+            select_pick_location,
             split_rgbd_node,
         ]
     )
