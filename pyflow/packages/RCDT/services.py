@@ -23,18 +23,14 @@ def add(
 
 # fmt: off
 group = "Detection"
-add("DefineCentroid", "/define_centroid", detection.DefineCentroid, group)
-add("FilterMasks", "/filter_masks", detection.FilterMasks, group)
-add("GetBoundingBox2D", "/get_bounding_box_2d", detection.GetBoundingBox2D, group)
-add("GetLargestContour", "/get_largetst_contour", detection.GetLargestContour, group)
-add("GetMeanHue", "/get_mean_hue", detection.GetMeanHue, group)
+add("GetMaskProperties","/get_mask_properties", detection.GetMaskProperties, group)
 add("GetRGBDFromTopic", "/get_rgbd_from_topic", detection.GetRGBDFromTopic, group)
-add("GetRectangleFactor", "/get_rectangle_factor", detection.GetRectangleFactor, group)
 add("PoseFromPixel", "/pose_from_pixel", detection.PoseFromPixel, group)
 add("PublishImage", "/publish_image", detection.PublishImage, group)
+add("PublishMasks", "/publish_masks", detection.PublishMasks, group)
 add("SegmentImage", "/segment_image", detection.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
-add("SplitRGBD", "/split_rgbd", detection.SplitRGBD, group)
+add("SelectPickLocation", "/select_pick_location", detection.SelectPickLocation, group)
 
 group = "Utilities"
 add("AddMarker", "/add_marker", utilities.AddMarker, group)
@@ -42,10 +38,12 @@ add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.Express
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 add("IsValueBetweenLimits", "/is_value_betwee_limits", utilities.IsValueBetweenLimits, group)
 
-group = "MoveIt"
-add("AddObject", "/add_object", utilities.AddObject, group)
-add("MoveHandToPose", "/move_hand_to_pose", utilities.MoveHandToPose, group)
-add("MoveToConfiguration", "/move_to_configuration", utilities.MoveToConfiguration, group)
+group = "moveit_controller"
+add("AddObject", f"{group}/add_object", utilities.AddObject, group)
+add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
+add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
+add("PickAtPose", f"{group}/pick_at_pose", utilities.MoveHandToPose, group)
+add("Drop", f"{group}/drop", Trigger, group)
 
 group = "Gripper"
 add("OpenGripper", "/open_gripper", Trigger, group)
