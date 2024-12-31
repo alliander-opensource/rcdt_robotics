@@ -5,6 +5,7 @@
 
 from dataclasses import dataclass
 import cv2
+import colorsys
 import numpy as np
 import pyrealsense2 as rs2
 from rcdt_detection.image_manipulation import three_to_single_channel
@@ -181,6 +182,7 @@ class MaskProperties:
 
     @property
     def contour(self) -> list[list[np.ndarray]]:
+        """Returns the main contour, so that tiny contours due to noise are eliminated."""
         contours, _ = cv2.findContours(
             self.single_channel, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
@@ -189,8 +191,26 @@ class MaskProperties:
 
     @property
     def bounding_box(self) -> BoundingBox:
+        """Returns the bounding box of the main contour."""
         (x, y), (w, h), angle = cv2.minAreaRect(self.contour)
         return BoundingBox(x, y, w, h, angle)
+
+    @property
+    def centroid(self) -> Point2D:
+        """Returns the centroid of the mask."""
+        moments = cv2.moments(self.single_channel)
+        x = float(moments["m10"] / moments["m00"])
+        y = float(moments["m01"] / moments["m00"])
+        return Point2D([x, y])
+
+    @property
+    def avg_hue(self) -> float:
+        """Returns average hue of the mask."""
+        b_mean, g_mean, r_mean = np.nanmean(
+            np.where(self.mask == 0.0, np.nan, self.mask), axis=(0, 1)
+        )
+        hue_mean, *_ = colorsys.rgb_to_hsv(r_mean, g_mean, b_mean)
+        return hue_mean * 360
 
     @property
     def avg_depth(self) -> float:

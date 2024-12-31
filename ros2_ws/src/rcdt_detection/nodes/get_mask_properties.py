@@ -10,7 +10,6 @@ from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
 
 from vision_msgs.msg import Point2D
-from geometry_msgs.msg import Point, PointStamped
 
 from rcdt_detection_msgs.srv import GetMaskProperties
 from rcdt_detection.mask_properties import MaskProperties
@@ -36,16 +35,12 @@ class GetMaskPropertiesNode(Node):
         for point in mask_properties.contour:
             point_2d = Point2D(x=float(point[0, 0]), y=float(point[0, 1]))
             response.contour.append(point_2d)
-        for point in mask_properties.box_contour_2d:
-            point_2d = Point2D(x=float(point[0]), y=float(point[1]))
-            response.box_contour_2d.append(point_2d)
-        for point in mask_properties.box_contour_3d:
-            point_3d = Point(x=float(point[0]), y=float(point[1]), z=float(point[2]))
-            point_stamped = PointStamped()
-            point_stamped.header.frame_id = "camera_depth_optical_frame"
-            point_stamped.point = point_3d
-            response.box_contour_3d.append(point_stamped)
-        response.box_shape_3d = mask_properties.box_shape_3d
+        for point in mask_properties.bounding_box.corners:
+            point_2d = Point2D(x=float(point.x), y=float(point.y))
+            response.box_contour.append(point_2d)
+        point = mask_properties.centroid
+        response.centroid = Point2D(x=float(point.x), y=float(point.y))
+        response.avg_hue = float(mask_properties.avg_hue)
 
         response.success = True
         return response
