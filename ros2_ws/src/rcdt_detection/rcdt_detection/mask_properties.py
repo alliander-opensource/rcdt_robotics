@@ -35,7 +35,7 @@ class Point2D:
         """Return the depth value in meters."""
         return depth_image[self.y, self.x] / 1000
 
-    def surrounding_points(self, d: np.ndarray) -> "Point2DGroup":
+    def surrounding_points(self, d: np.ndarray = 5) -> "Point2DGroup":
         """Return a list of 2D points around self with distance d."""
         x, y = self.tuple
         points = np.mgrid[x - d : x + d, y - d : y + d].reshape(2, -1).T
@@ -47,18 +47,17 @@ class Point2D:
         x, y = self.tuple
         return 0 <= x < cols and 0 <= y < rows
 
-    def is_space(self, depth_image: np.ndarray, object_depth: float) -> bool:
+    def is_space(
+        self, depth_image: np.ndarray, object_depth: float, min_depth: float = 0.05
+    ) -> bool:
         """Return wether there is space."""
-        OFFSET_POINTS = 5
-        MINIMUM_DEPTH_DIFFERENCE = 0.05
-
-        point_group = self.surrounding_points(OFFSET_POINTS)
+        point_group = self.surrounding_points()
         if not point_group.is_valid(depth_image):
             return False
 
         depth = point_group.average_depth_value(depth_image)
         depth_difference = depth - object_depth
-        return depth_difference > MINIMUM_DEPTH_DIFFERENCE
+        return depth_difference > min_depth
 
 
 @dataclass
@@ -123,7 +122,7 @@ class SideSet:
     side1: Side
     side2: Side
 
-    def point_groups(self, n: int) -> list[Point2DGroup]:
+    def point_groups(self, n: int = 5) -> list[Point2DGroup]:
         points1 = self.side1.points(n)
         points2 = self.side2.points(n)
         return [Point2DGroup([points1[i], points2[i]]) for i in range(n)]
@@ -137,7 +136,7 @@ class BoundingBox:
     h: float
     angle: float
 
-    def long_sides(self, offset_factor: float) -> SideSet:
+    def long_sides(self, offset_factor: float = 1.4) -> SideSet:
         x, y, w, h, angle = self.ordered_values
         h *= offset_factor
 
@@ -201,16 +200,13 @@ class MaskProperties:
 
     @property
     def pick_locations(self) -> tuple[Point2DGroup, Point2DGroup]:
-        OFFSET_FACTOR = 1.4
-        POINTS = 5
-
-        sides = self.bounding_box.long_sides(OFFSET_FACTOR)
-        groups = sides.point_groups(POINTS)
+        sides = self.bounding_box.long_sides()
+        groups = sides.point_groups()
         space = np.array(
             [group.is_space(self.img_depth, self.avg_depth) for group in groups]
         )
 
-        centers = np.array([groups[n].mean for n in range(POINTS)])
+        centers = np.array([groups[n].mean for n in range(len(groups))])
         suitable = Point2DGroup(centers[space])
         non_suitable = Point2DGroup(centers[~space])
 
