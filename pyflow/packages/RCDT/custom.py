@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from PyFlow.Core import PinBase, NodeBase
 from PyFlow.Core.Common import PinDirection, PinOptions
 from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
