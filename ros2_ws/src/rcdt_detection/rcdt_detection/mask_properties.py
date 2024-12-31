@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+
 from dataclasses import dataclass
 import cv2
 import numpy as np
