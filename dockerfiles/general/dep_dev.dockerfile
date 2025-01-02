@@ -44,3 +44,5 @@ RUN echo "source /home/$UNAME/bio_ik_ws/install/setup.bash" >> /home/$UNAME/.bas
 RUN pip install sphinx
 RUN pip install sphinx-autobuild
 RUN pip install myst-parser
+RUN pip install sphinx_copybutton
+RUN pip install sphinx_rtd_theme
