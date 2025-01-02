@@ -24,6 +24,7 @@ services:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
   rcdt_ros2:
     image: rcdt/ros2:${IMAGE_TAG}
     container_name: rcdt_ros2
@@ -45,3 +46,4 @@ services:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
