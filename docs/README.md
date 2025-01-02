@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # RCDT Robotics
 
-| [![drawing](img/logo/github.png)](https://github.com/alliander-opensource/rcdt_robotics) | [![drawing](img/logo/read-the-docs.png)](https://alliander-opensource.github.io/rcdt_robotics) |
+| [![drawing](img/logo/github.jpg)](https://github.com/alliander-opensource/rcdt_robotics) | [![drawing](img/logo/read_the_docs.jpg)](https://alliander-opensource.github.io/rcdt_robotics) |
 | - | - |
 
 ## Robots
