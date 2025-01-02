@@ -6,13 +6,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # RCDT Robotics
 
-This repository is used for development of robotics in the Alliander Research Center for Digital Technologies (RCDT). Currently, RCDT has two robots we use for development:
+| [![drawing](img/logo/github.png)](https://github.com/alliander-opensource/rcdt_robotics) | [![drawing](img/logo/read-the-docs.png)](https://alliander-opensource.github.io/rcdt_robotics) |
+| - | - |
+
+## Robots
 
 | ![drawing](img/vendor/fr3.jpg) | ![drawing](img/vendor/hp.jpg) |
-| :---------------------: | :--------------------: |
-|    Franka Research 3    |    Husarion Panther    |
-
-**Documentation can be found at: <https://alliander-opensource.github.io/rcdt_robotics>**
+| :----------------------------: | :---------------------------: |
+|       Franka Research 3        |       Husarion Panther        |
 
 ## License
 
