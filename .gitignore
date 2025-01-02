@@ -17,3 +17,5 @@ ignore/
 .bashrc
 .profile
 .vscode-server
+
+build/

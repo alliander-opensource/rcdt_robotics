@@ -39,3 +39,10 @@ RUN git clone https://github.com/PickNikRobotics/bio_ik.git -b ros2
 WORKDIR /home/$UNAME/bio_ik_ws/
 RUN . /opt/ros/humble/setup.sh && . /home/$UNAME/moveit_ws/install/setup.sh && colcon build
 RUN echo "source /home/$UNAME/bio_ik_ws/install/setup.bash" >> /home/$UNAME/.bashrc
+
+# Sphinx:
+RUN pip install sphinx
+RUN pip install sphinx-autobuild
+RUN pip install myst-parser
+RUN pip install sphinx_copybutton
+RUN pip install sphinx_rtd_theme
