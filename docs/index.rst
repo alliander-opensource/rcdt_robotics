@@ -16,9 +16,10 @@
 
    Home <self>
 
-   docs/getting_started.md
-   docs/pyflow.md
-   docs/docker.md
+   content/getting_started.md
+   content/pyflow.md
+   content/docker.md
+   content/writing_documentation.md
 
    CODE_OF_CONDUCT.md
    CONTRIBUTING.md
