@@ -8,7 +8,9 @@ SPDX-License-Identifier: Apache-2.0
 
 To simplify test and usage of the ROS2 package, it is possible to use PyFlow. PyFlow is a visual scripting framework for python. A [fork](https://github.com/alliander-opensource/PyFlow) of the original repository is automatically installed in the docker image. To use PyFlow, simply launch the application inside the docker container using:
 
-`pyflow`
+```bash
+pyflow
+```
 
 This should open the PyFlow application. If you use pyflow for the first time, open the preferences using *Edit -> Preferences*. Set the *Additional package locations* to `/home/rcdt/rcdt_robotics/pyflow/packages`, so that PyFlow can find our packages (and don't forget to click on *SaveAndClose* !):
 
