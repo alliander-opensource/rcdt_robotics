@@ -2,18 +2,17 @@ name: documentation
 
 on:
   push:
-    branches:
-      - '*'
+    branches: [main]
+  pull_request:
 
 jobs:
-  pages:
-    runs-on: ubuntu-20.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      pages: write
-      id-token: write
+  ruff:
+    runs-on: ubuntu-latest
     steps:
-      - id: deployment
-        uses: sphinx-notes/pages@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install ruff
+      - run: ruff format --check
+      - run: ruff check
