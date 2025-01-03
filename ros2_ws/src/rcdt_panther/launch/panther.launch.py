@@ -63,7 +63,7 @@ def launch_setup(context: LaunchContext) -> None:
 
     joy_to_twist_node = Node(
         package="rcdt_utilities",
-        executable="joy_to_twist_node.py",
+        executable="joy_to_twist.py",
         parameters=[
             {"pub_topic": "/diff_drive_controller/cmd_vel"},
             {"config_pkg": "rcdt_panther"},

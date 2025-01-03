@@ -113,12 +113,12 @@ def launch_setup(context: LaunchContext) -> None:
 
     joy_topic_manager = Node(
         package="rcdt_mobile_manipulator",
-        executable="joy_topic_manager_node.py",
+        executable="joy_topic_manager.py",
     )
 
     joy_to_twist_franka = Node(
         package="rcdt_utilities",
-        executable="joy_to_twist_node.py",
+        executable="joy_to_twist.py",
         namespace="franka",
         parameters=[
             {"sub_topic": "/franka/joy"},
@@ -130,19 +130,19 @@ def launch_setup(context: LaunchContext) -> None:
 
     joy_to_gripper = Node(
         package="rcdt_franka",
-        executable="joy_to_gripper_node.py",
+        executable="joy_to_gripper.py",
     )
     open_gripper = Node(
         package="rcdt_franka",
-        executable="open_gripper_node.py",
+        executable="open_gripper.py",
     )
     close_gripper = Node(
         package="rcdt_franka",
-        executable="close_gripper_node.py",
+        executable="close_gripper.py",
     )
 
     manipulate_pose = Node(
-        package="rcdt_utilities", executable="manipulate_pose_node.py"
+        package="rcdt_utilities", executable="manipulate_pose.py"
     )
 
     skip = LaunchDescriptionEntity()

@@ -27,7 +27,7 @@ ros2_control_node = Node(
 
 settings_setter = Node(
     package="rcdt_franka",
-    executable="settings_setter_node.py",
+    executable="settings_setter.py",
 )
 
 joint_state_publisher = Node(
