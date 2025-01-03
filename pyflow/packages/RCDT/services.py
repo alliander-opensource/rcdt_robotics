@@ -36,7 +36,6 @@ group = "Utilities"
 add("AddMarker", "/add_marker", utilities.AddMarker, group)
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.ExpressPoseInOtherFrame, group)
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
-add("IsValueBetweenLimits", "/is_value_betwee_limits", utilities.IsValueBetweenLimits, group)
 
 group = "moveit_controller"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)

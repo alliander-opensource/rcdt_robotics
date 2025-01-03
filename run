@@ -20,9 +20,9 @@ if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* || ${ch
 fi
 
 mkdir -p ~/.vscode-server
-mkdir -p $SCRIPT_DIR/.config
+mkdir -p $SCRIPT_DIR/.config/pyflow
+cp --update=none -a pyflow/default_config/. .config/pyflow
 touch $SCRIPT_DIR/.personal.bashrc
-
 docker pull $IMAGE:$image_tag
 
 echo Running $IMAGE:$image_tag ...
