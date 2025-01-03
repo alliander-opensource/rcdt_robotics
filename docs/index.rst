@@ -17,6 +17,9 @@
    Home <self>
 
    content/getting_started.md
+   content/conventions/ros_package.md
+   content/conventions/ros_package_msgs.md
+
    content/pyflow.md
    content/docker.md
    content/writing_documentation.md
