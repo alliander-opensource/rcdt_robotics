@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # ros_package_msgs conventions
 
 ## Folder Structure
@@ -28,13 +34,13 @@ Also the CMakeLists.txt file is very similar. This shows an example where only c
 :linenos:
 :::
 
-**6**:\
+**10**:\
 The *rosidl_default_generators* dependency is now required, to generated the custom messages.
 
-**13-18**:\
+**16-22**:\
 We use CMake's *GLOB* method to automatically obtain all the srv files.
 
-**20-23**:\
+**24-27**:\
 We generate the custom service and link the dependencies (if any).
 
 ## package.xml

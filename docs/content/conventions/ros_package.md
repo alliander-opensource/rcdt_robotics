@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # ros_package conventions
 
 ## Folder Structure
@@ -43,25 +49,25 @@ This CMakeLists.txt file shows the different parts required to build a ROS packa
 :linenos:
 :::
 
-**1-6**:\
+**5-10**:\
 The file always starts with a version definition, the package name and the CMake dependencies when building C++ and/or python files.
 
-**8-10**:\
+**12-14**:\
 If the package depends on other packages, these are defined. In this case, the packaged depends on the *vision_msgs* and *geometry_msgs* packages.
 
-**12-18**:\
+**16-22**:\
 Building a C++ executable requires 3 steps: defining the executable, linking dependencies (if any) and installing the targets to the lib directory.
 
-**20-24**:\
+**24-28**:\
 For Python executables, we can simply install them all at the same time, by  providing the directory.
 
-**26-27**:\
+**30-31**:\
 If the package contains a Python package, it needs to be installed.
 
-**29-33**\
+**33-37**:\
 All shared folders are installed into the share directory. This includes the directory of launch files, but also other possible directories, like `urdf/` or `config/`, if these exist.
 
-**35-41**:\
+**39-45**:\
 The file always ends with a default test and the *ament_package()* command.
 
 ## package.xml
@@ -76,14 +82,14 @@ The package.xml file is related to the CMakeLists.txt file:
 **1-2**:\
 The files starts with default xml definitions.
 
-**3-8**:\
+**10-15**:\
 Inside the *package* tag, we start with some general information about the package.
 
-**10-11**:\
+**17-18**:\
 Next, we define the build tool dependencies for building C++ and/or Python files.
 
-**13-14**:\
+**20-21**:\
 Next, we define other packages where our package depends on.
 
-**16-21**"\
+**23-28**:\
 The file ends with the default test dependency and an export definition.
