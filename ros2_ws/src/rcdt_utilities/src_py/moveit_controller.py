@@ -26,7 +26,7 @@ from rcdt_utilities_msgs.srv import AddObject, MoveHandToPose, MoveToConfigurati
 from std_srvs.srv import Trigger
 
 
-class MoveitControllerNode(Node):
+class MoveitController(Node):
     def __init__(self, group: str) -> None:
         name = "moveit_controller"
         super().__init__(name)
@@ -222,7 +222,7 @@ class MoveitControllerNode(Node):
 def main(args: str = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
-    node = MoveitControllerNode("fr3_arm")
+    node = MoveitController("fr3_arm")
     executor.add_node(node)
     spin_executor(executor)
 

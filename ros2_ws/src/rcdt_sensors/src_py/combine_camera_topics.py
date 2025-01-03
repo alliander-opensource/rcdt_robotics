@@ -14,7 +14,7 @@ from rcdt_utilities.launch_utils import spin_node
 ros_logger = logging.get_logger(__name__)
 
 
-class CombineCameraTopicsNode(Node):
+class CombineCameraTopics(Node):
     def __init__(self) -> bool:
         super().__init__("combine_camera_topics")
         self.declare_parameter("rgb", "/camera/camera/color/image_raw")
@@ -56,7 +56,7 @@ class CombineCameraTopicsNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = CombineCameraTopicsNode()
+    node = CombineCameraTopics()
     spin_node(node)
 
 

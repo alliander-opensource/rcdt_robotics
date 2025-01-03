@@ -8,20 +8,18 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection_msgs.srv import PublishImage
+from rcdt_detection_msgs.srv import PublishImage as Srv
 from sensor_msgs.msg import Image
 
 ros_logger = logging.get_logger(__name__)
 
 
-class PublishImageNode(Node):
+class PublishImage(Node):
     def __init__(self) -> None:
         super().__init__("publish_image")
-        self.create_service(PublishImage, "/publish_image", self.callback)
+        self.create_service(Srv, "/publish_image", self.callback)
 
-    def callback(
-        self, request: PublishImage.Request, response: PublishImage.Response
-    ) -> PublishImage.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         publisher = self.create_publisher(Image, request.topic, 10)
         publisher.publish(request.image)
         response.success = True
@@ -30,7 +28,7 @@ class PublishImageNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = PublishImageNode()
+    node = PublishImage()
     spin_node(node)
 
 

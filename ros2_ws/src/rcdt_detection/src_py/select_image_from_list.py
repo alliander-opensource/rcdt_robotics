@@ -7,24 +7,18 @@
 import rclpy
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_detection_msgs.srv import SelectImageFromList
+from rcdt_detection_msgs.srv import SelectImageFromList as Srv
 from rcdt_utilities.launch_utils import spin_node
 
 ros_logger = logging.get_logger(__name__)
 
 
-class SelectImageFromListNode(Node):
+class SelectImageFromList(Node):
     def __init__(self) -> None:
         super().__init__("select_image_from_list")
-        self.create_service(
-            SelectImageFromList, "/select_image_from_list", self.callback
-        )
+        self.create_service(Srv, "/select_image_from_list", self.callback)
 
-    def callback(
-        self,
-        request: SelectImageFromList.Request,
-        response: SelectImageFromList.Response,
-    ) -> SelectImageFromList.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         n_images = len(request.image_list)
         n_select = request.n
         if n_select >= n_images:
@@ -40,7 +34,7 @@ class SelectImageFromListNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = SelectImageFromListNode()
+    node = SelectImageFromList()
     spin_node(node)
 
 

@@ -15,7 +15,7 @@ from rcdt_utilities.launch_utils import get_yaml, get_file_path
 ros_logger = logging.get_logger(__name__)
 
 
-class JoyToTwistNode(Node):
+class JoyToTwist(Node):
     def __init__(self) -> bool:
         super().__init__("joy_to_twist_node")
         self.declare_parameter("sub_topic", "/joy")
@@ -81,7 +81,7 @@ class JoyToTwistNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = JoyToTwistNode()
+    node = JoyToTwist()
     spin_node(node)
 
 
