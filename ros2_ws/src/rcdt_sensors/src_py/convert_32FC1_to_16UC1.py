@@ -15,7 +15,7 @@ from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_ima
 ros_logger = logging.get_logger(__name__)
 
 
-class Convert32FC1to16UC1Node(Node):
+class Convert32FC1to16UC1(Node):
     def __init__(self) -> bool:
         super().__init__("convert_32FC1_to_16UC1_node")
 
@@ -36,7 +36,7 @@ class Convert32FC1to16UC1Node(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = Convert32FC1to16UC1Node()
+    node = Convert32FC1to16UC1()
     spin_node(node)
 
 

@@ -19,7 +19,7 @@ from rcdt_utilities_msgs.srv import ExpressPoseInOtherFrame, TransformPose
 ros_logger = logging.get_logger(__name__)
 
 
-class ManipulatePoseNode(Node):
+class ManipulatePose(Node):
     def __init__(self):
         super().__init__("manipulate_pose")
 
@@ -92,7 +92,7 @@ def apply_transform_relative(pose: PoseStamped, transform: Transform) -> PoseSta
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = ManipulatePoseNode()
+    node = ManipulatePose()
     spin_node(node)
 
 

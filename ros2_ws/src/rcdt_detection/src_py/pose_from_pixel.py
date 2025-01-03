@@ -10,22 +10,20 @@ from rclpy import logging
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import CameraInfo
-from rcdt_detection_msgs.srv import PoseFromPixel
+from rcdt_detection_msgs.srv import PoseFromPixel as Srv
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)
 
 
-class PoseFromPixelNode(Node):
+class PoseFromPixel(Node):
     """Converts a pixel to the corresponding pose in meters."""
 
     def __init__(self) -> None:
         super().__init__("pose_from_pixel")
-        self.create_service(PoseFromPixel, "/pose_from_pixel", self.callback)
+        self.create_service(Srv, "/pose_from_pixel", self.callback)
 
-    def callback(
-        self, request: PoseFromPixel.Request, response: PoseFromPixel.Response
-    ) -> PoseFromPixel.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         cv2_image = ros_image_to_cv2_image(request.depth_image)
         height, width = cv2_image.shape
         intr = calculate_intrinsics(request.camera_info)
@@ -87,7 +85,7 @@ def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = PoseFromPixelNode()
+    node = PoseFromPixel()
     spin_node(node)
 
 

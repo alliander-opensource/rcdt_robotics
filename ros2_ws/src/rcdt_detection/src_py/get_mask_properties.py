@@ -11,21 +11,19 @@ from rcdt_utilities.launch_utils import spin_node
 
 from vision_msgs.msg import Point2D
 
-from rcdt_detection_msgs.srv import GetMaskProperties
+from rcdt_detection_msgs.srv import GetMaskProperties as Srv
 from rcdt_detection.mask_properties import MaskProperties
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image, camera_info_to_intrinsics
 
 ros_logger = logging.get_logger(__name__)
 
 
-class GetMaskPropertiesNode(Node):
+class GetMaskProperties(Node):
     def __init__(self) -> None:
         super().__init__("get_mask_properties")
-        self.create_service(GetMaskProperties, "/get_mask_properties", self.callback)
+        self.create_service(Srv, "/get_mask_properties", self.callback)
 
-    def callback(
-        self, request: GetMaskProperties.Request, response: GetMaskProperties.Response
-    ) -> GetMaskProperties.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         mask = ros_image_to_cv2_image(request.mask)
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
@@ -48,7 +46,7 @@ class GetMaskPropertiesNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = GetMaskPropertiesNode()
+    node = GetMaskProperties()
     spin_node(node)
 
 

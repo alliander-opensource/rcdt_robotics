@@ -8,21 +8,19 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from rclpy import wait_for_message
-from rcdt_detection_msgs.srv import GetRGBDFromTopic
+from rcdt_detection_msgs.srv import GetRGBDFromTopic as Srv
 from realsense2_camera_msgs.msg import RGBD
 from rcdt_utilities.launch_utils import spin_node
 
 ros_logger = logging.get_logger(__name__)
 
 
-class GetRGBDFromTopicNode(Node):
+class GetRGBDFromTopic(Node):
     def __init__(self) -> None:
         super().__init__("get_rgbd_from_topic")
-        self.create_service(GetRGBDFromTopic, "/get_rgbd_from_topic", self.callback)
+        self.create_service(Srv, "/get_rgbd_from_topic", self.callback)
 
-    def callback(
-        self, request: GetRGBDFromTopic.Request, response: GetRGBDFromTopic.Response
-    ) -> GetRGBDFromTopic.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         if request.topic == "":
             ros_logger.error("No topic was specified. Exit.")
             response.success = False
@@ -43,7 +41,7 @@ class GetRGBDFromTopicNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = GetRGBDFromTopicNode()
+    node = GetRGBDFromTopic()
     spin_node(node)
 
 

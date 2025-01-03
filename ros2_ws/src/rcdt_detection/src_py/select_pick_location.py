@@ -8,7 +8,7 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 from rclpy import logging
-from rcdt_detection_msgs.srv import SelectPickLocation
+from rcdt_detection_msgs.srv import SelectPickLocation as Srv
 from rcdt_utilities.cv_utils import (
     ros_image_to_cv2_image,
     cv2_image_to_ros_image,
@@ -21,14 +21,12 @@ from geometry_msgs.msg import Point
 ros_logger = logging.get_logger(__name__)
 
 
-class SelectPickLocationNode(Node):
+class SelectPickLocation(Node):
     def __init__(self) -> None:
         super().__init__("filter_masks")
-        self.create_service(SelectPickLocation, "/select_pick_location", self.callback)
+        self.create_service(Srv, "/select_pick_location", self.callback)
 
-    def callback(
-        self, request: SelectPickLocation.Request, response: SelectPickLocation.Response
-    ) -> SelectPickLocation.Response:
+    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
 
@@ -65,7 +63,7 @@ class SelectPickLocationNode(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    node = SelectPickLocationNode()
+    node = SelectPickLocation()
     spin_node(node)
 
 
