@@ -141,9 +141,7 @@ def launch_setup(context: LaunchContext) -> None:
         executable="close_gripper.py",
     )
 
-    manipulate_pose = Node(
-        package="rcdt_utilities", executable="manipulate_pose.py"
-    )
+    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
 
     skip = LaunchDescriptionEntity()
     return [
