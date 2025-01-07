@@ -21,9 +21,12 @@ from moveit.core.planning_scene import PlanningScene
 
 from geometry_msgs.msg import PoseStamped
 from moveit_msgs.msg import CollisionObject
+from shape_msgs.msg import SolidPrimitive
 from rcdt_utilities_msgs.srv import ExpressPoseInOtherFrame
 from rcdt_utilities_msgs.srv import AddObject, MoveHandToPose, MoveToConfiguration
 from std_srvs.srv import Trigger
+
+SHAPES = {"BOX": 1, "SPHERE": 2, "CYLINDER": 3, "CONE": 4}
 
 
 class MoveitController(Node):
@@ -38,6 +41,8 @@ class MoveitController(Node):
             return
         self.planner: PlanningComponent = self.robot.get_planning_component(group)
         self.monitor: PlanningSceneMonitor = self.robot.get_planning_scene_monitor()
+        self.collision_object = CollisionObject()
+        self.collision_object.header.frame_id = "world"
 
         self.create_service(
             MoveHandToPose, "~/move_hand_to_pose", self.cb_move_hand_to_pose
@@ -196,12 +201,23 @@ class MoveitController(Node):
     def add_object(
         self, request: AddObject.Request, response: AddObject.Response
     ) -> None:
-        collision_object = request.object
-        collision_object.operation = CollisionObject.ADD
-        collision_object.header.frame_id = "fr3_link0"
+        solid_primitive = SolidPrimitive()
+        shape = SHAPES.get(request.shape, False)
+        if not shape:
+            self.get_logger().error(
+                f"Shape {request.shape} not in {SHAPES.keys()}. Exit."
+            )
+            return response
+        solid_primitive.type = shape
+        solid_primitive.dimensions.extend([request.d1, request.d2, request.d3])
+
+        pose = self.change_frame_to_world(request.pose)
+        self.collision_object.primitive_poses.append(pose.pose)
+        self.collision_object.primitives.append(solid_primitive)
+
         scene: PlanningScene
         with self.monitor.read_write() as scene:
-            scene.apply_collision_object(collision_object)
+            scene.apply_collision_object(self.collision_object)
             current_state: RobotState = scene.current_state
         current_state.update()
         response.success = True
@@ -215,6 +231,8 @@ class MoveitController(Node):
             scene.remove_all_collision_objects()
             current_state: RobotState = scene.current_state
         current_state.update()
+        self.collision_object = CollisionObject()
+        self.collision_object.header.frame_id = "world"
         response.success = True
         return response
 

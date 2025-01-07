@@ -25,7 +25,7 @@ endforeach()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${SRVS_STRIPPED}
-  DEPENDENCIES std_msgs geometry_msgs moveit_msgs
+  DEPENDENCIES std_msgs geometry_msgs
 )
 
 if(BUILD_TESTING)

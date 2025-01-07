@@ -2,6 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-moveit_msgs/CollisionObject object
+geometry_msgs/PoseStamped pose
+string shape
+float32 d1
+float32 d2
+float32 d3
 ---
 bool success

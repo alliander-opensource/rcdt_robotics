@@ -39,6 +39,7 @@ add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 
 group = "moveit_controller"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)
+add("ClearObjects", f"{group}/clear_objects", Trigger, group)
 add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
 add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
 add("PickAtPose", f"{group}/pick_at_pose", utilities.MoveHandToPose, group)
