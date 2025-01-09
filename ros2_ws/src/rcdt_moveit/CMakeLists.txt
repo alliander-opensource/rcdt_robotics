@@ -16,7 +16,7 @@ find_package(rcdt_utilities_msgs REQUIRED)
 
 # C++ executables:
 include_directories(include)
-add_executable(moveit_controller src/moveit_controller.cpp src/moveit_servo.cpp src/moveit_cpp.cpp)
+add_executable(moveit_controller src/moveit_controller.cpp src/moveit_servo.cpp src/moveit_cpp.cpp src/planning_scene.cpp)
 ament_target_dependencies(moveit_controller rclcpp geometry_msgs moveit_servo rcdt_utilities_msgs)
 
 install(

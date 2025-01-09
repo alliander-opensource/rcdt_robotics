@@ -1,12 +1,14 @@
 #include "moveit_cpp.hpp"
 
-void MoveitCpp::initialize(std::shared_ptr<rclcpp::Node> node) {
+void MoveitCpp::initialize(
+    std::shared_ptr<rclcpp::Node> node_,
+    planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_) {
+  node = node_;
+  planning_scene_monitor = planning_scene_monitor_;
 
   planning_group = "fr3_arm";
 
   moveit_cpp = std::make_shared<moveit_cpp::MoveItCpp>(node);
-  moveit_cpp->getPlanningSceneMonitorNonConst()->providePlanningSceneService();
-
   planning_components = std::make_shared<moveit_cpp::PlanningComponent>(
       planning_group, moveit_cpp);
   robot_model = moveit_cpp->getRobotModel();

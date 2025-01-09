@@ -10,10 +10,14 @@ MoveitController::MoveitController(rclcpp::NodeOptions options)
     : Node("moveit_controller", options) {};
 
 void MoveitController::initialize() {
-  this->moveit_cpp.initialize(this->shared_from_this());
-  this->moveit_servo.initialize(this->shared_from_this());
+  sleep(5);
+  auto node = shared_from_this();
+  planning_scene.initialize(node);
+  auto planning_scene_monitor = planning_scene.get_planning_scene();
+  moveit_cpp.initialize(node, planning_scene_monitor);
+  moveit_servo.initialize(node, planning_scene_monitor);
 
-  service = this->create_service<MoveToConf>(
+  service = create_service<MoveToConf>(
       "~/move_to_configuration",
       std::bind(&MoveitController::move_to_configuration, this, _1, _2));
 }

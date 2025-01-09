@@ -10,16 +10,18 @@
 
 class MoveitServo {
 public:
-  void initialize(std::shared_ptr<rclcpp::Node> node);
+  void initialize(
+      std::shared_ptr<rclcpp::Node> node,
+      planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor);
   void activate();
   void deactivate();
 
 private:
   std::shared_ptr<rclcpp::Node> node;
+  planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor;
   rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr pub;
   rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr sub;
   servo::Params params;
-  planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor;
   std::unique_ptr<moveit_servo::Servo> servo;
   moveit::core::RobotStatePtr robot_state;
   const moveit::core::JointModelGroup *joint_model_group;
