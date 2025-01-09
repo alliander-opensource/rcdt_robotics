@@ -28,7 +28,7 @@ class Point2D:
         return int(self.array[1])
 
     @property
-    def tuple(self) -> tuple:
+    def as_tuple(self) -> tuple:
         """Return point as tuple."""
         return self.x, self.y
 
@@ -36,28 +36,30 @@ class Point2D:
         """Return the depth value in meters."""
         return depth_image[self.y, self.x] / 1000
 
-    def surrounding_points(self, d: np.ndarray = 5) -> "Point2DGroup":
-        """Return a list of 2D points around self with distance d."""
-        x, y = self.tuple
-        points = np.mgrid[x - d : x + d, y - d : y + d].reshape(2, -1).T
-        return Point2DGroup([Point2D(point) for point in points])
+    def surrounding_points(self, grid_size: np.ndarray = 5) -> "Point2DList":
+        """Return a dense list of 2D points around self with distance of up to d."""
+        surrounding_points = []
+        for x_pos in range(self.x - grid_size, self.x + grid_size):
+            for y_pos in range(self.y - grid_size, self.y + grid_size):
+                surrounding_points.append(Point2D([x_pos, y_pos]))
+        return Point2DList(surrounding_points)
 
-    def is_valid(self, image: np.ndarray) -> bool:
-        """Return whether point is in given image."""
+    def is_inside(self, image: np.ndarray) -> bool:
+        """Return if this point falls inside given image dimensions."""
         rows, cols = image.shape
-        x, y = self.tuple
+        x, y = self.as_tuple
         return 0 <= x < cols and 0 <= y < rows
 
-    def is_space(
+    def is_clearance(
         self, depth_image: np.ndarray, object_depth: float, min_depth: float = 0.05
     ) -> bool:
-        """Return wether there is space."""
+        """test if corresponding point in depth_image is deeper than min_depth."""
         point_group = self.surrounding_points()
-        if not point_group.is_valid(depth_image):
+        if not point_group.is_all_inside(depth_image):
             return False
 
-        depth = point_group.average_depth_value(depth_image)
-        depth_difference = depth - object_depth
+        average_depth = point_group.average_depth(depth_image)
+        depth_difference = average_depth - object_depth
         return depth_difference > min_depth
 
 
@@ -79,24 +81,26 @@ class Point3D:
 
 
 @dataclass
-class Point2DGroup:
+class Point2DList:
     points: list[Point2D]
 
     @property
     def mean(self) -> Point2D:
         return Point2D(np.mean([point.array for point in self.points], axis=0))
 
-    def average_depth_value(self, depth_image: np.ndarray) -> float:
+    def average_depth(self, depth_image: np.ndarray) -> float:
         """Return the average depth value in meters."""
         return np.mean([point.depth_value(depth_image) for point in self.points])
 
-    def is_valid(self, image: np.ndarray) -> bool:
-        """Return whether all points in group are in given image."""
-        return all(point.is_valid(image) for point in self.points)
+    def is_all_inside(self, image: np.ndarray) -> bool:
+        """Return if all points in group fall inside given image."""
+        return all(point.is_inside(image) for point in self.points)
 
-    def is_space(self, depth_image: np.ndarray, object_depth: float) -> bool:
-        """Return whether there is space for all points in the group."""
-        return all(point.is_space(depth_image, object_depth) for point in self.points)
+    def is_clearance(self, depth_image: np.ndarray, object_depth: float) -> bool:
+        """test if all corresponding points in depth_image are deeper than min_depth."""
+        return all(
+            point.is_clearance(depth_image, object_depth) for point in self.points
+        )
 
 
 @dataclass
@@ -112,21 +116,21 @@ class Side:
     def flipped(self) -> "Side":
         return Side(self.p2, self.p1)
 
-    def points(self, n: int) -> list[Point2D]:
+    def points_along(self, n: int) -> list[Point2D]:
         points = np.linspace(self.p1.array, self.p2.array, n + 2, dtype=int)
         points = points[1:-1]  # remove edges
         return [Point2D(point) for point in points]
 
 
 @dataclass
-class SideSet:
+class TwoSides:
     side1: Side
     side2: Side
 
-    def point_groups(self, n: int = 5) -> list[Point2DGroup]:
-        points1 = self.side1.points(n)
-        points2 = self.side2.points(n)
-        return [Point2DGroup([points1[i], points2[i]]) for i in range(n)]
+    def point_pairs(self, n: int = 5) -> list[Point2DList]:
+        points1 = self.side1.points_along(n)
+        points2 = self.side2.points_along(n)
+        return [Point2DList([points1[i], points2[i]]) for i in range(n)]
 
 
 @dataclass
@@ -137,17 +141,17 @@ class BoundingBox:
     h: float
     angle: float
 
-    def long_sides(self, offset_factor: float = 1.4) -> SideSet:
-        x, y, w, h, angle = self.ordered_values
-        h *= offset_factor
-
-        corners = cv2.boxPoints(((x, y), (w, h), angle))
+    def long_sides(self, offset_factor: float = 1.4) -> TwoSides:
+        if self.h > self.w:
+            self.w *= offset_factor
+        else:
+            self.h *= offset_factor
+        corners = cv2.boxPoints(((self.x, self.y), (self.w, self.h), self.angle))
         points = [Point2D(corner) for corner in corners]
         sides = [Side(points[n], points[n - 1]) for n in range(len(corners))]
-
         sides.sort(key=lambda side: side.length)
         side1, side2 = sides[2:]
-        return SideSet(side1, side2.flipped)
+        return TwoSides(side1, side2.flipped)
 
     @property
     def ordered_values(self) -> tuple[float]:
@@ -168,17 +172,17 @@ class MaskProperties:
         self, mask: np.ndarray, depth_image: np.ndarray, intrinsics: rs2.intrinsics
     ):
         self.mask = mask
-        self.img_depth = depth_image
+        self.depth_image = depth_image
         self.intrinsics = intrinsics
         self.single_channel = three_to_single_channel(mask)
 
     @property
     def rows(self) -> int:
-        return self.img_depth.shape[0]
+        return self.depth_image.shape[0]
 
     @property
     def cols(self) -> int:
-        return self.img_depth.shape[1]
+        return self.depth_image.shape[1]
 
     @property
     def contour(self) -> list[list[np.ndarray]]:
@@ -213,22 +217,25 @@ class MaskProperties:
         return hue_mean * 360
 
     @property
-    def avg_depth(self) -> float:
+    def average_depth(self) -> float:
         """Returns the average depth value of the mask in meters."""
-        average_depth_mm = cv2.mean(self.img_depth, mask=self.single_channel)[0]
+        average_depth_mm = cv2.mean(self.depth_image, mask=self.single_channel)[0]
         return average_depth_mm / 1000
 
     @property
-    def pick_locations(self) -> tuple[Point2DGroup, Point2DGroup]:
-        sides = self.bounding_box.long_sides()
-        groups = sides.point_groups()
+    def pick_locations(self) -> tuple[Point2DList, Point2DList]:
+        long_sides = self.bounding_box.long_sides()
+        point_pairs = long_sides.point_pairs()
         space = np.array(
-            [group.is_space(self.img_depth, self.avg_depth) for group in groups]
+            [
+                pair.is_clearance(self.depth_image, self.average_depth)
+                for pair in point_pairs
+            ]
         )
 
-        centers = np.array([groups[n].mean for n in range(len(groups))])
-        suitable = Point2DGroup(centers[space])
-        non_suitable = Point2DGroup(centers[~space])
+        centers = np.array([point_pairs[n].mean for n in range(len(point_pairs))])
+        suitable = Point2DList(centers[space])
+        non_suitable = Point2DList(centers[~space])
 
         return suitable, non_suitable
 
@@ -239,27 +246,51 @@ class MaskProperties:
         if len(suitable.points) == 0:
             return None
 
-        middle = suitable.points[len(suitable.points) // 2]
-        return middle
+        return suitable.points[len(suitable.points) // 2]
 
     @property
     def filter_visualization(self) -> np.ndarray:
         image = self.mask.copy()
 
+        for i in range(len(self.bounding_box.corners)):
+            cv2.line(
+                image,
+                self.bounding_box.corners[i - 1].as_tuple,
+                self.bounding_box.corners[i].as_tuple,
+                (255, 255, 0),
+                1,
+            )
+        cv2.line(
+            image,
+            self.bounding_box.long_sides().side1.p1.as_tuple,
+            self.bounding_box.long_sides().side1.p2.as_tuple,
+            (255, 0, 255),
+            1,
+        )
+        cv2.line(
+            image,
+            self.bounding_box.long_sides().side2.p1.as_tuple,
+            self.bounding_box.long_sides().side2.p2.as_tuple,
+            (255, 0, 255),
+            1,
+        )
         suitable, non_suitable = self.pick_locations
         for point in suitable.points:
-            cv2.circle(image, point.tuple, 3, (0, 0, 255), -1)
+            cv2.circle(image, point.as_tuple, 3, (0, 0, 255), -1)
         for point in non_suitable.points:
-            cv2.circle(image, point.tuple, 3, (255, 0, 0), -1)
+            cv2.circle(image, point.as_tuple, 3, (255, 0, 0), -1)
 
         point = self.pick_location
         if point is not None:
-            cv2.circle(image, point.tuple, 3, (0, 255, 0), -1)
+            cv2.circle(image, point.as_tuple, 3, (0, 255, 0), -1)
 
+        for point_pair in self.bounding_box.long_sides().point_pairs():
+            cv2.circle(image, point_pair.points[0].as_tuple, 3, (255, 255, 255), -1)
+            cv2.circle(image, point_pair.points[1].as_tuple, 3, (255, 255, 255), -1)
         return image
 
     def point_2d_to_3d(self, point: Point2D) -> Point3D:
         x, y, z = rs2.rs2_deproject_pixel_to_point(
-            self.intrinsics, point.array, point.depth_value(self.img_depth)
+            self.intrinsics, point.array, point.depth_value(self.depth_image)
         )
         return Point3D(np.array([x, y, z]))

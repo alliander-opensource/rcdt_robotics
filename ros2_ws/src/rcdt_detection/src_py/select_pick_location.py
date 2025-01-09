@@ -18,7 +18,7 @@ from rcdt_utilities.launch_utils import spin_node
 from rcdt_detection.mask_properties import MaskProperties, Point2D, Point3D
 from geometry_msgs.msg import Point
 
-ros_logger = logging.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 class SelectPickLocation(Node):
@@ -44,20 +44,24 @@ class SelectPickLocation(Node):
             visualizations.append(mask_properties.filter_visualization)
 
         if len(points_2d) == 0:
-            ros_logger.error("No suitable pick location found.")
-            return response
+            logger.error("No suitable pick location found.")
+            point=None
+        else:
+            index = sorted(
+                range(len(points_2d)), key=lambda n: points_2d[n].y, reverse=True
+            )[0]
+            point = points_3d[index]
 
-        index = sorted(
-            range(len(points_2d)), key=lambda n: points_2d[n].y, reverse=True
-        )[0]
-        point = points_3d[index]
-
-        response.pick_location.pose.position = Point(x=point.x, y=point.y, z=point.z)
+        response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
+        if point:
+            response.pick_location.pose.position = Point(
+                x=point.x, y=point.y, z=point.z
+            )
         response.pick_location.pose.orientation.z = 0.707
         response.pick_location.pose.orientation.w = -0.707
         response.pick_location.header.frame_id = "camera_depth_optical_frame"
-        response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
         response.success = True
+        logger.info("returning response!")
         return response
 
 
