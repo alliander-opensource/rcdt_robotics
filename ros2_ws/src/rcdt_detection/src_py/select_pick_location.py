@@ -45,7 +45,7 @@ class SelectPickLocation(Node):
 
         if len(points_2d) == 0:
             logger.error("No suitable pick location found.")
-            point=None
+            point = None
         else:
             index = sorted(
                 range(len(points_2d)), key=lambda n: points_2d[n].y, reverse=True
