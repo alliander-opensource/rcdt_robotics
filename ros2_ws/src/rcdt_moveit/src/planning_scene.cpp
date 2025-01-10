@@ -8,27 +8,17 @@
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-void PlanningScene::initialize(std::shared_ptr<rclcpp::Node> node_) {
+void PlanningScene::initialize(
+    std::shared_ptr<rclcpp::Node> node_,
+    planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_) {
   node = node_;
-  robot_model_loader::RobotModelLoader robot_model_loader(node);
-  planning_scene_monitor =
-      std::make_shared<planning_scene_monitor::PlanningSceneMonitor>(
-          node, robot_model_loader.getRobotDescription());
-
-  planning_scene_monitor->startStateMonitor();
-  planning_scene_monitor->startSceneMonitor();
-  planning_scene_monitor->providePlanningSceneService();
+  planning_scene_monitor = planning_scene_monitor_;
 
   add_object_service = node->create_service<AddObject>(
       "~/add_object", std::bind(&PlanningScene::add_object, this, _1, _2));
   clear_objects_service = node->create_service<Trigger>(
       "~/clear_objects",
       std::bind(&PlanningScene::clear_objects, this, _1, _2));
-};
-
-planning_scene_monitor::PlanningSceneMonitorPtr
-PlanningScene::get_planning_scene() {
-  return planning_scene_monitor;
 };
 
 void PlanningScene::add_object(

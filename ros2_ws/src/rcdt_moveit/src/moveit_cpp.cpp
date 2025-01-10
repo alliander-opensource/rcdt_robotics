@@ -1,10 +1,7 @@
 #include "moveit_cpp.hpp"
 
-void MoveitCpp::initialize(
-    std::shared_ptr<rclcpp::Node> node_,
-    planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_) {
+void MoveitCpp::initialize(std::shared_ptr<rclcpp::Node> node_) {
   node = node_;
-  planning_scene_monitor = planning_scene_monitor_;
 
   planning_group = "fr3_arm";
 
@@ -13,6 +10,11 @@ void MoveitCpp::initialize(
       planning_group, moveit_cpp);
   robot_model = moveit_cpp->getRobotModel();
   joint_model_group = robot_model->getJointModelGroup(planning_group);
+};
+
+planning_scene_monitor::PlanningSceneMonitorPtr
+MoveitCpp::get_planning_scene_monitor() {
+  return moveit_cpp->getPlanningSceneMonitorNonConst();
 };
 
 bool MoveitCpp::move_to_configuration(std::string configuration) {

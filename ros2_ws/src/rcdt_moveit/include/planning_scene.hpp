@@ -1,7 +1,6 @@
 #include <moveit/planning_scene_monitor/planning_scene_monitor.hpp>
 #include <rcdt_utilities_msgs/srv/add_object.hpp>
 #include <rclcpp/node.hpp>
-#include <std_srvs/srv/detail/trigger__struct.hpp>
 #include <std_srvs/srv/trigger.hpp>
 
 typedef rcdt_utilities_msgs::srv::AddObject AddObject;
@@ -9,8 +8,9 @@ typedef std_srvs::srv::Trigger Trigger;
 
 class PlanningScene {
 public:
-  void initialize(std::shared_ptr<rclcpp::Node> node);
-  planning_scene_monitor::PlanningSceneMonitorPtr get_planning_scene();
+  void initialize(
+      std::shared_ptr<rclcpp::Node> node,
+      planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor);
 
 private:
   std::shared_ptr<rclcpp::Node> node;

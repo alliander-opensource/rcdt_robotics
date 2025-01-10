@@ -10,11 +10,11 @@ MoveitController::MoveitController(rclcpp::NodeOptions options)
     : Node("moveit_controller", options) {};
 
 void MoveitController::initialize() {
-  sleep(5);
   auto node = shared_from_this();
-  planning_scene.initialize(node);
-  auto planning_scene_monitor = planning_scene.get_planning_scene();
-  moveit_cpp.initialize(node, planning_scene_monitor);
+  moveit_cpp.initialize(node);
+
+  auto planning_scene_monitor = moveit_cpp.get_planning_scene_monitor();
+  planning_scene.initialize(node, planning_scene_monitor);
   moveit_servo.initialize(node, planning_scene_monitor);
 
   service = create_service<MoveToConf>(

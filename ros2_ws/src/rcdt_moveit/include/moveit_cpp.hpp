@@ -8,15 +8,13 @@
 
 class MoveitCpp {
 public:
-  void initialize(
-      std::shared_ptr<rclcpp::Node> node,
-      planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor);
+  void initialize(std::shared_ptr<rclcpp::Node> node);
+  planning_scene_monitor::PlanningSceneMonitorPtr get_planning_scene_monitor();
   bool move_to_configuration(std::string configuration);
   void plan_and_execute();
 
 private:
   std::shared_ptr<rclcpp::Node> node;
-  planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor;
   std::string planning_group;
   moveit_cpp::MoveItCppPtr moveit_cpp;
   moveit_cpp::PlanningComponentPtr planning_components;
