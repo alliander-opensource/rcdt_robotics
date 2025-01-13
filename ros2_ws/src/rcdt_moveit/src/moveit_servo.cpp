@@ -5,11 +5,8 @@
 
 using std::placeholders::_1;
 
-void MoveitServo::initialize(
-    std::shared_ptr<rclcpp::Node> node_,
-    planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor_) {
+void MoveitServo::initialize(std::shared_ptr<rclcpp::Node> node_) {
   node = node_;
-  planning_scene_monitor = planning_scene_monitor_;
 
   // Get the servo parameters.
   auto param_namespace = "moveit_servo";
@@ -23,6 +20,10 @@ void MoveitServo::initialize(
           params.command_out_topic, rclcpp::SystemDefaultsQoS());
 
   //   Create the servo object.
+  planning_scene_monitor = moveit_servo::createPlanningSceneMonitor(
+      node_, servo_param_listener->get_params());
+  ;
+  planning_scene_monitor->startSceneMonitor("/monitored_planning_scene");
   servo = std::make_unique<moveit_servo::Servo>(node, servo_param_listener,
                                                 planning_scene_monitor);
 

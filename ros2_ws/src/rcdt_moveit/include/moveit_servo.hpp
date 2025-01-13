@@ -10,9 +10,7 @@
 
 class MoveitServo {
 public:
-  void initialize(
-      std::shared_ptr<rclcpp::Node> node,
-      planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor);
+  void initialize(std::shared_ptr<rclcpp::Node> node);
   void activate();
   void deactivate();
 

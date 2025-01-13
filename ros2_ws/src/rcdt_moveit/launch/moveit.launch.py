@@ -14,14 +14,22 @@ def generate_launch_description() -> LaunchDescription:
     servo_config = get_yaml(file)
     servo_params = {"moveit_servo": servo_config}
 
-    moveit_controller = Node(
+    moveit_client = Node(
         package="rcdt_moveit",
-        executable="moveit_controller",
+        executable="moveit_client",
         output="screen",
         parameters=[moveit_config, servo_params],
     )
+
+    move_group = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        parameters=[moveit_config],
+    )
+
     return LaunchDescription(
         [
-            moveit_controller,
+            move_group,
+            moveit_client,
         ]
     )

@@ -37,7 +37,7 @@ add("AddMarker", "/add_marker", utilities.AddMarker, group)
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.ExpressPoseInOtherFrame, group)
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 
-group = "moveit_controller"
+group = "moveit_client"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)
 add("ClearObjects", f"{group}/clear_objects", Trigger, group)
 add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)

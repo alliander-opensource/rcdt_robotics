@@ -10,17 +10,17 @@ find_package(ament_cmake REQUIRED)
 
 # Other dependencies:
 find_package(rclcpp REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(moveit_servo REQUIRED)
+find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rcdt_utilities_msgs REQUIRED)
 
 # C++ executables:
 include_directories(include)
-add_executable(moveit_controller src/moveit_controller.cpp src/moveit_servo.cpp src/moveit_cpp.cpp src/planning_scene.cpp)
-ament_target_dependencies(moveit_controller rclcpp geometry_msgs moveit_servo rcdt_utilities_msgs)
+add_executable(moveit_client src/moveit_client.cpp src/moveit_servo.cpp)
+ament_target_dependencies(moveit_client rclcpp moveit_ros_planning_interface moveit_servo rcdt_utilities_msgs)
 
 install(
-  TARGETS moveit_controller
+  TARGETS moveit_client
   DESTINATION lib/${PROJECT_NAME}
 )
 
