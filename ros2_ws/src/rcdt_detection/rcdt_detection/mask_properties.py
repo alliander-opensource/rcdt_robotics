@@ -8,6 +8,7 @@ import cv2
 import colorsys
 import numpy as np
 import pyrealsense2 as rs2
+from math import atan2
 from rcdt_detection.image_manipulation import three_to_single_channel
 
 from rclpy.logging import get_logger
@@ -81,6 +82,18 @@ class Point3D:
 
 
 @dataclass
+class Quaternion:
+    x: float
+    y: float
+    z: float
+    w: float
+
+    @property
+    def as_tuple(self) -> tuple:
+        return self.x, self.y, self.z, self.w
+
+
+@dataclass
 class Point2DList:
     points: list[Point2D]
 
@@ -104,7 +117,7 @@ class Point2DList:
 
 
 @dataclass
-class Side:
+class Line:
     p1: Point2D
     p2: Point2D
 
@@ -113,19 +126,24 @@ class Side:
         return np.linalg.norm(self.p1.array - self.p2.array)
 
     @property
-    def flipped(self) -> "Side":
-        return Side(self.p2, self.p1)
+    def flipped(self) -> "Line":
+        return Line(self.p2, self.p1)
 
     def points_along(self, n: int) -> list[Point2D]:
         points = np.linspace(self.p1.array, self.p2.array, n + 2, dtype=int)
         points = points[1:-1]  # remove edges
         return [Point2D(point) for point in points]
 
+    def angle(self) -> float:
+        dx = self.p2.x - self.p1.x
+        dy = self.p2.y - self.p1.y
+        return atan2(dy, dx)
+
 
 @dataclass
-class TwoSides:
-    side1: Side
-    side2: Side
+class SidePair:
+    side1: Line
+    side2: Line
 
     def point_pairs(self, n: int = 5) -> list[Point2DList]:
         points1 = self.side1.points_along(n)
@@ -141,17 +159,18 @@ class BoundingBox:
     h: float
     angle: float
 
-    def long_sides(self, offset_factor: float = 1.4) -> TwoSides:
+    def long_sides_offset(self) -> SidePair:
+        offset_factor: float = 1.4
         if self.h > self.w:
             self.w *= offset_factor
         else:
             self.h *= offset_factor
         corners = cv2.boxPoints(((self.x, self.y), (self.w, self.h), self.angle))
         points = [Point2D(corner) for corner in corners]
-        sides = [Side(points[n], points[n - 1]) for n in range(len(corners))]
+        sides = [Line(points[n], points[n - 1]) for n in range(len(corners))]
         sides.sort(key=lambda side: side.length)
         side1, side2 = sides[2:]
-        return TwoSides(side1, side2.flipped)
+        return SidePair(side1, side2.flipped)
 
     @property
     def ordered_values(self) -> tuple[float]:
@@ -223,10 +242,10 @@ class MaskProperties:
         return average_depth_mm / 1000
 
     @property
-    def pick_locations(self) -> tuple[Point2DList, Point2DList]:
-        long_sides = self.bounding_box.long_sides()
+    def pickup_points(self) -> tuple[Point2DList, Point2DList]:
+        long_sides = self.bounding_box.long_sides_offset()
         point_pairs = long_sides.point_pairs()
-        space = np.array(
+        clearance = np.array(
             [
                 pair.is_clearance(self.depth_image, self.average_depth)
                 for pair in point_pairs
@@ -234,14 +253,14 @@ class MaskProperties:
         )
 
         centers = np.array([point_pairs[n].mean for n in range(len(point_pairs))])
-        suitable = Point2DList(centers[space])
-        non_suitable = Point2DList(centers[~space])
+        suitable = Point2DList(centers[clearance])
+        non_suitable = Point2DList(centers[~clearance])
 
         return suitable, non_suitable
 
     @property
-    def pick_location(self) -> Point2D | None:
-        suitable, non_suitable = self.pick_locations
+    def chosen_pickup_point(self) -> Point2D | None:
+        suitable, non_suitable = self.pickup_points
 
         if len(suitable.points) == 0:
             return None
@@ -262,29 +281,29 @@ class MaskProperties:
             )
         cv2.line(
             image,
-            self.bounding_box.long_sides().side1.p1.as_tuple,
-            self.bounding_box.long_sides().side1.p2.as_tuple,
+            self.bounding_box.long_sides_offset().side1.p1.as_tuple,
+            self.bounding_box.long_sides_offset().side1.p2.as_tuple,
             (255, 0, 255),
             1,
         )
         cv2.line(
             image,
-            self.bounding_box.long_sides().side2.p1.as_tuple,
-            self.bounding_box.long_sides().side2.p2.as_tuple,
+            self.bounding_box.long_sides_offset().side2.p1.as_tuple,
+            self.bounding_box.long_sides_offset().side2.p2.as_tuple,
             (255, 0, 255),
             1,
         )
-        suitable, non_suitable = self.pick_locations
+        suitable, non_suitable = self.pickup_points
         for point in suitable.points:
             cv2.circle(image, point.as_tuple, 3, (0, 0, 255), -1)
         for point in non_suitable.points:
             cv2.circle(image, point.as_tuple, 3, (255, 0, 0), -1)
 
-        point = self.pick_location
+        point = self.chosen_pickup_point
         if point is not None:
             cv2.circle(image, point.as_tuple, 3, (0, 255, 0), -1)
 
-        for point_pair in self.bounding_box.long_sides().point_pairs():
+        for point_pair in self.bounding_box.long_sides_offset().point_pairs():
             cv2.circle(image, point_pair.points[0].as_tuple, 3, (255, 255, 255), -1)
             cv2.circle(image, point_pair.points[1].as_tuple, 3, (255, 255, 255), -1)
         return image
@@ -294,3 +313,8 @@ class MaskProperties:
             self.intrinsics, point.array, point.depth_value(self.depth_image)
         )
         return Point3D(np.array([x, y, z]))
+
+    def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
+        point_3d = self.point_2d_to_3d(point_2d)
+        mask_angle = self.bounding_box.long_sides_offset().side1.angle()
+        return point_3d, (0.0, 0.0, mask_angle)
