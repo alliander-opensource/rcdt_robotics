@@ -61,8 +61,7 @@ class SelectPickLocation(Node):
             response.pick_location.pose.position = Point(
                 x=pickup_pose[0].x, y=pickup_pose[0].y, z=pickup_pose[0].z
             )
-            logger.info(f"--------Angles: {eulerangles}")
-            # logger.info(f"--------expanded: {*eulerangles}")
+            logger.info(f"EulerAngles: {eulerangles}")
             quaternion = quaternion_from_euler(*eulerangles)
             response.pick_location.pose.orientation = Quaternion(
                 x=quaternion[0], y=quaternion[1], z=quaternion[2], w=quaternion[3]
@@ -70,7 +69,7 @@ class SelectPickLocation(Node):
 
         response.pick_location.header.frame_id = "camera_depth_optical_frame"
         response.success = True
-        logger.info("returning response!")
+        logger.info("returning pick location")
         return response
 
 

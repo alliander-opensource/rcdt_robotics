@@ -10,6 +10,7 @@ import numpy as np
 import pyrealsense2 as rs2
 from math import atan2
 from rcdt_detection.image_manipulation import three_to_single_channel
+from math import pi
 
 from rclpy.logging import get_logger
 
@@ -316,5 +317,5 @@ class MaskProperties:
 
     def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
         point_3d = self.point_2d_to_3d(point_2d)
-        mask_angle = self.bounding_box.long_sides_offset().side1.angle()
+        mask_angle = self.bounding_box.long_sides_offset().side1.angle()# + pi
         return point_3d, (0.0, 0.0, mask_angle)
