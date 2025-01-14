@@ -33,13 +33,14 @@ add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromL
 add("SelectPickLocation", "/select_pick_location", detection.SelectPickLocation, group)
 
 group = "Utilities"
-add("AddMarker", "/add_marker", utilities.AddMarker, group)
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.ExpressPoseInOtherFrame, group)
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 
 group = "moveit_client"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)
+add("AddMarker", f"{group}/add_marker", utilities.AddMarker, group)
 add("ClearObjects", f"{group}/clear_objects", Trigger, group)
+add("ClearMarkers", f"{group}/clear_markers", Trigger, group)
 add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
 add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
 add("PickAtPose", f"{group}/pick_at_pose", utilities.MoveHandToPose, group)

@@ -3,6 +3,7 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/robot_model/joint_model_group.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
+#include <rcdt_utilities_msgs/srv/add_marker.hpp>
 #include <rcdt_utilities_msgs/srv/add_object.hpp>
 #include <rcdt_utilities_msgs/srv/detail/move_hand_to_pose__struct.hpp>
 #include <rcdt_utilities_msgs/srv/move_hand_to_pose.hpp>
@@ -11,6 +12,7 @@
 #include <std_srvs/srv/trigger.hpp>
 
 typedef rcdt_utilities_msgs::srv::AddObject AddObject;
+typedef rcdt_utilities_msgs::srv::AddMarker AddMarker;
 typedef rcdt_utilities_msgs::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_utilities_msgs::srv::MoveHandToPose MoveHandToPose;
 typedef std_srvs::srv::Trigger Trigger;
@@ -47,7 +49,13 @@ private:
   void move_hand_to_pose(const std::shared_ptr<MoveHandToPose::Request> request,
                          std::shared_ptr<MoveHandToPose::Response> response);
 
-  void move_over_line(geometry_msgs::msg::PoseStamped pose);
+  rclcpp::Service<AddMarker>::SharedPtr add_marker_service;
+  void add_marker(const std::shared_ptr<AddMarker::Request> request,
+                  std::shared_ptr<AddMarker::Response> response);
+
+  rclcpp::Service<Trigger>::SharedPtr clear_markers_service;
+  void clear_markers(const std::shared_ptr<Trigger::Request> request,
+                     std::shared_ptr<Trigger::Response> response);
 
   void plan_and_execute(std::string planning_type = "");
 

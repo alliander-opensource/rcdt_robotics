@@ -28,6 +28,12 @@ MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
   move_hand_to_pose_service = node->create_service<MoveHandToPose>(
       "~/move_hand_to_pose",
       std::bind(&MoveitClient::move_hand_to_pose, this, _1, _2));
+
+  add_marker_service = node->create_service<AddMarker>(
+      "~/add_marker", std::bind(&MoveitClient::add_marker, this, _1, _2));
+
+  clear_markers_service = node->create_service<Trigger>(
+      "~/clear_markers", std::bind(&MoveitClient::clear_markers, this, _1, _2));
 };
 
 void MoveitClient::add_object(const std::shared_ptr<AddObject::Request> request,
@@ -86,12 +92,28 @@ void MoveitClient::plan_and_execute(std::string planning_type) {
   }
   moveit::planning_interface::MoveGroupInterface::Plan plan;
   move_group.plan(plan);
-  moveit_visual_tools.deleteAllMarkers();
+  moveit_visual_tools.deleteAllMarkers("Path");
+  moveit_visual_tools.deleteAllMarkers("Sphere");
   moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
   moveit_visual_tools.trigger();
   move_group.execute(plan);
   moveit_servo.activate();
 };
+
+void MoveitClient::add_marker(const std::shared_ptr<AddMarker::Request> request,
+                              std::shared_ptr<AddMarker::Response> response) {
+  moveit_visual_tools.publishAxis(request->marker_pose.pose);
+  moveit_visual_tools.trigger();
+  response->success = true;
+};
+
+void MoveitClient::clear_markers(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+  moveit_visual_tools.deleteAllMarkers("Axis");
+  moveit_visual_tools.trigger();
+  response->success = true;
+}
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
