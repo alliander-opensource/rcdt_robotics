@@ -12,10 +12,6 @@ from math import atan2
 from rcdt_detection.image_manipulation import three_to_single_channel
 from math import pi
 
-from rclpy.logging import get_logger
-
-logger = get_logger(__name__)
-
 
 @dataclass
 class Point2D:
@@ -256,7 +252,6 @@ class MaskProperties:
         centers = np.array([point_pairs[n].mean for n in range(len(point_pairs))])
         suitable = Point2DList(centers[clearance])
         non_suitable = Point2DList(centers[~clearance])
-
         return suitable, non_suitable
 
     @property
@@ -265,7 +260,6 @@ class MaskProperties:
 
         if len(suitable.points) == 0:
             return None
-
         return suitable.points[len(suitable.points) // 2]
 
     @property
@@ -295,10 +289,10 @@ class MaskProperties:
             1,
         )
         suitable, non_suitable = self.pickup_points
-        for point in suitable.points:
-            cv2.circle(image, point.as_tuple, 3, (0, 0, 255), -1)
-        for point in non_suitable.points:
-            cv2.circle(image, point.as_tuple, 3, (255, 0, 0), -1)
+        for s_point in suitable.points:
+            cv2.circle(image, s_point.as_tuple, 3, (0, 0, 255), -1)
+        for ns_point in non_suitable.points:
+            cv2.circle(image, ns_point.as_tuple, 3, (255, 0, 0), -1)
 
         point = self.chosen_pickup_point
         if point is not None:
@@ -317,5 +311,7 @@ class MaskProperties:
 
     def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
         point_3d = self.point_2d_to_3d(point_2d)
-        mask_angle = self.bounding_box.long_sides_offset().side1.angle()# + pi
-        return point_3d, (0.0, 0.0, mask_angle)
+        bounding_box_angle = (
+            self.bounding_box.long_sides_offset().side1.angle() % pi
+        ) + pi
+        return point_3d, (0.0, 0.0, bounding_box_angle)

@@ -15,7 +15,7 @@ from rcdt_utilities.cv_utils import (
     camera_info_to_intrinsics,
 )
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection.mask_properties import MaskProperties, Point2D, Point3D
+from rcdt_detection.mask_properties import MaskProperties
 from geometry_msgs.msg import Point, Quaternion
 from tf_transformations import quaternion_from_euler
 
@@ -30,45 +30,37 @@ class SelectPickLocation(Node):
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
-
-        pickup_points_2d: list[Point2D] = []
-        pickup_poses: list[Point3D] = []
+        pickup_poses: list[tuple] = []
         visualizations: list[np.ndarray] = []
 
         for mask_ros in request.masks:
             mask_cv2 = ros_image_to_cv2_image(mask_ros)
             mask_properties = MaskProperties(mask_cv2, depth_image, intrinsics)
-            point_2d = mask_properties.chosen_pickup_point
-            if point_2d is not None:
-                pickup_points_2d.append(point_2d)
-                point_3d, eulerangles = mask_properties.point_2d_to_pose(point_2d)
+            chosen_point2d = mask_properties.chosen_pickup_point
+            if chosen_point2d is not None:
+                point_3d, eulerangles = mask_properties.point_2d_to_pose(chosen_point2d)
                 pickup_poses.append((point_3d, eulerangles))
             visualizations.append(mask_properties.filter_visualization)
 
-        if len(pickup_points_2d) == 0:
+        if len(pickup_poses) == 0:
             logger.error("No suitable pick location found.")
             pickup_pose = None
+            # Set succes to true in order to inspect visualization in ROSboard
+            response.success = False
         else:
-            index = sorted(
-                range(len(pickup_points_2d)),
-                key=lambda n: pickup_points_2d[n].y,
-                reverse=True,
-            )[0]
-            pickup_pose = pickup_poses[index]
-
-        response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
-        if pickup_pose:
+            pickup_poses.sort(key=lambda x: x[0].y)
+            pickup_pose = pickup_poses[-1]
             response.pick_location.pose.position = Point(
                 x=pickup_pose[0].x, y=pickup_pose[0].y, z=pickup_pose[0].z
             )
-            logger.info(f"EulerAngles: {eulerangles}")
-            quaternion = quaternion_from_euler(*eulerangles)
+            quaternion = quaternion_from_euler(*pickup_pose[1])
             response.pick_location.pose.orientation = Quaternion(
                 x=quaternion[0], y=quaternion[1], z=quaternion[2], w=quaternion[3]
             )
+            response.success = True
 
+        response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
         response.pick_location.header.frame_id = "camera_depth_optical_frame"
-        response.success = True
         logger.info("returning pick location")
         return response
 
