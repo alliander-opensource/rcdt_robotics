@@ -13,11 +13,18 @@ find_package(rclcpp REQUIRED)
 find_package(moveit_servo REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rcdt_utilities_msgs REQUIRED)
+find_package(moveit_visual_tools)
 
 # C++ executables:
 include_directories(include)
 add_executable(moveit_client src/moveit_client.cpp src/moveit_servo.cpp)
-ament_target_dependencies(moveit_client rclcpp moveit_ros_planning_interface moveit_servo rcdt_utilities_msgs)
+ament_target_dependencies(moveit_client
+  rclcpp
+  moveit_ros_planning_interface
+  moveit_visual_tools
+  moveit_servo
+  rcdt_utilities_msgs
+)
 
 install(
   TARGETS moveit_client

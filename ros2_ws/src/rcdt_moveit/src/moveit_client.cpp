@@ -8,9 +8,12 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
-    : node(node_), move_group(node_, planning_group) {
+    : node(node_), move_group(node, planning_group),
+      moveit_visual_tools(node, "fr3_link0", "/rviz_markers") {
+  move_group.setEndEffectorLink("fr3_hand");
+  joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
   moveit_servo.initialize(node);
-  moveit_servo.deactivate();
+  moveit_servo.activate();
 
   add_object_service = node->create_service<AddObject>(
       "~/add_object", std::bind(&MoveitClient::add_object, this, _1, _2));
@@ -61,7 +64,7 @@ void MoveitClient::move_to_configuration(
     const std::shared_ptr<MoveToConf::Request> request,
     std::shared_ptr<MoveToConf::Response> response) {
   move_group.setNamedTarget(request->configuration);
-  move_group.move();
+  plan_and_execute();
   response->success = true;
 };
 
@@ -69,8 +72,25 @@ void MoveitClient::move_hand_to_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   move_group.setPoseTarget(request->pose);
-  move_group.move();
+  plan_and_execute(request->planning_type);
   response->success = true;
+};
+
+void MoveitClient::plan_and_execute(std::string planning_type) {
+  moveit_servo.deactivate();
+  if (pilz_types.count(planning_type)) {
+    move_group.setPlanningPipelineId("pilz_industrial_motion_planner");
+    move_group.setPlannerId(planning_type);
+  } else {
+    move_group.setPlanningPipelineId("ompl");
+  }
+  moveit::planning_interface::MoveGroupInterface::Plan plan;
+  move_group.plan(plan);
+  moveit_visual_tools.deleteAllMarkers();
+  moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
+  moveit_visual_tools.trigger();
+  move_group.execute(plan);
+  moveit_servo.activate();
 };
 
 int main(int argc, char **argv) {
