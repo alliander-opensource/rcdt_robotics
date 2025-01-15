@@ -15,6 +15,13 @@ MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
   moveit_servo.initialize(node);
   moveit_servo.activate();
 
+  client_node = std::make_shared<rclcpp::Node>("moveit_");
+  open_gripper_client = client_node->create_client<Trigger>("/open_gripper");
+  close_gripper_client = client_node->create_client<Trigger>("/close_gripper");
+  express_pose_in_other_frame_client =
+      client_node->create_client<ExpressPoseInOtherFrame>(
+          "/express_pose_in_other_frame");
+
   add_object_service = node->create_service<AddObject>(
       "~/add_object", std::bind(&MoveitClient::add_object, this, _1, _2));
 
@@ -28,6 +35,12 @@ MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
   move_hand_to_pose_service = node->create_service<MoveHandToPose>(
       "~/move_hand_to_pose",
       std::bind(&MoveitClient::move_hand_to_pose, this, _1, _2));
+
+  pick_at_pose_service = node->create_service<MoveHandToPose>(
+      "~/pick_at_pose", std::bind(&MoveitClient::pick_at_pose, this, _1, _2));
+
+  drop_service = node->create_service<Trigger>(
+      "~/drop", std::bind(&MoveitClient::drop, this, _1, _2));
 
   add_marker_service = node->create_service<AddMarker>(
       "~/add_marker", std::bind(&MoveitClient::add_marker, this, _1, _2));
@@ -82,6 +95,38 @@ void MoveitClient::move_hand_to_pose(
   response->success = true;
 };
 
+void MoveitClient::pick_at_pose(
+    const std::shared_ptr<MoveHandToPose::Request> request,
+    std::shared_ptr<MoveHandToPose::Response> response) {
+  auto pose = change_frame_to_world(request->pose);
+  auto z = &pose.pose.position.z;
+  open_gripper();
+  *z += 0.15;
+  move_group.setPoseTarget(pose);
+  plan_and_execute();
+  *z -= 0.07;
+  move_group.setPoseTarget(pose);
+  plan_and_execute("LIN");
+  close_gripper();
+  *z += 0.07;
+  move_group.setPoseTarget(pose);
+  plan_and_execute("LIN");
+  move_group.setNamedTarget("home");
+  plan_and_execute();
+  response->success = true;
+};
+
+void MoveitClient::drop(const std::shared_ptr<Trigger::Request> request,
+                        std::shared_ptr<Trigger::Response> response) {
+  move_group.setNamedTarget("drop");
+  plan_and_execute();
+  open_gripper();
+  close_gripper();
+  move_group.setNamedTarget("home");
+  plan_and_execute();
+  response->success = true;
+};
+
 void MoveitClient::plan_and_execute(std::string planning_type) {
   moveit_servo.deactivate();
   if (pilz_types.count(planning_type)) {
@@ -98,6 +143,33 @@ void MoveitClient::plan_and_execute(std::string planning_type) {
   moveit_visual_tools.trigger();
   move_group.execute(plan);
   moveit_servo.activate();
+};
+
+void MoveitClient::open_gripper() {
+  auto request = std::make_shared<Trigger::Request>();
+  RCLCPP_INFO(client_node->get_logger(), "Opening gripper...");
+  auto future = open_gripper_client->async_send_request(request);
+  rclcpp::spin_until_future_complete(client_node, future);
+  RCLCPP_INFO(client_node->get_logger(), "Gripper opened.");
+};
+
+void MoveitClient::close_gripper() {
+  auto request = std::make_shared<Trigger::Request>();
+  RCLCPP_INFO(client_node->get_logger(), "Closing gripper...");
+  auto future = close_gripper_client->async_send_request(request);
+  rclcpp::spin_until_future_complete(client_node, future);
+  RCLCPP_INFO(client_node->get_logger(), "Gripper closed.");
+};
+
+geometry_msgs::msg::PoseStamped
+MoveitClient::change_frame_to_world(geometry_msgs::msg::PoseStamped pose) {
+  auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
+  request->pose = pose;
+  request->target_frame = "world";
+  auto future = express_pose_in_other_frame_client->async_send_request(request);
+  rclcpp::spin_until_future_complete(client_node, future);
+  auto response = future.get();
+  return response->pose;
 };
 
 void MoveitClient::add_marker(const std::shared_ptr<AddMarker::Request> request,
@@ -120,9 +192,9 @@ int main(int argc, char **argv) {
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
   auto node = std::make_shared<rclcpp::Node>("moveit_client", node_options);
+  auto moveit_client = MoveitClient(node);
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(node);
-  auto moveit_client = MoveitClient(node);
   executor.spin();
   rclcpp::shutdown();
 }
