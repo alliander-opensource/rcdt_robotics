@@ -20,9 +20,9 @@ typedef std_srvs::srv::Trigger Trigger;
 typedef rcdt_utilities_msgs::srv::ExpressPoseInOtherFrame
     ExpressPoseInOtherFrame;
 
-class MoveitClient {
+class MoveitManager {
 public:
-  MoveitClient(rclcpp::Node::SharedPtr node);
+  MoveitManager(rclcpp::Node::SharedPtr node);
 
 private:
   rclcpp::Node::SharedPtr node;

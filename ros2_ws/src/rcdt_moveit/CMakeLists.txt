@@ -17,8 +17,8 @@ find_package(moveit_visual_tools)
 
 # C++ executables:
 include_directories(include)
-add_executable(moveit_client src/moveit_client.cpp src/moveit_servo.cpp)
-ament_target_dependencies(moveit_client
+add_executable(moveit_manager src/moveit_manager.cpp src/moveit_servo.cpp)
+ament_target_dependencies(moveit_manager
   rclcpp
   moveit_ros_planning_interface
   moveit_visual_tools
@@ -27,7 +27,7 @@ ament_target_dependencies(moveit_client
 )
 
 install(
-  TARGETS moveit_client
+  TARGETS moveit_manager
   DESTINATION lib/${PROJECT_NAME}
 )
 

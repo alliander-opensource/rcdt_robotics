@@ -1,4 +1,4 @@
-#include "moveit_client.hpp"
+#include "moveit_manager.hpp"
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
 #include <rclcpp/node_options.hpp>
@@ -7,7 +7,7 @@
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
+MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
     : node(node_), move_group(node, planning_group),
       moveit_visual_tools(node, "fr3_link0", "/rviz_markers") {
   move_group.setEndEffectorLink("fr3_hand");
@@ -15,7 +15,7 @@ MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
   moveit_servo.initialize(node);
   moveit_servo.activate();
 
-  client_node = std::make_shared<rclcpp::Node>("moveit_");
+  client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
   open_gripper_client = client_node->create_client<Trigger>("/open_gripper");
   close_gripper_client = client_node->create_client<Trigger>("/close_gripper");
   express_pose_in_other_frame_client =
@@ -23,34 +23,37 @@ MoveitClient::MoveitClient(rclcpp::Node::SharedPtr node_)
           "/express_pose_in_other_frame");
 
   add_object_service = node->create_service<AddObject>(
-      "~/add_object", std::bind(&MoveitClient::add_object, this, _1, _2));
+      "~/add_object", std::bind(&MoveitManager::add_object, this, _1, _2));
 
   clear_objects_service = node->create_service<Trigger>(
-      "~/clear_objects", std::bind(&MoveitClient::clear_objects, this, _1, _2));
+      "~/clear_objects",
+      std::bind(&MoveitManager::clear_objects, this, _1, _2));
 
   move_to_configuration_service = node->create_service<MoveToConf>(
       "~/move_to_configuration",
-      std::bind(&MoveitClient::move_to_configuration, this, _1, _2));
+      std::bind(&MoveitManager::move_to_configuration, this, _1, _2));
 
   move_hand_to_pose_service = node->create_service<MoveHandToPose>(
       "~/move_hand_to_pose",
-      std::bind(&MoveitClient::move_hand_to_pose, this, _1, _2));
+      std::bind(&MoveitManager::move_hand_to_pose, this, _1, _2));
 
   pick_at_pose_service = node->create_service<MoveHandToPose>(
-      "~/pick_at_pose", std::bind(&MoveitClient::pick_at_pose, this, _1, _2));
+      "~/pick_at_pose", std::bind(&MoveitManager::pick_at_pose, this, _1, _2));
 
   drop_service = node->create_service<Trigger>(
-      "~/drop", std::bind(&MoveitClient::drop, this, _1, _2));
+      "~/drop", std::bind(&MoveitManager::drop, this, _1, _2));
 
   add_marker_service = node->create_service<AddMarker>(
-      "~/add_marker", std::bind(&MoveitClient::add_marker, this, _1, _2));
+      "~/add_marker", std::bind(&MoveitManager::add_marker, this, _1, _2));
 
   clear_markers_service = node->create_service<Trigger>(
-      "~/clear_markers", std::bind(&MoveitClient::clear_markers, this, _1, _2));
+      "~/clear_markers",
+      std::bind(&MoveitManager::clear_markers, this, _1, _2));
 };
 
-void MoveitClient::add_object(const std::shared_ptr<AddObject::Request> request,
-                              std::shared_ptr<AddObject::Response> response) {
+void MoveitManager::add_object(
+    const std::shared_ptr<AddObject::Request> request,
+    std::shared_ptr<AddObject::Response> response) {
   moveit_msgs::msg::CollisionObject collision_object;
   collision_object.header = request->pose.header;
 
@@ -72,14 +75,14 @@ void MoveitClient::add_object(const std::shared_ptr<AddObject::Request> request,
   response->success = true;
 };
 
-void MoveitClient::clear_objects(
+void MoveitManager::clear_objects(
     const std::shared_ptr<Trigger::Request> request,
     std::shared_ptr<Trigger::Response> response) {
   planning_scene_interface.removeCollisionObjects({"object"});
   response->success = true;
 };
 
-void MoveitClient::move_to_configuration(
+void MoveitManager::move_to_configuration(
     const std::shared_ptr<MoveToConf::Request> request,
     std::shared_ptr<MoveToConf::Response> response) {
   move_group.setNamedTarget(request->configuration);
@@ -87,7 +90,7 @@ void MoveitClient::move_to_configuration(
   response->success = true;
 };
 
-void MoveitClient::move_hand_to_pose(
+void MoveitManager::move_hand_to_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   move_group.setPoseTarget(request->pose);
@@ -95,7 +98,7 @@ void MoveitClient::move_hand_to_pose(
   response->success = true;
 };
 
-void MoveitClient::pick_at_pose(
+void MoveitManager::pick_at_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   auto pose = change_frame_to_world(request->pose);
@@ -116,8 +119,8 @@ void MoveitClient::pick_at_pose(
   response->success = true;
 };
 
-void MoveitClient::drop(const std::shared_ptr<Trigger::Request> request,
-                        std::shared_ptr<Trigger::Response> response) {
+void MoveitManager::drop(const std::shared_ptr<Trigger::Request> request,
+                         std::shared_ptr<Trigger::Response> response) {
   move_group.setNamedTarget("drop");
   plan_and_execute();
   open_gripper();
@@ -127,7 +130,7 @@ void MoveitClient::drop(const std::shared_ptr<Trigger::Request> request,
   response->success = true;
 };
 
-void MoveitClient::plan_and_execute(std::string planning_type) {
+void MoveitManager::plan_and_execute(std::string planning_type) {
   moveit_servo.deactivate();
   if (pilz_types.count(planning_type)) {
     move_group.setPlanningPipelineId("pilz_industrial_motion_planner");
@@ -145,7 +148,7 @@ void MoveitClient::plan_and_execute(std::string planning_type) {
   moveit_servo.activate();
 };
 
-void MoveitClient::open_gripper() {
+void MoveitManager::open_gripper() {
   auto request = std::make_shared<Trigger::Request>();
   RCLCPP_INFO(client_node->get_logger(), "Opening gripper...");
   auto future = open_gripper_client->async_send_request(request);
@@ -153,7 +156,7 @@ void MoveitClient::open_gripper() {
   RCLCPP_INFO(client_node->get_logger(), "Gripper opened.");
 };
 
-void MoveitClient::close_gripper() {
+void MoveitManager::close_gripper() {
   auto request = std::make_shared<Trigger::Request>();
   RCLCPP_INFO(client_node->get_logger(), "Closing gripper...");
   auto future = close_gripper_client->async_send_request(request);
@@ -162,7 +165,7 @@ void MoveitClient::close_gripper() {
 };
 
 geometry_msgs::msg::PoseStamped
-MoveitClient::change_frame_to_world(geometry_msgs::msg::PoseStamped pose) {
+MoveitManager::change_frame_to_world(geometry_msgs::msg::PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
   request->target_frame = "world";
@@ -172,14 +175,15 @@ MoveitClient::change_frame_to_world(geometry_msgs::msg::PoseStamped pose) {
   return response->pose;
 };
 
-void MoveitClient::add_marker(const std::shared_ptr<AddMarker::Request> request,
-                              std::shared_ptr<AddMarker::Response> response) {
+void MoveitManager::add_marker(
+    const std::shared_ptr<AddMarker::Request> request,
+    std::shared_ptr<AddMarker::Response> response) {
   moveit_visual_tools.publishAxis(request->marker_pose.pose);
   moveit_visual_tools.trigger();
   response->success = true;
 };
 
-void MoveitClient::clear_markers(
+void MoveitManager::clear_markers(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
   moveit_visual_tools.deleteAllMarkers("Axis");
@@ -191,8 +195,8 @@ int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
-  auto node = std::make_shared<rclcpp::Node>("moveit_client", node_options);
-  auto moveit_client = MoveitClient(node);
+  auto node = std::make_shared<rclcpp::Node>("moveit_manager", node_options);
+  auto moveit_manager = MoveitManager(node);
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(node);
   executor.spin();
