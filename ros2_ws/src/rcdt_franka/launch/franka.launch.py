@@ -16,7 +16,6 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
-moveit_mode_arg = LaunchArgument("moveit", "off", ["node", "rviz", "servo", "off"])
 world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
 
 
@@ -25,7 +24,6 @@ def launch_setup(context: LaunchContext) -> None:
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
-    moveit_mode = moveit_mode_arg.value(context)
     world = str(world_arg.value(context))
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
@@ -78,7 +76,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     rviz_launch_arguments = {
-        "moveit": moveit_mode,
+        "moveit": "node",
         "moveit_package_name": "rcdt_franka_moveit_config",
     }
     if use_realsense:
@@ -90,11 +88,11 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     moveit = IncludeLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "moveit.launch.py"),
+        get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
         launch_arguments={
-            "simulation": str(use_sim),
-            "moveit": moveit_mode,
+            "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
+            "servo_params_package": "rcdt_franka",
         }.items(),
     )
 
@@ -152,11 +150,11 @@ def launch_setup(context: LaunchContext) -> None:
         joint_state_broadcaster,
         controllers,
         rviz if use_rviz else skip,
-        moveit if moveit_mode != "off" else skip,
+        moveit,
         realsense if use_realsense else skip,
         joy,
-        joy_topic_manager if moveit_mode == "servo" else skip,
-        joy_to_twist_franka if moveit_mode == "servo" else skip,
+        joy_topic_manager,
+        joy_to_twist_franka,
         joy_to_gripper,
         open_gripper,
         close_gripper,
@@ -171,7 +169,6 @@ def generate_launch_description() -> LaunchDescription:
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
             use_realsense_arg.declaration,
-            moveit_mode_arg.declaration,
             world_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

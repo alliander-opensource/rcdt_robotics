@@ -1,22 +1,35 @@
-from launch import LaunchDescription
+from moveit_configs_utils import MoveItConfigsBuilder
+from launch import LaunchDescription, LaunchContext
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import get_file_path, get_moveit_parameters, get_yaml
+from rcdt_utilities.launch_utils import LaunchArgument, get_file_path, get_yaml
+
+robot_name_arg = LaunchArgument("robot_name", "")
+moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
+servo_params_package_arg = LaunchArgument("servo_params_package", "rcdt_franka")
 
 
-def generate_launch_description() -> LaunchDescription:
-    moveit_config = get_moveit_parameters(
-        robot_name="fr3",
-        package_name="rcdt_franka_moveit_config",
-        mode="node",
+def launch_setup(context: LaunchContext) -> None:
+    robot_name = robot_name_arg.value(context)
+    package_name = moveit_package_name_arg.value(context)
+    servo_params_package = servo_params_package_arg.value(context)
+
+    moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
+    moveit_config.trajectory_execution(
+        get_file_path(package_name, ["config"], "moveit_controllers.yaml")
     )
+    moveit_config.moveit_cpp(
+        get_file_path(package_name, ["config"], "planning_pipeline.yaml")
+    )
+    moveit_config = moveit_config.to_dict()
 
-    file = get_file_path("rcdt_franka", ["config"], "servo_params.yaml")
+    file = get_file_path(servo_params_package, ["config"], "servo_params.yaml")
     servo_config = get_yaml(file)
     servo_params = {"moveit_servo": servo_config}
 
-    moveit_client = Node(
+    moveit_manager = Node(
         package="rcdt_moveit",
-        executable="moveit_client",
+        executable="moveit_manager",
         output="screen",
         parameters=[moveit_config, servo_params],
     )
@@ -27,9 +40,15 @@ def generate_launch_description() -> LaunchDescription:
         parameters=[moveit_config],
     )
 
+    return [moveit_manager, move_group]
+
+
+def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
-            move_group,
-            moveit_client,
+            robot_name_arg.declaration,
+            moveit_package_name_arg.declaration,
+            servo_params_package_arg.declaration,
+            OpaqueFunction(function=launch_setup),
         ]
     )

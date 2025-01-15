@@ -36,7 +36,7 @@ group = "Utilities"
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.ExpressPoseInOtherFrame, group)
 add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 
-group = "moveit_client"
+group = "moveit_manager"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)
 add("AddMarker", f"{group}/add_marker", utilities.AddMarker, group)
 add("ClearObjects", f"{group}/clear_objects", Trigger, group)
