@@ -97,51 +97,101 @@ void MoveitManager::move_to_configuration(
     const std::shared_ptr<MoveToConf::Request> request,
     std::shared_ptr<MoveToConf::Response> response) {
   move_group.setNamedTarget(request->configuration);
-  plan_and_execute();
-  response->success = true;
+  response->success = plan_and_execute();
 };
 
 void MoveitManager::move_hand_to_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   move_group.setPoseTarget(request->pose);
-  plan_and_execute(request->planning_type);
-  response->success = true;
+  response->success = plan_and_execute(request->planning_type);
 };
 
 void MoveitManager::pick_at_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   auto pose = change_frame_to_world(request->pose);
-  auto z = &pose.pose.position.z;
-  open_gripper();
-  *z += 0.15;
-  move_group.setPoseTarget(pose);
-  plan_and_execute();
-  *z -= 0.07;
-  move_group.setPoseTarget(pose);
-  plan_and_execute("LIN");
-  close_gripper();
-  *z += 0.07;
-  move_group.setPoseTarget(pose);
-  plan_and_execute("LIN");
-  move_group.setNamedTarget("home");
-  plan_and_execute();
-  response->success = true;
+  set_goal_pose(pose);
+
+  std::deque<Action> sequence;
+  sequence.push_back(Action{"open_gripper"});
+  sequence.push_back(Action{"transform_goal_pose", "z", 0.15});
+  sequence.push_back(Action{"plan_and_execute"});
+  sequence.push_back(Action{"transform_goal_pose", "z", -0.07});
+  sequence.push_back(Action{"plan_and_execute", "LIN"});
+  sequence.push_back(Action{"close_gripper"});
+  sequence.push_back(Action{"transform_goal_pose", "z", 0.07});
+  sequence.push_back(Action{"plan_and_execute", "LIN"});
+  sequence.push_back(Action{"set_named_target", "home"});
+  sequence.push_back(Action{"plan_and_execute"});
+  response->success = execute_sequence(sequence);
 };
 
 void MoveitManager::drop(const std::shared_ptr<Trigger::Request> request,
                          std::shared_ptr<Trigger::Response> response) {
-  move_group.setNamedTarget("drop");
-  plan_and_execute();
-  open_gripper();
-  close_gripper();
-  move_group.setNamedTarget("home");
-  plan_and_execute();
-  response->success = true;
+  std::deque<Action> sequence;
+  sequence.push_back(Action{"set_named_target", "drop"});
+  sequence.push_back(Action{"plan_and_execute"});
+  sequence.push_back(Action{"open_gripper"});
+  sequence.push_back(Action{"close_gripper"});
+  sequence.push_back(Action{"set_named_target", "home"});
+  sequence.push_back(Action{"plan_and_execute"});
+  response->success = execute_sequence(sequence);
 };
 
-void MoveitManager::plan_and_execute(std::string planning_type) {
+bool MoveitManager::execute_sequence(std::deque<Action> sequence) {
+  bool successful = true;
+  while (successful && !sequence.empty()) {
+    auto action = sequence.front();
+    successful = execute_action(action);
+    sequence.pop_front();
+  }
+  if (!successful) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to execute sequence.");
+  }
+  return successful;
+};
+
+bool MoveitManager::execute_action(Action action) {
+  if (action.name == "open_gripper") {
+    return open_gripper();
+  }
+  if (action.name == "close_gripper") {
+    return close_gripper();
+  }
+  if (action.name == "set_named_target") {
+    return move_group.setNamedTarget(action.argument);
+  }
+  if (action.name == "transform_goal_pose") {
+    return transform_goal_pose(action.argument, action.value);
+  }
+  if (action.name == "plan_and_execute") {
+    return plan_and_execute(action.argument);
+  }
+  RCLCPP_ERROR(node->get_logger(), "Action '%s' unkown. Exit.",
+               action.name.c_str());
+  return false;
+}
+
+PoseStamped &MoveitManager::get_goal_pose() { return goal_pose; };
+void MoveitManager::set_goal_pose(PoseStamped pose) { goal_pose = pose; };
+bool MoveitManager::transform_goal_pose(std::string axis, float value) {
+  if (axis == "x") {
+    goal_pose.pose.position.x += value;
+  } else if (axis == "y") {
+    goal_pose.pose.position.y += value;
+  } else if (axis == "z") {
+    goal_pose.pose.position.z += value;
+  } else {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Can't transform pose: axis '%s' is unkown.", axis.c_str());
+    return false;
+  }
+  move_group.setPoseTarget(goal_pose);
+  return true;
+};
+
+bool MoveitManager::plan_and_execute(std::string planning_type) {
   if (pilz_types.count(planning_type)) {
     move_group.setPlanningPipelineId("pilz_industrial_motion_planner");
     move_group.setPlannerId(planning_type);
@@ -154,7 +204,8 @@ void MoveitManager::plan_and_execute(std::string planning_type) {
   moveit_visual_tools.deleteAllMarkers("Sphere");
   moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
   moveit_visual_tools.trigger();
-  move_group.execute(plan);
+  auto error_code = move_group.execute(plan);
+  return (error_code == moveit::core::MoveItErrorCode::SUCCESS);
 };
 
 void MoveitManager::switch_servo_command_type(std::string command_type) {
@@ -177,24 +228,35 @@ void MoveitManager::switch_servo_command_type(std::string command_type) {
   auto response = future.get();
 }
 
-void MoveitManager::open_gripper() {
+bool MoveitManager::open_gripper() {
   auto request = std::make_shared<Trigger::Request>();
   RCLCPP_INFO(client_node->get_logger(), "Opening gripper...");
   auto future = open_gripper_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
-  RCLCPP_INFO(client_node->get_logger(), "Gripper opened.");
+  auto response = future.get();
+  if (response->success) {
+    RCLCPP_INFO(client_node->get_logger(), "Gripper opened.");
+  } else {
+    RCLCPP_WARN(client_node->get_logger(), "Failed to open gripper.");
+  }
+  return response->success;
 };
 
-void MoveitManager::close_gripper() {
+bool MoveitManager::close_gripper() {
   auto request = std::make_shared<Trigger::Request>();
   RCLCPP_INFO(client_node->get_logger(), "Closing gripper...");
   auto future = close_gripper_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
-  RCLCPP_INFO(client_node->get_logger(), "Gripper closed.");
+  auto response = future.get();
+  if (response->success) {
+    RCLCPP_INFO(client_node->get_logger(), "Gripper closed.");
+  } else {
+    RCLCPP_WARN(client_node->get_logger(), "Failed to close gripper.");
+  }
+  return response->success;
 };
 
-geometry_msgs::msg::PoseStamped
-MoveitManager::change_frame_to_world(geometry_msgs::msg::PoseStamped pose) {
+PoseStamped MoveitManager::change_frame_to_world(PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
   request->target_frame = "world";

@@ -1,3 +1,5 @@
+#include <deque>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/robot_model/joint_model_group.hpp>
@@ -18,8 +20,15 @@ typedef rcdt_utilities_msgs::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_utilities_msgs::srv::MoveHandToPose MoveHandToPose;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
+typedef geometry_msgs::msg::PoseStamped PoseStamped;
 typedef rcdt_utilities_msgs::srv::ExpressPoseInOtherFrame
     ExpressPoseInOtherFrame;
+
+struct Action {
+  std::string name;
+  std::string argument = "";
+  float value = 0.0;
+};
 
 class MoveitManager {
 public:
@@ -33,22 +42,23 @@ private:
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
   const moveit::core::JointModelGroup *joint_model_group;
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
+  PoseStamped goal_pose;
 
-  void initialize_clients();
-  void initialize_services();
-
+  //   Definitions:
   std::map<std::string, int> shapes = {
       {"BOX", 1}, {"SPHERE", 2}, {"CYLINDER", 3}, {"CONE", 4}};
   std::set<std::string> pilz_types = {"PTP", "LIN", "CIRC"};
   std::map<std::string, int> servo_command_types = {
       {"JOINT_JOG", 0}, {"TWIST", 1}, {"POSE", 2}};
 
+  //   Clients:
   rclcpp::Client<ServoCommandType>::SharedPtr switch_servo_type_client;
   rclcpp::Client<Trigger>::SharedPtr open_gripper_client;
   rclcpp::Client<Trigger>::SharedPtr close_gripper_client;
   rclcpp::Client<ExpressPoseInOtherFrame>::SharedPtr
       express_pose_in_other_frame_client;
 
+  //   Services:
   rclcpp::Service<AddObject>::SharedPtr add_object_service;
   void add_object(const std::shared_ptr<AddObject::Request> request,
                   std::shared_ptr<AddObject::Response> response);
@@ -81,10 +91,17 @@ private:
   void clear_markers(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);
 
+  //   Methods:
+  void initialize_clients();
+  void initialize_services();
   void switch_servo_command_type(std::string command_type);
-  void open_gripper();
-  void close_gripper();
-  geometry_msgs::msg::PoseStamped
-      change_frame_to_world(geometry_msgs::msg::PoseStamped);
-  void plan_and_execute(std::string planning_type = "");
+  bool open_gripper();
+  bool close_gripper();
+  PoseStamped change_frame_to_world(PoseStamped pose);
+  PoseStamped &get_goal_pose();
+  void set_goal_pose(PoseStamped goal_pose);
+  bool transform_goal_pose(std::string axis, float value);
+  bool plan_and_execute(std::string planning_type = "");
+  bool execute_action(Action action);
+  bool execute_sequence(std::deque<Action> sequence);
 };
