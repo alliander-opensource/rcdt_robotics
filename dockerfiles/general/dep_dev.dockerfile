@@ -53,3 +53,6 @@ WORKDIR /home/$UNAME/moveit_visual_tools
 RUN . /opt/ros/humble/setup.sh && . /home/$UNAME/moveit_ws/install/setup.sh && \ 
     colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
 RUN echo "source /home/$UNAME/moveit_visual_tools/install/setup.bash" >> /home/$UNAME/.bashrc
+
+# General python packages:
+RUN pip install mashumaro
