@@ -75,16 +75,12 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    rviz_launch_arguments = {
-        "moveit": "node",
-        "moveit_package_name": "rcdt_franka_moveit_config",
-    }
-    if use_realsense:
-        display_config = get_file_path("rcdt_utilities", ["rviz"], "realsense.rviz")
-        rviz_launch_arguments["rviz_display_config"] = display_config
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
-        launch_arguments=rviz_launch_arguments.items(),
+        launch_arguments={
+            "robot_name": "fr3",
+            "moveit_package_name": "rcdt_franka_moveit_config",
+        }.items(),
     )
 
     moveit = IncludeLaunchDescription(
