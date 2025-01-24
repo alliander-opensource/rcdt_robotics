@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Moveit
 
 According to the official [website](https://moveit.picknik.ai/main/index.html):

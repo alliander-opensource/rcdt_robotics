@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from moveit_configs_utils import MoveItConfigsBuilder
 from launch import LaunchDescription, LaunchContext
 from launch.actions import OpaqueFunction

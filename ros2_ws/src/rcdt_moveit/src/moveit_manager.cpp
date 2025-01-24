@@ -1,3 +1,7 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
 #include "moveit_manager.hpp"
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>

@@ -1,3 +1,7 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
 #include <deque>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
