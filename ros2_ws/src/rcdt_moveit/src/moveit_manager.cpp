@@ -1,6 +1,7 @@
 #include "moveit_manager.hpp"
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
+#include <rclcpp/logging.hpp>
 #include <rclcpp/node_options.hpp>
 #include <rclcpp/rclcpp.hpp>
 
@@ -10,18 +11,28 @@ using std::placeholders::_2;
 MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
     : node(node_), move_group(node, planning_group),
       moveit_visual_tools(node, "fr3_link0", "/rviz_markers") {
+
   move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
-  moveit_servo.initialize(node);
-  moveit_servo.activate();
 
+  initialize_clients();
+  initialize_services();
+
+  switch_servo_command_type("TWIST");
+};
+
+void MoveitManager::initialize_clients() {
   client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
+  switch_servo_type_client = client_node->create_client<ServoCommandType>(
+      "/servo_node/switch_command_type");
   open_gripper_client = client_node->create_client<Trigger>("/open_gripper");
   close_gripper_client = client_node->create_client<Trigger>("/close_gripper");
   express_pose_in_other_frame_client =
       client_node->create_client<ExpressPoseInOtherFrame>(
           "/express_pose_in_other_frame");
+};
 
+void MoveitManager::initialize_services() {
   add_object_service = node->create_service<AddObject>(
       "~/add_object", std::bind(&MoveitManager::add_object, this, _1, _2));
 
@@ -131,7 +142,6 @@ void MoveitManager::drop(const std::shared_ptr<Trigger::Request> request,
 };
 
 void MoveitManager::plan_and_execute(std::string planning_type) {
-  moveit_servo.deactivate();
   if (pilz_types.count(planning_type)) {
     move_group.setPlanningPipelineId("pilz_industrial_motion_planner");
     move_group.setPlannerId(planning_type);
@@ -145,8 +155,27 @@ void MoveitManager::plan_and_execute(std::string planning_type) {
   moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
   moveit_visual_tools.trigger();
   move_group.execute(plan);
-  moveit_servo.activate();
 };
+
+void MoveitManager::switch_servo_command_type(std::string command_type) {
+  auto request = std::make_shared<ServoCommandType::Request>();
+
+  try {
+    request->command_type = servo_command_types.at(command_type);
+  } catch (std::out_of_range) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Command type %s is not a valid option.}. Exit.",
+                 command_type.c_str());
+    return;
+  }
+  while (!switch_servo_type_client->wait_for_service(std::chrono::seconds(1))) {
+    RCLCPP_WARN(node->get_logger(),
+                "Servo node service not available. Waiting...");
+  }
+  auto future = switch_servo_type_client->async_send_request(request);
+  rclcpp::spin_until_future_complete(client_node, future);
+  auto response = future.get();
+}
 
 void MoveitManager::open_gripper() {
   auto request = std::make_shared<Trigger::Request>();

@@ -1,7 +1,7 @@
-#include "moveit_servo.hpp"
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/robot_model/joint_model_group.hpp>
+#include <moveit_msgs/srv/servo_command_type.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
 #include <rcdt_utilities_msgs/srv/add_marker.hpp>
 #include <rcdt_utilities_msgs/srv/add_object.hpp>
@@ -16,6 +16,7 @@ typedef rcdt_utilities_msgs::srv::AddObject AddObject;
 typedef rcdt_utilities_msgs::srv::AddMarker AddMarker;
 typedef rcdt_utilities_msgs::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_utilities_msgs::srv::MoveHandToPose MoveHandToPose;
+typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
 typedef rcdt_utilities_msgs::srv::ExpressPoseInOtherFrame
     ExpressPoseInOtherFrame;
@@ -33,10 +34,16 @@ private:
   const moveit::core::JointModelGroup *joint_model_group;
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
 
+  void initialize_clients();
+  void initialize_services();
+
   std::map<std::string, int> shapes = {
       {"BOX", 1}, {"SPHERE", 2}, {"CYLINDER", 3}, {"CONE", 4}};
   std::set<std::string> pilz_types = {"PTP", "LIN", "CIRC"};
+  std::map<std::string, int> servo_command_types = {
+      {"JOINT_JOG", 0}, {"TWIST", 1}, {"POSE", 2}};
 
+  rclcpp::Client<ServoCommandType>::SharedPtr switch_servo_type_client;
   rclcpp::Client<Trigger>::SharedPtr open_gripper_client;
   rclcpp::Client<Trigger>::SharedPtr close_gripper_client;
   rclcpp::Client<ExpressPoseInOtherFrame>::SharedPtr
@@ -74,11 +81,10 @@ private:
   void clear_markers(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);
 
+  void switch_servo_command_type(std::string command_type);
   void open_gripper();
   void close_gripper();
   geometry_msgs::msg::PoseStamped
       change_frame_to_world(geometry_msgs::msg::PoseStamped);
   void plan_and_execute(std::string planning_type = "");
-
-  MoveitServo moveit_servo;
 };

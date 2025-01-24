@@ -31,7 +31,7 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_moveit",
         executable="moveit_manager",
         output="screen",
-        parameters=[moveit_config, servo_params],
+        parameters=[moveit_config],
     )
 
     move_group = Node(
@@ -40,7 +40,13 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=[moveit_config],
     )
 
-    return [moveit_manager, move_group]
+    moveit_servo = Node(
+        package="moveit_servo",
+        executable="servo_node",
+        parameters=[moveit_config, servo_params],
+    )
+
+    return [move_group, moveit_servo, moveit_manager]
 
 
 def generate_launch_description() -> LaunchDescription:

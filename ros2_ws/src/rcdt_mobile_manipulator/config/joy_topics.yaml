@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 franka:
-  topic: "/franka/joy"
   button: 0
+  topic: "/franka/joy"
+  moveit: true
 panther:
-  topic: "/panther/joy"
   button: 1
+  topic: "/panther/joy"
 none:
-  topic: ""
   button: 2
