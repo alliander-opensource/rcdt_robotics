@@ -11,6 +11,12 @@ import pyrealsense2 as rs2
 from math import atan2
 from rcdt_detection.image_manipulation import three_to_single_channel
 from math import pi
+from tf_transformations import quaternion_from_euler, euler_from_quaternion
+
+from rclpy import logging
+
+logger = logging.get_logger(__name__)
+
 
 
 @dataclass
@@ -51,7 +57,7 @@ class Point2D:
     def is_clearance(
         self, depth_image: np.ndarray, object_depth: float, min_depth: float = 0.05
     ) -> bool:
-        """test if corresponding point in depth_image is deeper than min_depth."""
+        """Test if corresponding point in depth_image is deeper than min_depth."""
         point_group = self.surrounding_points()
         if not point_group.is_all_inside(depth_image):
             return False
@@ -78,6 +84,7 @@ class Point3D:
         return float(self.array[2])
 
 
+
 @dataclass
 class Quaternion:
     x: float
@@ -89,6 +96,14 @@ class Quaternion:
     def as_tuple(self) -> tuple:
         return self.x, self.y, self.z, self.w
 
+    @staticmethod
+    def quaternion_from_eulerangles(x:float,y:float,z:float)->"Quaternion":
+        return Quaternion(quaternion_from_euler(x,y,z))
+
+@dataclass
+class Pose:
+    position:Point3D
+    orientation: Quaternion
 
 @dataclass
 class Point2DList:
@@ -107,7 +122,7 @@ class Point2DList:
         return all(point.is_inside(image) for point in self.points)
 
     def is_clearance(self, depth_image: np.ndarray, object_depth: float) -> bool:
-        """test if all corresponding points in depth_image are deeper than min_depth."""
+        """Test if all corresponding points in depth_image are deeper than min_depth."""
         return all(
             point.is_clearance(depth_image, object_depth) for point in self.points
         )
@@ -154,7 +169,7 @@ class BoundingBox:
     y: float
     w: float
     h: float
-    angle: float
+    angle_deg: float
 
     def long_sides_offset(self) -> SidePair:
         offset_factor: float = 1.4
@@ -162,7 +177,7 @@ class BoundingBox:
             self.w *= offset_factor
         else:
             self.h *= offset_factor
-        corners = cv2.boxPoints(((self.x, self.y), (self.w, self.h), self.angle))
+        corners = cv2.boxPoints(((self.x, self.y), (self.w, self.h), self.angle_deg))
         points = [Point2D(corner) for corner in corners]
         sides = [Line(points[n], points[n - 1]) for n in range(len(corners))]
         sides.sort(key=lambda side: side.length)
@@ -171,7 +186,7 @@ class BoundingBox:
 
     @property
     def ordered_values(self) -> tuple[float]:
-        return (self.x, self.y, self.w, self.h, self.angle)
+        return (self.x, self.y, self.w, self.h, self.angle_deg)
 
     @property
     def center(self) -> Point2D:
@@ -179,8 +194,8 @@ class BoundingBox:
 
     @property
     def corners(self) -> list[Point2D]:
-        x, y, w, h, angle = self.ordered_values
-        return [Point2D(point) for point in cv2.boxPoints(((x, y), (w, h), angle))]
+        x, y, w, h, angle_deg = self.ordered_values
+        return [Point2D(point) for point in cv2.boxPoints(((x, y), (w, h), angle_deg))]
 
 
 class MaskProperties:
@@ -212,8 +227,8 @@ class MaskProperties:
     @property
     def bounding_box(self) -> BoundingBox:
         """Returns the bounding box of the main contour."""
-        (x, y), (w, h), angle = cv2.minAreaRect(self.contour)
-        return BoundingBox(x, y, w, h, angle)
+        (x, y), (w, h), angle_deg = cv2.minAreaRect(self.contour)
+        return BoundingBox(x, y, w, h, angle_deg)
 
     @property
     def centroid(self) -> Point2D:
@@ -276,7 +291,7 @@ class MaskProperties:
             )
         cv2.line(
             image,
-            self.bounding_box.long_sides_offset().side1.p1.as_tuple,
+            self.bounding_box.long_sides_off().side1.p1.as_tuple,
             self.bounding_box.long_sides_offset().side1.p2.as_tuple,
             (255, 0, 255),
             1,
@@ -311,6 +326,10 @@ class MaskProperties:
 
     def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
         point_3d = self.point_2d_to_3d(point_2d)
+        logger.info(
+            f"angle side: {self.bounding_box.long_sides_offset().side1.angle()}"
+        )
+        logger.info(f"bounding box angle: {self.bounding_box.angle_deg}")
         bounding_box_angle = (
             self.bounding_box.long_sides_offset().side1.angle() % pi
         ) + pi

@@ -45,7 +45,6 @@ class SelectPickLocation(Node):
         if len(pickup_poses) == 0:
             logger.error("No suitable pick location found.")
             pickup_pose = None
-            # Set succes to true in order to inspect visualization in ROSboard
             response.success = False
         else:
             pickup_poses.sort(key=lambda x: x[0].y)
