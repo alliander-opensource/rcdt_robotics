@@ -6,19 +6,18 @@
 
 import numpy as np
 import rclpy
-from rclpy.node import Node
-from rclpy import logging
+from rcdt_detection.mask_properties import MaskProperties, Pose
 from rcdt_detection_msgs.srv import SelectPickLocation as Srv
 from rcdt_utilities.cv_utils import (
-    ros_image_to_cv2_image,
-    cv2_image_to_ros_image,
     camera_info_to_intrinsics,
+    cv2_image_to_ros_image,
+    ros_image_to_cv2_image,
 )
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection.mask_properties import MaskProperties, Point2D, Point3D
-from geometry_msgs.msg import Point
+from rclpy import logging
+from rclpy.node import Node
 
-ros_logger = logging.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 class SelectPickLocation(Node):
@@ -29,35 +28,31 @@ class SelectPickLocation(Node):
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
-
-        points_2d: list[Point2D] = []
-        points_3d: list[Point3D] = []
+        pickup_poses: list[Pose] = []
         visualizations: list[np.ndarray] = []
 
         for mask_ros in request.masks:
             mask_cv2 = ros_image_to_cv2_image(mask_ros)
             mask_properties = MaskProperties(mask_cv2, depth_image, intrinsics)
-            point_2d = mask_properties.pick_location
-            if point_2d is not None:
-                points_2d.append(point_2d)
-                points_3d.append(mask_properties.point_2d_to_3d(point_2d))
+            chosen_point2d = mask_properties.chosen_pickup_point
+            if chosen_point2d is not None:
+                pose: Pose = mask_properties.point_2d_to_pose(chosen_point2d)
+                pickup_poses.append(pose)
             visualizations.append(mask_properties.filter_visualization)
 
-        if len(points_2d) == 0:
-            ros_logger.error("No suitable pick location found.")
-            return response
+        if len(pickup_poses) == 0:
+            logger.error("No suitable pick location found.")
+            pickup_pose = None
+            response.success = False
+        else:
+            pickup_poses.sort(key=lambda pose: pose.position.y)
+            pickup_pose = pickup_poses[-1]
+            response.pick_location.pose = pickup_pose.as_ros_pose()
+            response.success = True
 
-        index = sorted(
-            range(len(points_2d)), key=lambda n: points_2d[n].y, reverse=True
-        )[0]
-        point = points_3d[index]
-
-        response.pick_location.pose.position = Point(x=point.x, y=point.y, z=point.z)
-        response.pick_location.pose.orientation.z = 0.707
-        response.pick_location.pose.orientation.w = -0.707
-        response.pick_location.header.frame_id = "camera_depth_optical_frame"
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
-        response.success = True
+        response.pick_location.header.frame_id = "camera_depth_optical_frame"
+        logger.info("returning pick location")
         return response
 
 

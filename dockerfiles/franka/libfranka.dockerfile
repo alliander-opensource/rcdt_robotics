@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Install libfranka: https://support.franka.de/docs/installation_linux.html#build-libfranka
-RUN apt install -y build-essential
-RUN apt install -y cmake
-RUN apt install -y git
-RUN apt install -y libpoco-dev
-RUN apt install -y libeigen3-dev
+RUN apt update && apt install -y build-essential
+RUN apt update && apt install -y cmake
+RUN apt update && apt install -y git
+RUN apt update && apt install -y libpoco-dev
+RUN apt update && apt install -y libeigen3-dev
 
 WORKDIR /home/$UNAME
 RUN git clone --recursive https://github.com/frankaemika/libfranka
