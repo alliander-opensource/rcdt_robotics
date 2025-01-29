@@ -102,8 +102,6 @@ private:
   bool open_gripper();
   bool close_gripper();
   PoseStamped change_frame_to_world(PoseStamped pose);
-  PoseStamped &get_goal_pose();
-  void set_goal_pose(PoseStamped goal_pose);
   bool transform_goal_pose(std::string axis, float value);
   bool plan_and_execute(std::string planning_type = "");
   bool execute_action(Action action);

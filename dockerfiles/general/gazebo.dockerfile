@@ -13,8 +13,8 @@ RUN apt-get update
 RUN apt-get install -y ignition-fortress
 
 # Install ros-humble-ros-gz (which will now use the already installed ignition):
-RUN apt install -y ros-humble-ros-gz
-RUN apt install -y ros-humble-ign-ros2-control
+RUN apt update && apt install -y ros-humble-ros-gz
+RUN apt update && apt install -y ros-humble-ign-ros2-control
 
 # Define IGN_IP to use gazebo with firewall enabled:
 ENV IGN_IP=127.0.0.1

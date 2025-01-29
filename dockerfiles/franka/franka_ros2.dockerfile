@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Install ros2 franka: https://support.franka.de/docs/franka_ros2.html
-RUN apt install -y ros-humble-angles
-RUN apt install -y ros-humble-generate-parameter-library
-RUN apt install -y ros-humble-joint-state-publisher
-RUN apt install -y ros-humble-joint-state-publisher-gui
-RUN apt install -y ros-humble-pinocchio
-RUN apt install -y ros-humble-realtime-tools
-RUN apt install -y ros-humble-hardware-interface
+RUN apt update && apt install -y ros-humble-angles
+RUN apt update && apt install -y ros-humble-generate-parameter-library
+RUN apt update && apt install -y ros-humble-joint-state-publisher
+RUN apt update && apt install -y ros-humble-joint-state-publisher-gui
+RUN apt update && apt install -y ros-humble-pinocchio
+RUN apt update && apt install -y ros-humble-realtime-tools
+RUN apt update && apt install -y ros-humble-hardware-interface
 
 RUN mkdir -p /home/$UNAME/franka_ws/src
 WORKDIR /home/$UNAME/franka_ws

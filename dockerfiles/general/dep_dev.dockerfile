@@ -10,8 +10,10 @@
 RUN python3 -m pip install pyrealsense2
 RUN python3 -m pip install ultralytics
 RUN python3 -m pip install "numpy>=1.23.0,<2.0"
-RUN apt install -y ros-humble-realsense2-camera
-RUN apt install -y ros-humble-realsense2-description
+# specifying currently newest version of transforms3d to avoid conflict with imported numpy.float in older version.
+RUN python3 -m pip install "transforms3d>=0.4.2"
+RUN apt update && apt install -y ros-humble-realsense2-camera
+RUN apt update && apt install -y ros-humble-realsense2-description
 
 # Rosboard (https://github.com/dheera/rosboard):
 RUN python3 -m pip install tornado
@@ -24,7 +26,7 @@ RUN echo "source /home/$UNAME/rosboard_ws/install/setup.bash" >> /home/$UNAME/.b
 
 # PyFlow (https://github.com/alliander-opensource/PyFlow):
 RUN pip install git+https://github.com/alliander-opensource/PyFlow.git@master
-RUN apt install -y libxcb-cursor-dev
+RUN apt update && apt install -y libxcb-cursor-dev
 RUN pip install inflection
 RUN pip install distinctipy
 ENV QT_API=pyside6
@@ -43,6 +45,7 @@ RUN pip install sphinx-autobuild
 RUN pip install myst-parser
 RUN pip install sphinx_copybutton
 RUN pip install sphinx_rtd_theme
+RUN pip install sphinxcontrib-video
 
 # moveit_visual_tools
 RUN mkdir -p /home/$UNAME/moveit_visual_tools/src
