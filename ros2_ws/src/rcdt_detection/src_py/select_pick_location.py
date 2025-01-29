@@ -28,7 +28,7 @@ class SelectPickLocation(Node):
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
-        pickup_poses: list[tuple] = []
+        pickup_poses: list[Pose] = []
         visualizations: list[np.ndarray] = []
 
         for mask_ros in request.masks:

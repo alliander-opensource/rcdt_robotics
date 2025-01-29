@@ -83,6 +83,7 @@ class Point3D:
     def z(self) -> int:
         return float(self.array[2])
 
+    @property
     def as_ros_point(self) -> ros_Point:
         return ros_Point(x=self.x, y=self.y, z=self.z)
 
@@ -102,6 +103,7 @@ class Quaternion:
     def from_eulerangles(x: float, y: float, z: float) -> "Quaternion":
         return Quaternion(*quaternion_from_euler(x, y, z))
 
+    @property
     def as_ros_quaternion(self) -> ros_Quaternion:
         return ros_Quaternion(x=self.x, y=self.y, z=self.z, w=self.w)
 
