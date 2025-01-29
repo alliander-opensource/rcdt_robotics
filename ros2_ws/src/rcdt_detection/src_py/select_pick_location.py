@@ -15,9 +15,7 @@ from rcdt_utilities.cv_utils import (
     camera_info_to_intrinsics,
 )
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection.mask_properties import MaskProperties
-from geometry_msgs.msg import Point, Quaternion
-from tf_transformations import quaternion_from_euler
+from rcdt_detection.mask_properties import MaskProperties, Pose
 
 logger = logging.get_logger(__name__)
 
@@ -38,8 +36,8 @@ class SelectPickLocation(Node):
             mask_properties = MaskProperties(mask_cv2, depth_image, intrinsics)
             chosen_point2d = mask_properties.chosen_pickup_point
             if chosen_point2d is not None:
-                point_3d, eulerangles = mask_properties.point_2d_to_pose(chosen_point2d)
-                pickup_poses.append((point_3d, eulerangles))
+                pose: Pose = mask_properties.point_2d_to_pose(chosen_point2d)
+                pickup_poses.append(pose)
             visualizations.append(mask_properties.filter_visualization)
 
         if len(pickup_poses) == 0:
@@ -47,15 +45,9 @@ class SelectPickLocation(Node):
             pickup_pose = None
             response.success = False
         else:
-            pickup_poses.sort(key=lambda x: x[0].y)
+            pickup_poses.sort(key=lambda pose: pose.position.y)
             pickup_pose = pickup_poses[-1]
-            response.pick_location.pose.position = Point(
-                x=pickup_pose[0].x, y=pickup_pose[0].y, z=pickup_pose[0].z
-            )
-            quaternion = quaternion_from_euler(*pickup_pose[1])
-            response.pick_location.pose.orientation = Quaternion(
-                x=quaternion[0], y=quaternion[1], z=quaternion[2], w=quaternion[3]
-            )
+            response.pick_location.pose=pickup_pose.as_ros_pose()
             response.success = True
 
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))

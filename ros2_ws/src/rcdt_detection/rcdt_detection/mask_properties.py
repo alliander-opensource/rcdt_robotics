@@ -11,12 +11,12 @@ import pyrealsense2 as rs2
 from math import atan2
 from rcdt_detection.image_manipulation import three_to_single_channel
 from math import pi
-from tf_transformations import quaternion_from_euler, euler_from_quaternion
-
-from rclpy import logging
-
-logger = logging.get_logger(__name__)
-
+from tf_transformations import quaternion_from_euler
+from geometry_msgs.msg import (
+    Point as ros_Point,
+    Quaternion as ros_Quaternion,
+    Pose as ros_Pose,
+)
 
 
 @dataclass
@@ -83,6 +83,8 @@ class Point3D:
     def z(self) -> int:
         return float(self.array[2])
 
+    def as_ros_point(self) -> ros_Point:
+        return ros_Point(x=self.x, y=self.y, z=self.z)
 
 
 @dataclass
@@ -97,13 +99,24 @@ class Quaternion:
         return self.x, self.y, self.z, self.w
 
     @staticmethod
-    def quaternion_from_eulerangles(x:float,y:float,z:float)->"Quaternion":
-        return Quaternion(quaternion_from_euler(x,y,z))
+    def from_eulerangles(x: float, y: float, z: float) -> "Quaternion":
+        return Quaternion(*quaternion_from_euler(x, y, z))
+
+    def as_ros_quaternion(self) -> ros_Quaternion:
+        return ros_Quaternion(x=self.x, y=self.y, z=self.z, w=self.w)
+
 
 @dataclass
 class Pose:
-    position:Point3D
+    position: Point3D
     orientation: Quaternion
+
+    def as_ros_pose(self) -> ros_Pose:
+        return ros_Pose(
+            position=self.position.as_ros_point(),
+            orientation=self.orientation.as_ros_quaternion(),
+        )
+
 
 @dataclass
 class Point2DList:
@@ -291,7 +304,7 @@ class MaskProperties:
             )
         cv2.line(
             image,
-            self.bounding_box.long_sides_off().side1.p1.as_tuple,
+            self.bounding_box.long_sides_offset().side1.p1.as_tuple,
             self.bounding_box.long_sides_offset().side1.p2.as_tuple,
             (255, 0, 255),
             1,
@@ -326,11 +339,8 @@ class MaskProperties:
 
     def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
         point_3d = self.point_2d_to_3d(point_2d)
-        logger.info(
-            f"angle side: {self.bounding_box.long_sides_offset().side1.angle()}"
-        )
-        logger.info(f"bounding box angle: {self.bounding_box.angle_deg}")
+        # make sure bounding box angle is in the range of 0 to pi radians
         bounding_box_angle = (
             self.bounding_box.long_sides_offset().side1.angle() % pi
         ) + pi
-        return point_3d, (0.0, 0.0, bounding_box_angle)
+        return Pose(point_3d, Quaternion.from_eulerangles(0.0, 0.0, bounding_box_angle))
