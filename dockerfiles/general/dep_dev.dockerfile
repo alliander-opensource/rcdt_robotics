@@ -13,7 +13,7 @@ RUN python3 -m pip install "numpy>=1.23.0,<2.0"
 # specifying currently newest version of transforms3d to avoid conflict with imported numpy.float in older version.
 RUN python3 -m pip install "transforms3d>=0.4.2"
 RUN apt update && apt install -y ros-humble-realsense2-camera
-RUN apt update && apt install -y ros-humble-realsense2-apt description
+RUN apt update && apt install -y ros-humble-realsense2-description
 
 # rcdt_utilities
 RUN apt update && apt install -y ros-humble-rviz-visual-tools
