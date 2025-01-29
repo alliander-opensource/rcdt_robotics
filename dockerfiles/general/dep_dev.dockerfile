@@ -12,11 +12,11 @@ RUN python3 -m pip install ultralytics
 RUN python3 -m pip install "numpy>=1.23.0,<2.0"
 # specifying currently newest version of transforms3d to avoid conflict with imported numpy.float in older version.
 RUN python3 -m pip install "transforms3d>=0.4.2"
-RUN apt install -y ros-humble-realsense2-camera
-RUN apt install -y ros-humble-realsense2-description
+RUN apt update && apt install -y ros-humble-realsense2-camera
+RUN apt update && apt install -y ros-humble-realsense2-apt description
 
 # rcdt_utilities
-RUN apt install -y ros-humble-rviz-visual-tools
+RUN apt update && apt install -y ros-humble-rviz-visual-tools
 
 # Rosboard (https://github.com/dheera/rosboard):
 RUN python3 -m pip install tornado
@@ -29,7 +29,7 @@ RUN echo "source /home/$UNAME/rosboard_ws/install/setup.bash" >> /home/$UNAME/.b
 
 # PyFlow (https://github.com/alliander-opensource/PyFlow):
 RUN pip install git+https://github.com/alliander-opensource/PyFlow.git@master
-RUN apt install -y libxcb-cursor-dev
+RUN apt update && apt install -y libxcb-cursor-dev
 RUN pip install inflection
 RUN pip install distinctipy
 ENV QT_API=pyside6
