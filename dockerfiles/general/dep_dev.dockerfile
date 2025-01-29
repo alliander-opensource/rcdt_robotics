@@ -43,6 +43,7 @@ RUN pip install sphinx-autobuild
 RUN pip install myst-parser
 RUN pip install sphinx_copybutton
 RUN pip install sphinx_rtd_theme
+RUN pip install sphinxcontrib-video
 
 # moveit_visual_tools
 RUN mkdir -p /home/$UNAME/moveit_visual_tools/src
