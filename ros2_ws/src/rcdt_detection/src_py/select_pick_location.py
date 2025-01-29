@@ -6,16 +6,16 @@
 
 import numpy as np
 import rclpy
-from rclpy.node import Node
-from rclpy import logging
+from rcdt_detection.mask_properties import MaskProperties, Pose
 from rcdt_detection_msgs.srv import SelectPickLocation as Srv
 from rcdt_utilities.cv_utils import (
-    ros_image_to_cv2_image,
-    cv2_image_to_ros_image,
     camera_info_to_intrinsics,
+    cv2_image_to_ros_image,
+    ros_image_to_cv2_image,
 )
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection.mask_properties import MaskProperties, Pose
+from rclpy import logging
+from rclpy.node import Node
 
 logger = logging.get_logger(__name__)
 
@@ -47,7 +47,7 @@ class SelectPickLocation(Node):
         else:
             pickup_poses.sort(key=lambda pose: pose.position.y)
             pickup_pose = pickup_poses[-1]
-            response.pick_location.pose=pickup_pose.as_ros_pose()
+            response.pick_location.pose = pickup_pose.as_ros_pose()
             response.success = True
 
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
