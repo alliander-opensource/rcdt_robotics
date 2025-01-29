@@ -115,7 +115,7 @@ void MoveitManager::pick_at_pose(
     const std::shared_ptr<MoveHandToPose::Request> request,
     std::shared_ptr<MoveHandToPose::Response> response) {
   auto pose = change_frame_to_world(request->pose);
-  set_goal_pose(pose);
+  goal_pose = pose;
 
   std::deque<Action> sequence;
   sequence.push_back(Action{"open_gripper"});
@@ -177,8 +177,6 @@ bool MoveitManager::execute_action(Action action) {
   return false;
 }
 
-PoseStamped &MoveitManager::get_goal_pose() { return goal_pose; };
-void MoveitManager::set_goal_pose(PoseStamped pose) { goal_pose = pose; };
 bool MoveitManager::transform_goal_pose(std::string axis, float value) {
   if (axis == "x") {
     goal_pose.pose.position.x += value;
