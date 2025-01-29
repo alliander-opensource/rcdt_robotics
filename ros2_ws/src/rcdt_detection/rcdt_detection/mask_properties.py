@@ -115,8 +115,8 @@ class Pose:
 
     def as_ros_pose(self) -> ros_Pose:
         return ros_Pose(
-            position=self.position.as_ros_point(),
-            orientation=self.orientation.as_ros_quaternion(),
+            position=self.position.as_ros_point,
+            orientation=self.orientation.as_ros_quaternion,
         )
 
 
@@ -339,7 +339,7 @@ class MaskProperties:
         )
         return Point3D(np.array([x, y, z]))
 
-    def point_2d_to_pose(self, point_2d: Point2D) -> tuple:
+    def point_2d_to_pose(self, point_2d: Point2D) -> Pose:
         point_3d = self.point_2d_to_3d(point_2d)
         # make sure bounding box angle is in the range of 0 to pi radians
         bounding_box_angle = (

@@ -4,64 +4,90 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import List
+from dataclasses import dataclass
+import mashumaro.codecs.yaml as yaml_codec
 import rclpy
 from rclpy.node import Node, Publisher
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from sensor_msgs.msg import Joy
-from rcdt_utilities.launch_utils import spin_node
+from rcdt_utilities.launch_utils import spin_executor
 from rcdt_utilities.launch_utils import get_yaml, get_file_path
+from std_srvs.srv import SetBool
+
+
+@dataclass
+class Output:
+    button: int
+    topic: str | None = None
+    moveit: bool = False
+    state: int | None = None
+
+    def state_changed(self, state: bool) -> bool:
+        if self.state in [None, state]:
+            self.state = state
+            return False
+        else:
+            self.state = state
+            return True
 
 
 class JoyTopicManager(Node):
     def __init__(self) -> bool:
         super().__init__("joy_topic_manager")
         self.declare_parameter("joy_topic", value="/joy")
-        joy_topic = self.get_parameter("joy_topic").get_parameter_value().string_value
+        joy_input = self.get_parameter("joy_topic").get_parameter_value().string_value
+
+        cbg = MutuallyExclusiveCallbackGroup()
+        self.client = self.create_client(
+            SetBool, "/servo_node/pause_servo", callback_group=cbg
+        )
 
         file = get_file_path("rcdt_mobile_manipulator", ["config"], "joy_topics.yaml")
-        configs: dict = get_yaml(file)
-        self.topics: List[str] = []
+        yaml = get_yaml(file)
+
+        self.outputs = [yaml_codec.decode(str(yaml[output]), Output) for output in yaml]
         self.pubs: dict[str, Publisher] = {}
-        self.buttons: List[int] = []
-        self.button_states: List[int] = []
+        for output in self.outputs:
+            if output.topic is not None:
+                self.pubs[output.topic] = self.create_publisher(Joy, output.topic, 10)
 
-        for config in configs.values():
-            topic = config.get("topic")
-            button = config.get("button")
-            self.topics.append(topic)
-            self.pubs[topic] = (
-                None if topic == "" else self.create_publisher(Joy, topic, 10)
-            )
-            self.buttons.append(button)
-            self.button_states.append(None)
-
-        self.topic = ""
-        self.create_subscription(Joy, joy_topic, self.handle_joy_message, 10)
+        self.topic = None
+        self.create_subscription(Joy, joy_input, self.handle_joy_message, 10)
 
     def handle_joy_message(self, msg: Joy) -> None:
-        self.update_publish_topic(msg)
+        self.apply_output_changes(msg)
         self.pass_joy_message(msg)
 
-    def update_publish_topic(self, msg: Joy) -> None:
-        for idx in range(len(self.buttons)):
-            button = self.buttons[idx]
-            button_state = msg.buttons[button]
-            if self.button_states[idx] is None:
-                self.button_states[idx] = button_state
-            if button_state == self.button_states[idx]:
-                continue
-            self.button_states[idx] = button_state
-            topic = self.topics[idx]
-            if self.topic == topic:
-                continue
-            self.topic = topic
-            if self.topic == "":
-                self.get_logger().info("Joy topic passing stopped.")
-            else:
-                self.get_logger().info(f"Joy topic is now passed to {self.topic}.")
+    def apply_output_changes(self, msg: Joy) -> None:
+        for output in self.outputs:
+            state = msg.buttons[output.button]
+            if output.state_changed(state) and self.topic_changed(output.topic):
+                self.toggle_servo(pause=not output.moveit)
+
+    def topic_changed(self, topic: str) -> bool:
+        if self.topic == topic:
+            return False
+        self.topic = topic
+        if self.topic is None:
+            self.get_logger().info("Joy topic passing stopped.")
+        else:
+            self.get_logger().info(f"Joy topic is now passed to {self.topic}.")
+        return True
+
+    def toggle_servo(self, pause: bool) -> None:
+        request = SetBool.Request()
+        request.data = pause
+        action = "pausing" if pause else "starting"
+        self.get_logger().info(action + " moveit servo...")
+        response: SetBool.Response = self.client.call(request)
+        if response.success:
+            self.get_logger().info(action + " moveit servo succeeded.")
+        else:
+            self.get_logger().info(action + " moveit servo failed.")
 
     def pass_joy_message(self, msg: Joy) -> None:
-        if self.topic == "":
+        if self.topic is None:
             return
         pub = self.pubs[self.topic]
         pub.publish(msg)
@@ -69,8 +95,10 @@ class JoyTopicManager(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
+    executor = MultiThreadedExecutor()
     node = JoyTopicManager()
-    spin_node(node)
+    executor.add_node(node)
+    spin_executor(executor)
 
 
 if __name__ == "__main__":

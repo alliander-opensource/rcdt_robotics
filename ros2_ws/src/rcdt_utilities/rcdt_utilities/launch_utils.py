@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import List, Literal
+from typing import List
 import os
 import yaml
 import xacro
@@ -15,7 +15,6 @@ from ament_index_python.packages import get_package_share_directory, get_package
 from launch import LaunchContext
 from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
-from moveit_configs_utils import MoveItConfigsBuilder
 
 
 class LaunchArgument:
@@ -85,20 +84,3 @@ def spin_executor(executor: Executor) -> None:
         pass
     except Exception as e:
         raise e
-
-
-def get_moveit_parameters(
-    robot_name: str,
-    package_name: str,
-    mode: Literal["off", "rviz", "sevo", "node"] = "off",
-) -> dict:
-    moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
-    match mode:
-        case "node":
-            moveit_config.trajectory_execution(
-                get_file_path(package_name, ["config"], "moveit_controllers.yaml")
-            )
-            moveit_config.moveit_cpp(
-                get_file_path(package_name, ["config"], "planning_pipeline.yaml")
-            )
-    return moveit_config.to_dict()

@@ -15,9 +15,6 @@ RUN python3 -m pip install "transforms3d>=0.4.2"
 RUN apt update && apt install -y ros-humble-realsense2-camera
 RUN apt update && apt install -y ros-humble-realsense2-description
 
-# rcdt_utilities
-RUN apt update && apt install -y ros-humble-rviz-visual-tools
-
 # Rosboard (https://github.com/dheera/rosboard):
 RUN python3 -m pip install tornado
 RUN python3 -m pip install simplejpeg 
@@ -48,3 +45,17 @@ RUN pip install sphinx-autobuild
 RUN pip install myst-parser
 RUN pip install sphinx_copybutton
 RUN pip install sphinx_rtd_theme
+RUN pip install sphinxcontrib-video
+
+# moveit_visual_tools
+RUN mkdir -p /home/$UNAME/moveit_visual_tools/src
+WORKDIR /home/$UNAME/moveit_visual_tools/src
+RUN git clone -b ros2 https://github.com/ros-planning/moveit_visual_tools
+RUN vcs import < moveit_visual_tools/moveit_visual_tools.repos
+WORKDIR /home/$UNAME/moveit_visual_tools
+RUN . /opt/ros/humble/setup.sh && . /home/$UNAME/moveit_ws/install/setup.sh && \ 
+    colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN echo "source /home/$UNAME/moveit_visual_tools/install/setup.bash" >> /home/$UNAME/.bashrc
+
+# General python packages:
+RUN pip install mashumaro
