@@ -9,29 +9,92 @@ from rclpy.client import Client
 TIME_OUT = 3
 
 
+def info(node: Node, message: str) -> None:
+    node.get_logger().info(message)
+
+
+def warn(node: Node, message: str) -> None:
+    node.get_logger().warn(message)
+
+
+def error(node: Node, message: str) -> None:
+    node.get_logger().error(message)
+
+
 @dataclass
 class Action:
     service_name: str
     service_type: object
+    args: dict | None = None
+    links: dict | None = None
+    node: Node | None = None
     client: Client | None = None
 
-    def call(self, node: Node) -> bool:
-        if self.client is None:
-            self.client = node.create_client(self.service_type, self.service_name)
+    def set_args(self, args: dict) -> "Action":
+        self.args = args
+        return self
 
-        if not self.client.wait_for_service(TIME_OUT):
-            node.get_logger().error(f"Service `{self.service_name}` is not available.")
-            return False
+    def set_links(self, links: dict) -> "Action":
+        self.links = links
+        return self
+
+    def fill_from_arguments(self, request: object) -> bool:
+        if self.args is None:
+            return True
+        for key, value in self.args.items():
+            if not hasattr(request, key):
+                warn(self.node, f"Skipped '{key}': doesn't exist on {type(request)}")
+                continue
+            try:
+                setattr(request, key, value)
+            except AssertionError as e:
+                warn(self.node, f"Skipped '{key}' because of wrong type:\n {e}")
+                return False
+            return True
+
+    def fill_from_last_result(self, request: object, last_result: object) -> bool:
+        if self.links is None:
+            return True
+        for arg_out, arg_in in self.links.items():
+            if not (hasattr(last_result, arg_out) and hasattr(request, arg_in)):
+                warn(self.node, f"Link {arg_out}->{arg_in} is not possible.")
+                return False
+            try:
+                value = getattr(last_result, arg_out)
+            except Exception as e:
+                error(str(e))
+                return False
+            try:
+                setattr(request, arg_in, value)
+            except Exception as e:
+                error(str(e))
+                return False
+            return True
+
+    def call(self, last_result: object) -> tuple[bool, object]:
+        if self.client is None:
+            self.client = self.node.create_client(self.service_type, self.service_name)
 
         request = self.service_type.Request()
+
+        if not self.fill_from_arguments(request):
+            return False, None
+        if not self.fill_from_last_result(request, last_result):
+            return False, None
+        if not self.client.wait_for_service(TIME_OUT):
+            error(self.node, f"Service `{self.service_name}` is not available.")
+            return False, None
+
         response = self.client.call(request)
-        return response.success
+        return response.success, response
 
 
 @dataclass
 class Sequence:
     name: str
     actions: list[Action]
+    node: Node | None = None
+    last_result = None
     success = True
     index = 0
 
@@ -45,31 +108,32 @@ class Sequence:
     def current_action(self) -> Action:
         return self.actions[self.index]
 
-    def log_start(self, node: Node) -> None:
-        node.get_logger().info(f"Starting execution of sequence '{self.name}'.")
+    def log_start(self) -> None:
+        info(self.node, f"Starting execution of sequence '{self.name}'.")
 
-    def log_progress(self, node: Node) -> None:
+    def log_progress(self) -> None:
         if self.success:
-            node.get_logger().info(f"Finished: {self.current_action().service_name}")
+            info(self.node, f"Finished: {self.current_action().service_name}")
         else:
-            node.get_logger().error(f"Failed: {self.current_action().service_name}")
+            error(self.node, f"Failed: {self.current_action().service_name}")
 
-    def log_result(self, node: Node) -> None:
+    def log_result(self) -> None:
         if self.success:
-            node.get_logger().info(f"Sequency '{self.name}' was executed successfully.")
+            info(self.node, f"Sequency '{self.name}' was executed successfully.")
         else:
-            node.get_logger().error(f"Failed to execute sequence '{self.name}'.")
+            error(self.node, f"Failed to execute sequence '{self.name}'.")
 
-    def call(self, node: Node) -> None:
+    def call(self) -> None:
         action = self.actions[self.index]
-        self.success = action.call(node)
+        action.node = self.node
+        self.success, self.last_result = action.call(self.last_result)
 
-    def execute(self, node: Node) -> bool:
+    def execute(self) -> bool:
         self.reset()
-        self.log_start(node)
+        self.log_start()
         while not self.is_finished():
-            self.call(node)
-            self.log_progress(node)
+            self.call()
+            self.log_progress()
             self.index += 1
-        self.log_result(node)
+        self.log_result()
         return self.success

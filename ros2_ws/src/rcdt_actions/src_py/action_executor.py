@@ -31,7 +31,8 @@ class ActionExecutor(Node):
     def callback(self, goal_handle: ServerGoalHandle) -> Sequence.Result:
         reload(actions)
         sequence = actions.pick
-        sequence.execute(self)
+        sequence.node = self
+        sequence.execute()
 
         if sequence.success:
             goal_handle.succeed()
