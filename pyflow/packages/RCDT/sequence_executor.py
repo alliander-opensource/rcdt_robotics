@@ -43,10 +43,10 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
         response: Sequence.Impl.GetResultService.Response = goal_handle.get_result()
         result = response.result
         if result.success:
-            logger.info(f"Sequence '{goal.sequence}' was executed successfully.")
+            logger.info(result.message)
             self.exec_out.call()
         else:
-            logger.error(f"Execution of sequence '{goal.sequence}' failed.")
+            logger.error(result.message)
 
     def sequence_finished(self, future: Future) -> bool:
         self.last_response = time.time()
@@ -57,6 +57,14 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
             time.sleep(1)
         return True
 
-    def feedback_callback(self, feedback: Sequence.Feedback) -> None:
-        logger.info(str(feedback))
+    def feedback_callback(self, feedback_msg: Sequence.Impl.FeedbackMessage) -> None:
+        feedback = feedback_msg.feedback
+        if feedback.success:
+            logger.info(feedback.message)
+        else:
+            logger.error(feedback.message)
         self.last_response = time.time()
+
+    @staticmethod
+    def category() -> str:
+        return "Custom"

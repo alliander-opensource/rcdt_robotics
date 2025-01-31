@@ -35,20 +35,24 @@ class ActionExecutor(Node):
         result = Sequence.Result()
 
         if not hasattr(actions, goal.sequence):
-            self.get_logger().error(f"Sequence '{goal.sequence}' does not exist.")
+            message = f"Sequence '{goal.sequence}' does not exist."
+            self.get_logger().error(message)
             goal_handle.abort()
             result.success = False
+            result.message = message
             return result
 
         sequence: actions.Sequence = getattr(actions, goal.sequence)
         sequence.node = self
+        sequence.goal_handle = goal_handle
         sequence.execute()
 
         if sequence.success:
             goal_handle.succeed()
+            result.message = f"Sequence '{goal.sequence}' was executed successfully."
         else:
             goal_handle.abort()
-
+            result.message = f"Sequence '{goal.sequence}' was aborted."
         result.success = sequence.success
         return result
 

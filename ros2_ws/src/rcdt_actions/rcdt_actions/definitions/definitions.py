@@ -5,6 +5,9 @@
 from dataclasses import dataclass
 from rclpy.node import Node
 from rclpy.client import Client
+from rclpy.action.server import ServerGoalHandle
+from rcdt_messages.action import Sequence as SequenceMsg
+
 
 TIME_OUT = 3
 
@@ -50,7 +53,7 @@ class Action:
             except AssertionError as e:
                 warn(self.node, f"Skipped '{key}' because of wrong type:\n {e}")
                 return False
-            return True
+        return True
 
     def fill_from_last_result(self, request: object, last_result: object) -> bool:
         if self.links is None:
@@ -94,6 +97,7 @@ class Sequence:
     name: str
     actions: list[Action]
     node: Node | None = None
+    goal_handle: ServerGoalHandle | None = None
     last_result = None
     success = True
     index = 0
@@ -112,10 +116,16 @@ class Sequence:
         info(self.node, f"Starting execution of sequence '{self.name}'.")
 
     def log_progress(self) -> None:
+        feedback = SequenceMsg.Feedback()
+        feedback.success = self.success
         if self.success:
-            info(self.node, f"Finished: {self.current_action().service_name}")
+            message = f"Finished: {self.current_action().service_name}"
+            info(self.node, message)
         else:
-            error(self.node, f"Failed: {self.current_action().service_name}")
+            message = f"Failed: {self.current_action().service_name}"
+            error(self.node, message)
+        feedback.message = message
+        self.goal_handle.publish_feedback(feedback)
 
     def log_result(self) -> None:
         if self.success:

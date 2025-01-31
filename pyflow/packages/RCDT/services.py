@@ -39,12 +39,11 @@ add("TransformPose", "/transform_pose", utilities.TransformPose, group)
 group = "moveit_manager"
 add("AddObject", f"{group}/add_object", utilities.AddObject, group)
 add("AddMarker", f"{group}/add_marker", utilities.AddMarker, group)
+add("DefineGoalPose", f"{group}/define_goal_pose", utilities.DefineGoalPose, group)
 add("ClearObjects", f"{group}/clear_objects", Trigger, group)
 add("ClearMarkers", f"{group}/clear_markers", Trigger, group)
 add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
 add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
-add("PickAtPose", f"{group}/pick_at_pose", utilities.MoveHandToPose, group)
-add("Drop", f"{group}/drop", Trigger, group)
 
 group = "Gripper"
 add("OpenGripper", "/open_gripper", Trigger, group)

@@ -2,7 +2,6 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include <deque>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
@@ -11,15 +10,18 @@
 #include <moveit_visual_tools/moveit_visual_tools.h>
 #include <rcdt_utilities_msgs/srv/add_marker.hpp>
 #include <rcdt_utilities_msgs/srv/add_object.hpp>
-#include <rcdt_utilities_msgs/srv/detail/move_hand_to_pose__struct.hpp>
+#include <rcdt_utilities_msgs/srv/define_goal_pose.hpp>
 #include <rcdt_utilities_msgs/srv/express_pose_in_other_frame.hpp>
 #include <rcdt_utilities_msgs/srv/move_hand_to_pose.hpp>
 #include <rcdt_utilities_msgs/srv/move_to_configuration.hpp>
+#include <rcdt_utilities_msgs/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
 #include <std_srvs/srv/trigger.hpp>
 
 typedef rcdt_utilities_msgs::srv::AddObject AddObject;
 typedef rcdt_utilities_msgs::srv::AddMarker AddMarker;
+typedef rcdt_utilities_msgs::srv::DefineGoalPose DefineGoalPose;
+typedef rcdt_utilities_msgs::srv::TransformGoalPose TransformGoalPose;
 typedef rcdt_utilities_msgs::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_utilities_msgs::srv::MoveHandToPose MoveHandToPose;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
@@ -57,8 +59,6 @@ private:
 
   //   Clients:
   rclcpp::Client<ServoCommandType>::SharedPtr switch_servo_type_client;
-  rclcpp::Client<Trigger>::SharedPtr open_gripper_client;
-  rclcpp::Client<Trigger>::SharedPtr close_gripper_client;
   rclcpp::Client<ExpressPoseInOtherFrame>::SharedPtr
       express_pose_in_other_frame_client;
 
@@ -71,6 +71,15 @@ private:
   void clear_objects(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);
 
+  rclcpp::Service<DefineGoalPose>::SharedPtr define_goal_pose_service;
+  void define_goal_pose(const std::shared_ptr<DefineGoalPose::Request> request,
+                        std::shared_ptr<DefineGoalPose::Response> response);
+
+  rclcpp::Service<TransformGoalPose>::SharedPtr transform_goal_pose_service;
+  void
+  transform_goal_pose(const std::shared_ptr<TransformGoalPose::Request> request,
+                      std::shared_ptr<TransformGoalPose::Response> response);
+
   rclcpp::Service<MoveToConf>::SharedPtr move_to_configuration_service;
   void move_to_configuration(const std::shared_ptr<MoveToConf::Request> request,
                              std::shared_ptr<MoveToConf::Response> response);
@@ -78,14 +87,6 @@ private:
   rclcpp::Service<MoveHandToPose>::SharedPtr move_hand_to_pose_service;
   void move_hand_to_pose(const std::shared_ptr<MoveHandToPose::Request> request,
                          std::shared_ptr<MoveHandToPose::Response> response);
-
-  rclcpp::Service<MoveHandToPose>::SharedPtr pick_at_pose_service;
-  void pick_at_pose(const std::shared_ptr<MoveHandToPose::Request> request,
-                    std::shared_ptr<MoveHandToPose::Response> response);
-
-  rclcpp::Service<Trigger>::SharedPtr drop_service;
-  void drop(const std::shared_ptr<Trigger::Request> request,
-            std::shared_ptr<Trigger::Response> response);
 
   rclcpp::Service<AddMarker>::SharedPtr add_marker_service;
   void add_marker(const std::shared_ptr<AddMarker::Request> request,
@@ -99,11 +100,6 @@ private:
   void initialize_clients();
   void initialize_services();
   void switch_servo_command_type(std::string command_type);
-  bool open_gripper();
-  bool close_gripper();
   PoseStamped change_frame_to_world(PoseStamped pose);
-  bool transform_goal_pose(std::string axis, float value);
   bool plan_and_execute(std::string planning_type = "");
-  bool execute_action(Action action);
-  bool execute_sequence(std::deque<Action> sequence);
 };

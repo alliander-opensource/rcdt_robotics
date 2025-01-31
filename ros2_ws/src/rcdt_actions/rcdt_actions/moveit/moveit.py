@@ -1,7 +1,15 @@
 from rcdt_actions.definitions import Action
-from rcdt_utilities_msgs.srv import MoveToConfiguration, MoveHandToPose
+from rcdt_utilities_msgs.srv import (
+    MoveToConfiguration,
+    MoveHandToPose,
+    TransformGoalPose,
+)
 
 ns = "/moveit_manager"
+
+
+def tranform_goal_pose() -> Action:
+    return Action(f"{ns}/transform_goal_pose", TransformGoalPose)
 
 
 def move_to_configuration() -> Action:
