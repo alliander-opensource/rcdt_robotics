@@ -3,15 +3,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
+from math import atan2
+
 import cv2
 import numpy as np
-from math import atan2
-from tf_transformations import quaternion_from_euler
 from geometry_msgs.msg import (
     Point as ros_Point,
-    Quaternion as ros_Quaternion,
+)
+from geometry_msgs.msg import (
     Pose as ros_Pose,
 )
+from geometry_msgs.msg import (
+    Quaternion as ros_Quaternion,
+)
+from tf_transformations import quaternion_from_euler
 
 
 @dataclass
@@ -25,38 +30,20 @@ class Point2D:
         return self.x, self.y
 
     @property
-    def as_list(self) -> list:
-        return [self.x, self.y]
+    def as_int_tuple(self) -> tuple:
+        return int(self.x), int(self.y)
 
-    def depth_value(self, depth_image: np.ndarray) -> float:
-        """Return the depth value in meters."""
-        return depth_image[self.y, self.x] / 1000
+    @property
+    def as_array(self) -> np.ndarray:
+        return np.array([self.x, self.y])
 
     def surrounding_points(self, grid_size: np.ndarray = 5) -> "Point2DList":
         """Return a dense list of 2D points around self with distance of up to grid_size."""
         surrounding_points = []
         for x_pos in range(self.x - grid_size, self.x + grid_size):
             for y_pos in range(self.y - grid_size, self.y + grid_size):
-                surrounding_points.append(Point2D([x_pos, y_pos]))
+                surrounding_points.append(Point2D(x_pos, y_pos))
         return Point2DList(surrounding_points)
-
-    # def is_inside(self, image: np.ndarray) -> bool:
-    #     """Return if this point falls inside given image dimensions."""
-    #     rows, cols = image.shape
-    #     x, y = self.as_tuple
-    #     return 0 <= x < cols and 0 <= y < rows
-
-    # def is_clearance(
-    #     self, depth_image: np.ndarray, object_depth: float, min_depth: float = 0.05
-    # ) -> bool:
-    #     """Test if corresponding point in depth_image is deeper than min_depth."""
-    #     point_group = self.surrounding_points()
-    #     if not point_group.is_all_inside(depth_image):
-    #         return False
-
-    #     average_depth = point_group.average_depth(depth_image)
-    #     depth_difference = average_depth - object_depth
-    #     return depth_difference > min_depth
 
 
 @dataclass
@@ -108,21 +95,7 @@ class Point2DList:
 
     @property
     def mean(self) -> Point2D:
-        return Point2D(np.mean([point.array for point in self.points], axis=0))
-
-    ### def average_depth(self, depth_image: np.ndarray) -> float:
-    #     """Return the average depth value in meters."""
-    #     return np.mean([point.depth_value(depth_image) for point in self.points])
-
-    #### def is_all_inside(self, image: np.ndarray) -> bool:
-    #     """Return if all points in group fall inside given image."""
-    #     return all(point.is_inside(image) for point in self.points)
-
-    #### def is_clearance(self, depth_image: np.ndarray, object_depth: float) -> bool:
-    #     """Test if all corresponding points in depth_image are deeper than object_depth."""
-    #     return all(
-    #         point.is_clearance(depth_image, object_depth) for point in self.points
-    #     )
+        return Point2D(*np.mean([point.as_array for point in self.points], axis=0))
 
 
 @dataclass
@@ -132,14 +105,14 @@ class Line:
 
     @property
     def length(self) -> float:
-        return np.linalg.norm(self.p1.as_list() - self.p2.as_list())
+        return np.linalg.norm(self.p1.as_array - self.p2.as_array)
 
     @property
     def flipped(self) -> "Line":
         return Line(self.p2, self.p1)
 
     def points_along(self, n: int) -> list[Point2D]:
-        points = np.linspace(self.p1.array, self.p2.array, n + 2, dtype=int)
+        points = np.linspace(self.p1.as_array, self.p2.as_array, n + 2, dtype=int)
         points = points[1:-1]  # remove edges
         return [Point2D(*point) for point in points]
 
@@ -174,12 +147,12 @@ class BoundingBox:
 
     @property
     def center(self) -> Point2D:
-        return Point2D([self.x, self.y])
+        return Point2D(self.x, self.y)
 
     @property
     def corners(self) -> list[Point2D]:
         x, y, w, h, angle_deg = self.ordered_values
-        return [Point2D(point) for point in cv2.boxPoints(((x, y), (w, h), angle_deg))]
+        return [Point2D(*point) for point in cv2.boxPoints(((x, y), (w, h), angle_deg))]
 
     @property
     def long_sides_offset(self) -> SidePair:

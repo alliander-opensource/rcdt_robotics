@@ -12,13 +12,11 @@ import numpy as np
 import pyrealsense2 as rs2
 from rcdt_utilities.geometry import (
     BoundingBox,
-    Line,
     Point2D,
     Point2DList,
     Point3D,
+    Pose,
     Quaternion,
-    SidePair,
-    Pose
 )
 
 from rcdt_detection.image_manipulation import three_to_single_channel
@@ -28,10 +26,9 @@ from rcdt_detection.image_manipulation import three_to_single_channel
 class ImageUtils:
     image: np.ndarray
 
-    @property
-    def average_depth(self) -> float:
+    def average_depth(self, points: Point2DList) -> float:
         """Return the average depth value in meters."""
-        return np.mean([point.depth_value(self.image) for point in self.points])
+        return np.mean([self.depth_value(point) for point in points.points])
 
     def is_point_inside(self, point: Point2D) -> bool:
         """Return if this point falls inside given image dimensions."""
@@ -41,24 +38,28 @@ class ImageUtils:
 
     def is_pointlist_inside(self, points: Point2DList) -> bool:
         """Test if all points in group fall inside given image."""
-        return all(point.is_inside(self.image) for point in points)
+        return all(self.is_point_inside(point) for point in points.points)
 
     def is_point_clearance(
-        self, object_depth: float, min_depth: float, point: Point2D
+        self, point: Point2D, object_depth: float, min_depth: float = 0.05
     ) -> bool:
         """Test if area arround point is deeper than object_depth, and is at least min_depth relative to object_depth."""
         point_group = point.surrounding_points()
-        if not point_group.is_all_inside(self.image):
+        if not self.is_pointlist_inside(point_group):
             return False
-        average_depth = point_group.average_depth(self.image)
+        average_depth = self.average_depth(point_group)
         depth_difference = average_depth - object_depth
         return depth_difference > min_depth
 
     def is_points_clearance(self, object_depth: float, points: Point2DList) -> bool:
         """Test if all corresponding points in depth_image are deeper than object_depth."""
         return all(
-            self.is_point_clearance(self.image, object_depth) for point in points
+            self.is_point_clearance(point, object_depth) for point in points.points
         )
+
+    def depth_value(self, point: Point2D) -> float:
+        """Return the depth value in meters."""
+        return self.image[int(point.y), int(point.x)] / 1000
 
 
 class MaskProperties:
@@ -67,6 +68,7 @@ class MaskProperties:
     ):
         self.mask = mask
         self.depth_image = depth_image
+        self.depth_image_utils = ImageUtils(depth_image)
         self.intrinsics = intrinsics
         self.single_channel = three_to_single_channel(mask)
 
@@ -118,11 +120,10 @@ class MaskProperties:
 
     @property
     def pickup_points(self) -> tuple[Point2DList, Point2DList]:
-        long_sides = self.bounding_box.long_sides_offset()
-        point_pairs = long_sides.point_pairs()
+        point_pairs = self.bounding_box.long_sides_offset.point_pairs()
         clearance = np.array(
             [
-                pair.is_clearance(self.depth_image, self.average_depth)
+                self.depth_image_utils.is_points_clearance(self.average_depth, pair)
                 for pair in point_pairs
             ]
         )
@@ -147,50 +148,50 @@ class MaskProperties:
         for i in range(len(self.bounding_box.corners)):
             cv2.line(
                 image,
-                self.bounding_box.corners[i - 1].as_tuple,
-                self.bounding_box.corners[i].as_tuple,
+                self.bounding_box.corners[i - 1].as_int_tuple,
+                self.bounding_box.corners[i].as_int_tuple,
                 (255, 255, 0),
                 1,
             )
         cv2.line(
             image,
-            self.bounding_box.long_sides_offset().side1.p1.as_tuple,
-            self.bounding_box.long_sides_offset().side1.p2.as_tuple,
+            self.bounding_box.long_sides_offset.side1.p1.as_int_tuple,
+            self.bounding_box.long_sides_offset.side1.p2.as_int_tuple,
             (255, 0, 255),
             1,
         )
         cv2.line(
             image,
-            self.bounding_box.long_sides_offset().side2.p1.as_tuple,
-            self.bounding_box.long_sides_offset().side2.p2.as_tuple,
+            self.bounding_box.long_sides_offset.side2.p1.as_int_tuple,
+            self.bounding_box.long_sides_offset.side2.p2.as_int_tuple,
             (255, 0, 255),
             1,
         )
         suitable, non_suitable = self.pickup_points
         for s_point in suitable.points:
-            cv2.circle(image, s_point.as_tuple, 3, (0, 0, 255), -1)
+            cv2.circle(image, s_point.as_int_tuple, 3, (0, 0, 255), -1)
         for ns_point in non_suitable.points:
-            cv2.circle(image, ns_point.as_tuple, 3, (255, 0, 0), -1)
+            cv2.circle(image, ns_point.as_int_tuple, 3, (255, 0, 0), -1)
 
         point = self.chosen_pickup_point
         if point is not None:
-            cv2.circle(image, point.as_tuple, 3, (0, 255, 0), -1)
+            cv2.circle(image, point.as_int_tuple, 3, (0, 255, 0), -1)
 
-        for point_pair in self.bounding_box.long_sides_offset().point_pairs():
-            cv2.circle(image, point_pair.points[0].as_tuple, 3, (255, 255, 255), -1)
-            cv2.circle(image, point_pair.points[1].as_tuple, 3, (255, 255, 255), -1)
+        for point_pair in self.bounding_box.long_sides_offset.point_pairs():
+            cv2.circle(image, point_pair.points[0].as_int_tuple, 3, (255, 255, 255), -1)
+            cv2.circle(image, point_pair.points[1].as_int_tuple, 3, (255, 255, 255), -1)
         return image
 
     def point_2d_to_3d(self, point: Point2D) -> Point3D:
         x, y, z = rs2.rs2_deproject_pixel_to_point(
-            self.intrinsics, point.array, point.depth_value(self.depth_image)
+            self.intrinsics, point.as_array, self.depth_image_utils.depth_value(point)
         )
-        return Point3D(np.array([x, y, z]))
+        return Point3D(x, y, z)
 
     def point_2d_to_pose(self, point_2d: Point2D) -> Pose:
         point_3d = self.point_2d_to_3d(point_2d)
         # make sure bounding box angle is in the range of 0 to pi radians
         bounding_box_angle = (
-            self.bounding_box.long_sides_offset().side1.angle() % pi
+            self.bounding_box.long_sides_offset.side1.angle() % pi
         ) + pi
         return Pose(point_3d, Quaternion.from_eulerangles(0.0, 0.0, bounding_box_angle))
