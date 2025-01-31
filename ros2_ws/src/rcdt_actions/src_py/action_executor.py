@@ -30,7 +30,17 @@ class ActionExecutor(Node):
 
     def callback(self, goal_handle: ServerGoalHandle) -> Sequence.Result:
         reload(actions)
-        sequence = actions.pick
+
+        goal: Sequence.Goal = goal_handle.request
+        result = Sequence.Result()
+
+        if not hasattr(actions, goal.sequence):
+            self.get_logger().error(f"Sequence '{goal.sequence}' does not exist.")
+            goal_handle.abort()
+            result.success = False
+            return result
+
+        sequence: actions.Sequence = getattr(actions, goal.sequence)
         sequence.node = self
         sequence.execute()
 
@@ -39,7 +49,6 @@ class ActionExecutor(Node):
         else:
             goal_handle.abort()
 
-        result = Sequence.Result()
         result.success = sequence.success
         return result
 
