@@ -11,7 +11,7 @@ from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import JointState
 
-ros_logger = logging.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 MSG_TYPES = {"JointState": JointState}
 WAIT = 3
@@ -24,6 +24,7 @@ class WaitForTopic(Node):
         self.declare_parameter("msg_type", "")
 
         topic = self.get_parameter("topic").get_parameter_value().string_value
+        logger.info(f"waiting for topic: {topic}")
         if topic == "":
             self.error("Empty topic is not supported.")
 
@@ -36,14 +37,14 @@ class WaitForTopic(Node):
         while not success:
             success, _ = wait_for_message(msg_type, self, topic, time_to_wait=WAIT)
             if not success:
-                self.get_logger().warn(
+                logger.warn(
                     f"No message received on topic '{topic}' of type '{msg_type_str}'. Continue waiting..."
                 )
 
     def error(self, msg: str) -> None:
-        self.get_logger().error(msg)
+        logger.error(msg)
         while rclpy.ok:
-            self.get_logger().error("Please restart.")
+            logger.error("Please restart.")
             time.sleep(WAIT)
 
 
