@@ -12,9 +12,13 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import Executor
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
-from launch import LaunchContext
+from launch import Action, LaunchDescription, LaunchContext, LaunchDescriptionEntity
 from launch.substitutions import LaunchConfiguration
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
+from launch.events.process import ProcessExited
+
+SKIP = LaunchDescriptionEntity()
 
 
 class LaunchArgument:
@@ -84,3 +88,14 @@ def spin_executor(executor: Executor) -> None:
         pass
     except Exception as e:
         raise e
+
+
+def register_event_handler(target: Action, complete: LaunchDescription) -> None:
+    def on_completion(
+        _event: ProcessExited, _context: LaunchContext
+    ) -> LaunchDescription:
+        return complete
+
+    return RegisterEventHandler(
+        OnProcessExit(target_action=target, on_exit=on_completion)
+    )

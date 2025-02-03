@@ -2,14 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription, LaunchContext, LaunchDescriptionEntity
+from launch import LaunchDescription, LaunchContext
 from launch.actions import OpaqueFunction, IncludeLaunchDescription
 from launch_ros.actions import Node, SetParameter
 
 from rcdt_utilities.launch_utils import (
     get_file_path,
     get_robot_description,
+    register_event_handler,
     LaunchArgument,
+    SKIP,
 )
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -137,24 +139,42 @@ def launch_setup(context: LaunchContext) -> None:
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
 
-    skip = LaunchDescriptionEntity()
+    primary_ld = LaunchDescription(
+        [
+            robot_state_publisher,
+            robot,
+            static_transform_publisher,
+            joint_state_broadcaster,
+            controllers,
+        ]
+    )
+
+    wait_for_joint_states = Node(
+        package="rcdt_utilities",
+        executable="wait_for_topic.py",
+        parameters=[{"topic": "/joint_states"}, {"msg_type": "JointState"}],
+    )
+
+    secondary_ld = LaunchDescription(
+        [
+            rviz if use_rviz else SKIP,
+            moveit,
+            realsense if use_realsense else SKIP,
+            joy,
+            joy_topic_manager,
+            joy_to_twist_franka,
+            joy_to_gripper,
+            open_gripper,
+            close_gripper,
+            manipulate_pose,
+        ]
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        robot_state_publisher,
-        robot,
-        static_transform_publisher,
-        joint_state_broadcaster,
-        controllers,
-        rviz if use_rviz else skip,
-        moveit,
-        realsense if use_realsense else skip,
-        joy,
-        joy_topic_manager,
-        joy_to_twist_franka,
-        joy_to_gripper,
-        open_gripper,
-        close_gripper,
-        manipulate_pose,
+        primary_ld,
+        wait_for_joint_states,
+        register_event_handler(wait_for_joint_states, secondary_ld),
     ]
 
 
