@@ -23,7 +23,7 @@ extensions = [
     "myst_parser",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
-    "sphinxcontrib.video",
+    "sphinxcontrib-video",
 ]
 
 myst_enable_extensions = ["colon_fence"]
