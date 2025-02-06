@@ -5,13 +5,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from rclpy import logging
-from rclpy.node import Node
-from sensor_msgs.msg import Image, CameraInfo
-from realsense2_camera_msgs.msg import RGBD
 from rcdt_utilities.launch_utils import spin_node
-
-ros_logger = logging.get_logger(__name__)
+from rclpy.node import Node
+from realsense2_camera_msgs.msg import RGBD
+from sensor_msgs.msg import CameraInfo, Image
 
 
 class CombineCameraTopics(Node):

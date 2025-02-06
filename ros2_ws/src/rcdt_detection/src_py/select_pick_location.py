@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from logging import getLogger
+
 import numpy as np
 import rclpy
 from rcdt_detection.mask_properties import MaskProperties, Pose
@@ -14,10 +16,9 @@ from rcdt_utilities.cv_utils import (
     ros_image_to_cv2_image,
 )
 from rcdt_utilities.launch_utils import spin_node
-from rclpy import logging
 from rclpy.node import Node
 
-logger = logging.get_logger(__name__)
+logger = getLogger(__name__)
 
 
 class SelectPickLocation(Node):

@@ -3,18 +3,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
-from operator import attrgetter
-from PyFlow.Core import NodeBase, PinBase
-import rclpy
-from rclpy.node import Node
-from threading import Thread
-from time import time, sleep
 from logging import getLogger
+from operator import attrgetter
+from threading import Thread
+from time import sleep, time
+
+import rclpy
+from PyFlow.Core import NodeBase, PinBase
+from rclpy.node import Node
+
+logger = getLogger(__name__)
 
 SERVICE_AVAILABLE_TIMEOUT = 3
 SERVICE_RESPONSE_TIMEOUT = 20
-
-logger = getLogger(__name__)
 
 
 class PinManager:
@@ -45,7 +46,7 @@ class PyflowRosBridge:
     rclpy.init()
     node = Node("pyflow")
     Thread(target=rclpy.spin, args=[node], daemon=True).start()
-    node.get_logger().info("PyFlow ROS Node started!")
+    logger.info("PyFlow ROS Node started!")
 
 
 class PyflowBase(NodeBase):

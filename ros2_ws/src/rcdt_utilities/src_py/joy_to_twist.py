@@ -4,15 +4,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
-from rclpy import logging
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
-from sensor_msgs.msg import Joy
-from geometry_msgs.msg import TwistStamped
-from rcdt_utilities.launch_utils import get_yaml, get_file_path
+from logging import getLogger
 
-ros_logger = logging.get_logger(__name__)
+import rclpy
+from geometry_msgs.msg import TwistStamped
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
+from rclpy.node import Node
+from sensor_msgs.msg import Joy
+
+logger = getLogger(__name__)
 
 
 class JoyToTwist(Node):
@@ -29,22 +29,22 @@ class JoyToTwist(Node):
         pub_frame = self.get_parameter("pub_frame").get_parameter_value().string_value
 
         if sub_topic == "":
-            self.get_logger().warn("No subscriber topic was specified. Exiting.")
+            logger.warning("No subscriber topic was specified. Exiting.")
             return
 
         if pub_topic == "":
-            self.get_logger().warn("No publisher topic was specified. Exiting.")
+            logger.warning("No publisher topic was specified. Exiting.")
             return
 
         if config_pkg == "":
-            self.get_logger().warn("No package for config file was specified. Exiting.")
+            logger.warning("No package for config file was specified. Exiting.")
             return
 
         config = get_file_path(config_pkg, ["config"], "gamepad_mapping.yaml")
         self.mapping = get_yaml(config)
 
         if self.mapping == "":
-            self.get_logger().warn(f"No mapping was found in {config}. Exiting.")
+            logger.warning(f"No mapping was found in {config}. Exiting.")
             return
 
         self.create_subscription(Joy, sub_topic, self.handle_input, 10)
