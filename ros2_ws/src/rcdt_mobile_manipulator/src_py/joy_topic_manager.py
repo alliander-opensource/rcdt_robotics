@@ -18,6 +18,7 @@ from std_srvs.srv import SetBool
 
 logger = getLogger(__name__)
 
+
 @dataclass
 class Output:
     button: int

@@ -20,7 +20,6 @@ MAX = 0.039
 MIN = 0.001
 
 
-
 class GripperActionControllerClient(Node):
     def __init__(self):
         super().__init__("gripper_action_controller_client")

@@ -11,6 +11,7 @@ import rclpy
 from geometry_msgs.msg import Point, PoseStamped, Transform, TransformStamped
 from rcdt_utilities.launch_utils import spin_node
 from rcdt_utilities_msgs.srv import ExpressPoseInOtherFrame, TransformPose
+from rclpy import time
 from rclpy.node import Node
 from tf2_geometry_msgs import do_transform_pose_stamped
 from tf2_ros import TransformException
@@ -50,9 +51,7 @@ class ManipulatePose(Node):
                 target_frame, source_frame, time.Time()
             )
         except TransformException as ex:
-            logger.error(
-                f"Could not transform {target_frame} to {source_frame}: {ex}"
-            )
+            logger.error(f"Could not transform {target_frame} to {source_frame}: {ex}")
             response.success = False
             return response
         response.pose = do_transform_pose_stamped(request.pose, transform)
