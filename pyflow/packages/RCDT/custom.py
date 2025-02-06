@@ -2,11 +2,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from PyFlow.Core import PinBase, NodeBase
+from logging import getLogger
+
+from PyFlow.Core import NodeBase, PinBase
 from PyFlow.Core.Common import PinDirection, PinOptions
 from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
+
 from RCDT.Core.core import PyflowExecutor
-from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class AnyPinCustom(AnyPin):
@@ -35,11 +39,10 @@ class LogAnything(PyflowExecutor):
         self.createInputPin("In", "ExecPin", callback=self.execute)
         self.exec_out: PinBase = self.createOutputPin("Out", "ExecPin")
         self.input_pin: PinBase = self.createInputPin("data", "AnyPinCustom")
-        self.logger = getLogger("LogAnything")
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
         data = self.input_pin.getData()
-        self.logger.info(data)
+        logger.info(data)
         self.exec_out.call()
 
     @staticmethod

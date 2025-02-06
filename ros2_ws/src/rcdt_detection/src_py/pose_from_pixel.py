@@ -4,16 +4,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
+from logging import getLogger
+
 import pyrealsense2 as rs2
-from rclpy import logging
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
-from sensor_msgs.msg import CameraInfo
+import rclpy
 from rcdt_detection_msgs.srv import PoseFromPixel as Srv
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
+from rcdt_utilities.launch_utils import spin_node
+from rclpy.node import Node
+from sensor_msgs.msg import CameraInfo
 
-ros_logger = logging.get_logger(__name__)
+logger = getLogger(__name__)
 
 
 class PoseFromPixel(Node):
@@ -31,7 +32,7 @@ class PoseFromPixel(Node):
         y_pixel = int(request.pixel.y)
 
         if not is_pixel_valid(width, height, [x_pixel, y_pixel]):
-            ros_logger.error("Requested pixel location is invalid. Exiting.")
+            logger.error("Requested pixel location is invalid. Exiting.")
             response.success = False
             return response
 
@@ -40,7 +41,7 @@ class PoseFromPixel(Node):
             intr, [x_pixel, y_pixel], depth_value
         )
         x_m, y_m, z_m = x_mm / 1000, y_mm / 1000, z_mm / 1000
-        self.get_logger().info(
+        logger.info(
             f"Pixel ({x_pixel}, {y_pixel}) corresponds to Point ({x_m:.3f}, {y_m:.3f}, {z_m:.3f})."
         )
         response.pose.pose.position.x = float(x_m)
@@ -54,10 +55,10 @@ class PoseFromPixel(Node):
 def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
     valid = True
     if not 0 <= pixel[0] < width:
-        ros_logger.warn(f"Pixel x={pixel[0]} while image width={width}.")
+        logger.warning(f"Pixel x={pixel[0]} while image width={width}.")
         valid = False
     if not 0 <= pixel[1] < height:
-        ros_logger.warn(f"Pixel y={pixel[0]} while image height={height}.")
+        logger.warning(f"Pixel y={pixel[0]} while image height={height}.")
         valid = False
     return valid
 

@@ -3,17 +3,22 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from logging import getLogger
+
 import rclpy
-from rclpy.action import ActionServer, ActionClient
-from rclpy.action.server import ServerGoalHandle
-from rclpy.node import Node
-from franka_msgs.action import Grasp, Homing, Move
 from control_msgs.action import GripperCommand
-from rclpy.executors import MultiThreadedExecutor
+from franka_msgs.action import Grasp, Homing, Move
 from rcdt_utilities.launch_utils import spin_executor
+from rclpy.action import ActionClient, ActionServer
+from rclpy.action.server import ServerGoalHandle
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+
+logger = getLogger(__name__)
 
 MAX = 0.039
 MIN = 0.001
+
 
 
 class GripperActionControllerClient(Node):
@@ -53,32 +58,32 @@ class FrankaGripperSimulation(Node):
         ActionServer(self, Move, "~/move", self.move_action)
 
     def grasp_action(self, goal_handle: ServerGoalHandle) -> Grasp.Result:
-        self.get_logger().info("Gripper Grasping...")
+        logger.info("Gripper Grasping...")
         request: Grasp.Goal = goal_handle.request
         result = Grasp.Result()
         if self.gripper_action_client.grasp(0, request.force):
             goal_handle.succeed()
             result.success = True
-            self.get_logger().info("Gripper Grasping succeeded")
+            logger.info("Gripper Grasping succeeded")
         return result
 
     def homing_action(self, goal_handle: ServerGoalHandle) -> Homing.Result:
-        self.get_logger().info("Gripper Homing...")
+        logger.info("Gripper Homing...")
         result = Homing.Result()
         if self.gripper_action_client.move(MAX):
             goal_handle.succeed()
             result.success = True
-            self.get_logger().info("Gripper Homing succeeded")
+            logger.info("Gripper Homing succeeded")
         return result
 
     def move_action(self, goal_handle: ServerGoalHandle) -> Move.Result:
-        self.get_logger().info("Gripper Moving...")
+        logger.info("Gripper Moving...")
         request: Move.Goal = goal_handle.request
         result = Move.Result()
         if self.gripper_action_client.move(request.width):
             goal_handle.succeed()
             result.success = True
-            self.get_logger().info("Gripper Moving succeeded")
+            logger.info("Gripper Moving succeeded")
         return result
 
 

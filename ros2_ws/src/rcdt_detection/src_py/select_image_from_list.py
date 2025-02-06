@@ -4,13 +4,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from logging import getLogger
+
 import rclpy
-from rclpy import logging
-from rclpy.node import Node
 from rcdt_detection_msgs.srv import SelectImageFromList as Srv
 from rcdt_utilities.launch_utils import spin_node
+from rclpy.node import Node
 
-ros_logger = logging.get_logger(__name__)
+logger = getLogger(__name__)
 
 
 class SelectImageFromList(Node):
@@ -22,9 +23,7 @@ class SelectImageFromList(Node):
         n_images = len(request.image_list)
         n_select = request.n
         if n_select >= n_images:
-            ros_logger.error(
-                f"Index {n_select} out of range for length {n_images}. Exit."
-            )
+            logger.error(f"Index {n_select} out of range for length {n_images}. Exit.")
             response.success = False
             return response
         response.image = request.image_list[n_select]

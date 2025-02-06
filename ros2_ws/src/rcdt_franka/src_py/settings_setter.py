@@ -3,9 +3,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from logging import getLogger
+
 import rclpy
 from rclpy.node import Node
 from franka_msgs.srv import SetForceTorqueCollisionBehavior
+
+logger = getLogger(__name__)
 
 MAX_TORQUES = [100.0, 100.0, 100.0, 80.0, 80.0, 40.0, 40.0]
 MAX_FORCES = [100.0, 100.0, 100.0, 30.0, 30.0, 30.0]
@@ -19,7 +23,7 @@ class SettingsSetter(Node):
             "/service_server/set_force_torque_collision_behavior",
         )
         while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info("service not available, waiting again...")
+            logger.info("service not available, waiting again...")
         self.request = SetForceTorqueCollisionBehavior.Request()
 
     def set_thresholds(self) -> SetForceTorqueCollisionBehavior.Response:
@@ -35,9 +39,9 @@ def main(args: str = None) -> None:
     settings_setter = SettingsSetter()
     response = settings_setter.set_thresholds()
     if response.success:
-        settings_setter.get_logger().info("Thresholds set successfully.")
+        logger.info("Thresholds set successfully.")
     else:
-        settings_setter.get_logger().warn("Setting thresholds failed.")
+        logger.warn("Setting thresholds failed.")
     settings_setter.destroy_node()
     rclpy.shutdown()
 

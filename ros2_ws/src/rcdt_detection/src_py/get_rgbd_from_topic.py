@@ -4,15 +4,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
-from rclpy import logging
-from rclpy.node import Node
-from rclpy import wait_for_message
-from rcdt_detection_msgs.srv import GetRGBDFromTopic as Srv
-from realsense2_camera_msgs.msg import RGBD
-from rcdt_utilities.launch_utils import spin_node
+from logging import getLogger
 
-ros_logger = logging.get_logger(__name__)
+import rclpy
+from rcdt_detection_msgs.srv import GetRGBDFromTopic as Srv
+from rcdt_utilities.launch_utils import spin_node
+from rclpy import wait_for_message
+from rclpy.node import Node
+from realsense2_camera_msgs.msg import RGBD
+
+logger = getLogger(__name__)
 
 
 class GetRGBDFromTopic(Node):
@@ -22,7 +23,7 @@ class GetRGBDFromTopic(Node):
 
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
         if request.topic == "":
-            ros_logger.error("No topic was specified. Exit.")
+            logger.error("No topic was specified. Exit.")
             response.success = False
             return response
         response.success, rgbd = wait_for_message.wait_for_message(
@@ -35,7 +36,7 @@ class GetRGBDFromTopic(Node):
             response.rgb_info = rgbd.rgb_camera_info
             response.depth_info = rgbd.depth_camera_info
         else:
-            ros_logger.error(f"No RGBD message received on {request.topic}.")
+            logger.error(f"No RGBD message received on {request.topic}.")
         return response
 
 

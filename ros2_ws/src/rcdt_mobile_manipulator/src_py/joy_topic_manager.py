@@ -5,16 +5,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
+from logging import getLogger
+
 import mashumaro.codecs.yaml as yaml_codec
 import rclpy
-from rclpy.node import Node, Publisher
-from rclpy.executors import MultiThreadedExecutor
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node, Publisher
 from sensor_msgs.msg import Joy
-from rcdt_utilities.launch_utils import spin_executor
-from rcdt_utilities.launch_utils import get_yaml, get_file_path
 from std_srvs.srv import SetBool
 
+logger = getLogger(__name__)
 
 @dataclass
 class Output:
@@ -70,21 +72,21 @@ class JoyTopicManager(Node):
             return False
         self.topic = topic
         if self.topic is None:
-            self.get_logger().info("Joy topic passing stopped.")
+            logger.info("Joy topic passing stopped.")
         else:
-            self.get_logger().info(f"Joy topic is now passed to {self.topic}.")
+            logger.info(f"Joy topic is now passed to {self.topic}.")
         return True
 
     def toggle_servo(self, pause: bool) -> None:
         request = SetBool.Request()
         request.data = pause
         action = "pausing" if pause else "starting"
-        self.get_logger().info(action + " moveit servo...")
+        logger.info(f"{action} moveit servo...")
         response: SetBool.Response = self.client.call(request)
         if response.success:
-            self.get_logger().info(action + " moveit servo succeeded.")
+            logger.info(f"{action} moveit servo succeeded.")
         else:
-            self.get_logger().info(action + " moveit servo failed.")
+            logger.info(f"{action} moveit servo failed.")
 
     def pass_joy_message(self, msg: Joy) -> None:
         if self.topic is None:

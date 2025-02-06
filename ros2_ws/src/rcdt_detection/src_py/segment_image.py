@@ -4,20 +4,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
+from logging import getLogger
+
 import cv2
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
-from rclpy import logging
-from rcdt_detection_msgs.srv import SegmentImage as Srv
-from rcdt_detection.segmentation import segment_image, load_segmentation_model
-from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
+import rclpy
 from rcdt_detection.image_manipulation import (
     segmentation_mask_to_binary_mask,
     single_to_three_channel,
 )
+from rcdt_detection.segmentation import load_segmentation_model, segment_image
+from rcdt_detection_msgs.srv import SegmentImage as Srv
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
+from rcdt_utilities.launch_utils import spin_node
+from rclpy.node import Node
 
-ros_logger = logging.get_logger(__name__)
+logger = getLogger(__name__)
 
 
 class SegmentImage(Node):
@@ -32,9 +33,9 @@ class SegmentImage(Node):
         input_image_ros = request.input_image
         input_image_cv2 = ros_image_to_cv2_image(input_image_ros)
 
-        ros_logger.info("Start segmentation...")
+        logger.info("Start segmentation...")
         result = segment_image(self.model, input_image_cv2)
-        ros_logger.info("Finished segmentation!")
+        logger.info("Finished segmentation!")
         output_image_cv2 = result.plot(labels=False, boxes=False, conf=False)
         output_image_ros = cv2_image_to_ros_image(output_image_cv2)
         response.segmented_image = output_image_ros

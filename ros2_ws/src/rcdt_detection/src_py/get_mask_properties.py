@@ -15,8 +15,6 @@ from rcdt_detection_msgs.srv import GetMaskProperties as Srv
 from rcdt_detection.mask_properties import MaskProperties
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image, camera_info_to_intrinsics
 
-ros_logger = logging.get_logger(__name__)
-
 
 class GetMaskProperties(Node):
     def __init__(self) -> None:

@@ -4,15 +4,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
 import numpy as np
-from rclpy import logging
-from rclpy.node import Node
+import rclpy
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
+from rclpy.node import Node
 from sensor_msgs.msg import Image
-from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
-
-ros_logger = logging.get_logger(__name__)
 
 
 class Convert32FC1to16UC1(Node):

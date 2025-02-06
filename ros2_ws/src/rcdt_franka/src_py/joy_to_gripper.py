@@ -4,18 +4,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
-from typing import Literal
 from threading import Thread
-from rclpy import logging
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
+from typing import Literal
+
+import rclpy
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
-from rcdt_utilities.launch_utils import get_yaml, get_file_path, spin_executor
-
-ros_logger = logging.get_logger(__name__)
 
 
 class JoyToGripper(Node):

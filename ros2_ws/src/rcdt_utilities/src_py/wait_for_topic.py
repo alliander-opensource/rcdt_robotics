@@ -4,14 +4,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
 import time
-from rclpy import logging
+from logging import getLogger
+
+import rclpy
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import JointState
 
-logger = logging.get_logger(__name__)
+logger = getLogger(__name__)
 
 MSG_TYPES = {"JointState": JointState}
 WAIT = 3
@@ -37,7 +38,7 @@ class WaitForTopic(Node):
         while not success:
             success, _ = wait_for_message(msg_type, self, topic, time_to_wait=WAIT)
             if not success:
-                logger.warn(
+                logger.warning(
                     f"No message received on topic '{topic}' of type '{msg_type_str}'. Continue waiting..."
                 )
 
