@@ -5,15 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from rclpy import logging
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
-
-from vision_msgs.msg import Point2D
-
-from rcdt_detection_msgs.srv import GetMaskProperties as Srv
 from rcdt_detection.mask_properties import MaskProperties
-from rcdt_utilities.cv_utils import ros_image_to_cv2_image, camera_info_to_intrinsics
+from rcdt_detection_msgs.srv import GetMaskProperties as Srv
+from rcdt_utilities.cv_utils import camera_info_to_intrinsics, ros_image_to_cv2_image
+from rcdt_utilities.launch_utils import spin_node
+from rclpy.node import Node
+from vision_msgs.msg import Point2D
 
 
 class GetMaskProperties(Node):
