@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from rclpy.node import Node
 from franka_msgs.srv import SetForceTorqueCollisionBehavior
+from rclpy.node import Node
 
 MAX_TORQUES = [100.0, 100.0, 100.0, 80.0, 80.0, 40.0, 40.0]
 MAX_FORCES = [100.0, 100.0, 100.0, 30.0, 30.0, 30.0]

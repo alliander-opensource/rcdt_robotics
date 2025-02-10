@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from RCDT.Core.core import Service, Message
+from RCDT.Core.core import Message, Service
 from RCDT.Core.definitions import ServiceDefinition
 
 

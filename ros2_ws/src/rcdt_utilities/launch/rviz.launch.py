@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from moveit_configs_utils import MoveItConfigsBuilder
-from launch import LaunchDescription, LaunchContext
+from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
+from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 rviz_frame_arg = LaunchArgument("rviz_frame", "world")

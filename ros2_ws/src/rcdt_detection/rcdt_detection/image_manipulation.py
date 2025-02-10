@@ -2,12 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from math import ceil, floor
+
 import cv2
-from numpy import ndarray, uint8
 import torch
-from sensor_msgs.msg import Image
+from numpy import ndarray, uint8
 from rcdt_utilities import cv_utils
-from math import floor, ceil
+from sensor_msgs.msg import Image
 
 
 def slice_image_to_stride(image: ndarray, stride: int = 32) -> ndarray:

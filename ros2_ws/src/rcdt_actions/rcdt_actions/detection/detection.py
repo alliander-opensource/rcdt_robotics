@@ -2,8 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from rcdt_actions.definitions import Action
 from rcdt_messages.srv import GetRGBDFromTopic, SegmentImage
+
+from rcdt_actions.definitions import Action
 
 
 def get_rgbd_from_topic() -> Action:

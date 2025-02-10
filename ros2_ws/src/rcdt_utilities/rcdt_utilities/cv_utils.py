@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from cv_bridge import CvBridge
 import pyrealsense2 as rs2
-from sensor_msgs.msg import Image, CameraInfo
+from cv_bridge import CvBridge
 from numpy import ndarray
+from sensor_msgs.msg import CameraInfo, Image
 
 cv_bridge = CvBridge()
 

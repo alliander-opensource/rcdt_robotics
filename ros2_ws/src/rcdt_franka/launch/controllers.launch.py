@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription, LaunchContext, LaunchDescriptionEntity
+from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 simulation_arg = LaunchArgument("simulation", True, [True, False])

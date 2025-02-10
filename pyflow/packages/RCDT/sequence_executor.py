@@ -2,14 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import time
+from logging import getLogger
+
+from PyFlow.Core import PinBase
+from rcdt_messages.action import Sequence
 from rclpy.action import ActionClient
 from rclpy.action.client import ClientGoalHandle
 from rclpy.task import Future
-from RCDT.Core.core import PyflowRosBridge, PyflowNonBlockingExecutor
-from PyFlow.Core import PinBase
-from logging import getLogger
-from rcdt_messages.action import Sequence
-import time
+
+from RCDT.Core.core import PyflowNonBlockingExecutor, PyflowRosBridge
 
 logger = getLogger(__name__)
 

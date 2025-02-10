@@ -2,11 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from PyFlow.Core import PinBase, NodeBase
+from logging import getLogger
+
+from PyFlow.Core import NodeBase, PinBase
 from PyFlow.Core.Common import PinDirection, PinOptions
 from PyFlow.Packages.PyFlowBase.Pins.AnyPin import AnyPin
+
 from RCDT.Core.core import PyflowExecutor
-from logging import getLogger
 
 
 class AnyPinCustom(AnyPin):

@@ -4,13 +4,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
 import numpy as np
+import rclpy
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
+from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import Image
-from rcdt_utilities.cv_utils import ros_image_to_cv2_image, cv2_image_to_ros_image
 
 ros_logger = logging.get_logger(__name__)
 

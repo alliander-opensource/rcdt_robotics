@@ -5,12 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from rclpy import logging
-from rclpy.node import Node
-from rclpy import wait_for_message
 from rcdt_messages.srv import GetRGBDFromTopic as Srv
-from realsense2_camera_msgs.msg import RGBD
 from rcdt_utilities.launch_utils import spin_node
+from rclpy import logging, wait_for_message
+from rclpy.node import Node
+from realsense2_camera_msgs.msg import RGBD
 
 ros_logger = logging.get_logger(__name__)
 

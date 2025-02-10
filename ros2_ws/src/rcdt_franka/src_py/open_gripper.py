@@ -5,13 +5,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_executor
-from rclpy.action import ActionClient
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy import logging
 from franka_msgs.action import Move
+from rcdt_utilities.launch_utils import spin_executor
+from rclpy import logging
+from rclpy.action import ActionClient
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
 from std_srvs.srv import Trigger
 
 ros_logger = logging.get_logger(__name__)

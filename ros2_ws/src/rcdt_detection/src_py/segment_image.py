@@ -4,18 +4,18 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rclpy
 import cv2
-from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
-from rclpy import logging
-from rcdt_messages.srv import SegmentImage as Srv
-from rcdt_detection.segmentation import segment_image, load_segmentation_model
-from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
+import rclpy
 from rcdt_detection.image_manipulation import (
     segmentation_mask_to_binary_mask,
     single_to_three_channel,
 )
+from rcdt_detection.segmentation import load_segmentation_model, segment_image
+from rcdt_messages.srv import SegmentImage as Srv
+from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
+from rcdt_utilities.launch_utils import spin_node
+from rclpy import logging
+from rclpy.node import Node
 
 ros_logger = logging.get_logger(__name__)
 

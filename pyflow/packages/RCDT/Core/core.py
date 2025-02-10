@@ -3,13 +3,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
-from operator import attrgetter
-from PyFlow.Core import NodeBase, PinBase
-import rclpy
-from rclpy.node import Node
-from threading import Thread
-from time import time, sleep
 from logging import getLogger
+from operator import attrgetter
+from threading import Thread
+from time import sleep, time
+
+import rclpy
+from PyFlow.Core import NodeBase, PinBase
+from rclpy.node import Node
 
 SERVICE_AVAILABLE_TIMEOUT = 3
 SERVICE_RESPONSE_TIMEOUT = 20
