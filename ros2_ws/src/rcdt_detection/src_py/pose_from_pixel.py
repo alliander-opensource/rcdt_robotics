@@ -10,7 +10,7 @@ from rclpy import logging
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import CameraInfo
-from rcdt_detection_msgs.srv import PoseFromPixel as Srv
+from rcdt_messages.srv import PoseFromPixel as Srv
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 
 ros_logger = logging.get_logger(__name__)

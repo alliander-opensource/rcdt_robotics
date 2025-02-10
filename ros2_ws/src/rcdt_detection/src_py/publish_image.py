@@ -8,7 +8,7 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
-from rcdt_detection_msgs.srv import PublishImage as Srv
+from rcdt_messages.srv import PublishImage as Srv
 from sensor_msgs.msg import Image
 
 ros_logger = logging.get_logger(__name__)

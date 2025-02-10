@@ -8,27 +8,26 @@
 #include <moveit/robot_model/joint_model_group.hpp>
 #include <moveit_msgs/srv/servo_command_type.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
-#include <rcdt_utilities_msgs/srv/add_marker.hpp>
-#include <rcdt_utilities_msgs/srv/add_object.hpp>
-#include <rcdt_utilities_msgs/srv/define_goal_pose.hpp>
-#include <rcdt_utilities_msgs/srv/express_pose_in_other_frame.hpp>
-#include <rcdt_utilities_msgs/srv/move_hand_to_pose.hpp>
-#include <rcdt_utilities_msgs/srv/move_to_configuration.hpp>
-#include <rcdt_utilities_msgs/srv/transform_goal_pose.hpp>
+#include <rcdt_messages/srv/add_marker.hpp>
+#include <rcdt_messages/srv/add_object.hpp>
+#include <rcdt_messages/srv/define_goal_pose.hpp>
+#include <rcdt_messages/srv/express_pose_in_other_frame.hpp>
+#include <rcdt_messages/srv/move_hand_to_pose.hpp>
+#include <rcdt_messages/srv/move_to_configuration.hpp>
+#include <rcdt_messages/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
 #include <std_srvs/srv/trigger.hpp>
 
-typedef rcdt_utilities_msgs::srv::AddObject AddObject;
-typedef rcdt_utilities_msgs::srv::AddMarker AddMarker;
-typedef rcdt_utilities_msgs::srv::DefineGoalPose DefineGoalPose;
-typedef rcdt_utilities_msgs::srv::TransformGoalPose TransformGoalPose;
-typedef rcdt_utilities_msgs::srv::MoveToConfiguration MoveToConf;
-typedef rcdt_utilities_msgs::srv::MoveHandToPose MoveHandToPose;
+typedef rcdt_messages::srv::AddObject AddObject;
+typedef rcdt_messages::srv::AddMarker AddMarker;
+typedef rcdt_messages::srv::DefineGoalPose DefineGoalPose;
+typedef rcdt_messages::srv::TransformGoalPose TransformGoalPose;
+typedef rcdt_messages::srv::MoveToConfiguration MoveToConf;
+typedef rcdt_messages::srv::MoveHandToPose MoveHandToPose;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
 typedef geometry_msgs::msg::PoseStamped PoseStamped;
-typedef rcdt_utilities_msgs::srv::ExpressPoseInOtherFrame
-    ExpressPoseInOtherFrame;
+typedef rcdt_messages::srv::ExpressPoseInOtherFrame ExpressPoseInOtherFrame;
 
 struct Action {
   std::string name;

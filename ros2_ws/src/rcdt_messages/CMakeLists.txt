@@ -10,6 +10,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(vision_msgs REQUIRED)
 
 file(GLOB MSGS CONFIGURE_DEPENDS msg/*.msg*)
 file(GLOB SRVS CONFIGURE_DEPENDS srv/*.srv*)
@@ -34,7 +37,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   ${MSGS_STRIPPED}
   ${SRVS_STRIPPED}
   ${ACTIONS_STRIPPED}
-  DEPENDENCIES std_msgs
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+  vision_msgs
 )
 
 if(BUILD_TESTING)

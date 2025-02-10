@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from rcdt_actions.definitions import Action
-from rcdt_utilities_msgs.srv import (
+from rcdt_messages.srv import (
     MoveToConfiguration,
     MoveHandToPose,
     TransformGoalPose,

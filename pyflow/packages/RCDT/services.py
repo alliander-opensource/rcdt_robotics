@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rcdt_detection_msgs.srv as detection
-import rcdt_utilities_msgs.srv as utilities
+from rcdt_messages import srv
 from std_srvs.srv import Trigger
 from RCDT.Core.definitions import ServiceDefinition
 
@@ -23,27 +22,27 @@ def add(
 
 # fmt: off
 group = "Detection"
-add("GetMaskProperties","/get_mask_properties", detection.GetMaskProperties, group)
-add("GetRGBDFromTopic", "/get_rgbd_from_topic", detection.GetRGBDFromTopic, group)
-add("PoseFromPixel", "/pose_from_pixel", detection.PoseFromPixel, group)
-add("PublishImage", "/publish_image", detection.PublishImage, group)
-add("PublishMasks", "/publish_masks", detection.PublishMasks, group)
-add("SegmentImage", "/segment_image", detection.SegmentImage, group)
-add("SelectImageFromList", "/select_image_from_list", detection.SelectImageFromList, group)
-add("SelectPickLocation", "/select_pick_location", detection.SelectPickLocation, group)
+add("GetMaskProperties","/get_mask_properties", srv.GetMaskProperties, group)
+add("GetRGBDFromTopic", "/get_rgbd_from_topic", srv.GetRGBDFromTopic, group)
+add("PoseFromPixel", "/pose_from_pixel", srv.PoseFromPixel, group)
+add("PublishImage", "/publish_image", srv.PublishImage, group)
+add("PublishMasks", "/publish_masks", srv.PublishMasks, group)
+add("SegmentImage", "/segment_image", srv.SegmentImage, group)
+add("SelectImageFromList", "/select_image_from_list", srv.SelectImageFromList, group)
+add("SelectPickLocation", "/select_pick_location", srv.SelectPickLocation, group)
 
 group = "Utilities"
-add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", utilities.ExpressPoseInOtherFrame, group)
-add("TransformPose", "/transform_pose", utilities.TransformPose, group)
+add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", srv.ExpressPoseInOtherFrame, group)
+add("TransformPose", "/transform_pose", srv.TransformPose, group)
 
 group = "moveit_manager"
-add("AddObject", f"{group}/add_object", utilities.AddObject, group)
-add("AddMarker", f"{group}/add_marker", utilities.AddMarker, group)
-add("DefineGoalPose", f"{group}/define_goal_pose", utilities.DefineGoalPose, group)
+add("AddObject", f"{group}/add_object", srv.AddObject, group)
+add("AddMarker", f"{group}/add_marker", srv.AddMarker, group)
+add("DefineGoalPose", f"{group}/define_goal_pose", srv.DefineGoalPose, group)
 add("ClearObjects", f"{group}/clear_objects", Trigger, group)
 add("ClearMarkers", f"{group}/clear_markers", Trigger, group)
-add("MoveHandToPose", f"{group}/move_hand_to_pose", utilities.MoveHandToPose, group)
-add("MoveToConfiguration", f"{group}/move_to_configuration", utilities.MoveToConfiguration, group)
+add("MoveHandToPose", f"{group}/move_hand_to_pose", srv.MoveHandToPose, group)
+add("MoveToConfiguration", f"{group}/move_to_configuration", srv.MoveToConfiguration, group)
 
 group = "Gripper"
 add("OpenGripper", "/open_gripper", Trigger, group)

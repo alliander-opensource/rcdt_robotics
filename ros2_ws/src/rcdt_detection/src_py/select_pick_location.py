@@ -7,7 +7,7 @@
 import numpy as np
 import rclpy
 from rcdt_detection.mask_properties import MaskProperties, Pose
-from rcdt_detection_msgs.srv import SelectPickLocation as Srv
+from rcdt_messages.srv import SelectPickLocation as Srv
 from rcdt_utilities.cv_utils import (
     camera_info_to_intrinsics,
     cv2_image_to_ros_image,
