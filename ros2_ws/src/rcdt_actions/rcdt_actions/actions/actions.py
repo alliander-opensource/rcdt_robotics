@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from rcdt_actions.definitions import Sequence
 from rcdt_actions.gripper import gripper
 from rcdt_actions.moveit import moveit

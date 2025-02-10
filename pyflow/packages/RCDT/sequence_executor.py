@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from rclpy.action import ActionClient
 from rclpy.action.client import ClientGoalHandle
 from rclpy.task import Future
