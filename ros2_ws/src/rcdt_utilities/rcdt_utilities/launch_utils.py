@@ -2,23 +2,23 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import List
-import os
-import yaml
-import xacro
 import ast
+import os
 import time
+from typing import List
 
 import rclpy
-from rclpy.logging import get_logger
-from rclpy.node import Node
-from rclpy.executors import Executor
-from ament_index_python.packages import get_package_share_directory, get_package_prefix
-from launch import Action, LaunchDescription, LaunchContext, LaunchDescriptionEntity
-from launch.substitutions import LaunchConfiguration
+import xacro
+import yaml
+from ament_index_python.packages import get_package_prefix, get_package_share_directory
+from launch import Action, LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.events.process import ProcessExited
+from launch.substitutions import LaunchConfiguration
+from rclpy.executors import Executor
+from rclpy.logging import get_logger
+from rclpy.node import Node
 
 SKIP = LaunchDescriptionEntity()
 WAIT = 3

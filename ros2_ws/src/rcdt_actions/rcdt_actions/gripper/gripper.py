@@ -2,8 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from rcdt_actions.definitions import Action
 from std_srvs.srv import Trigger
+
+from rcdt_actions.definitions import Action
 
 
 def open_gripper() -> Action:

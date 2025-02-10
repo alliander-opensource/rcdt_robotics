@@ -5,12 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from geometry_msgs.msg import TwistStamped
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy import logging
 from rclpy.node import Node
-from rcdt_utilities.launch_utils import spin_node
 from sensor_msgs.msg import Joy
-from geometry_msgs.msg import TwistStamped
-from rcdt_utilities.launch_utils import get_yaml, get_file_path
 
 ros_logger = logging.get_logger(__name__)
 

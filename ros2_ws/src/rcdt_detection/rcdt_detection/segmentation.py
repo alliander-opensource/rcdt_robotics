@@ -5,10 +5,10 @@
 from pathlib import Path
 from typing import Literal
 
+import numpy as np
+from ultralytics import SAM, FastSAM
 from ultralytics.engine.model import Model
 from ultralytics.engine.results import Results
-from ultralytics import FastSAM, SAM
-import numpy as np
 
 PATH_FASTSAM: str = str(Path.home() / "models" / "FastSAM-x.pt")
 PATH_SAM2: str = str(Path.home() / "models" / "sam2.1_b.pt")

@@ -2,14 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription, LaunchContext, LaunchDescriptionEntity
-from launch.actions import OpaqueFunction, IncludeLaunchDescription
+from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-
 from rcdt_utilities.launch_utils import (
+    LaunchArgument,
     get_file_path,
     get_robot_description,
-    LaunchArgument,
 )
 
 moveit_mode_arg = LaunchArgument("moveit", "off", ["node", "rviz", "servo", "off"])

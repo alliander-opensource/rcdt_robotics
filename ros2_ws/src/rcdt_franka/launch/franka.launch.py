@@ -2,16 +2,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription, LaunchContext
-from launch.actions import OpaqueFunction, IncludeLaunchDescription
+from launch import LaunchContext, LaunchDescription
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-
 from rcdt_utilities.launch_utils import (
+    SKIP,
+    LaunchArgument,
     get_file_path,
     get_robot_description,
     register_event_handler,
-    LaunchArgument,
-    SKIP,
 )
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])

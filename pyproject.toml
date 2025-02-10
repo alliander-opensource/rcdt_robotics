@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
+select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
 ignore = ["E501", "ANN204"]

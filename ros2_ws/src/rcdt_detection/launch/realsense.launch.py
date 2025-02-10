@@ -5,7 +5,6 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node
-
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])

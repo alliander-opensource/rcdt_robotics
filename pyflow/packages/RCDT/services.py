@@ -4,8 +4,8 @@
 
 from rcdt_messages import srv
 from std_srvs.srv import Trigger
-from RCDT.Core.definitions import ServiceDefinition
 
+from RCDT.Core.definitions import ServiceDefinition
 
 unique_service_types: set[type] = set()
 service_definitions: list[ServiceDefinition] = []

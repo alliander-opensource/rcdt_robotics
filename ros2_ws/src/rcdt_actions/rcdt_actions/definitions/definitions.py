@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
-from rclpy.node import Node
-from rclpy.client import Client
-from rclpy.action.server import ServerGoalHandle
-from rcdt_messages.action import Sequence as SequenceMsg
 
+from rcdt_messages.action import Sequence as SequenceMsg
+from rclpy.action.server import ServerGoalHandle
+from rclpy.client import Client
+from rclpy.node import Node
 
 TIME_OUT = 3
 
