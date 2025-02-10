@@ -8,7 +8,7 @@ import rclpy
 from rclpy import logging
 from rclpy.node import Node
 from rclpy import wait_for_message
-from rcdt_detection_msgs.srv import GetRGBDFromTopic as Srv
+from rcdt_messages.srv import GetRGBDFromTopic as Srv
 from realsense2_camera_msgs.msg import RGBD
 from rcdt_utilities.launch_utils import spin_node
 

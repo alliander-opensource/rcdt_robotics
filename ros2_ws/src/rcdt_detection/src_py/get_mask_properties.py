@@ -11,7 +11,7 @@ from rcdt_utilities.launch_utils import spin_node
 
 from vision_msgs.msg import Point2D
 
-from rcdt_detection_msgs.srv import GetMaskProperties as Srv
+from rcdt_messages.srv import GetMaskProperties as Srv
 from rcdt_detection.mask_properties import MaskProperties
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image, camera_info_to_intrinsics
 

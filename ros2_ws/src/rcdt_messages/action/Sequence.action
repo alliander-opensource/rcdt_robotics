@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+string sequence
+---
+bool success
+string message
+---
+bool success
+string message

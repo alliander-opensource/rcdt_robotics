@@ -9,7 +9,7 @@ import cv2
 from rclpy.node import Node
 from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
-from rcdt_detection_msgs.srv import SegmentImage as Srv
+from rcdt_messages.srv import SegmentImage as Srv
 from rcdt_detection.segmentation import segment_image, load_segmentation_model
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_detection.image_manipulation import (

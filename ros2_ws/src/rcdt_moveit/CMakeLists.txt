@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
-find_package(rcdt_utilities_msgs REQUIRED)
+find_package(rcdt_messages REQUIRED)
 
 # C++ executables:
 include_directories(include)
@@ -21,7 +21,7 @@ ament_target_dependencies(moveit_manager
   rclcpp
   moveit_ros_planning_interface
   moveit_visual_tools
-  rcdt_utilities_msgs
+  rcdt_messages
 )
 
 install(

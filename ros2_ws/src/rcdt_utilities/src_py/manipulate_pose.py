@@ -14,7 +14,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_geometry_msgs import do_transform_pose_stamped
 from geometry_msgs.msg import PoseStamped, Transform, TransformStamped, Point
-from rcdt_utilities_msgs.srv import ExpressPoseInOtherFrame, TransformPose
+from rcdt_messages.srv import ExpressPoseInOtherFrame, TransformPose
 
 ros_logger = logging.get_logger(__name__)
 
