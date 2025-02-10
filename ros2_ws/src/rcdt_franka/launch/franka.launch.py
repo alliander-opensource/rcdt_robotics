@@ -139,7 +139,7 @@ def launch_setup(context: LaunchContext) -> None:
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
 
-    core = LaunchDescription(
+    primary_ld = LaunchDescription(
         [
             robot_state_publisher,
             robot,
@@ -155,7 +155,7 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=[{"topic": "/joint_states"}, {"msg_type": "JointState"}],
     )
 
-    secondaries = LaunchDescription(
+    secondary_ld = LaunchDescription(
         [
             rviz if use_rviz else SKIP,
             moveit,
@@ -172,9 +172,9 @@ def launch_setup(context: LaunchContext) -> None:
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        core,
+        primary_ld,
         wait_for_joint_states,
-        register_event_handler(wait_for_joint_states, secondaries),
+        register_event_handler(wait_for_joint_states, secondary_ld),
     ]
 
 

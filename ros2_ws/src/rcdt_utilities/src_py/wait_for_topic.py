@@ -5,25 +5,22 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-import time
-from rclpy import logging
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import JointState
-
-ros_logger = logging.get_logger(__name__)
 
 MSG_TYPES = {"JointState": JointState}
 WAIT = 3
 
 
 class WaitForTopic(Node):
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         super().__init__("wait_for_topic")
         self.declare_parameter("topic", "")
         self.declare_parameter("msg_type", "")
 
         topic = self.get_parameter("topic").get_parameter_value().string_value
+        self.get_logger().info(f"waiting for topic: {topic}")
         if topic == "":
             self.error("Empty topic is not supported.")
 
@@ -42,9 +39,7 @@ class WaitForTopic(Node):
 
     def error(self, msg: str) -> None:
         self.get_logger().error(msg)
-        while rclpy.ok:
-            self.get_logger().error("Please restart.")
-            time.sleep(WAIT)
+        raise ValueError(msg)
 
 
 def main(args: str = None) -> None:

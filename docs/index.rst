@@ -20,6 +20,7 @@
    content/conventions/ros_package.md
    content/conventions/ros_package_msgs.md
 
+   content/franka.md
    content/moveit.md
    content/pyflow.md
    content/docker.md
