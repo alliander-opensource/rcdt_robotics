@@ -7,8 +7,10 @@ import os
 import yaml
 import xacro
 import ast
+import time
 
 import rclpy
+from rclpy.logging import get_logger
 from rclpy.node import Node
 from rclpy.executors import Executor
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
@@ -19,6 +21,7 @@ from launch.event_handlers import OnProcessExit
 from launch.events.process import ProcessExited
 
 SKIP = LaunchDescriptionEntity()
+WAIT = 3
 
 
 class LaunchArgument:
@@ -91,10 +94,17 @@ def spin_executor(executor: Executor) -> None:
 
 
 def register_event_handler(target: Action, complete: LaunchDescription) -> None:
+    logger = get_logger(register_event_handler.__name__)
+
     def on_completion(
-        _event: ProcessExited, _context: LaunchContext
+        event: ProcessExited, _context: LaunchContext
     ) -> LaunchDescription:
-        return complete
+        if event.returncode == 0:
+            return complete
+        else:
+            while rclpy.ok:
+                logger.error("Target did not start successfully. Please restart.")
+                time.sleep(WAIT)
 
     return RegisterEventHandler(
         OnProcessExit(target_action=target, on_exit=on_completion)
