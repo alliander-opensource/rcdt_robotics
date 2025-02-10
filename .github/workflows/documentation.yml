@@ -22,7 +22,6 @@ jobs:
         with:
           persist-credentials: false
           lfs: true
-
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
       - name: Upload artifacts
