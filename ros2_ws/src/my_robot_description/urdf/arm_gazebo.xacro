@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <gazebo reference="arm_base_link">
+        <material>Gazebo/Yellow</material>
+    </gazebo>
+
+    <gazebo reference="forearm_link">
+        <material>Gazebo/Magenta</material>
+    </gazebo>
+
+    <gazebo reference="hand_link">
+        <material>Gazebo/Yellow</material>
+    </gazebo>
+
+    <gazebo>
+        <plugin
+            filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+        </plugin>
+    </gazebo>
+
+    <!--nudges the arm upon startup-->
+    <gazebo>
+        <plugin
+        filename="gz-sim-joint-controller-system"
+        name="gz::sim::systems::JointController">
+        <joint_name>forearm_hand_joint</joint_name>
+        <initial_velocity>1.0</initial_velocity>
+        </plugin>
+    </gazebo>
+
+</robot>

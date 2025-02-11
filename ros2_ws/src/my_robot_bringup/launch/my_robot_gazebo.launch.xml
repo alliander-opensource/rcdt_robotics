@@ -1,0 +1,34 @@
+<launch>
+    <let name="urdf_path" 
+         value="$(find-pkg-share my_robot_description)/urdf/my_robot.urdf.xacro" />
+    <let name="rviz_config_path"
+         value="$(find-pkg-share my_robot_bringup)/rviz/urdf_config.rviz" />
+    <let name="gazebo_config_path" 
+         value="$(find-pkg-share my_robot_bringup)/config/gazebo_bridge.yaml" />
+
+    <node pkg="robot_state_publisher" exec="robot_state_publisher">
+        <param name="robot_description"
+               value="$(command 'xacro $(var urdf_path)')" />
+    </node>
+
+    <!--Classic Gazebo
+    <include file="$(find-pkg-share gazebo_ros)/launch/gazebo.launch.py">
+     <arg name="world" value="$(find-pkg-share my_robot_bringup)/worlds/test_world.world" />
+    </include>
+    <node pkg="gazebo_ros" exec="spawn_entity.py" args="-topic robot_description -entity my_robot" />
+    -->
+
+    <!--New Gazebo-->
+    <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
+     <arg name="gz_args" value="$(find-pkg-share my_robot_bringup)/worlds/test_world_new.sdf -r" />
+    </include>
+    <node pkg="ros_gz_sim" exec="create" args="-topic robot_description" />
+        <node pkg="ros_gz_bridge" exec="parameter_bridge">
+        <param name="config_file" value="$(var gazebo_config_path)" />
+     </node>
+    <!--End new Gazebo-->
+
+    <node pkg="rviz2" exec="rviz2" output="screen" args="-d $(var rviz_config_path)" />
+    <!--node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui" />-->
+    
+</launch>
