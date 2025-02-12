@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Realsense
 
 We use a depth camera (Realsense D435) to sense the environment of the robot. This section describes how we use this camera on the real robot and in simulation.
