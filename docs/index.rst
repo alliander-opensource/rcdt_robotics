@@ -22,6 +22,7 @@
 
    content/franka.md
    content/moveit.md
+   content/realsense.md
    content/pyflow.md
    content/docker.md
    content/writing_documentation.md
