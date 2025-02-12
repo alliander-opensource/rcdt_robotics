@@ -64,7 +64,7 @@ Netmask: `255.255.255.0`
 
 You may also want to consider making this a separate profile for future convenience when moving to different networks.
 
-If the robot's power switch is turned on, you should now be able to go to [https://172.16.0.1](https://172.16.0.1).  
+If the robot's power switch is turned on, you should now be able to go to [https://172.16.0.2](https://172.16.0.2).  
 Fill in the username and password, and click unlock.  
 After that, click `My Franka Robot> Activate FCI`. The robot is now ready to be controlled by the user, and the commands in quickstart can be run.
 

@@ -14,7 +14,7 @@ using std::placeholders::_2;
 
 MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
     : node(node_), move_group(node, planning_group),
-      moveit_visual_tools(node, "fr3_link0", "/rviz_markers") {
+      moveit_visual_tools(node, "world", "/rviz_markers") {
 
   move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
@@ -186,7 +186,8 @@ PoseStamped MoveitManager::change_frame_to_world(PoseStamped pose) {
 void MoveitManager::add_marker(
     const std::shared_ptr<AddMarker::Request> request,
     std::shared_ptr<AddMarker::Response> response) {
-  moveit_visual_tools.publishAxis(request->marker_pose.pose);
+  auto pose = change_frame_to_world(request->marker_pose);
+  moveit_visual_tools.publishAxis(pose.pose);
   moveit_visual_tools.trigger();
   response->success = true;
 };
