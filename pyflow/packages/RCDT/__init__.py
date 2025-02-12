@@ -17,6 +17,7 @@ from RCDT.Factories.UINodeFactory import createUINode
 from RCDT.services import unique_service_types, service_definitions
 from RCDT.messages import messages
 from RCDT.custom import LogAnything, AnyPinCustom
+from RCDT.change_camera import ChangeCamera
 from RCDT.sequence_executor import SequenceExecutor
 from RCDT.Core.node_loader import (
     get_pyflow_nodes_from_ros_services,
@@ -26,7 +27,11 @@ from RCDT.Core.pin_loader import get_pyflow_pins_from_ros_services
 
 _EXPORTERS = {}
 _FOO_LIBS = {}
-_NODES = {"LogAnything": LogAnything, "SequenceExecutor": SequenceExecutor}
+_NODES = {
+    "LogAnything": LogAnything,
+    "ChangeCamera": ChangeCamera,
+    "SequenceExecutor": SequenceExecutor,
+}
 _NODES.update(get_pyflow_nodes_from_ros_services(service_definitions))
 _NODES.update(get_pyflow_nodes_from_ros_messages(messages))
 _PINS = {"AnyPinCustom": AnyPinCustom}
