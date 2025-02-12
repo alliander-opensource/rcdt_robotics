@@ -72,6 +72,12 @@ class Quaternion:
     def from_eulerangles(x: float, y: float, z: float) -> "Quaternion":
         return Quaternion(*quaternion_from_euler(x, y, z))
 
+    @staticmethod
+    def from_eulerangles_deg(x: float, y: float, z: float) -> "Quaternion":
+        return Quaternion(
+            *quaternion_from_euler(np.deg2rad(x), np.deg2rad(y), np.deg2rad(z))
+        )
+
     @property
     def as_ros_quaternion(self) -> ros_Quaternion:
         return ros_Quaternion(x=self.x, y=self.y, z=self.z, w=self.w)
