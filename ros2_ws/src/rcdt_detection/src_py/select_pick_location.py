@@ -51,7 +51,7 @@ class SelectPickLocation(Node):
             response.success = True
 
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))
-        response.pick_location.header.frame_id = "camera_depth_optical_frame"
+        response.pick_location.header.frame_id = "camera_color_optical_frame"
         logger.info("returning pick location")
         return response
 

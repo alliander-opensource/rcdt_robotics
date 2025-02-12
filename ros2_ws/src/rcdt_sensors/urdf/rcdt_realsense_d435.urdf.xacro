@@ -10,6 +10,7 @@ SPDX-License-Identifier: Apache-2.0
     gazebo:=true
     parent:=world
     namespace:=camera
+    align:=color
     ">
 
     <!-- Create world link if this is the parent: -->
@@ -27,7 +28,7 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Add gazebo plugin: -->
     <xacro:if value="${gazebo}">
-      <gazebo reference="${namespace}_link">
+      <gazebo reference="${namespace}_${align}_frame">
 
         <!-- rgb_camera: -->
         <sensor type="camera" name="${namespace}_intel_realsense_d435_color">
@@ -37,7 +38,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${namespace}/camera/color/image_raw</topic>
           <visualize>false</visualize>
 
-          <ignition_frame_id>${namespace}_color_optical_frame</ignition_frame_id>
+          <ignition_frame_id>${namespace}_${align}_optical_frame</ignition_frame_id>
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov>
             <image>
@@ -59,7 +60,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${namespace}/camera/depth/image_rect_raw_float</topic>
           <visualize>false</visualize>
 
-          <ignition_frame_id>${namespace}_depth_optical_frame</ignition_frame_id>
+          <ignition_frame_id>${namespace}_${align}_optical_frame</ignition_frame_id>
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov> <!-- Using color FOV, to avoid align. -->
             <image>
