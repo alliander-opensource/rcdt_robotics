@@ -137,6 +137,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+    action_executor = Node(package="rcdt_actions", executable="action_executor.py")
 
     primary_ld = LaunchDescription(
         [
@@ -166,6 +167,7 @@ def launch_setup(context: LaunchContext) -> None:
             open_gripper,
             close_gripper,
             manipulate_pose,
+            action_executor,
         ]
     )
 
