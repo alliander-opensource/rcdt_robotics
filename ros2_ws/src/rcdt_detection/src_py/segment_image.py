@@ -4,7 +4,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from dataclasses import dataclass
+
 import cv2
+import distinctipy
+import numpy as np
 import rclpy
 from rcdt_detection.image_manipulation import (
     segmentation_mask_to_binary_mask,
@@ -16,8 +20,19 @@ from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_ima
 from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
 from rclpy.node import Node
+from ultralytics.engine.results import Results
 
 ros_logger = logging.get_logger(__name__)
+
+
+@dataclass
+class Contour:
+    color: list
+    points: np.ndarray
+
+    @property
+    def area(self) -> float:
+        return cv2.contourArea(self.points)
 
 
 class SegmentImage(Node):
@@ -35,7 +50,7 @@ class SegmentImage(Node):
         ros_logger.info("Start segmentation...")
         result = segment_image(self.model, input_image_cv2)
         ros_logger.info("Finished segmentation!")
-        output_image_cv2 = result.plot(labels=False, boxes=False, conf=False)
+        output_image_cv2 = draw_segmented_image(result, input_image_cv2)
         output_image_ros = cv2_image_to_ros_image(output_image_cv2)
         response.segmented_image = output_image_ros
 
@@ -48,6 +63,22 @@ class SegmentImage(Node):
 
         response.success = True
         return response
+
+
+def draw_segmented_image(seg_results: Results, input_image: np.ndarray) -> np.ndarray:
+    n_masks = len(seg_results.masks.xy)
+    colors = distinctipy.get_colors(n_masks)
+    output_image_cv2 = input_image.copy()
+    contours: list[Contour] = []
+    for contour in seg_results.masks.xy:
+        color = [int(255 * value) for value in colors.pop()]
+        points = np.array([(int(p[0]), int(p[1])) for p in contour.tolist()])
+        contours.append(Contour(color, points))
+
+    contours.sort(key=lambda contour: contour.area, reverse=True)
+    for contour in contours:
+        cv2.drawContours(output_image_cv2, [contour.points], 0, contour.color, 2)
+    return output_image_cv2
 
 
 def main(args: str = None) -> None:
