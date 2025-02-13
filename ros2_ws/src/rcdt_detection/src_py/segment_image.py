@@ -38,7 +38,7 @@ class Contour:
 class SegmentImage(Node):
     def __init__(self) -> None:
         super().__init__("segment_image")
-        self.declare_parameter("model_name", "SAM2")
+        self.declare_parameter("model_name", "FastSAM")
         model_name = self.get_parameter("model_name").get_parameter_value().string_value
         self.create_service(Srv, "segment_image", self.callback)
         self.model = load_segmentation_model(model_name)
