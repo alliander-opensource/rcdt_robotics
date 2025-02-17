@@ -26,9 +26,16 @@ pick = Sequence(
         moveit.tranform_goal_pose().set_args({"axis": "z", "value": -Z_PICK}),
         moveit.move_hand_to_pose().set_args({"planning_type": "LIN"}),
         gripper.close_gripper(),
-        moveit.tranform_goal_pose().set_args({"axis": "z", "value": Z_PICK}),
+        moveit.tranform_goal_pose().set_args({"axis": "z", "value": Z_PICK * 3}),
         moveit.move_hand_to_pose().set_args({"planning_type": "LIN"}),
-        moveit.move_to_configuration().set_args({"configuration": "home"}),
+    ],
+)
+
+place = Sequence(
+    "place",
+    [
+        moveit.move_to_configuration().set_args({"configuration": "place"}),
+        gripper.open_gripper(),
     ],
 )
 
