@@ -11,7 +11,7 @@ from rcdt_utilities.launch_utils import (
     get_robot_description,
 )
 
-use_rviz_arg = LaunchArgument("rviz", False, [True, False])
+use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
