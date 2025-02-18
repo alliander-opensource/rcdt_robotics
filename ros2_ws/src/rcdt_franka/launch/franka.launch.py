@@ -79,6 +79,7 @@ def launch_setup(context: LaunchContext) -> None:
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
+            "rviz_display_config": "planning.rviz",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
         }.items(),
