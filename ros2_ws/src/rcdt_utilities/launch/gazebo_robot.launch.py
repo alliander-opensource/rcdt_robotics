@@ -45,6 +45,11 @@ def launch_setup(context: LaunchContext) -> List:
                 "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
+    bridge_topics.extend(
+        [
+            "/velodyne_points/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+        ]
+    )
 
     bridge = Node(
         package="ros_gz_bridge",

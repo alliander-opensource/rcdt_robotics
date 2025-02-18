@@ -17,8 +17,9 @@ use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 def launch_setup(context: LaunchContext) -> None:
     use_rviz = use_rviz_arg.value(context)
 
-    xacro_path = get_file_path("panther_description", ["urdf"], "panther.urdf.xacro")
-    xacro_arguments = {"use_sim": "true"}
+    xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
+    components_path = get_file_path("rcdt_panther", ["config"], "components.yaml")
+    xacro_arguments = {"use_sim": "true", "components_config_path": components_path}
     robot_description = get_robot_description(xacro_path, xacro_arguments)
 
     robot_state_publisher = Node(
@@ -41,7 +42,7 @@ def launch_setup(context: LaunchContext) -> None:
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster"],
+        arguments=["joint_state_broadcaster", "-t", "joint_state_broadcaster/JointStateBroadcaster"],
     )
 
     controllers = IncludeLaunchDescription(

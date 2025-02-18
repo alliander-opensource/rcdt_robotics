@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="panther">
+
+  <!-- Set use_sim argument to let panther xacro load gazebo plugin: -->
+  <xacro:arg name="use_sim" default="true" />
+
+  <!-- Load panther: -->
+  <xacro:include filename="$(find panther_description)/urdf/panther_macro.urdf.xacro" ns="husarion" />
+  <xacro:husarion.panther_robot
+    panther_version="1.0"
+    use_sim="$(arg use_sim)"
+    wheel_config_file="$(find panther_description)/config/WH01.yaml"
+    controller_config_file="$(find rcdt_panther)/config/ros_controller.yaml"
+    battery_config_file="" />
+
+  <!-- Load Velodyne: -->
+  <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_velodyne.urdf.xacro" />
+  <xacro:VLP-16>
+    <origin xyz="0.18 0 0.03" rpy="0 0 0" />
+  </xacro:VLP-16>
+</robot>
