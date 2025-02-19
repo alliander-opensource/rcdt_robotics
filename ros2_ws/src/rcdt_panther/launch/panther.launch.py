@@ -12,14 +12,17 @@ from rcdt_utilities.launch_utils import (
 )
 
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
     use_rviz = use_rviz_arg.value(context)
+    use_velodyne = use_velodyne_arg.value(context)
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
     components_path = get_file_path("rcdt_panther", ["config"], "components.yaml")
     xacro_arguments = {"use_sim": "true", "components_config_path": components_path}
+    xacro_arguments["load_velodyne"] = "true" if use_velodyne else "false"
     robot_description = get_robot_description(xacro_path, xacro_arguments)
 
     robot_state_publisher = Node(
@@ -42,7 +45,11 @@ def launch_setup(context: LaunchContext) -> None:
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "-t", "joint_state_broadcaster/JointStateBroadcaster"],
+        arguments=[
+            "joint_state_broadcaster",
+            "-t",
+            "joint_state_broadcaster/JointStateBroadcaster",
+        ],
     )
 
     controllers = IncludeLaunchDescription(
@@ -88,6 +95,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_rviz_arg.declaration,
+            use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
