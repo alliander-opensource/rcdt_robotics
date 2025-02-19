@@ -15,6 +15,16 @@ apt update
 apt install -y ignition-fortress
 
 # Install ros-humble-ros-gz (which will now use the already installed ignition):
-apt install -y \
-    ros-humble-ros-gz \
-    ros-humble-ign-ros2-control
+apt install -y ros-humble-ros-gz
+
+# Install ign-ros2-control from source because of https://github.com/ros-controls/gz_ros2_control/issues/503
+mkdir -p /home/$UNAME/control_ws/src
+cd /home/$UNAME/control_ws/src
+git clone https://github.com/ros-controls/gz_ros2_control.git -b humble
+cd gz_ros2_control
+git checkout 0.7.9
+cd /home/$UNAME/control_ws
+. /opt/ros/humble/setup.sh
+colcon build
+echo "source /home/$UNAME/control_ws/install/setup.bash" >>/home/$UNAME/.bashrc
+
