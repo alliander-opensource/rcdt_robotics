@@ -1,0 +1,143 @@
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+# Panther
+
+This page gives information about usage of the Husarion Panther.
+
+## Physical robot
+
+### Quick start
+
+The physical robot can  be started by:
+
+- Enable the battery (switch at front of robot).
+- Start the robot (press red power button).
+- Wait, till the [E_STOP animation](https://husarion.com/manuals/panther/software/ros2/robot-management/#led-animations) is played
+- Release hardware stop (rotate red emergency button if it was pressed).
+- Start Logitech gamepad:
+  - press Logitech button.
+  - press *mode* button if mode light is on (should be off).
+  - have the switch at the back on *D*.
+- Remove E_STOP by *Left Trigger + A* on the gamepad.
+- You can drive by pressing *Left Button* and use the two joysticks.
+- You can enable the E_STOp by pressing *B*.
+- See [this](https://husarion.com/manuals/panther/software/ros2/robot-management/#gamepad) for more information about gamepad control.
+
+The robot can be shut down by:
+
+- Shut down the robot (hold red button next to battery switch till it starts blinking).
+- Wait till all lights are off.
+- Disable the battery (switch at front of robot)
+
+### Configuration
+
+Our Husarion Panther is configured with 3 computers with the following default settings:
+
+| computer                 | ip-address | ssh username | ssh password |
+|--------------------------|------------|--------------|--------------|
+| Teltonika RUTX11         | 10.15.20.1 | root         | Husarion1    |
+| Raspberry Pi 4           | 10.15.20.2 | husarion     | husarion     |
+| Lenovo ThinkStation P360 | 10.15.20.3 | husarion     | husarion     |
+
+When the Panther is started, two WiFi networks (*Panther_<serial_number>* and *Panther_5G_<serial_number>*) should be available, both with default password `husarion`. One can connect with one of the WiFi networks or connect using a ethernet cable directly to the Teltonika (this may require to remove on of the other ethernet cables, like the one of the lidar). After connecting, it should be possible to ssh into the three computers.
+
+**Teltonika RUTX11:**
+\
+This is an industrial router. The *Raspberry Pi 4* and *Lenovo ThinkStation P360* are connected to the *Teltonika* by Ethernet. Also the *Velodyne Lidar* and is connected to the *Teltonika* by Ethernet. A [combo anetnna](https://teltonika-networks.com/products/accessories/antenna-options/combo-mimo-mobilegnsswi-fi-roof-sma-antenna) (black dome) is also connected, which enables the *Teltonika* to obtain GPS location.
+
+**Raspberry Pi 4 :**
+\
+The *Raspberry Pi 4* is built in the front of the Panther and not directly accessible. Two Docker images are pre-installed: a [docker image](https://hub.docker.com/r/husarion/panther) of the [panther_ros](https://github.com/husarion/panther_ros) repository and a [docker image](https://hub.docker.com/r/husarion/joy2twist) of the [joy_to_wist](https://github.com/husarion/joy2twist) repository. Both images are started automatically when the robot starts. The first image runs all the required software to use the robot, like motor control and led control. The second image enables gamepad control with the Logitech gamepad shipped with the robot, when the USB receiver is connected to the USB port at the front of the robot.
+
+We have also cloned the [nmea-gps-docker](https://github.com/husarion/nmea-gps-docker/tree/ros2) repository with a docker that enables use of GPS in ROS. This docker images get's started automatically as well when the the Panther starts. For more information about the use of this docker, see the Sensors section.
+
+**Lenovo ThinkStation P360**
+\
+The *Lenovo ThinkStation P360* is a powerful computer, used to handle the camera stream. The robot is shipped with a ZED 2i depth camera, which can be connected to the *ThinkStation* by USB-C. We have installed the required Nvidia software, based on our own [Docker installation](docker.md) to run dockers with use of the Nvidia CPU. Next, we cloned Husarion's [zed-docker](https://github.com/husarion/zed-docker), [realsense-docker](https://github.com/husarion/realsense-docker/tree/ros2) and [velodyne-docker](https://github.com/husarion/velodyne-docker/tree/ros2) to the *ThinkStation*. These docker images enable easy use of the ZED 2i and Realsense depth camera's or *Velodyne* lidar. For more information about the use of these dockers, see the Sensors section
+
+### Sensors
+
+The Husarion Panther is shipped with different sensors:
+
+- ZED 2i depth camera
+- Velodyne VLP 16 lidar
+- GPS (using Teltonika RUTX 11)
+
+For all sensors, Husarion provides docker images to easily start them connected with ROS.
+
+**ZED 2i:**
+\
+To use the ZED 2i camera, ssh into the *ThinkStation*. Here you can find the cloned `zed-docker` repository folder. One can start the docker with these commands:
+
+```bash
+cd ~/zed-docker/demo;
+xhost local:root;
+export ZED_IMAGE=husarion/zed-desktop:humble;
+export CAMERA_MODEL=zed2;
+docker compose up zed;
+```
+
+We also created the script `~/zed` which executes these commands. Running the docker with the camera connected should start the ROS nodes that publish the camera stream on ROS topics.
+
+**Realsense:**
+\
+Use of a Realsense is similar to the use of ZED camera. You can find the `realsense-docker` repository folder on the *ThinkStation* and start the docker:
+
+```bash
+cd ~/realsense-docker/demo;
+xhost local:root;
+docker compose up realsense;
+```
+
+We also created the scrip `~/realsense` which executes these commands. Running the docker with the camera connected should start the ROS nodes that publish the camera stream on ROS topics.
+
+**Velodyne:**
+\
+To use the Velodyne lidar, we have to make sure that the *Velodyne* uses the *ThinkStation* as host. The settings of the **Velodyne* can be reached by it's ip-adress, which can be found by a network scan:
+
+```bash
+nmap -sn 10.15.20.0/24
+```
+
+One of the devices in the network should be `che.lan` (which is the *Velodyne*), which in our case has the ip-adress `10.15.20.154`. Now we can open the settings by going to this ip-adress in a browser:
+
+![velodyne-settings](../img/panther/velodyne_settings.png)
+
+Here, we can set the host ip-adress to `10.15.20.3` (the ip-adress of the *ThinkStation*). Next, you can find the `velodyne-docker` repository folder on the *ThinkStation* and start the docker:
+
+```bash
+cd ~/velodyne-docker/demo;
+docker compose up;
+```
+
+We also created the script `~/velodyne` which executes these commands. Note that the settings of this docker can be changed in the two files in the `~velodyne-docker/demo/config/` folder. Especially the *device_ip* parameter in the `panther_velodyne_driver.yaml` is important and needs to be the ip-adress of the *Velodyne* (`10.15.20.154` in our case).
+
+**GPS:**
+\
+To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on the *Raspberry Pi*. This docker only works if the *Teltonika* forwards the GPS data to the *Raspberry Pi*. The corresponding settings can be adapted by going to the ip-adress of the *Teltonika* (`10.15.20.1`). Default username is `admin` and default password is `Husarion1` and logging in should give you the settings:
+
+![teltonika-settings](../img/panther/teltonika_settings.png)
+
+Make sure that Hostname is set to the ip-adress of the *Raspberry Pi* (`10.15.20.2`). The docker image should now publish the GPS location on a ROS topic, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* [map page](https://10.15.20.1/services/gps/map).
+
+## Simulation
+
+You can start a simulation of the Panther using the `rcdt_panther/rcdt_panther.launch.py` file. It can be started including a simulated Velodyne lidar by passing the `velodyne:=True` flag:
+
+```bash
+ros2 launch rcdt_franka franka.launch.py velodyne:=True
+```
+
+This should start the simulation with the following Rviz visualization:
+
+![simulattion](../img/panther/simulation.png)
+
+You can control the simulated Panther if a gamepad is connected. By default, a simulated hardware stop is triggered and you need to reset this before you can control the Panther:
+
+```bash
+ros2 service call /hardware/e_stop_reset std_srvs/srv/Trigger {}
+```

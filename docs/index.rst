@@ -21,6 +21,7 @@
    content/conventions/ros_package_msgs.md
 
    content/franka.md
+   content/panther.md
    content/moveit.md
    content/realsense.md
    content/pyflow.md
