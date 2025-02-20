@@ -11,11 +11,13 @@ from rcdt_utilities.launch_utils import (
     get_robot_description,
 )
 
+load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
+    load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
     use_velodyne = use_velodyne_arg.value(context)
 
@@ -32,7 +34,11 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     robot = IncludeLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py")
+        get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py"),
+        launch_arguments={
+            "velodyne": str(use_velodyne),
+            "load_gazebo_ui": str(load_gazebo_ui),
+        }.items(),
     )
 
     static_transform_publisher = Node(
@@ -57,7 +63,10 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     rviz = IncludeLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py")
+        get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
+        launch_arguments={
+            "rviz_display_config": "lidar.rviz" if use_velodyne else "general.rviz",
+        }.items(),
     )
 
     joy = Node(
@@ -94,6 +103,7 @@ def launch_setup(context: LaunchContext) -> None:
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
+            load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
             use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
