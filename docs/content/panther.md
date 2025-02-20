@@ -24,7 +24,7 @@ The physical robot can  be started by:
   - have the switch at the back on *D*.
 - Remove E_STOP by *Left Trigger + A* on the gamepad.
 - You can drive by pressing *Left Button* and use the two joysticks.
-- You can enable the E_STOp by pressing *B*.
+- You can enable the E_STOP by pressing *B*.
 - See [this](https://husarion.com/manuals/panther/software/ros2/robot-management/#gamepad) for more information about gamepad control.
 
 The robot can be shut down by:
@@ -47,7 +47,7 @@ When the Panther is started, two WiFi networks (*Panther_<serial_number>* and *P
 
 **Teltonika RUTX11:**
 \
-This is an industrial router. The *Raspberry Pi 4* and *Lenovo ThinkStation P360* are connected to the *Teltonika* by Ethernet. Also the *Velodyne Lidar* and is connected to the *Teltonika* by Ethernet. A [combo anetnna](https://teltonika-networks.com/products/accessories/antenna-options/combo-mimo-mobilegnsswi-fi-roof-sma-antenna) (black dome) is also connected, which enables the *Teltonika* to obtain GPS location.
+This is an industrial router. The *Raspberry Pi 4* and *Lenovo ThinkStation P360* are connected to the *Teltonika* by Ethernet. Also the *Velodyne Lidar* and is connected to the *Teltonika* by Ethernet. A [combo antenna](https://teltonika-networks.com/products/accessories/antenna-options/combo-mimo-mobilegnsswi-fi-roof-sma-antenna) (black dome) is also connected, which enables the *Teltonika* to obtain GPS location.
 
 **Raspberry Pi 4 :**
 \
@@ -57,7 +57,7 @@ We have also cloned the [nmea-gps-docker](https://github.com/husarion/nmea-gps-d
 
 **Lenovo ThinkStation P360**
 \
-The *Lenovo ThinkStation P360* is a powerful computer, used to handle the camera stream. The robot is shipped with a ZED 2i depth camera, which can be connected to the *ThinkStation* by USB-C. We have installed the required Nvidia software, based on our own [Docker installation](docker.md) to run dockers with use of the Nvidia CPU. Next, we cloned Husarion's [zed-docker](https://github.com/husarion/zed-docker), [realsense-docker](https://github.com/husarion/realsense-docker/tree/ros2) and [velodyne-docker](https://github.com/husarion/velodyne-docker/tree/ros2) to the *ThinkStation*. These docker images enable easy use of the ZED 2i and Realsense depth camera's or *Velodyne* lidar. For more information about the use of these dockers, see the Sensors section
+The *Lenovo ThinkStation P360* is a powerful computer, used to handle the camera stream. The robot is shipped with a ZED 2i depth camera, which can be connected to the *ThinkStation* by USB-C. We have installed the required Nvidia software, based on our own [Docker installation](docker.md) to run dockers with use of the Nvidia CPU. Next, we cloned Husarion's [zed-docker](https://github.com/husarion/zed-docker), [realsense-docker](https://github.com/husarion/realsense-docker/tree/ros2) and [velodyne-docker](https://github.com/husarion/velodyne-docker/tree/ros2) to the *ThinkStation*. These docker images enable easy use of the *ZED* and *Realsense* camera's or *Velodyne* lidar. For more information about the use of these dockers, see the Sensors section
 
 ### Sensors
 
@@ -97,17 +97,17 @@ We also created the scrip `~/realsense` which executes these commands. Running t
 
 **Velodyne:**
 \
-To use the Velodyne lidar, we have to make sure that the *Velodyne* uses the *ThinkStation* as host. The settings of the **Velodyne* can be reached by it's ip-adress, which can be found by a network scan:
+To use the Velodyne lidar, we have to make sure that the *Velodyne* uses the *ThinkStation* as host. The settings of the **Velodyne* can be reached by it's ip-address, which can be found by a network scan:
 
 ```bash
 nmap -sn 10.15.20.0/24
 ```
 
-One of the devices in the network should be `che.lan` (which is the *Velodyne*), which in our case has the ip-adress `10.15.20.154`. Now we can open the settings by going to this ip-adress in a browser:
+One of the devices in the network should be `che.lan` (which is the *Velodyne*), which in our case has the ip-address `10.15.20.154`. Now we can open the settings by going to this ip-address in a browser:
 
 ![velodyne-settings](../img/panther/velodyne_settings.png)
 
-Here, we can set the host ip-adress to `10.15.20.3` (the ip-adress of the *ThinkStation*). Next, you can find the `velodyne-docker` repository folder on the *ThinkStation* and start the docker:
+Here, we can set the host ip-address to `10.15.20.3` (the ip-address of the *ThinkStation*). Next, you can find the `velodyne-docker` repository folder on the *ThinkStation* and start the docker:
 
 ```bash
 cd ~/velodyne-docker/demo;
@@ -118,11 +118,11 @@ We also created the script `~/velodyne` which executes these commands. Note that
 
 **GPS:**
 \
-To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on the *Raspberry Pi*. This docker only works if the *Teltonika* forwards the GPS data to the *Raspberry Pi*. The corresponding settings can be adapted by going to the ip-adress of the *Teltonika* (`10.15.20.1`). Default username is `admin` and default password is `Husarion1` and logging in should give you the settings:
+To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on the *Raspberry Pi*. This docker only works if the *Teltonika* forwards the GPS data to the *Raspberry Pi*. The corresponding settings can be adapted by going to the ip-address of the *Teltonika* (`10.15.20.1`). Default username is `admin` and default password is `Husarion1` and logging in should give you the settings:
 
 ![teltonika-settings](../img/panther/teltonika_settings.png)
 
-Make sure that Hostname is set to the ip-adress of the *Raspberry Pi* (`10.15.20.2`). The docker image should now publish the GPS location on a ROS topic, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* [map page](https://10.15.20.1/services/gps/map).
+Make sure that Hostname is set to the ip-address of the *Raspberry Pi* (`10.15.20.2`). The docker image should now publish the GPS location on a ROS topic, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* [map page](https://10.15.20.1/services/gps/map).
 
 ## Simulation
 
@@ -134,7 +134,7 @@ ros2 launch rcdt_franka franka.launch.py velodyne:=True
 
 This should start the simulation with the following Rviz visualization:
 
-![simulattion](../img/panther/simulation.png)
+![simulation](../img/panther/simulation.png)
 
 You can control the simulated Panther if a gamepad is connected. By default, a simulated hardware stop is triggered and you need to reset this before you can control the Panther:
 
