@@ -36,6 +36,7 @@ def launch_setup(context: LaunchContext) -> None:
     robot = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
+            "world": "walls.sdf",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
         }.items(),
