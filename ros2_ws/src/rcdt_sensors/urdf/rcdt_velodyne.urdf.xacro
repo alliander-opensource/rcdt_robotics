@@ -18,7 +18,7 @@ Based on:
     *origin 
     parent:=cover_link 
     name:=velodyne 
-    topic:=/velodyne_points
+    topic:=/scan
     update_rate:=10 
     lasers:=16 
     samples:=1875 
