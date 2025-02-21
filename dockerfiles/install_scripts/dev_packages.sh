@@ -13,4 +13,5 @@ pip install "transforms3d>=0.4.2"
 sudo apt update
 sudo apt install -y \
     ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
     ros-humble-slam-toolbox
