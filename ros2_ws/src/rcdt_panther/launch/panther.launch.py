@@ -75,7 +75,7 @@ def launch_setup(context: LaunchContext) -> None:
     if use_nav2:
         rviz_display_config = "nav2.rviz"
     elif use_slam:
-        rviz_display_config = "slam.rviz"
+        rviz_display_config = "panther_slam.rviz"
     elif use_velodyne:
         rviz_display_config = "panther_velodyne.rviz"
     else:
