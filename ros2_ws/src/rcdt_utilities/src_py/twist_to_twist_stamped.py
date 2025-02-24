@@ -16,7 +16,7 @@ ros_logger = logging.get_logger(__name__)
 class TwistToTwistStamped(Node):
     def __init__(self) -> bool:
         super().__init__("twist_to_twist_stamped_node")
-        self.declare_parameter("sub_topic", "/cmd_vel")
+        self.declare_parameter("sub_topic", "/coll_mntr_cmd_vel")
         self.declare_parameter("pub_topic", "/diff_drive_controller/cmd_vel")
 
         sub_topic = self.get_parameter("sub_topic").get_parameter_value().string_value

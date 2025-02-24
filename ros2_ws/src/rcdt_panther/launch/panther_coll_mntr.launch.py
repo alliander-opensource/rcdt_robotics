@@ -70,6 +70,22 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
+    collision_monitoring = IncludeLaunchDescription(
+        get_file_path("nav2_collision_monitor", ["launch"], "collision_monitor_node.launch.py"),
+        launch_arguments={
+            "params_file": "/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_sensors/config/collision_monitor_params.yaml",
+        }.items(),
+    )
+
+    twist_to_twist_stamped = Node(
+        package="rcdt_utilities",
+        executable="twist_to_twist_stamped.py",
+        parameters=[
+            {"sub_topic": "/coll_mntr_cmd_vel"}, 
+            {"pub_topic": "/diff_drive_controller/cmd_vel"}
+            ],
+    )
+
     joy = Node(
         package="joy",
         executable="game_controller_node",
@@ -78,11 +94,11 @@ def launch_setup(context: LaunchContext) -> None:
         ],
     )
 
-    joy_to_twist_stamped_node = Node(
+    joy_to_twist = Node(
         package="rcdt_utilities",
-        executable="joy_to_twist_stamped.py",
+        executable="joy_to_twist.py",
         parameters=[
-            {"pub_topic": "/diff_drive_controller/cmd_vel"},
+            {"pub_topic": "/joy_cmd_vel"},
             {"config_pkg": "rcdt_panther"},
         ],
     )
@@ -96,8 +112,10 @@ def launch_setup(context: LaunchContext) -> None:
         joint_state_broadcaster,
         controllers,
         rviz if use_rviz else skip,
+        collision_monitoring,
+        twist_to_twist_stamped,
         joy,
-        joy_to_twist_stamped_node,
+        joy_to_twist,
     ]
 
 
