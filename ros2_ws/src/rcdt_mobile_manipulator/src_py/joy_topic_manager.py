@@ -8,12 +8,9 @@ from dataclasses import dataclass
 
 import mashumaro.codecs.yaml as yaml_codec
 import rclpy
-from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy.node import Node, Publisher
 from sensor_msgs.msg import Joy
-from std_srvs.srv import SetBool
 
 
 @dataclass
@@ -38,11 +35,6 @@ class JoyTopicManager(Node):
         self.declare_parameter("joy_topic", value="/joy")
         joy_input = self.get_parameter("joy_topic").get_parameter_value().string_value
 
-        cbg = MutuallyExclusiveCallbackGroup()
-        self.client = self.create_client(
-            SetBool, "/servo_node/pause_servo", callback_group=cbg
-        )
-
         file = get_file_path("rcdt_mobile_manipulator", ["config"], "joy_topics.yaml")
         yaml = get_yaml(file)
 
@@ -62,8 +54,8 @@ class JoyTopicManager(Node):
     def apply_output_changes(self, msg: Joy) -> None:
         for output in self.outputs:
             state = msg.buttons[output.button]
-            if output.state_changed(state) and self.topic_changed(output.topic):
-                self.toggle_servo(pause=not output.moveit)
+            if output.state_changed(state):
+                self.topic_changed(output.topic)
 
     def topic_changed(self, topic: str) -> bool:
         if self.topic == topic:
@@ -75,17 +67,6 @@ class JoyTopicManager(Node):
             self.get_logger().info(f"Joy topic is now passed to {self.topic}.")
         return True
 
-    def toggle_servo(self, pause: bool) -> None:
-        request = SetBool.Request()
-        request.data = pause
-        action = "pausing" if pause else "starting"
-        self.get_logger().info(action + " moveit servo...")
-        response: SetBool.Response = self.client.call(request)
-        if response.success:
-            self.get_logger().info(action + " moveit servo succeeded.")
-        else:
-            self.get_logger().info(action + " moveit servo failed.")
-
     def pass_joy_message(self, msg: Joy) -> None:
         if self.topic is None:
             return
@@ -95,10 +76,8 @@ class JoyTopicManager(Node):
 
 def main(args: str = None) -> None:
     rclpy.init(args=args)
-    executor = MultiThreadedExecutor()
     node = JoyTopicManager()
-    executor.add_node(node)
-    spin_executor(executor)
+    spin_node(node)
 
 
 if __name__ == "__main__":
