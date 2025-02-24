@@ -52,8 +52,8 @@ def launch_setup(context: LaunchContext) -> List:
     if use_velodyne:
         bridge_topics.extend(
             [
-                "/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                "/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+                "/panther/velodyne@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                "/panther/velodyne/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
 
