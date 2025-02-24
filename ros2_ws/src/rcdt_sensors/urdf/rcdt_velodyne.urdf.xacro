@@ -85,10 +85,11 @@ Based on:
         <always_on>true</always_on>
         <update_rate>${update_rate}</update_rate>
 
-        <topic>${namespace}/${name}</topic>
+        <topic>${namespace}/${name}/scan</topic>
         <visualize>false</visualize>
 
         <ignition_frame_id>${namespace}/${name}_lidar</ignition_frame_id>
+        <frame_id>${namespace}/${name}_lidar</frame_id>
 
         <ray>
           <scan>

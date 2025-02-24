@@ -29,7 +29,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -61,7 +61,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /robot_description
+        Value: /panther/robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -122,21 +122,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_lidar:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
       Name: RobotModel
-      TF Prefix: ""
+      TF Prefix: /panther
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -170,7 +160,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /scan/points
+        Value: /panther/velodyne/scan/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -241,7 +231,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 10.984465599060059
+      Distance: 2.8377578258514404
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -256,10 +246,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7503980994224548
+      Pitch: 0.32539844512939453
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.905397891998291
+      Yaw: 0.965397834777832
     Saved: ~
 Window Geometry:
   Displays:
@@ -277,5 +267,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 328
+  X: 360
   Y: 0
