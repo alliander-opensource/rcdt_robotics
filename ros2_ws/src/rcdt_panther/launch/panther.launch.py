@@ -77,7 +77,7 @@ def launch_setup(context: LaunchContext) -> None:
     elif use_slam:
         rviz_display_config = "slam.rviz"
     elif use_velodyne:
-        rviz_display_config = "lidar.rviz"
+        rviz_display_config = "panther_velodyne.rviz"
     else:
         rviz_display_config = "panther_general.rviz"
     rviz = IncludeLaunchDescription(

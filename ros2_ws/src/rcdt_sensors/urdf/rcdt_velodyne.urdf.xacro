@@ -16,9 +16,9 @@ Based on:
   <xacro:macro name="VLP-16"
     params="
     *origin 
+    namespace
     parent:=cover_link 
     name:=velodyne 
-    topic:=/scan
     update_rate:=10 
     lasers:=16 
     samples:=1875 
@@ -85,11 +85,10 @@ Based on:
         <always_on>true</always_on>
         <update_rate>${update_rate}</update_rate>
 
-        <topic>${topic}</topic>
+        <topic>${namespace}/${name}</topic>
         <visualize>false</visualize>
 
-        <ignition_frame_id>${name}_lidar</ignition_frame_id>
-        <frame_id>${name}_lidar</frame_id>
+        <ignition_frame_id>${namespace}/${name}_lidar</ignition_frame_id>
 
         <ray>
           <scan>

@@ -61,7 +61,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /robot_description
+        Value: /panther/robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -136,7 +136,7 @@ Visualization Manager:
         Inertia: false
         Mass: false
       Name: RobotModel
-      TF Prefix: ""
+      TF Prefix: /panther
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -170,14 +170,14 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /scan/points
+        Value: /panther/velodyne/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: world
+    Fixed Frame: panther/odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -256,5 +256,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 294
+  X: 360
   Y: 0

@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="load_velodyne" default="false" />
   <xacro:if value="$(arg load_velodyne)">
     <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_velodyne.urdf.xacro" />
-    <xacro:VLP-16>
+    <xacro:VLP-16 namespace="panther">
       <origin xyz="0.18 0 0.03" rpy="0 0 0" />
     </xacro:VLP-16>
   </xacro:if>
