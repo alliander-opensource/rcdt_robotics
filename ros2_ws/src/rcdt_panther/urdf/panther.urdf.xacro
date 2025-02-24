@@ -16,7 +16,8 @@ SPDX-License-Identifier: Apache-2.0
     use_sim="$(arg use_sim)"
     wheel_config_file="$(find panther_description)/config/WH01.yaml"
     controller_config_file="$(find rcdt_panther)/config/ros_controller.yaml"
-    battery_config_file="" />
+    battery_config_file=""
+    namespace="panther" />
 
   <!-- Load Velodyne: -->
   <xacro:arg name="load_velodyne" default="false" />
