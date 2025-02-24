@@ -14,12 +14,23 @@ from rcdt_utilities.launch_utils import (
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
+use_slam_arg = LaunchArgument("slam", False, [True, False])
+use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
     use_velodyne = use_velodyne_arg.value(context)
+    use_slam = use_slam_arg.value(context)
+    use_nav2 = use_nav2_arg.value(context)
+
+    if use_slam:
+        use_velodyne = True
+
+    if use_nav2:
+        use_velodyne = True
+        use_slam = True
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
     components_path = get_file_path("rcdt_panther", ["config"], "components.yaml")
@@ -63,10 +74,19 @@ def launch_setup(context: LaunchContext) -> None:
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
     )
 
+    if use_nav2:
+        rviz_display_config = "nav2.rviz"
+    elif use_slam:
+        rviz_display_config = "slam.rviz"
+    elif use_velodyne:
+        rviz_display_config = "lidar.rviz"
+    else:
+        rviz_display_config = "general.rviz"
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_display_config": "lidar.rviz" if use_velodyne else "general.rviz",
+            "rviz_frame": "map" if use_slam else "world",
+            "rviz_display_config": rviz_display_config,
         }.items(),
     )
 
@@ -78,13 +98,41 @@ def launch_setup(context: LaunchContext) -> None:
         ],
     )
 
-    joy_to_twist_node = Node(
+    joy_topic_manager = Node(
+        package="rcdt_mobile_manipulator",
+        executable="joy_topic_manager.py",
+    )
+
+    joy_to_twist_panther = Node(
         package="rcdt_utilities",
         executable="joy_to_twist.py",
         parameters=[
+            {"sub_topic": "/panther/joy"},
             {"pub_topic": "/diff_drive_controller/cmd_vel"},
             {"config_pkg": "rcdt_panther"},
         ],
+    )
+
+    twist_to_twist_stamped = Node(
+        package="rcdt_utilities", executable="twist_to_twist_stamped.py"
+    )
+
+    slam = IncludeLaunchDescription(
+        get_file_path("slam_toolbox", ["launch"], "online_async_launch.py"),
+        launch_arguments={
+            "slam_params_file": get_file_path(
+                "rcdt_panther", ["config"], "slam_params.yaml"
+            ),
+        }.items(),
+    )
+
+    nav2 = IncludeLaunchDescription(
+        get_file_path("nav2_bringup", ["launch"], "navigation_launch.py"),
+        launch_arguments={
+            "params_file": get_file_path(
+                "rcdt_panther", ["config"], "nav2_params.yaml"
+            ),
+        }.items(),
     )
 
     skip = LaunchDescriptionEntity()
@@ -97,7 +145,11 @@ def launch_setup(context: LaunchContext) -> None:
         controllers,
         rviz if use_rviz else skip,
         joy,
-        joy_to_twist_node,
+        joy_topic_manager,
+        joy_to_twist_panther,
+        slam if use_slam else skip,
+        twist_to_twist_stamped if use_nav2 else skip,
+        nav2 if use_nav2 else skip,
     ]
 
 
@@ -107,6 +159,8 @@ def generate_launch_description() -> LaunchDescription:
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
             use_velodyne_arg.declaration,
+            use_slam_arg.declaration,
+            use_nav2_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
