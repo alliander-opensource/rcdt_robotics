@@ -8,12 +8,12 @@ from rcdt_utilities.launch_utils import get_file_path
 
 controllers_config = get_file_path("rcdt_panther", ["config"], "ros_controller.yaml")
 
-diff_drive_controller = Node(
+drive_controller = Node(
     package="controller_manager",
     executable="spawner",
-    name="diff_drive_controller",
+    namespace="panther",
     arguments=[
-        "diff_drive_controller",
+        "drive_controller",
         "-t",
         "diff_drive_controller/DiffDriveController",
         "-p",
@@ -25,6 +25,6 @@ diff_drive_controller = Node(
 def generate_launch_description() -> None:
     return LaunchDescription(
         [
-            diff_drive_controller,
+            drive_controller,
         ]
     )
