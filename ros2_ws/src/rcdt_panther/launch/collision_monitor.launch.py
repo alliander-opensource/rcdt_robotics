@@ -18,7 +18,6 @@ def launch_setup(context: LaunchContext) -> None:
         ),
         launch_arguments={
             "use_sim_time": str(use_sim),
-            # "namespace": "panther",
             "params_file": "/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_panther/config/collision_monitor.yaml",
         }.items(),
     )
