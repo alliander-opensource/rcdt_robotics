@@ -116,7 +116,7 @@ docker compose up;
 
 We also created the script `~/velodyne` which executes these commands. Note that the settings of this docker can be changed in the two files in the `~velodyne-docker/demo/config/` folder. Especially the *device_ip* parameter in the `panther_velodyne_driver.yaml` is important and needs to be the ip-adress of the *Velodyne* (`10.15.20.154` in our case).
 
-The topic `/panther/velodyne/velodyne_points` can be used to visualize the lidar data. 
+The topic `/panther/velodyne/velodyne_points` can be used to visualize the lidar data.
 
 **GPS:**
 \
@@ -126,21 +126,69 @@ To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on t
 
 Make sure that Hostname is set to the ip-address of the *Raspberry Pi* (`10.15.20.2`). The docker image should now publish the GPS location on the ROS  topic `panther/gps/fix`, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* [map page](https://10.15.20.1/services/gps/map).
 
-
 ## Simulation
 
 You can start a simulation of the Panther using the `rcdt_panther/rcdt_panther.launch.py` file. It can be started including a simulated Velodyne lidar by passing the `velodyne:=True` flag:
 
 ```bash
-ros2 launch rcdt_franka franka.launch.py velodyne:=True
+ros2 launch rcdt_panther panther.launch.py velodyne:=True
 ```
 
 This should start the simulation with the following Rviz visualization:
 
 ![simulation](../img/panther/simulation.png)
 
-You can control the simulated Panther if a gamepad is connected. By default, a simulated hardware stop is triggered and you need to reset this before you can control the Panther:
+You can control the simulated Panther if a gamepad is connected. By default, the E-STOP is triggered and you need to reset this before you can control the Panther:
 
 ```bash
 ros2 service call /hardware/e_stop_reset std_srvs/srv/Trigger {}
 ```
+
+## Slam, Collision Monitor and Navigation
+
+It is possible to run the Panther with additional tools, both in simulation and on the real robot. When using the real robot, make sure to have your laptop connected to the Panther network (preferably by ethernet for the best results) and to pass the `simulation:=True` flag to each launch command mentioned in the next steps:
+
+**Slam:**
+
+```bash
+ros2 launch rcdt_panther panther.launch.py slam:=True
+```
+
+A map should be visualized in Rviz and be updated when driving around.
+
+**Collision Monitor:**
+
+```bash
+ros2 launch rcdt_panther panther.launch.py collision_monitor:=True
+```
+
+Next, start the collision monitor in a second terminal:
+
+```bash
+ros2 launch rcdt_panther panther.launch.py collision_monitor.launch.py
+```
+
+Rviz should visualize "slow-down" regions around the Panther and the Panther should slow down when objects are in these regions.
+
+**Navigation:**
+
+```bash
+ros2 launch rcdt_panther panther.launch.py nav2:=True
+```
+
+Next, start the collision monitor in a second terminal:
+
+```bash
+ros2 launch rcdt_panther panther.launch.py navigation.launch.py
+```
+
+Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. The robot should plan, visualize and drive a route to this goal pose.
+
+:::{note}
+Don't forget to reset the E-STOP when the Panther should drive:
+
+```bash
+ros2 service call /hardware/e_stop_reset std_srvs/srv/Trigger {}
+```
+
+:::
