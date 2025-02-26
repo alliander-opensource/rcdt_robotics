@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import Twist, TwistStamped
 from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy import logging
 from rclpy.node import Node
@@ -19,11 +19,13 @@ class JoyToTwist(Node):
         super().__init__("joy_to_twist_node")
         self.declare_parameter("sub_topic", "/joy")
         self.declare_parameter("pub_topic", "")
+        self.declare_parameter("stamped", True)
         self.declare_parameter("config_pkg", "")
         self.declare_parameter("pub_frame", "")
 
         sub_topic = self.get_parameter("sub_topic").get_parameter_value().string_value
         pub_topic = self.get_parameter("pub_topic").get_parameter_value().string_value
+        self.stamped = self.get_parameter("stamped").get_parameter_value().bool_value
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
         pub_frame = self.get_parameter("pub_frame").get_parameter_value().string_value
 
@@ -47,9 +49,13 @@ class JoyToTwist(Node):
             return
 
         self.create_subscription(Joy, sub_topic, self.handle_input, 10)
-        self.pub = self.create_publisher(TwistStamped, pub_topic, 10)
-        self.pub_msg = TwistStamped()
-        self.pub_msg.header.frame_id = pub_frame
+        self.pub = self.create_publisher(
+            TwistStamped if self.stamped else Twist, pub_topic, 10
+        )
+        self.twist_msg = Twist()
+        self.twist_stamped_msg = TwistStamped()
+        self.twist_stamped_msg.twist = self.twist_msg
+        self.twist_stamped_msg.header.frame_id = pub_frame
         self.profile = "A"
 
     def handle_input(self, sub_msg: Joy) -> None:
@@ -72,10 +78,13 @@ class JoyToTwist(Node):
                     continue
                 value *= -1 if config.get("flip", False) else 1
                 direction = config["direction"]
-                vector = getattr(self.pub_msg.twist, movement)
+                vector = getattr(self.twist_msg, movement)
                 setattr(vector, direction, value)
-        self.pub_msg.header.stamp = self.get_clock().now().to_msg()
-        self.pub.publish(self.pub_msg)
+        if self.stamped:
+            self.twist_stamped_msg.header.stamp = self.get_clock().now().to_msg()
+            self.pub.publish(self.twist_stamped_msg)
+        else:
+            self.pub.publish(self.twist_msg)
 
 
 def main(args: str = None) -> None:

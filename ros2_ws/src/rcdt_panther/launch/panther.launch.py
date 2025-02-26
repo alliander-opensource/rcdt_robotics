@@ -14,6 +14,7 @@ from rcdt_utilities.launch_utils import (
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
@@ -23,9 +24,13 @@ def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
+    use_collision_monitor = use_collision_monitor_arg.value(context)
     use_velodyne = use_velodyne_arg.value(context)
     use_slam = use_slam_arg.value(context)
     use_nav2 = use_nav2_arg.value(context)
+
+    if use_collision_monitor:
+        use_velodyne = True
 
     if use_slam:
         use_velodyne = True
@@ -57,23 +62,14 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        namespace="panther",
-        arguments=[
-            "joint_state_broadcaster",
-            "-t",
-            "joint_state_broadcaster/JointStateBroadcaster",
-        ],
-    )
-
     controllers = IncludeLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
     )
 
     if use_nav2:
-        rviz_display_config = "nav2.rviz"
+        rviz_display_config = "panther_nav2.rviz"
+    elif use_collision_monitor:
+        rviz_display_config = "panther_collision_monitor.rviz"
     elif use_slam:
         rviz_display_config = "panther_slam.rviz"
     elif use_velodyne:
@@ -106,13 +102,10 @@ def launch_setup(context: LaunchContext) -> None:
         executable="joy_to_twist.py",
         parameters=[
             {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/panther/drive_controller/cmd_vel"},
+            {"pub_topic": "/cmd_vel" if use_collision_monitor else "/panther/cmd_vel"},
+            {"stamped": False},
             {"config_pkg": "rcdt_panther"},
         ],
-    )
-
-    twist_to_twist_stamped = Node(
-        package="rcdt_utilities", executable="twist_to_twist_stamped.py"
     )
 
     slam = IncludeLaunchDescription(
@@ -124,21 +117,16 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    nav2 = IncludeLaunchDescription(
-        get_file_path("nav2_bringup", ["launch"], "navigation_launch.py"),
-        launch_arguments={
-            "params_file": get_file_path(
-                "rcdt_panther", ["config"], "nav2_params.yaml"
-            ),
-        }.items(),
-    )
-
     simulation_components = LaunchDescription(
         [
             robot_state_publisher,
             robot,
-            joint_state_broadcaster,
             controllers,
+        ]
+    )
+
+    gamepad_components = LaunchDescription(
+        [
             joy,
             joy_topic_manager,
             joy_to_twist_panther,
@@ -149,10 +137,9 @@ def launch_setup(context: LaunchContext) -> None:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         simulation_components if use_sim else skip,
+        gamepad_components,
         rviz if use_rviz else skip,
         slam if use_slam else skip,
-        twist_to_twist_stamped if use_nav2 else skip,
-        nav2 if use_nav2 else skip,
     ]
 
 
@@ -162,6 +149,7 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
+            use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
             use_nav2_arg.declaration,

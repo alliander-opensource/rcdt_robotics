@@ -47,8 +47,8 @@ bt_navigator:
   ros__parameters:
     use_sim_time: True
     global_frame: map
-    robot_base_frame: base_link
-    odom_topic: /odom
+    robot_base_frame: panther/base_link
+    odom_topic: /panther/odom
     bt_loop_duration: 10
     default_server_timeout: 20
     wait_for_service_timeout: 1000
@@ -198,8 +198,8 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_link
+      global_frame: panther/odom
+      robot_base_frame: panther/base_link
       use_sim_time: True
       rolling_window: true
       width: 3
@@ -242,7 +242,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
+      robot_base_frame: panther/base_link
       use_sim_time: True
       robot_radius: 0.6
       resolution: 0.05
