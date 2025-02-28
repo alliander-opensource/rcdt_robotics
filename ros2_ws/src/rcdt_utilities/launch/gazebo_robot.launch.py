@@ -11,13 +11,17 @@ from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
+namespace_arg = LaunchArgument("namespace", "")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
+use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> List:
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = world_arg.value(context)
+    namespace = namespace_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
+    use_velodyne = use_velodyne_arg.value(context)
 
     sdf_file = get_file_path("rcdt_gz_worlds", ["worlds"], world)
     gz_args = f" -r {sdf_file}"
@@ -31,7 +35,7 @@ def launch_setup(context: LaunchContext) -> List:
     spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
-        arguments=["-topic", "/robot_description"],
+        arguments=["-topic", f"{namespace}/robot_description"],
         output="screen",
     )
 
@@ -43,6 +47,13 @@ def launch_setup(context: LaunchContext) -> List:
                 "/camera/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
                 "/camera/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
                 "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
+            ]
+        )
+    if use_velodyne:
+        bridge_topics.extend(
+            [
+                "/panther/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
 
@@ -64,7 +75,9 @@ def generate_launch_description() -> LaunchDescription:
         [
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
+            namespace_arg.declaration,
             use_realsense_arg.declaration,
+            use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
