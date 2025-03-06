@@ -162,7 +162,7 @@ class BoundingBox:
 
     @property
     def long_sides_offset(self) -> SidePair:
-        offset_factor: float = 1.4
+        offset_factor: float = 1.6
         if self.h > self.w:
             self.w *= offset_factor
         else:

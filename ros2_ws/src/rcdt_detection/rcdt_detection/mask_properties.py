@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 import colorsys
 from dataclasses import dataclass
 from math import pi
@@ -18,8 +17,15 @@ from rcdt_utilities.geometry import (
     Pose,
     Quaternion,
 )
+from rclpy import logging
+from typing_extensions import Self
 
-from rcdt_detection.image_manipulation import three_to_single_channel
+from rcdt_detection.image_manipulation import (
+    single_to_three_channel,
+    three_to_single_channel,
+)
+
+logger = logging.get_logger(__name__)
 
 
 @dataclass
@@ -27,7 +33,7 @@ class ImageUtils:
     image: np.ndarray
 
     def average_depth(self, points: Point2DList) -> float:
-        """Return the average depth value in meters."""
+        """Return the average depth value."""
         return np.mean([self.depth_value(point) for point in points.points])
 
     def is_point_inside(self, point: Point2D) -> bool:
@@ -41,7 +47,7 @@ class ImageUtils:
         return all(self.is_point_inside(point) for point in points.points)
 
     def is_point_clearance(
-        self, point: Point2D, object_depth: float, min_depth: float = 0.05
+        self, point: Point2D, object_depth: float, min_depth: float = 0.04
     ) -> bool:
         """Test if area arround point is deeper than object_depth, and is at least min_depth relative to object_depth."""
         point_group = point.surrounding_points()
@@ -117,6 +123,21 @@ class MaskProperties:
         """Returns the average depth value of the mask in meters."""
         average_depth_mm = cv2.mean(self.depth_image, mask=self.single_channel)[0]
         return average_depth_mm / 1000
+
+    @property
+    def mode_depth(self) -> float:
+        """return the most common (mode) depth value of the mask."""
+        masked_depth_values = self.depth_image[self.single_channel > 0]
+        return np.bincount(masked_depth_values).argmax()
+
+    def refined_mask(self) -> Self:
+        min_depth = self.mode_depth - 10
+        max_depth = self.mode_depth + 10
+        condition = (self.depth_image >= min_depth) & (self.depth_image <= max_depth)
+        reduced_mask: np.ndarray = self.mask * condition[:, :, np.newaxis]
+        return MaskProperties(
+            mask=reduced_mask, depth_image=self.depth_image, intrinsics=self.intrinsics
+        )
 
     @property
     def pickup_points(self) -> tuple[Point2DList, Point2DList]:
