@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
     <xacro:sensor_d435
       parent="${parent}"
       use_nominal_extrinsics="true">
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0.015 0" rpy="0 0 0" />
     </xacro:sensor_d435>
 
     <!-- Add gazebo plugin: -->
@@ -32,6 +32,7 @@ SPDX-License-Identifier: Apache-2.0
 
         <!-- rgb_camera: -->
         <sensor type="camera" name="${namespace}_intel_realsense_d435_color">
+          <!-- <pose>0 -0.04 0 0 0 0</pose> -->
           <always_on>true</always_on>
           <update_rate>30.0</update_rate>
 
@@ -54,6 +55,7 @@ SPDX-License-Identifier: Apache-2.0
 
         <!-- depth camera -->
         <sensor type="depth_camera" name="${namespace}_intel_realsense_d435_depth">
+          <!-- <pose>0 -0.04 0 0 0 0</pose> -->
           <always_on>true</always_on>
           <update_rate>30.0</update_rate>
 

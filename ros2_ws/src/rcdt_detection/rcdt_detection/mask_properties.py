@@ -128,11 +128,14 @@ class MaskProperties:
     def mode_depth(self) -> float:
         """return the most common (mode) depth value of the mask."""
         masked_depth_values = self.depth_image[self.single_channel > 0]
+        logger.info("--------------------------")
+        logger.info(str(np.bincount(masked_depth_values)))
         return np.bincount(masked_depth_values).argmax()
 
     def refined_mask(self) -> Self:
-        min_depth = self.mode_depth - 10
-        max_depth = self.mode_depth + 10
+        delta=30
+        min_depth = self.mode_depth - delta
+        max_depth = self.mode_depth + delta
         condition = (self.depth_image >= min_depth) & (self.depth_image <= max_depth)
         reduced_mask: np.ndarray = self.mask * condition[:, :, np.newaxis]
         return MaskProperties(
