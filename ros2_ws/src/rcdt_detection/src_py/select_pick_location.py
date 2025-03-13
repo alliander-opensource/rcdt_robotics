@@ -6,7 +6,7 @@
 
 import numpy as np
 import rclpy
-from rcdt_detection.mask_properties import MaskProperties  # , Pose
+from rcdt_detection.mask_properties import MaskProperties
 from rcdt_messages.srv import SelectPickLocation as Srv
 from rcdt_utilities.cv_utils import (
     camera_info_to_intrinsics,
@@ -51,7 +51,7 @@ class SelectPickLocation(Node):
         else:
             pickup_poses.sort(key=lambda pose: pose.position.y)
             pickup_pose = pickup_poses[-1]
-            response.pick_location.pose = pickup_pose.as_ros_pose()
+            response.pick_location.pose = pickup_pose.as_ros_pose
             response.success = True
 
         response.visualization = cv2_image_to_ros_image(np.max(visualizations, axis=0))

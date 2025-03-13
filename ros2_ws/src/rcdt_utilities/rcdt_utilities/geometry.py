@@ -88,6 +88,7 @@ class Pose:
     position: Point3D
     orientation: Quaternion
 
+    @property
     def as_ros_pose(self) -> ros_Pose:
         return ros_Pose(
             position=self.position.as_ros_point,

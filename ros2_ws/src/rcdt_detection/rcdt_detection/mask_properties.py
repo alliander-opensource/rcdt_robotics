@@ -20,10 +20,7 @@ from rcdt_utilities.geometry import (
 from rclpy import logging
 from typing_extensions import Self
 
-from rcdt_detection.image_manipulation import (
-    single_to_three_channel,
-    three_to_single_channel,
-)
+from rcdt_detection.image_manipulation import three_to_single_channel
 
 logger = logging.get_logger(__name__)
 
@@ -128,12 +125,10 @@ class MaskProperties:
     def mode_depth(self) -> float:
         """return the most common (mode) depth value of the mask."""
         masked_depth_values = self.depth_image[self.single_channel > 0]
-        logger.info("--------------------------")
-        logger.info(str(np.bincount(masked_depth_values)))
         return np.bincount(masked_depth_values).argmax()
 
     def refined_mask(self) -> Self:
-        delta=30
+        delta = 30
         min_depth = self.mode_depth - delta
         max_depth = self.mode_depth + delta
         condition = (self.depth_image >= min_depth) & (self.depth_image <= max_depth)
