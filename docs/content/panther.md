@@ -35,14 +35,6 @@ The robot can be shut down as follows:
 
 ### Configuration
 
-Our Husarion Panther is configured with 3 computers with the following default settings:
-
-| computer                 | ip-address | ssh username | ssh password |
-|--------------------------|------------|--------------|--------------|
-| Teltonika RUTX11         | 10.15.20.1 | root         | Husarion1    |
-| Raspberry Pi 4           | 10.15.20.2 | husarion     | husarion     |
-| Lenovo ThinkStation P360 | 10.15.20.3 | husarion     | husarion     |
-
 When the Panther is started, two WiFi networks (*Panther_<serial_number>* and *Panther_5G_<serial_number>*) should be available, both with default password `husarion`. One can connect with one of the WiFi networks or connect using a ethernet cable directly to the Teltonika (this may require to remove on of the other ethernet cables, like the one of the lidar). After connecting, it should be possible to ssh into all three computers.
 
 **Teltonika RUTX11:**
