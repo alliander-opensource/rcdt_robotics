@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+vision_msgs/Point2D pixel
+bool success

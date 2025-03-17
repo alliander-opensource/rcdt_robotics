@@ -58,6 +58,14 @@ SPDX-License-Identifier: Apache-2.0
       </include>
     </model>
 
+
+        <model name='apriltag'>
+      <pose>0.3 0.2 0 0 0 0</pose>
+      <include>
+        <uri>model://april_131</uri>
+      </include>
+    </model>
+
     <!-- regular static world elements-->
 
     <light type="directional" name="sun">

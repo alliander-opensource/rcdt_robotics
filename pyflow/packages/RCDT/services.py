@@ -31,6 +31,7 @@ add("SegmentImage", "/segment_image", srv.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", srv.SelectImageFromList, group)
 add("SelectPickLocation", "/select_pick_location", srv.SelectPickLocation, group)
 add("SelectPlaceLocation","/select_place_location",srv.SelectPlaceLocation, group)
+add("GetApriltagCentrePixel","/get_apriltag_centre_pixel",srv.GetApriltagCentrePixel, group)
 
 group = "Utilities"
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", srv.ExpressPoseInOtherFrame, group)
