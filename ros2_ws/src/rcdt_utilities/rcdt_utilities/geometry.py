@@ -88,6 +88,7 @@ class Pose:
     position: Point3D
     orientation: Quaternion
 
+    @property
     def as_ros_pose(self) -> ros_Pose:
         return ros_Pose(
             position=self.position.as_ros_point,
@@ -162,7 +163,7 @@ class BoundingBox:
 
     @property
     def long_sides_offset(self) -> SidePair:
-        offset_factor: float = 1.4
+        offset_factor: float = 1.6
         if self.h > self.w:
             self.w *= offset_factor
         else:

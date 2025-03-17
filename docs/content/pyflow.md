@@ -53,3 +53,12 @@ If you execute the graph shown above without launching ROS, the *Logger* panel s
 ## Add other services
 
 You can see all the available services under the *RCDT* group in the *NodeBox* panel. These services are defined in `rcdt_robotics/pyflow/packages/RCDT/services.py`. If you create a new service, you can add a PyFlow client node by adding the service to this file. After restarting PyFlow, this new node should be available.
+
+### Checklist for creating a service in pyflow
+- add the service under a relevant group in `rcdt_robotics/pyflow/packages/RCDT/services.py`. This ensures the service shows up in pyflow.  
+```
+# example entry:
+add("YourService","/your_service", srv.YourService, group)
+```
+- add an srv file in `rcdt_messages/srv/YourService.srv`, making sure the filename is identical to the third entry in the add() function above. This defines the input and output ports on your node. Make sure to follow the convention that all these services at least return a bool success.
+- Write the actual node implementation. Extend rclpy.node.Node, and call `self.create_service(srv, "/your_service",self.callback)` in the \_\_init__. `/your_service` should be identical to the entry in the first step, while the `callback()` function will contain the actual code that gets run in the pyflow node. For some examples, check `rcdt_detection/src_py`.

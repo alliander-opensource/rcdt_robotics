@@ -79,7 +79,9 @@ def launch_setup(context: LaunchContext) -> None:
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_display_config": "planning.rviz",
+            "rviz_display_config": "planning.rviz"
+            if use_sim
+            else "planning_nosim.rviz",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
         }.items(),
@@ -138,6 +140,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+    action_executor = Node(package="rcdt_actions", executable="action_executor.py")
 
     primary_ld = LaunchDescription(
         [
@@ -167,6 +170,7 @@ def launch_setup(context: LaunchContext) -> None:
             open_gripper,
             close_gripper,
             manipulate_pose,
+            action_executor,
         ]
     )
 
