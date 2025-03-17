@@ -35,15 +35,7 @@ The robot can be shut down as follows:
 
 ### Configuration
 
-Our Husarion Panther is configured with 3 computers with the following default settings:
-
-| computer                 | ip-address | ssh username | ssh password |
-|--------------------------|------------|--------------|--------------|
-| Teltonika RUTX11         | 10.15.20.1 | root         | Husarion1    |
-| Raspberry Pi 4           | 10.15.20.2 | husarion     | husarion     |
-| Lenovo ThinkStation P360 | 10.15.20.3 | husarion     | husarion     |
-
-When the Panther is started, two WiFi networks (*Panther_<serial_number>* and *Panther_5G_<serial_number>*) should be available, both with default password `husarion`. One can connect with one of the WiFi networks or connect using a ethernet cable directly to the Teltonika (this may require to remove on of the other ethernet cables, like the one of the lidar). After connecting, it should be possible to ssh into all three computers.
+When the Panther is started, two WiFi networks (*Panther_<serial_number>* and *Panther_5G_<serial_number>*) should be available. One can connect with one of the WiFi networks or connect using a ethernet cable directly to the Teltonika (this may require to remove on of the other ethernet cables, like the one of the lidar). After connecting, it should be possible to ssh into all three computers.
 
 **Teltonika RUTX11:**
 \
@@ -103,28 +95,28 @@ To use the Velodyne lidar, we have to make sure that the *Velodyne* uses the *Th
 nmap -sn 10.15.20.0/24
 ```
 
-One of the devices in the network should be `che.lan` (which is the *Velodyne*), which in our case has the ip-address `10.15.20.154`. Now we can open the settings by going to this ip-address in a browser:
+One of the devices in the network should be `che.lan` (which is the *Velodyne*). Now we can open the settings by going to this ip-address in a browser:
 
 ![velodyne-settings](../img/panther/velodyne_settings.png)
 
-Here, we can set the host ip-address to `10.15.20.3` (the ip-address of the *ThinkStation*). Next, you can find the [velodyne-docker](https://github.com/husarion/velodyne-docker/tree/ros2-fix-tf) repository folder on the *ThinkStation* and start the docker:
+Here, we can set the host ip-address the ip-address of the *ThinkStation*. Next, you can find the [velodyne-docker](https://github.com/husarion/velodyne-docker/tree/ros2-fix-tf) repository folder on the *ThinkStation* and start the docker:
 
 ```bash
 cd ~/velodyne-docker/demo;
 docker compose up;
 ```
 
-We also created the script `~/velodyne` which executes these commands. Note that the settings of this docker can be changed in the two files in the `~velodyne-docker/demo/config/` folder. Especially the *device_ip* parameter in the `panther_velodyne_driver.yaml` is important and needs to be the ip-adress of the *Velodyne* (`10.15.20.154` in our case).
+We also created the script `~/velodyne` which executes these commands. Note that the settings of this docker can be changed in the two files in the `~velodyne-docker/demo/config/` folder. Especially the *device_ip* parameter in the `panther_velodyne_driver.yaml` is important and needs to be the ip-adress of the *Velodyne*.
 
 The topic `/panther/velodyne/velodyne_points` can be used to visualize the lidar data.
 
 **GPS:**
 \
-To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on the *Raspberry Pi*. This docker only works if the *Teltonika* forwards the GPS data to the *Raspberry Pi*. The corresponding settings can be adapted by going to the ip-address of the *Teltonika* (`10.15.20.1`). Default username is `admin` and default password is `Husarion1` and logging in should give you the settings:
+To use the GPS in ROS, the `nmea-gps-docker` image is started automatically on the *Raspberry Pi*. This docker only works if the *Teltonika* forwards the GPS data to the *Raspberry Pi*. The corresponding settings can be adapted by going to the ip-address of the *Teltonika*. Default username is `admin` and default password is `Husarion1` and logging in should give you the settings:
 
 ![teltonika-settings](../img/panther/teltonika_settings.png)
 
-Make sure that Hostname is set to the ip-address of the *Raspberry Pi* (`10.15.20.2`). The docker image should now publish the GPS location on the ROS  topic `panther/gps/fix`, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* [map page](https://10.15.20.1/services/gps/map).
+Make sure that Hostname is set to the ip-address of the *Raspberry Pi*. The docker image should now publish the GPS location on the ROS  topic `panther/gps/fix`, if the location is available. Note that GPS might not work indoor. The GPS can also be tested in the *Teltonika* map page.
 
 ## Simulation
 
