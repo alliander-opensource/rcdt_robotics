@@ -10,7 +10,7 @@ mkdir husarion_ws
 cd /home/$UNAME/husarion_ws
 git clone -b ros2 https://github.com/husarion/panther_ros.git src/panther_ros
 export HUSARION_ROS_BUILD_TYPE=simulation
-vcs import src <src/panther_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
+vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_deps.repos
 
 cp -r src/ros2_controllers/diff_drive_controller src
 cp -r src/ros2_controllers/imu_sensor_broadcaster src
