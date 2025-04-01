@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+apt update
 
 #Install husarion_ugv_ros: https://github.com/husarion/husarion_ugv_ros
 cd /home/$UNAME
