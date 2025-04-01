@@ -4,7 +4,7 @@
 
 set -e
 
-#Install panther_ros: https://github.com/husarion/panther_ros
+#Install husarion_ugv_ros: https://github.com/husarion/husarion_ugv_ros
 cd /home/$UNAME
 mkdir husarion_ws
 cd /home/$UNAME/husarion_ws
