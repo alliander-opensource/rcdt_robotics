@@ -60,13 +60,13 @@ class JoyToTwist(Node):
 
     def handle_input(self, sub_msg: Joy) -> None:
         for idx in range(len(sub_msg.axes)):
-            value = sub_msg.axes[idx]
+            joy_value = sub_msg.axes[idx]
             if idx not in self.mapping["axes"]:
                 continue
             axis: dict = self.mapping["axes"][idx]
 
             if axis == "switch_profile":
-                self.profile = "A" if value > -1 else "B"
+                self.profile = "A" if joy_value > -1 else "B"
                 continue
 
             for movement in ["angular", "linear"]:
@@ -75,11 +75,12 @@ class JoyToTwist(Node):
                     continue
                 profile = config.get("profile", self.profile)
                 if profile != self.profile:
-                    continue
-                value *= -1 if config.get("flip", False) else 1
+                    twist_value = 0.0
+                else:
+                    twist_value = -joy_value if config.get("flip", False) else joy_value
                 direction = config["direction"]
                 vector = getattr(self.twist_msg, movement)
-                setattr(vector, direction, value)
+                setattr(vector, direction, twist_value)
         if self.stamped:
             self.twist_stamped_msg.header.stamp = self.get_clock().now().to_msg()
             self.pub.publish(self.twist_stamped_msg)
