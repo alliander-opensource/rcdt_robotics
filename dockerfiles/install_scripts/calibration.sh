@@ -8,7 +8,8 @@ apt update
 # gazebo_apriltag:
 cd
 git clone --recurse-submodules https://github.com/rickarmstrong/gazebo_apriltag.git
-python3 gazebo_apriltag/generate.py
+cd gazebo_apriltag
+python3 generate.py
 
 # apriltag_ros:
 apt install -y ros-humble-apriltag-ros
