@@ -14,9 +14,9 @@ from rcdt_utilities.launch_utils import (
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
-use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 
 
@@ -24,20 +24,16 @@ def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
-    use_collision_monitor = use_collision_monitor_arg.value(context)
     use_velodyne = use_velodyne_arg.value(context)
     use_slam = use_slam_arg.value(context)
+    use_collision_monitor = use_collision_monitor_arg.value(context)
     use_nav2 = use_nav2_arg.value(context)
 
-    if use_collision_monitor:
-        use_velodyne = True
+    if use_collision_monitor or use_nav2:
+        use_slam = True
 
     if use_slam:
         use_velodyne = True
-
-    if use_nav2:
-        use_velodyne = True
-        use_slam = True
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
     components_path = get_file_path("rcdt_panther", ["config"], "components.yaml")
@@ -59,6 +55,7 @@ def launch_setup(context: LaunchContext) -> None:
             "namespace": "panther",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
+            "z": "0.2",
         }.items(),
     )
 
@@ -149,9 +146,9 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
-            use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
+            use_collision_monitor_arg.declaration,
             use_nav2_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
