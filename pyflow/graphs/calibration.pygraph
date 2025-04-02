@@ -1,0 +1,3237 @@
+{
+    "name": "root",
+    "category": "",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveToConfiguration",
+            "owningGraphName": "root",
+            "name": "MoveToConfiguration",
+            "uuid": "983bee58-7e2a-4663-91a1-8310bda6af46",
+            "inputs": [
+                {
+                    "name": "configuration",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveToConfiguration_configuration",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"home\"",
+                    "uuid": "0e5789cb-1f14-4a81-b65e-a951ca02a985",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "configuration",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveToConfiguration_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "ae59867e-95ec-4c87-b821-9e1e4ccc7df4",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveToConfiguration_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "e50ca0f1-e779-433b-bf6e-d0080525d7d5",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveToConfiguration_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "1e28841f-61ba-4b79-b293-fbd4e282a6b5",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveToConfiguration"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveToConfiguration</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -532.5294383356148,
+            "y": -213.49368055771123
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveHandToPose",
+            "owningGraphName": "root",
+            "name": "MoveHandToPose",
+            "uuid": "3b38f60d-0f13-451f-80d6-62f98c2854ee",
+            "inputs": [
+                {
+                    "name": "planning_type",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose_planning_type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "497066ef-a8ca-4d9c-9285-5d0efbfe1618",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "planning_type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "268ebfab-4e19-4e67-91f6-6e4cff5f8c25",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose1",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose",
+                            "inPinId": 1,
+                            "lhsNodeUid": "b9ded90d-fb5b-4266-9e4c-3d4e1a75aa79",
+                            "rhsNodeUid": "3b38f60d-0f13-451f-80d6-62f98c2854ee"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a3b0e8ff-2c56-4818-b4df-9c41075f3ed9",
+                                "destinationUUID": "268ebfab-4e19-4e67-91f6-6e4cff5f8c25",
+                                "sourceName": "DefineGoalPose1_Out",
+                                "destinationName": "MoveHandToPose_In",
+                                "uuid": "3ff77faa-4d9e-43cb-97cf-346aa9ed7d05",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "33d47240-9123-4395-8620-3ffecfd6fb26",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "9dcfbd89-2e8e-4c3a-9fe4-580587939ba7",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveHandToPose"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveHandToPose</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -191.6426223062639,
+            "y": -117.03695268764835
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStamped",
+            "owningGraphName": "root",
+            "name": "PoseStamped",
+            "uuid": "e2170e88-bb15-44f8-bcf3-4faf5727e3f8",
+            "inputs": [
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "19b97334-718f-4500-87b4-877332276ba4",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "30349b41-7ad4-4156-b113-83a5d9d65dd0",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.5",
+                    "uuid": "5caffb98-be5c-4144-8696-5fd40f84d817",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_y ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "de95fbd6-ddad-45c9-8714-ad8b95c54ea5",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "frame_id",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_frame_id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"world\"",
+                    "uuid": "fbcedf93-15f2-4454-b3c4-ff3349f21b8d",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "frame_id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_z ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "be4aa7fa-a9ea-4a4d-aedc-2947c175a54f",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "nanosec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_nanosec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "a937d49a-a97b-4e77-8057-d7115b4c1231",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "nanosec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "w",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_w",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "7287b8a5-c383-424e-b894-03a4aedeffb3",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "w",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_x ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "1.0",
+                    "uuid": "823d7bd9-78c8-4baa-94c3-31c1e0bea3d3",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped_sec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "85c12456-ea2d-4b33-80eb-c49d9f3e2473",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sec",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "RCDT",
+                    "fullName": "PoseStamped_PoseStamped",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "644e737a-18ec-485d-a316-6544838e0e44",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose1",
+                            "inPinId": 2,
+                            "lhsNodeUid": "e2170e88-bb15-44f8-bcf3-4faf5727e3f8",
+                            "rhsNodeUid": "b9ded90d-fb5b-4266-9e4c-3d4e1a75aa79"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "644e737a-18ec-485d-a316-6544838e0e44",
+                                "destinationUUID": "f10eacec-4526-4e58-8f88-f22dc0b0b6f2",
+                                "sourceName": "PoseStamped_PoseStamped",
+                                "destinationName": "DefineGoalPose1_pose",
+                                "uuid": "51f96813-c9bf-4d44-a18b-a65f8d3bdb61",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStamped"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStamped</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "header": true,
+                        "header/stamp": true,
+                        "pose/position": true,
+                        "pose/orientation": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -531.2606936773294,
+            "y": -117.03695268764835
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "DefineGoalPose",
+            "owningGraphName": "root",
+            "name": "DefineGoalPose1",
+            "uuid": "b9ded90d-fb5b-4266-9e4c-3d4e1a75aa79",
+            "inputs": [
+                {
+                    "name": "pose",
+                    "package": "RCDT",
+                    "fullName": "DefineGoalPose1_pose",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "f10eacec-4526-4e58-8f88-f22dc0b0b6f2",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose1",
+                            "inPinId": 2,
+                            "lhsNodeUid": "e2170e88-bb15-44f8-bcf3-4faf5727e3f8",
+                            "rhsNodeUid": "b9ded90d-fb5b-4266-9e4c-3d4e1a75aa79"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pose",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "644e737a-18ec-485d-a316-6544838e0e44",
+                                "destinationUUID": "f10eacec-4526-4e58-8f88-f22dc0b0b6f2",
+                                "sourceName": "PoseStamped_PoseStamped",
+                                "destinationName": "DefineGoalPose1_pose",
+                                "uuid": "51f96813-c9bf-4d44-a18b-a65f8d3bdb61",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose1_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "b776f72c-f6db-4258-a478-0b61dc357296",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose1_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "a3b0e8ff-2c56-4818-b4df-9c41075f3ed9",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose1",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose",
+                            "inPinId": 1,
+                            "lhsNodeUid": "b9ded90d-fb5b-4266-9e4c-3d4e1a75aa79",
+                            "rhsNodeUid": "3b38f60d-0f13-451f-80d6-62f98c2854ee"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "a3b0e8ff-2c56-4818-b4df-9c41075f3ed9",
+                                "destinationUUID": "268ebfab-4e19-4e67-91f6-6e4cff5f8c25",
+                                "sourceName": "DefineGoalPose1_Out",
+                                "destinationName": "MoveHandToPose_In",
+                                "uuid": "3ff77faa-4d9e-43cb-97cf-346aa9ed7d05",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose1_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "64edf444-7496-4de5-8c07-98ed31673438",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "DefineGoalPose1"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose1</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -318.75145550541794,
+            "y": -117.03695268764835
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveHandToPose",
+            "owningGraphName": "root",
+            "name": "MoveHandToPose2",
+            "uuid": "eb8d4edb-996f-47dd-9c40-609d13daf2a9",
+            "inputs": [
+                {
+                    "name": "planning_type",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose2_planning_type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "53860c0d-01e5-42aa-8229-89db6fae5886",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "planning_type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose2_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "d2080f92-415e-4d4a-bfd8-0a7e75d284c3",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose4",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose2",
+                            "inPinId": 1,
+                            "lhsNodeUid": "30e5000a-daba-4976-a129-2f96149f16b6",
+                            "rhsNodeUid": "eb8d4edb-996f-47dd-9c40-609d13daf2a9"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8c258351-3723-4880-a830-cd54d4994f25",
+                                "destinationUUID": "d2080f92-415e-4d4a-bfd8-0a7e75d284c3",
+                                "sourceName": "DefineGoalPose4_Out",
+                                "destinationName": "MoveHandToPose2_In",
+                                "uuid": "f7d972fb-32f9-4ab8-8c2f-cb909b1311e1",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose2_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "a37cb6d7-2e82-4c45-ae0f-5d479eeb30a5",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose2_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "7cac1e4d-7730-468f-98ad-164ab80ab35a",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveHandToPose2"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveHandToPose2</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -191.6426223062639,
+            "y": -71.42090618037368
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStamped",
+            "owningGraphName": "root",
+            "name": "PoseStamped3",
+            "uuid": "0473e9c4-1a7e-451e-85df-7dac0a2f4b67",
+            "inputs": [
+                {
+                    "name": "w",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_w",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.321",
+                    "uuid": "05186a4a-272b-4915-bc94-f5e73f2764a6",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "w",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "nanosec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_nanosec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "131a2d3f-9332-4e29-9c76-073d8b445e08",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "nanosec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "4609107f-9863-4e66-a7e2-830bcefcfba0",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_sec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "e7eef184-40f3-46ad-a3a4-00ff536c322d",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_y ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.117",
+                    "uuid": "c1b071aa-2b45-450b-91e7-89c74a950afa",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_z ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.321",
+                    "uuid": "d0a16e8e-9259-4940-8d9b-6d6fb59ed6d8",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "eeeb0a3b-e938-4137-95a3-442deed71c37",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "1c418046-19f7-421c-a5ce-9febeaa28554",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "frame_id",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_frame_id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"world\"",
+                    "uuid": "44842283-b5ed-4331-817e-7c0bf21c8b32",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "frame_id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped3_x ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.883",
+                    "uuid": "8bd898f7-3e69-4219-9c84-bec7960eff9a",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x ",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "RCDT",
+                    "fullName": "PoseStamped3_PoseStamped",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "6ee78075-08dd-4564-9513-22df7c1237e8",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped3",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose4",
+                            "inPinId": 2,
+                            "lhsNodeUid": "0473e9c4-1a7e-451e-85df-7dac0a2f4b67",
+                            "rhsNodeUid": "30e5000a-daba-4976-a129-2f96149f16b6"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "6ee78075-08dd-4564-9513-22df7c1237e8",
+                                "destinationUUID": "25ef1f64-33f3-4c3f-bf4b-ae253ff97e4e",
+                                "sourceName": "PoseStamped3_PoseStamped",
+                                "destinationName": "DefineGoalPose4_pose",
+                                "uuid": "91a5865e-e8e8-46de-9d08-8d81f1e24de6",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStamped3"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStamped3</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "header": true,
+                        "header/stamp": true,
+                        "pose/position": true,
+                        "pose/orientation": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -531.2606936773294,
+            "y": -71.42090618037368
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "DefineGoalPose",
+            "owningGraphName": "root",
+            "name": "DefineGoalPose4",
+            "uuid": "30e5000a-daba-4976-a129-2f96149f16b6",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose4_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "6aa73688-fd69-4d6d-8870-dde6526af114",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "pose",
+                    "package": "RCDT",
+                    "fullName": "DefineGoalPose4_pose",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "25ef1f64-33f3-4c3f-bf4b-ae253ff97e4e",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped3",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose4",
+                            "inPinId": 2,
+                            "lhsNodeUid": "0473e9c4-1a7e-451e-85df-7dac0a2f4b67",
+                            "rhsNodeUid": "30e5000a-daba-4976-a129-2f96149f16b6"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pose",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "6ee78075-08dd-4564-9513-22df7c1237e8",
+                                "destinationUUID": "25ef1f64-33f3-4c3f-bf4b-ae253ff97e4e",
+                                "sourceName": "PoseStamped3_PoseStamped",
+                                "destinationName": "DefineGoalPose4_pose",
+                                "uuid": "91a5865e-e8e8-46de-9d08-8d81f1e24de6",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose4_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "8c258351-3723-4880-a830-cd54d4994f25",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose4",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose2",
+                            "inPinId": 1,
+                            "lhsNodeUid": "30e5000a-daba-4976-a129-2f96149f16b6",
+                            "rhsNodeUid": "eb8d4edb-996f-47dd-9c40-609d13daf2a9"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8c258351-3723-4880-a830-cd54d4994f25",
+                                "destinationUUID": "d2080f92-415e-4d4a-bfd8-0a7e75d284c3",
+                                "sourceName": "DefineGoalPose4_Out",
+                                "destinationName": "MoveHandToPose2_In",
+                                "uuid": "f7d972fb-32f9-4ab8-8c2f-cb909b1311e1",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose4_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "6fc02d98-8d3e-4136-a999-3e98cde17ab1",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "DefineGoalPose4"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose4</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -318.7514555054179,
+            "y": -73.95839549694465
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveHandToPose",
+            "owningGraphName": "root",
+            "name": "MoveHandToPose5",
+            "uuid": "e63959e4-5a86-44d1-8d5f-47717941e0ee",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose5_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "a040d56c-7b27-4b1f-9ca7-d5f9f0d2f29b",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose7",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose5",
+                            "inPinId": 1,
+                            "lhsNodeUid": "fc03899d-0779-4999-92c2-df4532be36d4",
+                            "rhsNodeUid": "e63959e4-5a86-44d1-8d5f-47717941e0ee"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "1d0fc4e4-d56a-4f80-a1c4-ddabb65862b4",
+                                "destinationUUID": "a040d56c-7b27-4b1f-9ca7-d5f9f0d2f29b",
+                                "sourceName": "DefineGoalPose7_Out",
+                                "destinationName": "MoveHandToPose5_In",
+                                "uuid": "c0ad6c36-fbfe-49b9-89bd-dc219458b1d9",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "planning_type",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose5_planning_type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "b06b3caa-d1f8-4475-9acc-4d6a3643bcac",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "planning_type",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose5_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "939ab341-f020-4e67-95ec-fe943af8f6e7",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose5_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "f29ab5d5-c6d6-4106-a7fd-396bc756b885",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveHandToPose5"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveHandToPose5</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -191.6426223062639,
+            "y": -9.418881316582402
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStamped",
+            "owningGraphName": "root",
+            "name": "PoseStamped6",
+            "uuid": "f2ad3594-e1ff-4f68-a46b-2f165c8d897f",
+            "inputs": [
+                {
+                    "name": "w",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_w",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.321",
+                    "uuid": "f14fbb95-e0e9-4df2-9c00-b778f405211d",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "w",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.6",
+                    "uuid": "8354954b-c088-447c-bbd3-8ee805a69b90",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "frame_id",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_frame_id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"world\"",
+                    "uuid": "f57a756d-3b8f-4445-8f96-f226ec98be1f",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "frame_id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_sec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "974d71f2-949a-4b10-b3e4-36ea3724206a",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_x ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.883",
+                    "uuid": "c89ee6fe-e3a1-42a7-8e7f-bea3a5052df5",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_z ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.321",
+                    "uuid": "93fb944e-4e90-4c38-b525-0e1a6a26c1f6",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "1d132932-efa5-4236-8a44-aeb61d9a24dc",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "551fe8e0-56d0-4a0b-95df-83c9ac5ea054",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_y ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.117",
+                    "uuid": "1955aaba-46ad-45c5-a591-7abcd0b40fc9",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "nanosec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped6_nanosec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "a7ed8d8e-2b93-424e-b9ac-8042612fdfd6",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "nanosec",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "RCDT",
+                    "fullName": "PoseStamped6_PoseStamped",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "15bd6141-472c-4950-b758-401fc4d21eed",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped6",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose7",
+                            "inPinId": 2,
+                            "lhsNodeUid": "f2ad3594-e1ff-4f68-a46b-2f165c8d897f",
+                            "rhsNodeUid": "fc03899d-0779-4999-92c2-df4532be36d4"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "15bd6141-472c-4950-b758-401fc4d21eed",
+                                "destinationUUID": "ca11ed8c-8d31-43f4-a282-eb3994a03408",
+                                "sourceName": "PoseStamped6_PoseStamped",
+                                "destinationName": "DefineGoalPose7_pose",
+                                "uuid": "c8dc5753-e014-4477-8362-481e434b18d9",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStamped6"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStamped6</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "header": true,
+                        "header/stamp": true,
+                        "pose/position": true,
+                        "pose/orientation": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -531.2606936773294,
+            "y": -9.418881316582402
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "DefineGoalPose",
+            "owningGraphName": "root",
+            "name": "DefineGoalPose7",
+            "uuid": "fc03899d-0779-4999-92c2-df4532be36d4",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose7_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "92eefb72-3ab5-4026-a692-c37f557135f6",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "pose",
+                    "package": "RCDT",
+                    "fullName": "DefineGoalPose7_pose",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "ca11ed8c-8d31-43f4-a282-eb3994a03408",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped6",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose7",
+                            "inPinId": 2,
+                            "lhsNodeUid": "f2ad3594-e1ff-4f68-a46b-2f165c8d897f",
+                            "rhsNodeUid": "fc03899d-0779-4999-92c2-df4532be36d4"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pose",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "15bd6141-472c-4950-b758-401fc4d21eed",
+                                "destinationUUID": "ca11ed8c-8d31-43f4-a282-eb3994a03408",
+                                "sourceName": "PoseStamped6_PoseStamped",
+                                "destinationName": "DefineGoalPose7_pose",
+                                "uuid": "c8dc5753-e014-4477-8362-481e434b18d9",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose7_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "1d0fc4e4-d56a-4f80-a1c4-ddabb65862b4",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose7",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose5",
+                            "inPinId": 1,
+                            "lhsNodeUid": "fc03899d-0779-4999-92c2-df4532be36d4",
+                            "rhsNodeUid": "e63959e4-5a86-44d1-8d5f-47717941e0ee"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "1d0fc4e4-d56a-4f80-a1c4-ddabb65862b4",
+                                "destinationUUID": "a040d56c-7b27-4b1f-9ca7-d5f9f0d2f29b",
+                                "sourceName": "DefineGoalPose7_Out",
+                                "destinationName": "MoveHandToPose5_In",
+                                "uuid": "c0ad6c36-fbfe-49b9-89bd-dc219458b1d9",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose7_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "df309e3b-0467-4e22-9804-bd3bcf5764fc",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "DefineGoalPose7"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose7</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -318.7514555054179,
+            "y": -9.418881316582402
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveHandToPose",
+            "owningGraphName": "root",
+            "name": "MoveHandToPose8",
+            "uuid": "c54866a5-c910-4019-a5ef-bfe7198ffac9",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose8_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "7d63c717-6afa-40f4-81b5-b439d1d8ae32",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose10",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose8",
+                            "inPinId": 1,
+                            "lhsNodeUid": "d0996461-fe57-4452-92bd-73ca1f6597e3",
+                            "rhsNodeUid": "c54866a5-c910-4019-a5ef-bfe7198ffac9"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8642345d-00e9-4302-b53b-c388b2f3474e",
+                                "destinationUUID": "7d63c717-6afa-40f4-81b5-b439d1d8ae32",
+                                "sourceName": "DefineGoalPose10_Out",
+                                "destinationName": "MoveHandToPose8_In",
+                                "uuid": "2fb587fc-a2d3-4bc3-9780-ae08e2d85429",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "planning_type",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose8_planning_type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "1f7d450f-5a2c-4b94-9693-fa73e38354fb",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "planning_type",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose8_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "2bf96ee1-3abd-4e5a-8237-1abcf595591a",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose8_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "bfd3deff-7186-457c-8418-06f32915f01d",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveHandToPose8"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveHandToPose8</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -191.64262230626372,
+            "y": 62.3839534927253
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStamped",
+            "owningGraphName": "root",
+            "name": "PoseStamped9",
+            "uuid": "cdabc70a-defa-4eeb-b28c-d259dcadc3d4",
+            "inputs": [
+                {
+                    "name": "y ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_y ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.117",
+                    "uuid": "2ba697b9-1ad7-4ca7-8cd0-2edeed8654ba",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "w",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_w",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.321",
+                    "uuid": "bffc2359-dc59-402f-921d-16396be0f538",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "w",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.3",
+                    "uuid": "88f5f457-448c-43a2-af02-2739be1f4689",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "nanosec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_nanosec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "edb44128-97e2-493d-88cb-845c227e1dab",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "nanosec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_z ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.321",
+                    "uuid": "7b4a5512-8b2a-4a4a-9810-3268f87794e6",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "frame_id",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_frame_id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"world\"",
+                    "uuid": "1c0ef3bf-2514-4c3e-ae1b-0b3c93f7ab20",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "frame_id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "a3b9960e-ad56-461a-8a04-fb10b6afeea9",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.6",
+                    "uuid": "c65837a4-cb9e-47a1-8eb9-bfb957a337a2",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "sec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_sec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "8404d2b7-68a0-4175-8833-7d4b24f77895",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped9_x ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.883",
+                    "uuid": "ca61f447-2daf-487d-aeb9-a4a322a180da",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x ",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "RCDT",
+                    "fullName": "PoseStamped9_PoseStamped",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "06aa145b-317f-42f8-9870-0937eb572fdd",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped9",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose10",
+                            "inPinId": 2,
+                            "lhsNodeUid": "cdabc70a-defa-4eeb-b28c-d259dcadc3d4",
+                            "rhsNodeUid": "d0996461-fe57-4452-92bd-73ca1f6597e3"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "06aa145b-317f-42f8-9870-0937eb572fdd",
+                                "destinationUUID": "0dbf9701-791b-4183-9008-e0df0105e07e",
+                                "sourceName": "PoseStamped9_PoseStamped",
+                                "destinationName": "DefineGoalPose10_pose",
+                                "uuid": "363bbb8e-e5d3-4265-a71d-ce7d875b80fd",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStamped9"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStamped9</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "header": true,
+                        "header/stamp": true,
+                        "pose/position": true,
+                        "pose/orientation": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -531.2606936773294,
+            "y": 62.3839534927253
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "DefineGoalPose",
+            "owningGraphName": "root",
+            "name": "DefineGoalPose10",
+            "uuid": "d0996461-fe57-4452-92bd-73ca1f6597e3",
+            "inputs": [
+                {
+                    "name": "pose",
+                    "package": "RCDT",
+                    "fullName": "DefineGoalPose10_pose",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "0dbf9701-791b-4183-9008-e0df0105e07e",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped9",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose10",
+                            "inPinId": 2,
+                            "lhsNodeUid": "cdabc70a-defa-4eeb-b28c-d259dcadc3d4",
+                            "rhsNodeUid": "d0996461-fe57-4452-92bd-73ca1f6597e3"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pose",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "06aa145b-317f-42f8-9870-0937eb572fdd",
+                                "destinationUUID": "0dbf9701-791b-4183-9008-e0df0105e07e",
+                                "sourceName": "PoseStamped9_PoseStamped",
+                                "destinationName": "DefineGoalPose10_pose",
+                                "uuid": "363bbb8e-e5d3-4265-a71d-ce7d875b80fd",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose10_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "74d6bd57-4397-4f4b-89b6-3511e05a6d54",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose10_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "42ba7afe-6f5a-4de4-b892-925c620a20b4",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose10_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "8642345d-00e9-4302-b53b-c388b2f3474e",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose10",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose8",
+                            "inPinId": 1,
+                            "lhsNodeUid": "d0996461-fe57-4452-92bd-73ca1f6597e3",
+                            "rhsNodeUid": "c54866a5-c910-4019-a5ef-bfe7198ffac9"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "8642345d-00e9-4302-b53b-c388b2f3474e",
+                                "destinationUUID": "7d63c717-6afa-40f4-81b5-b439d1d8ae32",
+                                "sourceName": "DefineGoalPose10_Out",
+                                "destinationName": "MoveHandToPose8_In",
+                                "uuid": "2fb587fc-a2d3-4bc3-9780-ae08e2d85429",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "DefineGoalPose10"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose10</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -320.0202001637034,
+            "y": 62.38395349272528
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveHandToPose",
+            "owningGraphName": "root",
+            "name": "MoveHandToPose11",
+            "uuid": "a98aa2b9-3057-4cf6-9f0e-b381d0d4525a",
+            "inputs": [
+                {
+                    "name": "planning_type",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose11_planning_type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "68f0e32c-4921-4bcc-9345-196216065246",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "planning_type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose11_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "51a81317-ac8f-45da-98bf-7fa12a78bcc6",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose13",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose11",
+                            "inPinId": 1,
+                            "lhsNodeUid": "74d0a2c6-132f-4ed4-a7ba-f849ad113f12",
+                            "rhsNodeUid": "a98aa2b9-3057-4cf6-9f0e-b381d0d4525a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "9c404705-2490-427a-be53-d1d9a4fe3ebe",
+                                "destinationUUID": "51a81317-ac8f-45da-98bf-7fa12a78bcc6",
+                                "sourceName": "DefineGoalPose13_Out",
+                                "destinationName": "MoveHandToPose11_In",
+                                "uuid": "f9df55c8-71dc-4f61-9dbc-87877c7be7a0",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose11_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "d36a633b-6535-4602-a2f3-7f090c55f3aa",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "MoveHandToPose11_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "db7bcfc5-fda3-4828-8605-480082f920cf",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "MoveHandToPose11"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveHandToPose11</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -191.6426223062639,
+            "y": 139.38597835651657
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "PoseStamped",
+            "owningGraphName": "root",
+            "name": "PoseStamped12",
+            "uuid": "034ddfe2-b71e-4390-9bdc-b7dc4dcdc130",
+            "inputs": [
+                {
+                    "name": "sec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_sec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "eda0fe16-497f-4e34-a035-17e8e25bb2ab",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "sec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_x ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.883",
+                    "uuid": "d66fa0a1-dc7e-4c3f-9cc7-4df229e16d18",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "x",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_x",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0",
+                    "uuid": "412b2585-c42c-42bb-a9a9-cdb57fb64512",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "x",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "nanosec",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_nanosec",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "c1423715-19b9-4c9c-915a-bccfae97b525",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "nanosec",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_y",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.3",
+                    "uuid": "f2591de3-27d7-4f91-95f5-9d15f95b5478",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "frame_id",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_frame_id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"world\"",
+                    "uuid": "5ffc7c3f-00e3-4b56-869c-6d47a2c4f827",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "frame_id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "w",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_w",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.321",
+                    "uuid": "1135422c-a627-4eab-853c-dd33f8ff2d88",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "w",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_z ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "-0.321",
+                    "uuid": "27a18143-6548-4763-a4f6-a6918cbea6a0",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "y ",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_y ",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.017",
+                    "uuid": "09fee86f-b047-49d4-9b2f-eb26ff317a18",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "y ",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "z",
+                    "package": "PyFlowBase",
+                    "fullName": "PoseStamped12_z",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.3",
+                    "uuid": "86211e1d-2dec-4d00-9d2a-7bc15e8f6c5e",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "z",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "PoseStamped",
+                    "package": "RCDT",
+                    "fullName": "PoseStamped12_PoseStamped",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "b59b986c-7264-481b-8aef-f0dbf981e8c0",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped12",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose13",
+                            "inPinId": 2,
+                            "lhsNodeUid": "034ddfe2-b71e-4390-9bdc-b7dc4dcdc130",
+                            "rhsNodeUid": "74d0a2c6-132f-4ed4-a7ba-f849ad113f12"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "PoseStamped",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "b59b986c-7264-481b-8aef-f0dbf981e8c0",
+                                "destinationUUID": "b36369fe-1ba1-4354-ba29-60847b2fe342",
+                                "sourceName": "PoseStamped12_PoseStamped",
+                                "destinationName": "DefineGoalPose13_pose",
+                                "uuid": "81fbeeb6-7284-4026-98b2-b84c1c57873c",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "PoseStamped12"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PoseStamped12</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {
+                        "header": true,
+                        "header/stamp": true,
+                        "pose/position": true,
+                        "pose/orientation": true
+                    },
+                    "output": {}
+                }
+            },
+            "x": -531.2606936773294,
+            "y": 139.38597835651657
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "DefineGoalPose",
+            "owningGraphName": "root",
+            "name": "DefineGoalPose13",
+            "uuid": "74d0a2c6-132f-4ed4-a7ba-f849ad113f12",
+            "inputs": [
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose13_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "39406511-19de-46e0-9d34-9dcdcb5aef02",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "pose",
+                    "package": "RCDT",
+                    "fullName": "DefineGoalPose13_pose",
+                    "dataType": "geometry_msgs/PoseStamped",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "b36369fe-1ba1-4354-ba29-60847b2fe342",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "PoseStamped12",
+                            "outPinId": 1,
+                            "rhsNodeName": "DefineGoalPose13",
+                            "inPinId": 2,
+                            "lhsNodeUid": "034ddfe2-b71e-4390-9bdc-b7dc4dcdc130",
+                            "rhsNodeUid": "74d0a2c6-132f-4ed4-a7ba-f849ad113f12"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "pose",
+                        "wires": {
+                            "2": {
+                                "sourceUUID": "b59b986c-7264-481b-8aef-f0dbf981e8c0",
+                                "destinationUUID": "b36369fe-1ba1-4354-ba29-60847b2fe342",
+                                "sourceName": "PoseStamped12_PoseStamped",
+                                "destinationName": "DefineGoalPose13_pose",
+                                "uuid": "81fbeeb6-7284-4026-98b2-b84c1c57873c",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose13_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "9c404705-2490-427a-be53-d1d9a4fe3ebe",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "DefineGoalPose13",
+                            "outPinId": 1,
+                            "rhsNodeName": "MoveHandToPose11",
+                            "inPinId": 1,
+                            "lhsNodeUid": "74d0a2c6-132f-4ed4-a7ba-f849ad113f12",
+                            "rhsNodeUid": "a98aa2b9-3057-4cf6-9f0e-b381d0d4525a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "9c404705-2490-427a-be53-d1d9a4fe3ebe",
+                                "destinationUUID": "51a81317-ac8f-45da-98bf-7fa12a78bcc6",
+                                "sourceName": "DefineGoalPose13_Out",
+                                "destinationName": "MoveHandToPose11_In",
+                                "uuid": "f9df55c8-71dc-4f61-9dbc-87877c7be7a0",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefineGoalPose13_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "1c39feb5-b448-42da-a4bd-091af15ebedf",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "DefineGoalPose13"
+            },
+            "wrapper": {
+                "collapsed": true,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose13</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -318.75145550541794,
+            "y": 139.38597835651657
+        }
+    ],
+    "depth": 1,
+    "isRoot": true,
+    "parentGraphName": "None",
+    "fileVersion": "3.0.0",
+    "activeGraph": "root"
+}

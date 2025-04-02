@@ -18,6 +18,7 @@ load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
+calibration_arg = LaunchArgument("calibration", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
@@ -26,6 +27,11 @@ def launch_setup(context: LaunchContext) -> None:
     use_rviz = use_rviz_arg.value(context)
     use_realsense = use_realsense_arg.value(context)
     world = str(world_arg.value(context))
+    calibration = calibration_arg.value(context)
+
+    if calibration:
+        world = "table_with_apriltag.sdf"
+        use_realsense = True
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
     xacro_arguments = {}
@@ -174,6 +180,16 @@ def launch_setup(context: LaunchContext) -> None:
         ]
     )
 
+    if calibration:
+        secondary_ld = LaunchDescription(
+            [
+                rviz,
+                moveit,
+                realsense,
+                manipulate_pose,
+            ]
+        )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         primary_ld,
@@ -190,6 +206,7 @@ def generate_launch_description() -> LaunchDescription:
             use_rviz_arg.declaration,
             use_realsense_arg.declaration,
             world_arg.declaration,
+            calibration_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

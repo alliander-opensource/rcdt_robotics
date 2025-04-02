@@ -23,8 +23,8 @@ RUN ./libfranka.sh
 COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
 
-COPY ./install_scripts/panther_ros.sh .
-RUN ./panther_ros.sh
+COPY ./install_scripts/husarion_ugv_ros.sh .
+RUN ./husarion_ugv_ros.sh
 
 COPY ./install_scripts/rosboard.sh .
 RUN ./rosboard.sh
@@ -34,6 +34,9 @@ RUN ./pyflow.sh
 
 COPY ./install_scripts/sensors.sh .
 RUN ./sensors.sh
+
+COPY ./install_scripts/calibration.sh .
+RUN ./calibration.sh
 
 COPY ./install_scripts/sphinx.sh .
 RUN ./sphinx.sh
