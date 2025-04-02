@@ -10,11 +10,10 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="use_sim" default="true" />
 
   <!-- Load panther: -->
-  <xacro:include filename="$(find panther_description)/urdf/panther_macro.urdf.xacro" ns="husarion" />
+  <xacro:include filename="$(find husarion_ugv_description)/urdf/panther/panther_macro.urdf.xacro" ns="husarion" />
   <xacro:husarion.panther_robot
-    panther_version="1.0"
     use_sim="$(arg use_sim)"
-    wheel_config_file="$(find panther_description)/config/WH01.yaml"
+    wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
     controller_config_file="$(find rcdt_panther)/config/ros_controller.yaml"
     battery_config_file="" />
 </robot>
