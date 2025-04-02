@@ -6,7 +6,7 @@ set -e
 apt update
 
 # gazebo_apriltag:
-cd
+cd /home/$UNAME/
 git clone --recurse-submodules https://github.com/rickarmstrong/gazebo_apriltag.git
 cd gazebo_apriltag
 python3 generate.py
