@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
     <xacro:sensor_d435
       parent="${parent}"
       use_nominal_extrinsics="true">
-      <origin xyz="0 0.015 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
     </xacro:sensor_d435>
 
     <!-- Add gazebo plugin: -->
@@ -68,7 +68,7 @@ SPDX-License-Identifier: Apache-2.0
               <height>480</height>
             </image>
             <clip>
-              <near>0.01</near>
+              <near>0.1</near>
               <far>65.536</far>
             </clip>
           </camera>
