@@ -29,7 +29,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -69,69 +69,118 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_link:
+        camera_bottom_screw_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        body_link:
+        camera_color_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        cover_link:
+        camera_color_optical_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        fl_wheel_link:
+        camera_depth_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        fr_wheel_link:
+        camera_depth_optical_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        front_bumper_link:
+        camera_infra1_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        imu_link:
+        camera_infra1_optical_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        lights_channel_1_link:
+        camera_infra2_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        lights_channel_2_link:
+        camera_infra2_optical_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        rear_bumper_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        rl_wheel_link:
+        camera_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        rr_wheel_link:
+        fr3_hand:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_base_link:
+        fr3_hand_tcp:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        fr3_leftfinger:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_lidar:
+        fr3_link0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        fr3_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        fr3_link8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        fr3_rightfinger:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        realsense_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -140,114 +189,114 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: Intensity
-      Decay Time: 0
+    - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 0
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: PointCloud2
-      Position Transformer: XYZ
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.009999999776482582
-      Style: Flat Squares
+      Name: MarkerArray
+      Namespaces:
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
-        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /scan/points
-      Use Fixed Frame: true
-      Use rainbow: true
+        Value: /rviz_markers
       Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz_default_plugins/Map
-      Color Scheme: map
-      Draw Behind: false
+    - Class: moveit_rviz_plugin/PlanningScene
       Enabled: true
-      Name: Map
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /map
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /map_updates
-      Use Timestamp: false
-      Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz_default_plugins/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: Map
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /global_costmap/costmap
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /global_costmap/costmap_updates
-      Use Timestamp: false
-      Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /plan
+      Move Group Namespace: ""
+      Name: PlanningScene
+      Planning Scene Topic: /monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Scene Display Time: 0.009999999776482582
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+          base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          fr3_hand:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_hand_tcp:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          fr3_leftfinger:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link4:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link5:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link6:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link7:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          fr3_link8:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          fr3_rightfinger:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+        Robot Alpha: 1
+        Show Robot Collision: false
+        Show Robot Visual: false
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -290,7 +339,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 10.984465599060059
+      Distance: 2.8377578258514404
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -305,10 +354,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7503980994224548
+      Pitch: 0.32539844512939453
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.905397891998291
+      Yaw: 0.965397834777832
     Saved: ~
 Window Geometry:
   Displays:
@@ -326,5 +375,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 328
+  X: 276
   Y: 0

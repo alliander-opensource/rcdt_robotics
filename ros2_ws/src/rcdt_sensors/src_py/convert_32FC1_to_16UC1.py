@@ -31,6 +31,7 @@ class Convert32FC1to16UC1(Node):
         cv2_image *= 1000  # m to mm
         cv2_image = cv2_image.astype(np.uint16)
         ros_image = cv2_image_to_ros_image(cv2_image)
+        ros_image.header = msg.header
         self.publisher.publish(ros_image)
 
 
