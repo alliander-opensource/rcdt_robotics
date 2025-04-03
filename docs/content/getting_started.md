@@ -71,7 +71,7 @@ colcon build --symlink-install
 After building, you need to source the files you build:
 
 ```bash
-source /home/rcdt/ros2_ws/install/setup.bash
+source /home/rcdt/rcdt_robotics/ros2_ws/install/setup.bash
 ```
 
 :::{note}
