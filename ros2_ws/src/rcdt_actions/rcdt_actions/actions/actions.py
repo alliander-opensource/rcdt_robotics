@@ -51,7 +51,6 @@ place = Sequence(
         gripper.open_gripper(),
         moveit.tranform_goal_pose().set_args({"axis": "z", "value": Z_PICK}),
         moveit.move_hand_to_pose().set_args({"planning_type": "LIN"}),
-        gripper.close_gripper(),
         moveit.move_to_configuration().set_args({"configuration": "home"}),
     ],
 )
