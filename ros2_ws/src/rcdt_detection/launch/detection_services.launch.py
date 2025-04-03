@@ -20,4 +20,10 @@ def generate_launch_description() -> LaunchDescription:
         if path.is_symlink() and not path.exists():
             continue
         nodes.append(Node(package="rcdt_detection", executable=basename(executable)))
+    rosboard = Node(
+        package="rosboard",
+        executable="rosboard_node",
+        output={"stdout": "log"},
+    )
+    nodes.append(rosboard)
     return LaunchDescription(nodes)

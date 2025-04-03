@@ -15,8 +15,8 @@ from RCDT.Core.core import PyflowNonBlockingExecutor, PyflowRosBridge
 
 logger = getLogger(__name__)
 
-TIMEOUT_SERVER = 3
-TIMEOUT_ACTION = 10
+SERVICE_AVAILABLE_TIMEOUT = 3
+SERVICE_RESPONSE_TIMEOUT = 20
 
 
 class SequenceExecutor(PyflowNonBlockingExecutor):
@@ -37,27 +37,35 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
         goal.sequence = self.input_pin.getData()
 
         logger.info(f"Starting execution of sequence '{goal.sequence}'.")
-        if not self.action_client.wait_for_server(TIMEOUT_SERVER):
+        if not self.action_client.wait_for_server(SERVICE_AVAILABLE_TIMEOUT):
             logger.error(f"Action server '{self.server_name}' is not available.")
             return
 
-        future = self.action_client.send_goal_async(goal, self.feedback_callback)
-        if not self.sequence_finished(future):
+        future_goal_handle = self.action_client.send_goal_async(
+            goal, self.feedback_callback
+        )
+        if not self.future_done(future_goal_handle):
             return
+        goal_handle: ClientGoalHandle = future_goal_handle.result()
 
-        goal_handle: ClientGoalHandle = future.result()
-        response: Sequence.Impl.GetResultService.Response = goal_handle.get_result()
-        result = response.result
+        future_service_response: Future = goal_handle.get_result_async()
+        if not self.future_done(future_service_response):
+            return
+        service_response: Sequence.Impl.GetResultService.Response = (
+            future_service_response.result()
+        )
+
+        result = service_response.result
         if result.success:
             logger.info(result.message)
             self.exec_out.call()
         else:
             logger.error(result.message)
 
-    def sequence_finished(self, future: Future) -> bool:
+    def future_done(self, future: Future) -> bool:
         self.last_response = time.time()
         while not future.done():
-            if time.time() - self.last_response > TIMEOUT_ACTION:
+            if time.time() - self.last_response > SERVICE_RESPONSE_TIMEOUT:
                 logger.error("Timeout on execution of sequence.")
                 return False
             time.sleep(1)

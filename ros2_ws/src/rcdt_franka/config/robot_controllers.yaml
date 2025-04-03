@@ -26,3 +26,25 @@ fr3_arm_controller:
       fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
       fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
       fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
+    constraints:
+      fr3_joint1:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint2:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint3:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint4:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint5:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint6:
+        goal: 0.01
+        trajectory: 0.1
+      fr3_joint7:
+        goal: 0.01
+        trajectory: 0.1

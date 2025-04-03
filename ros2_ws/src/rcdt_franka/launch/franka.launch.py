@@ -76,14 +76,15 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
+    display_config = (
+        "franka_realsense.rviz" if use_realsense else "franka_planning.rviz"
+    )
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_display_config": "planning.rviz"
-            if use_sim
-            else "planning_nosim.rviz",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
+            "rviz_display_config": display_config,
         }.items(),
     )
 
