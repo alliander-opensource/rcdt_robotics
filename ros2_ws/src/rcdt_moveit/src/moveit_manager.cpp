@@ -144,13 +144,23 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
     move_group.setPlanningPipelineId("ompl");
   }
   moveit::planning_interface::MoveGroupInterface::Plan plan;
-  move_group.plan(plan);
+  auto error_code = move_group.plan(plan);
+  if (error_code != moveit::core::MoveItErrorCode::SUCCESS) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to generate plan.");
+    return false;
+  }
+
   moveit_visual_tools.deleteAllMarkers("Path");
   moveit_visual_tools.deleteAllMarkers("Sphere");
   moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
   moveit_visual_tools.trigger();
-  auto error_code = move_group.execute(plan);
-  return (error_code == moveit::core::MoveItErrorCode::SUCCESS);
+
+  error_code = move_group.execute(plan);
+  if (error_code != moveit::core::MoveItErrorCode::SUCCESS) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to execute plan.");
+    return false;
+  }
+  return true;
 };
 
 void MoveitManager::switch_servo_command_type(std::string command_type) {
