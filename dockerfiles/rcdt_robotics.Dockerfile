@@ -35,6 +35,9 @@ RUN ./pyflow.sh
 COPY ./install_scripts/sensors.sh .
 RUN ./sensors.sh
 
+COPY ./install_scripts/calibration.sh .
+RUN ./calibration.sh
+
 COPY ./install_scripts/sphinx.sh .
 RUN ./sphinx.sh
 
