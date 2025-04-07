@@ -65,6 +65,15 @@ are defined
         <joint name="fr3_joint6" value="1.75" />
         <joint name="fr3_joint7" value="0.78539816339" />
     </group_state>
+    <group_state name="calibrate" group="fr3_arm">
+        <joint name="fr3_joint1" value="0" />
+        <joint name="fr3_joint2" value="-0.174532925" />
+        <joint name="fr3_joint3" value="0" />
+        <joint name="fr3_joint4" value="-1.74532925" />
+        <joint name="fr3_joint5" value="0" />
+        <joint name="fr3_joint6" value="1.57079632679" />
+        <joint name="fr3_joint7" value="0.78539816339" />
+    </group_state>
 
     <!--END_EFFECTOR:
     Purpose: Represent information about an end effector.-->

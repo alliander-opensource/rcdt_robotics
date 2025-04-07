@@ -16,6 +16,7 @@ from geometry_msgs.msg import (
 from geometry_msgs.msg import (
     Quaternion as ros_Quaternion,
 )
+from geometry_msgs.msg import Vector3
 from tf_transformations import quaternion_from_euler
 
 
@@ -55,6 +56,10 @@ class Point3D:
     @property
     def as_ros_point(self) -> ros_Point:
         return ros_Point(x=self.x, y=self.y, z=self.z)
+
+    @property
+    def as_ros_vector(self) -> Vector3:
+        return Vector3(x=self.x, y=self.y, z=self.z)
 
 
 @dataclass
