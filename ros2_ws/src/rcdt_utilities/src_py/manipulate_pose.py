@@ -34,7 +34,7 @@ class ManipulatePose(Node):
         self.create_service(
             TransformPose,
             "/transform_pose",
-            self.transform_pose_relative,
+            self.transform_pose,
         )
 
     def express_pose_in_other_frame(

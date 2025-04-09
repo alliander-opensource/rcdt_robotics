@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-string configuration
+uint8 joint
+float32 value
+bool unit_is_degree true
 ---
 bool success
