@@ -37,10 +37,10 @@ def launch_setup(context: LaunchContext) -> None:
             {
                 "name": "calibration",
                 "calibration_type": "eye_in_hand",
-                "tracking_base_frame": "fr3_link0",
-                "tracking_marker_frame": "tag36h11:0",
-                "robot_base_frame": "realsense_link",
+                "robot_base_frame": "fr3_link0",
                 "robot_effector_frame": "fr3_hand",
+                "tracking_base_frame": "realsense_link",
+                "tracking_marker_frame": "tag36h11:0",
             }
         ],
     )
