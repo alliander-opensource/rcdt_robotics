@@ -7,6 +7,7 @@
 
 import numpy as np
 import rclpy
+import ros2_numpy as rnp
 from easy_handeye2_msgs.srv import ComputeCalibration, TakeSample
 from geometry_msgs.msg import PoseStamped, TransformStamped
 from rcdt_messages.srv import (
@@ -15,6 +16,7 @@ from rcdt_messages.srv import (
     DefineGoalPose,
     ExpressPoseInOtherFrame,
     MoveHandToPose,
+    MoveJoint,
     MoveToConfiguration,
     TransformPose,
 )
@@ -26,12 +28,17 @@ from rclpy.node import Node
 from std_srvs.srv import Trigger
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
+LAST_JOINT = 6
+LAST_JOINT_DEFAULT = 45
+LAST_JOINT_OFFSET = 45
+
 DIST_MARKER = 0.6
-DIST_SCAN = 0.2
+DIST_SCAN = 0.25
 ROUND = 360
-ANGLE = 45
-STEPS = 8
-ROUNDS = 1
+GROUND_ANGLE = 45
+
+STEPS = 5
+ROUNDS = 3
 
 
 class Calibrate(Node):
@@ -68,6 +75,11 @@ class Calibrate(Node):
             "moveit_manager/move_to_configuration",
             callback_group=client_group,
         )
+        self.move_joint = self.create_client(
+            MoveJoint,
+            "moveit_manager/move_joint",
+            callback_group=client_group,
+        )
         self.transform_pose = self.create_client(
             TransformPose,
             "/transform_pose",
@@ -95,15 +107,15 @@ class Calibrate(Node):
         self, _request: Trigger.Request, response: Trigger.Response
     ) -> Trigger.Response:
         self.clear_markers()
-        self.move_above()
-        pose = self.get_marker_pose()
+        self.move_to_calibration_start()
+        pose = self.estimate_marker_pose()
         self.add_ground_limit(pose)
         self.publish_origin(pose)
         poses = self.get_calibration_poses()
         for _ in range(ROUNDS):
             self.clear_markers()
             self.execution_round(poses)
-        self.move_above()
+        self.move_to_calibration_start()
         self.compute_transform()
         response.success = True
         return response
@@ -111,12 +123,16 @@ class Calibrate(Node):
     def clear_markers(self) -> None:
         self.clear_markers_client.call(Trigger.Request())
 
-    def move_above(self) -> None:
+    def move_to_calibration_start(self) -> None:
         self.move_to_configuration.call(
             MoveToConfiguration.Request(configuration="calibrate")
         )
 
-    def get_marker_pose(self) -> PoseStamped:
+    def rotate_joint(self, joint: int, deg_value: int) -> None:
+        request = MoveJoint.Request(joint=joint, value=float(deg_value))
+        self.move_joint.call(request)
+
+    def estimate_marker_pose(self) -> PoseStamped:
         pose = PoseStamped()
         pose.header.frame_id = "fr3_hand_tcp"
         pose.pose.position = Point3D(0.0, 0.0, DIST_MARKER).as_ros_point
@@ -150,7 +166,9 @@ class Calibrate(Node):
 
         poses = []
         for n in np.linspace(0, ROUND, STEPS + 1):
-            rotation = Quaternion.from_eulerangles_deg(10, -ANGLE, n).as_ros_quaternion
+            rotation = Quaternion.from_eulerangles_deg(
+                0, -GROUND_ANGLE, n
+            ).as_ros_quaternion
             request.transform.rotation = rotation
             response: TransformPose.Response = self.transform_pose.call(request)
             poses.append(response.pose)
@@ -161,12 +179,31 @@ class Calibrate(Node):
         self.take_sample.call(TakeSample.Request())
 
     def compute_transform(self) -> None:
-        self.compute_calibration.call(ComputeCalibration.Request())
+        response: ComputeCalibration.Response = self.compute_calibration.call(
+            ComputeCalibration.Request()
+        )
+        translation = rnp.numpify(response.calibration.transform.translation)
+        rotation = rnp.numpify(response.calibration.transform.rotation)
+
+        self.get_logger().info(
+            "".join(
+                [
+                    "\n COMPUTED TRANSFORMATION:",
+                    "\n Translation: \n",
+                    str(translation),
+                    "\n Rotation: \n",
+                    str(rotation),
+                ]
+            )
+        )
 
     def execution_round(self, poses: list[PoseStamped]) -> None:
         for pose in poses:
-            self.move_above()
+            self.move_to_calibration_start()
             self.move_to_pose(pose)
+            self.rotate_joint(LAST_JOINT, LAST_JOINT_DEFAULT - LAST_JOINT_OFFSET)
+            self.take_calibration_sample()
+            self.rotate_joint(LAST_JOINT, LAST_JOINT_DEFAULT + LAST_JOINT_OFFSET)
             self.take_calibration_sample()
 
     def move_to_pose(self, pose: PoseStamped) -> None:
