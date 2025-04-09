@@ -12,12 +12,15 @@
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
-    : node(node_), move_group(node, planning_group),
+MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_,
+                             rclcpp::Node::SharedPtr move_group_node)
+    : node(node_), move_group(move_group_node, planning_group),
       moveit_visual_tools(node, "world", "/rviz_markers") {
 
   move_group.setEndEffectorLink("fr3_hand");
+  move_group.startStateMonitor();
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
+  number_of_joints = joint_model_group->getActiveJointModelNames().size();
 
   initialize_clients();
   initialize_services();
@@ -57,6 +60,9 @@ void MoveitManager::initialize_services() {
   move_hand_to_pose_service = node->create_service<MoveHandToPose>(
       "~/move_hand_to_pose",
       std::bind(&MoveitManager::move_hand_to_pose, this, _1, _2));
+
+  move_joint_service = node->create_service<MoveJoint>(
+      "~/move_joint", std::bind(&MoveitManager::move_joint, this, _1, _2));
 
   add_marker_service = node->create_service<AddMarker>(
       "~/add_marker", std::bind(&MoveitManager::add_marker, this, _1, _2));
@@ -163,6 +169,42 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
   return true;
 };
 
+void MoveitManager::move_joint(
+    const std::shared_ptr<MoveJoint::Request> request,
+    std::shared_ptr<MoveJoint::Response> response) {
+  auto joint_values = move_group.getCurrentJointValues();
+  if (joint_values.size() != number_of_joints) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to obtain current joint state.");
+    std::cout << number_of_joints << std::endl;
+    return;
+  }
+
+  auto joint = request->joint;
+  if (joint < 0 || joint >= number_of_joints) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Requested to move joint %i, but selectable joints are in "
+                 "range [0-%i].",
+                 joint, number_of_joints - 1);
+    return;
+  }
+
+  auto desired_value =
+      (request->unit_is_degree) ? request->value / 180 * M_PI : request->value;
+  auto bound = *joint_model_group->getActiveJointModelsBounds()[joint];
+  auto pos_min = bound[0].min_position_;
+  auto pos_max = bound[0].max_position_;
+  if (desired_value < pos_min || desired_value > pos_max) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Desired value of %f is out of joint limit range [%f, %f].",
+                 desired_value, pos_min, pos_max);
+    return;
+  }
+
+  joint_values[joint] = desired_value;
+  move_group.setJointValueTarget(joint_values);
+  response->success = plan_and_execute();
+};
+
 void MoveitManager::switch_servo_command_type(std::string command_type) {
   auto request = std::make_shared<ServoCommandType::Request>();
 
@@ -214,10 +256,16 @@ int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
-  auto node = std::make_shared<rclcpp::Node>("moveit_manager", node_options);
-  auto moveit_manager = MoveitManager(node);
+
+  auto moveit_manager_node =
+      std::make_shared<rclcpp::Node>("moveit_manager", node_options);
+  auto move_group_node =
+      std::make_shared<rclcpp::Node>("move_group", node_options);
+  auto moveit_manager = MoveitManager(moveit_manager_node, move_group_node);
+
   rclcpp::executors::MultiThreadedExecutor executor;
-  executor.add_node(node);
+  executor.add_node(moveit_manager_node);
+  executor.add_node(move_group_node);
   executor.spin();
   rclcpp::shutdown();
 }

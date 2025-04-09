@@ -13,6 +13,7 @@
 #include <rcdt_messages/srv/define_goal_pose.hpp>
 #include <rcdt_messages/srv/express_pose_in_other_frame.hpp>
 #include <rcdt_messages/srv/move_hand_to_pose.hpp>
+#include <rcdt_messages/srv/move_joint.hpp>
 #include <rcdt_messages/srv/move_to_configuration.hpp>
 #include <rcdt_messages/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
@@ -24,6 +25,7 @@ typedef rcdt_messages::srv::DefineGoalPose DefineGoalPose;
 typedef rcdt_messages::srv::TransformGoalPose TransformGoalPose;
 typedef rcdt_messages::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_messages::srv::MoveHandToPose MoveHandToPose;
+typedef rcdt_messages::srv::MoveJoint MoveJoint;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
 typedef geometry_msgs::msg::PoseStamped PoseStamped;
@@ -37,12 +39,14 @@ struct Action {
 
 class MoveitManager {
 public:
-  MoveitManager(rclcpp::Node::SharedPtr node);
+  MoveitManager(rclcpp::Node::SharedPtr node,
+                rclcpp::Node::SharedPtr move_group_node);
 
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::Node::SharedPtr client_node;
   std::string planning_group = "fr3_arm";
+  int number_of_joints;
   moveit::planning_interface::MoveGroupInterface move_group;
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
   const moveit::core::JointModelGroup *joint_model_group;
@@ -86,6 +90,10 @@ private:
   rclcpp::Service<MoveHandToPose>::SharedPtr move_hand_to_pose_service;
   void move_hand_to_pose(const std::shared_ptr<MoveHandToPose::Request> request,
                          std::shared_ptr<MoveHandToPose::Response> response);
+
+  rclcpp::Service<MoveJoint>::SharedPtr move_joint_service;
+  void move_joint(const std::shared_ptr<MoveJoint::Request> request,
+                  std::shared_ptr<MoveJoint::Response> response);
 
   rclcpp::Service<AddMarker>::SharedPtr add_marker_service;
   void add_marker(const std::shared_ptr<AddMarker::Request> request,
