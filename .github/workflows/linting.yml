@@ -21,6 +21,13 @@ jobs:
       - run: ruff format --check
       - run: ruff check
 
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt install -y clang-format
+      - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run
+
   reuse:
     runs-on: ubuntu-latest
     steps:
