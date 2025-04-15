@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt install -y clang-format
-      - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run
+      - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run --Werror
 
   reuse:
     runs-on: ubuntu-latest
