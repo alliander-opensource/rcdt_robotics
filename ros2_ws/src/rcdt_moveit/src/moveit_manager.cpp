@@ -35,8 +35,7 @@ void MoveitManager::initialize_clients() {
 };
 
 void MoveitManager::initialize_services() {
-  add_object_service = node->create_service<AddObject>(
-      "~/add_object", std::bind(&MoveitManager::add_object, this, _1, _2));
+  add_object_service = node->create_service<AddObject>("~/add_object", std::bind(&MoveitManager::add_object, this, _1, _2));
 
   clear_objects_service = node->create_service<Trigger>(
       "~/clear_objects",
