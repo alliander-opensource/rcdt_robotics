@@ -14,18 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: rcdt/robotics
+      options: --user root
     steps:
-      - name: test permission
+      - name: clone repo
+        uses: actions/checkout@v4
+      - name: colcon build
+        shell: bash -ieo pipefail {0} 
         run: |
-          cd ~  
-          mkdir test
-          ls
-      # - name: clone repo
-      #   run: |
-      #     cd ~  
-      #     git clone https://github.com/alliander-opensource/rcdt_robotics.git
-      # - name: colcon build
-      #   shell: bash -ieo pipefail {0} # Use interactive shell, so that bashrc is sourced.
-      #   run: |
-      #       cd ~/rcdt_robotics/ros2_ws
-      #       colcon build
+            source /home/rcdt/.bashrc
+            cd ros2_ws
+            colcon build
