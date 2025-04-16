@@ -17,6 +17,8 @@ jobs:
     #   volumes:
     #     - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
     steps:
+      - name: Print workspace path
+        run: echo ${{ github.workspace }}
       - name: List files
         run: |
             pwd
