@@ -18,15 +18,11 @@ jobs:
     #   volumes:
     #     - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
     steps:
-      - name: Print workspace path
-        run: echo ${{ github.workspace }}
-      - name: List files
-        run: |
-            pwd
-            ls -a
       - name: Git checkout
         uses: actions/checkout@v4
       - name: List files
         run: |
             pwd
             ls -a
+      - name: List ros2 packages
+        run: ros2 pkg list
