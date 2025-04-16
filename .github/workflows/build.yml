@@ -15,10 +15,10 @@ jobs:
     container: 
       image: rcdt/robotics
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v4
+      - name: clone repo
+        run: git clone https://github.com/alliander-opensource/rcdt_robotics.git
       - name: colcon build
-        shell: bash -ieo pipefail {0} 
+        shell: bash -ieo pipefail {0} # Use interactive shell, so that bashrc is sourced.
         run: |
-            cd ros2_ws
+            cd rcdt_robotics/ros2_ws
             colcon build
