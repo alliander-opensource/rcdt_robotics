@@ -12,12 +12,18 @@ on:
 jobs:
   build-workspace:
     runs-on: ubuntu-latest
-    container: 
-      image: rcdt/robotics
-      volumes:
-        - ${{ github.workspace }}:/app
+    # container: 
+    #   image: rcdt/robotics
+    #   volumes:
+    #     - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
     steps:
+      - name: List files
+        run: |
+            pwd
+            ls -a
       - name: Git checkout
         uses: actions/checkout@v4
       - name: List files
-        run: ls /app
+        run: |
+            pwd
+            ls -a
