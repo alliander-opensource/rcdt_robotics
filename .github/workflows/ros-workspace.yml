@@ -10,17 +10,17 @@ on:
   pull_request:
 
 jobs:
-  build-workspace:
+  ros-workspace:
     runs-on: ubuntu-latest
     container: 
       image: rcdt/robotics
       options: --user root
     steps:
-      - name: clone repo
+      - name: checkout
         uses: actions/checkout@v4
         with:
           submodules: 'true'
-      - name: colcon build
+      - name: build
         shell: bash -ieo pipefail {0} 
         run: |
             source /home/rcdt/.bashrc
