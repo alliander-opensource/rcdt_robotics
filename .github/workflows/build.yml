@@ -15,9 +15,9 @@ jobs:
     container: 
       image: rcdt/robotics
       volumes:
-        - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
+        - ${{ github.workspace }}:/app
     steps:
       - name: Git checkout
         uses: actions/checkout@v4
       - name: List files
-        run: ls /home/rcdt/rcdt_robotics/
+        run: ls /app
