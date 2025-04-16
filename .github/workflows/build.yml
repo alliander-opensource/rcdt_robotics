@@ -14,15 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: rcdt/robotics
-      options: --user root
-    #   volumes:
-    #     - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
     steps:
       - name: Git checkout
         uses: actions/checkout@v4
-      - name: List files
+      - name: colcon build
+        shell: bash -ieo pipefail {0} 
         run: |
-            pwd
-            ls -a
-      - name: List ros2 packages
-        run: ros2 pkg list
+            cd ros2_ws
+            colcon build
