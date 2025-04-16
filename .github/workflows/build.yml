@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-workspace:
+    runs-on: ubuntu-latest
+    container: rcdt/robotics
+    steps:
+      - run: |
+          echo This job does specify a container.
+          ls
