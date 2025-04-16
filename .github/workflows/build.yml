@@ -12,8 +12,8 @@ on:
 jobs:
   build-workspace:
     runs-on: ubuntu-latest
-    # container: 
-    #   image: rcdt/robotics
+    container: 
+      image: rcdt/robotics
     #   volumes:
     #     - ${{ github.workspace }}:/home/rcdt/rcdt_robotics/
     steps:
