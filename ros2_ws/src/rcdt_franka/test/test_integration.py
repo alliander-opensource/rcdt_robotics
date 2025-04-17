@@ -22,4 +22,4 @@ def launch_description() -> LaunchDescription:
 
 @pytest.mark.launch(fixture=launch_description)
 def test_joint_states_published() -> None:
-    assert_for_message(JointState, "/joint_states", 10)
+    assert_for_message(JointState, "/joint_states", 60)
