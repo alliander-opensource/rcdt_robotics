@@ -26,8 +26,6 @@ jobs:
           docker-hub-token: ${{ secrets.DOCKER_TOKEN }}
           container-image: rcdt/robotics:${{ github.ref_name }}-latest
   ros-workspace:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/ros-workspace.yml
-        with:
-          container-image: rcdt/robotics:${{ github.ref_name }}-latest
+    uses: ./.github/workflows/ros-workspace.yml
+    with:
+      container-image: rcdt/robotics:${{ github.ref_name }}-latest
