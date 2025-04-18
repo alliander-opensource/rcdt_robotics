@@ -19,7 +19,8 @@ jobs:
   deploy-docker-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/deploy-docker-image.yml
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy-docker-image
         with:
           container-image: rcdt/robotics:${{ github.ref_name }}-latest
   ros-workspace:
