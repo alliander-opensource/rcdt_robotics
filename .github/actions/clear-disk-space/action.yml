@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: clear-disk-space
+description: Clear as much disk space as possible.
+runs:
+  using: "composite"
+  steps:
+    - name: clear-disk-space
+      shell: bash
+      run: |
+        sudo rm -rf \
+          "$AGENT_TOOLSDIRECTORY" \
+          /opt/google/chrome \
+          /opt/microsoft/msedge \
+          /opt/microsoft/powershell \
+          /opt/pipx \
+          /usr/lib/mono \
+          /usr/local/julia* \
+          /usr/local/lib/android \
+          /usr/local/lib/node_modules \
+          /usr/local/share/chromium \
+          /usr/local/share/powershell \
+          /usr/share/dotnet \
+          /usr/share/swift
+        df -h /

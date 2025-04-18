@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: dockerfiles-changed
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - dockerfiles/**
+
+  pull_request:
+    branches: [main]
+    paths:
+      - dockerfiles/**
+
+jobs:
+  deploy-docker-image:
+    uses: ./.github/workflows/reusable/deploy-docker-image.yml
+    with:
+      container-image: rcdt/robotics:${{ github.ref_name }}-latest
+  ros-workspace:
+    uses: ./.github/workflows/reusable/ros-workspace.yml
+    with:
+      container-image: rcdt/robotics:${{ github.ref_name }}-latest

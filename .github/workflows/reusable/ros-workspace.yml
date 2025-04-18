@@ -4,16 +4,18 @@
 
 name: ros-workspace
 
-on:
-  push:
-    branches: [main]
-  pull_request:
+on: 
+  workflow_call:
+    inputs:
+      container-image:
+        type: string
+        required: true
 
 jobs:
   ros-workspace:
     runs-on: ubuntu-latest
     container:
-      image: rcdt/robotics
+      image: ${{ inputs.container-image}}
       options: --user root
     steps:
       - name: checkout
@@ -35,4 +37,4 @@ jobs:
           GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/worlds"
           cd ros2_ws
           source install/setup.bash
-          pytest-3 src/ -s
+          pytest-3 src/
