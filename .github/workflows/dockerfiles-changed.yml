@@ -19,12 +19,12 @@ jobs:
   deploy-docker-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/reusable/deploy-docker-image.yml
+      - uses: ./.github/workflows/deploy-docker-image.yml
         with:
           container-image: rcdt/robotics:${{ github.ref_name }}-latest
   ros-workspace:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/reusable/ros-workspace.yml
+      - uses: ./.github/workflows/ros-workspace.yml
         with:
           container-image: rcdt/robotics:${{ github.ref_name }}-latest
