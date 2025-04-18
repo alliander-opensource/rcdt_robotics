@@ -17,14 +17,9 @@ on:
 
 jobs:
   deploy-docker-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/deploy-docker-image
-        with:
-          docker-hub-username: ${{ secrets.DOCKER_USERNAME }}
-          docker-hub-token: ${{ secrets.DOCKER_TOKEN }}
-          container-image: rcdt/robotics:${{ github.ref_name }}-latest
+    uses: ./.github/workflows/deploy-docker-image.yml
+    with:
+      container-image: rcdt/robotics:${{ github.ref_name }}-latest
   ros-workspace:
     uses: ./.github/workflows/ros-workspace.yml
     with:
