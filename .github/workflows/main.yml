@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: get-image-tag
         run: |
+          ls -al
           image_tag=$(. ./get_image_tag)
           echo "value=${image_tag}"
           echo "value=${image_tag}" >> "$GITHUB_OUTPUT"
