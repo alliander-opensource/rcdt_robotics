@@ -15,7 +15,7 @@ branch_name=$(git branch --show-current)
 changed_files=($(git diff --name-only main))
 
 image_tag="latest"
-if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* || ${changed_files[@]} =~ .github/workflows/* ]]; then
+if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* ]]; then
     image_tag="${branch_name/\//-}-latest"
 fi
 
