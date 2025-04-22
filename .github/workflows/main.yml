@@ -20,11 +20,12 @@ jobs:
       - uses: actions/checkout@v4
       - id: get-image-tag
         run: |
-          echo "docker image tag: $(. ./get_image_tag)"
-          echo "value=$(. ./get_image_tag)" >> "$GITHUB_OUTPUT"
+          image_tag=$(. ./get_image_tag)
+          echo "value=${image_tag}"
+          echo "value=${image_tag}" >> "$GITHUB_OUTPUT"
   deploy-docker-image:
     needs: get-docker-image-tag-to-use
-    if: ${{ needs.get-docker-image-tag-to-use.outputs.image-tag != 'latest' }}
+    if: ${{ (needs.get-docker-image-tag-to-use.outputs.image-tag != 'latest') }}
     uses: ./.github/workflows/deploy-docker-image.yml
     with:
       container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
