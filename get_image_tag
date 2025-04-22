@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+
+SCRIPT_DIR=$(
+    cd "$(dirname "${BASH_SOURCE[0]}")" || exit
+    pwd -P
+)
+IMAGE=rcdt/robotics
+SERVICE="${IMAGE/rcdt\//rcdt_}"
+
+branch_name=$(git branch --show-current)
+changed_files=($(git diff --name-only main))
+
+image_tag="latest"
+if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* ]]; then
+    image_tag="${branch_name/\//-}-latest"
+fi
+
+echo ${image_tag}

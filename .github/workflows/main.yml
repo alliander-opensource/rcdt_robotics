@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: main
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - dockerfiles/**
+
+  pull_request:
+    branches: [main]
+    paths:
+      - dockerfiles/**
+
+jobs:
+  get-docker-image-tag-to-use:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.get-image-tag.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: get-image-tag
+        run: echo "value=$(. ./get_image_tag)" >> "$GITHUB_OUTPUT"
+  deploy-docker-image:
+    needs: get-docker-image-tag-to-use
+    uses: ./.github/workflows/deploy-docker-image.yml
+    with:
+      container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
+    secrets: inherit
+  ros-workspace:
+    needs: [get-docker-image-tag-to-use, deploy-docker-image]
+    uses: ./.github/workflows/ros-workspace.yml
+    with:
+      container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
