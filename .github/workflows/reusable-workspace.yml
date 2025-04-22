@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: ros-workspace
+name: workspace
 
 on:
   workflow_call:
@@ -12,7 +12,7 @@ on:
         required: true
 
 jobs:
-  ros-workspace:
+  build-and-test:
     runs-on: ubuntu-latest
     container:
       image: ${{ inputs.container-image }}

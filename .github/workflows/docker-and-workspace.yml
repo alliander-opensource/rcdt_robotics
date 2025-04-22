@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: main
+name: docker-and-workspace
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
     branches: [main]
 
 jobs:
-  get-docker-image-tag-to-use:
+  get-image-tag:
     runs-on: ubuntu-latest
     outputs:
       image-tag: ${{ steps.get-image-tag.outputs.value }}
@@ -26,16 +26,16 @@ jobs:
           image_tag=$(. ./get_image_tag ${current_branch})
           echo "value=${image_tag}"
           echo "value=${image_tag}" >> "$GITHUB_OUTPUT"
-  deploy-docker-image:
-    needs: get-docker-image-tag-to-use
-    if: ${{ (needs.get-docker-image-tag-to-use.outputs.image-tag != 'latest') || (github.event_name == 'push') }}
-    uses: ./.github/workflows/deploy-docker-image.yml
+  docker:
+    needs: get-image-tag
+    if: ${{ (needs.get-image-tag.outputs.image-tag != 'latest') || (github.event_name == 'push') }}
+    uses: ./.github/workflows/reusable-docker.yml
     with:
-      container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
+      container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
     secrets: inherit
-  ros-workspace:
-    needs: [get-docker-image-tag-to-use, deploy-docker-image]
+  workspace:
+    needs: [get-image-tag, docker]
     if: always()
-    uses: ./.github/workflows/ros-workspace.yml
+    uses: ./.github/workflows/reusable-workspace.yml
     with:
-      container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
+      container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
