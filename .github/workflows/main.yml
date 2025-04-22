@@ -7,13 +7,9 @@ name: main
 on:
   push:
     branches: [main]
-    paths:
-      - dockerfiles/**
 
   pull_request:
     branches: [main]
-    paths:
-      - dockerfiles/**
 
 jobs:
   get-docker-image-tag-to-use:
@@ -23,9 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: get-image-tag
-        run: echo "value=$(. ./get_image_tag)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "docker image tag: $(. ./get_image_tag)"
+          echo "value=$(. ./get_image_tag)" >> "$GITHUB_OUTPUT"
   deploy-docker-image:
     needs: get-docker-image-tag-to-use
+    if: ${{ (needs.get-docker-image-tag-to-use.outputs.image-tag != 'latest') || (github.event_name == 'push') }}
     uses: ./.github/workflows/deploy-docker-image.yml
     with:
       container-image: rcdt/robotics:${{ needs.get-docker-image-tag-to-use.outputs.image-tag }}
