@@ -21,7 +21,8 @@ jobs:
       - id: get-image-tag
         run: |
           git branch
-          image_tag=$(. ./get_image_tag)
+          current_branch=${GITHUB_HEAD_REF/\//-}
+          image_tag=$(. ./get_image_tag ${current_branch})
           echo "value=${image_tag}"
           echo "value=${image_tag}" >> "$GITHUB_OUTPUT"
   deploy-docker-image:
