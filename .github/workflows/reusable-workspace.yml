@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: workspace
+
+on:
+  workflow_call:
+    inputs:
+      container-image:
+        type: string
+        required: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.container-image }}
+      options: --user root
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+      - name: build workspace
+        shell: bash -ieo pipefail {0}
+        run: |
+          source /home/rcdt/.bashrc
+          cd ros2_ws
+          colcon build --symlink-install
+      - name: run tests
+        shell: bash -ieo pipefail {0}
+        run: |
+          source /home/rcdt/.bashrc
+          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src"
+          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/models"
+          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/worlds"
+          cd ros2_ws
+          source install/setup.bash
+          pytest-3 src/

@@ -5,3 +5,6 @@
 [tool.ruff.lint]
 select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
 ignore = ["E501", "ANN204"]
+
+[tool.pytest.ini_options]
+timeout = 90

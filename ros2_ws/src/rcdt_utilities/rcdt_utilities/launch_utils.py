@@ -4,7 +4,6 @@
 
 import ast
 import os
-import time
 from typing import List
 
 import rclpy
@@ -16,6 +15,7 @@ from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.events.process import ProcessExited
 from launch.substitutions import LaunchConfiguration
+from launch_testing_ros.wait_for_topics import WaitForTopics
 from rclpy.executors import Executor
 from rclpy.logging import get_logger
 from rclpy.node import Node
@@ -102,10 +102,17 @@ def register_event_handler(target: Action, complete: LaunchDescription) -> None:
         if event.returncode == 0:
             return complete
         else:
-            while rclpy.ok:
-                logger.error("Target did not start successfully. Please restart.")
-                time.sleep(WAIT)
+            logger.error("Target did not start successfully. Please restart.")
 
     return RegisterEventHandler(
         OnProcessExit(target_action=target, on_exit=on_completion)
+    )
+
+
+def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
+    wait_for_topics = WaitForTopics([(topic, message_type)], timeout)
+    received = wait_for_topics.wait()
+    wait_for_topics.shutdown()
+    assert received, (
+        f"No message received of type {message_type.__name__} on topic {topic} within {timeout} seconds."
     )
