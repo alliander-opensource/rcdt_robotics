@@ -4,6 +4,7 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
+git fetch origin main
 branch_name=$1
 changed_files=($(git diff --name-only origin/main))
 
