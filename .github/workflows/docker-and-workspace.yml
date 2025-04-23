@@ -50,7 +50,7 @@ jobs:
           echo "tag=$(. ./get_image_tag ${current_branch})" >> "$GITHUB_OUTPUT"
   docker:
     needs: get-image-tag
-    if: ${{ ((needs.get-image-tag.outputs.image-tag != 'latest') || (github.event_name == 'push')) && (needs.check-run-destination.outputs.destination == 'Github') }}
+    if: ${{ ((needs.get-image-tag.outputs.tag != 'latest') || (github.event_name == 'push')) && (needs.check-run-destination.outputs.destination == 'Github') }}
     uses: ./.github/workflows/reusable-docker.yml
     with:
       container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.tag }}
