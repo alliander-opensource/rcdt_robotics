@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import launch_pytest
 import pytest
 from launch import LaunchDescription
@@ -7,19 +11,17 @@ from sensor_msgs.msg import JointState
 
 
 @launch_pytest.fixture(scope="module")
-def launch_description() -> LaunchDescription:
-    franka = IncludeLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "franka.launch.py")
-    )
-
+def core() -> LaunchDescription:
     return LaunchDescription(
         [
-            franka,
+            IncludeLaunchDescription(
+                get_file_path("rcdt_franka", ["launch"], "core.launch.py")
+            ),
             launch_pytest.actions.ReadyToTest(),
         ]
     )
 
 
-@pytest.mark.launch(fixture=launch_description)
+@pytest.mark.launch(fixture=core)
 def test_joint_states_published() -> None:
     assert_for_message(JointState, "/joint_states", 60)
