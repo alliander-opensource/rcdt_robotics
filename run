@@ -12,12 +12,7 @@ IMAGE=rcdt/robotics
 SERVICE="${IMAGE/rcdt\//rcdt_}"
 
 branch_name=$(git branch --show-current)
-changed_files=($(git diff --name-only main))
-
-image_tag="latest"
-if [[ $branch_name != main ]] && [[ ${changed_files[@]} =~ dockerfiles/* ]]; then
-    image_tag="${branch_name/\//-}-latest"
-fi
+image_tag=$(. ./get_image_tag ${branch_name})
 
 mkdir -p ~/.vscode-server
 mkdir -p $SCRIPT_DIR/.config/pyflow
