@@ -26,6 +26,7 @@
    content/realsense.md
    content/pyflow.md
    content/docker.md
+   content/workflows.md
    content/writing_documentation.md
 
    CODE_OF_CONDUCT.md
