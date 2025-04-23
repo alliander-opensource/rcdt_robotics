@@ -12,30 +12,47 @@ on:
     branches: [main]
 
 jobs:
-  get-image-tag:
+  define-variables:
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.get-image-tag.outputs.value }}
+      running-local: ${{ steps.define-variables.outputs.running-local }}
+      current-branch: ${{ steps.define-variables.outputs.current-branch }}
+      image-tag: ${{ steps.define-variables.outputs.image-tag }}
     steps:
       - uses: actions/checkout@v4
-      - id: get-image-tag
-        name: define-docker-image-tag
-        run: |
-          git branch
-          current_branch=${GITHUB_HEAD_REF/\//-}
-          image_tag=$(. ./get_image_tag ${current_branch})
-          echo "value=${image_tag}"
-          echo "value=${image_tag}" >> "$GITHUB_OUTPUT"
-  docker:
-    needs: get-image-tag
-    if: ${{ (needs.get-image-tag.outputs.image-tag != 'latest') || (github.event_name == 'push') }}
-    uses: ./.github/workflows/reusable-docker.yml
-    with:
-      container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
-    secrets: inherit
-  workspace:
-    needs: [get-image-tag, docker]
-    if: always()
-    uses: ./.github/workflows/reusable-workspace.yml
-    with:
-      container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
+      - name: is-local
+        if: ${{ env.ACT }}
+        run: | 
+          echo "Workflow is running locally using Nektos Act."
+      - name: is-github
+        if: ${{ !env.ACT }}
+        run: | 
+          echo "Workflow is running on Github."
+      # - id: define-variables
+      #   run: |
+      #       echo "${env.ACT}"
+          # running_local=$env.ACT
+          # echo "running-local=${running-local}"
+
+          # if [ ${running-local} ]; then
+          #   current-branch=$(git branch --show-current)
+          # else
+          #   current-branch=${GITHUB_HEAD_REF/\//-}
+          # fi
+          # echo "current-branch=${current-branch}" >> "$GITHUB_OUTPUT"
+
+          # image-tag=$(. ./get_image_tag)
+          # echo "image-tag=${image-tag}" >> "$GITHUB_OUTPUT"
+  # docker:
+  #   needs: get-image-tag
+  #   if: ${{ (needs.get-image-tag.outputs.image-tag != 'latest') || (github.event_name == 'push') }}
+  #   uses: ./.github/workflows/reusable-docker.yml
+  #   with:
+  #     container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
+  #   secrets: inherit
+  # workspace:
+  #   needs: [get-image-tag, docker]
+  #   if: always()
+  #   uses: ./.github/workflows/reusable-workspace.yml
+  #   with:
+  #     container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.image-tag }}
