@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: get-current-branch
         run: |
-          if [ ${{ needs.check-run-destination.outputs.destination }} == 'Github'] ; then
+          if [ "${{ needs.check-run-destination.outputs.destination }}" == "Github" ] ; then
             echo "branch=${GITHUB_HEAD_REF/\//-}" >> "$GITHUB_OUTPUT"
           else
             echo "branch=$(git branch --show-current)"  >> "$GITHUB_OUTPUT"
