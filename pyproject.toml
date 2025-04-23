@@ -7,7 +7,4 @@ select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "
 ignore = ["E501", "ANN204"]
 
 [tool.pytest.ini_options]
-filterwarnings = [
-    "ignore:invalid escape sequence",
-]
 timeout = 90
