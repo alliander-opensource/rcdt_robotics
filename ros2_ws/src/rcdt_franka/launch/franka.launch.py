@@ -15,21 +15,21 @@ from rcdt_utilities.launch_utils import (
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
-use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
+use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
-    use_realsense = use_realsense_arg.value(context)
     world = str(world_arg.value(context))
+    use_realsense = use_realsense_arg.value(context)
 
     core = IncludeLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
         launch_arguments={
-            "use_sim": str(use_sim),
+            "simulation": str(use_sim),
             "load_gazebo_ui": str(load_gazebo_ui),
             "realsense": str(use_realsense),
             "world": world,
@@ -139,8 +139,8 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
-            use_realsense_arg.declaration,
             world_arg.declaration,
+            use_realsense_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
