@@ -4,7 +4,7 @@
 
 set -e
 
-#Install ros2 franka: https://support.franka.de/docs/franka_ros2.html
+#Install ros2 franka: https://github.com/frankaemika/franka_ros2/tree/v1.0.0
 apt update
 apt install -y \
     ros-humble-angles \
@@ -17,12 +17,10 @@ apt install -y \
 
 mkdir -p /home/$UNAME/franka_ws/src
 cd /home/$UNAME/franka_ws
-git clone https://github.com/frankaemika/franka_ros2.git src/franka_ros2
+git clone -b v1.0.0 https://github.com/frankaemika/franka_ros2.git src
 cd /home/$UNAME/franka_ws/src/franka_ros2
-git checkout v0.1.15
-
-cd /home/$UNAME/franka_ws
+rosdep install --from-paths src --ignore-src --rosdistro humble -y
 . /opt/ros/humble/setup.sh
 . /home/$UNAME/moveit_ws/install/setup.sh
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore franka_ign_ros2_control
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 echo "source /home/$UNAME/franka_ws/install/setup.bash" >>/home/$UNAME/.bashrc
