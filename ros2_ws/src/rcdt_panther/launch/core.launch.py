@@ -13,12 +13,14 @@ from rcdt_utilities.launch_utils import (
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
+world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
+    world = str(world_arg.value(context))
     use_velodyne = use_velodyne_arg.value(context)
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
@@ -37,7 +39,7 @@ def launch_setup(context: LaunchContext) -> None:
     robot = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
-            "world": "walls.sdf",
+            "world": world,
             "namespace": "panther",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
@@ -61,6 +63,7 @@ def generate_launch_description() -> LaunchDescription:
         [
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
+            world_arg.declaration,
             use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
