@@ -2,18 +2,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
+from launch import LaunchContext, LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import (
-    LaunchArgument,
-    get_file_path,
-    get_robot_description,
-)
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
@@ -24,6 +21,7 @@ def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
+    world = str(world_arg.value(context))
     use_collision_monitor = use_collision_monitor_arg.value(context)
     use_velodyne = use_velodyne_arg.value(context)
     use_slam = use_slam_arg.value(context)
@@ -39,31 +37,14 @@ def launch_setup(context: LaunchContext) -> None:
         use_velodyne = True
         use_slam = True
 
-    xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
-    components_path = get_file_path("rcdt_panther", ["config"], "components.yaml")
-    xacro_arguments = {"use_sim": "true", "components_config_path": components_path}
-    xacro_arguments["load_velodyne"] = "true" if use_velodyne else "false"
-    robot_description = get_robot_description(xacro_path, xacro_arguments)
-
-    robot_state_publisher = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        namespace="panther",
-        parameters=[robot_description, {"frame_prefix": "panther/"}],
-    )
-
-    robot = IncludeLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py"),
+    core = IncludeLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
         launch_arguments={
-            "world": "walls.sdf",
-            "namespace": "panther",
-            "velodyne": str(use_velodyne),
+            "simulation": str(use_sim),
             "load_gazebo_ui": str(load_gazebo_ui),
+            "velodyne": str(use_velodyne),
+            "world": world,
         }.items(),
-    )
-
-    controllers = IncludeLaunchDescription(
-        get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
     )
 
     if use_nav2:
@@ -117,29 +98,20 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    simulation_components = LaunchDescription(
-        [
-            robot_state_publisher,
-            robot,
-            controllers,
-        ]
-    )
-
-    gamepad_components = LaunchDescription(
+    launch_description = LaunchDescription(
         [
             joy,
             joy_topic_manager,
             joy_to_twist_panther,
+            rviz if use_rviz else SKIP,
+            slam if use_slam else SKIP,
         ]
     )
 
-    skip = LaunchDescriptionEntity()
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        simulation_components if use_sim else skip,
-        gamepad_components,
-        rviz if use_rviz else skip,
-        slam if use_slam else skip,
+        core if use_sim else SKIP,
+        launch_description,
     ]
 
 
@@ -149,6 +121,7 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
+            world_arg.declaration,
             use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,

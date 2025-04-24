@@ -13,15 +13,15 @@ from rcdt_utilities.launch_utils import (
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
+use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_realsense = use_realsense_arg.value(context)
     world = str(world_arg.value(context))
+    use_realsense = use_realsense_arg.value(context)
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
     xacro_arguments = {}
@@ -87,8 +87,8 @@ def generate_launch_description() -> LaunchDescription:
         [
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
-            use_realsense_arg.declaration,
             world_arg.declaration,
+            use_realsense_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
