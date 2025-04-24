@@ -21,5 +21,5 @@ git clone -b v1.0.0 https://github.com/frankaemika/franka_ros2.git src
 rosdep install --from-paths src --ignore-src --rosdistro humble -y
 . /opt/ros/humble/setup.sh
 . /home/$UNAME/moveit_ws/install/setup.sh
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore franka_ign_ros2_control
 echo "source /home/$UNAME/franka_ws/install/setup.bash" >>/home/$UNAME/.bashrc
