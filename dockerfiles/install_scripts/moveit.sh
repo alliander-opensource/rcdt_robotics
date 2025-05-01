@@ -1,7 +1,8 @@
+#!/bin/bash
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
-
 set -e
 
 mkdir -p /home/$UNAME/moveit_ws/src
@@ -15,6 +16,6 @@ for repo in moveit2/moveit2.repos $(
 rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 
 cd /home/$UNAME/moveit_ws
-. /opt/ros/humble/setup.sh
+source /home/$UNAME/.bashrc
 colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release ${COLCON_BUILD_SEQUENTIAL:+--executor sequential}
 echo "source /home/$UNAME/moveit_ws/install/setup.bash" >>/home/$UNAME/.bashrc

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -21,7 +23,6 @@ git clone -b v1.0.0 https://github.com/frankaemika/franka_ros2.git
 git clone -b 0.3.0 https://github.com/frankaemika/franka_description.git
 cd /home/$UNAME/franka_ws/
 rosdep install --from-paths src --ignore-src --rosdistro humble -y
-. /opt/ros/humble/setup.sh
-. /home/$UNAME/moveit_ws/install/setup.sh
+source /home/$UNAME/.bashrc
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore franka_ign_ros2_control
 echo "source /home/$UNAME/franka_ws/install/setup.bash" >>/home/$UNAME/.bashrc
