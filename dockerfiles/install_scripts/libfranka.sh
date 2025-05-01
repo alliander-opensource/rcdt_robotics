@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -i
 
 # SPDX-FileCopyrightText: Alliander N. V.
 #
