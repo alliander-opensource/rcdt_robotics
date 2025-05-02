@@ -40,7 +40,7 @@ def launch_setup(context: LaunchContext) -> List:
         cmd.append("-s")
     gazebo = ExecuteProcess(
         cmd=cmd,
-        shell=True,
+        shell=False,
         additional_env=GazeboRosPaths.get_env(),
     )
 
