@@ -9,7 +9,7 @@ from typing import List
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_gazebo.GazeboRosPaths import GazeboRosPaths
+from rcdt_gazebo.gazebo_ros_paths import GazeboRosPaths
 from rcdt_utilities.launch_utils import (
     LaunchArgument,
     get_file_path,
