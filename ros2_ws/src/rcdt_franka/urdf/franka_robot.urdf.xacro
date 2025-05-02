@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<!-- 
+Based on:
+https://github.com/frankaemika/franka_description/blob/main/robots/common/franka_robot.xacro
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="franka_robot"
+    params="arm_id
+                      joint_limits
+                      kinematics
+                      inertials
+                      dynamics
+                      parent:='world'
+                      xyz:='0 0 0'
+                      rpy:='0 0 0'
+                      hand:='true'
+                      ee_id:=none
+                      gazebo:='false'
+                      with_sc:='false'
+                      ros2_control:=false
+                      robot_ip:=''
+                      use_fake_hardware:=false
+                      fake_sensor_commands:=false
+                      gazebo_effort:=false">
+    <xacro:include filename="$(find franka_description)/robots/common/utils.xacro" />
+
+    <xacro:include filename="$(find franka_description)/robots/common/franka_arm.xacro" />
+
+    <xacro:franka_arm
+      arm_id="${arm_id}"
+      xyz="${xyz}"
+      rpy="${rpy}"
+      safety_distance="0.03"
+      gazebo="${gazebo}"
+      joint_limits="${joint_limits}"
+      kinematics="${kinematics}"
+      inertials="${inertials}"
+      dynamics="${dynamics}"
+      with_sc="${with_sc}"
+    />
+
+    <xacro:if value="${hand and ee_id == 'franka_hand'}">
+      <xacro:include filename="$(find franka_description)/end_effectors/common/franka_hand.xacro" />
+      <xacro:include filename="$(find franka_description)/end_effectors/common/utils.xacro" />
+      <xacro:include
+        filename="$(find franka_description)/end_effectors/$(arg ee_id)/$(arg ee_id)_arguments.xacro" />
+      <xacro:if value="${arm_id == 'fp3'}">
+        <xacro:property name="ee_color" value="black" />
+      </xacro:if>
+      <xacro:if value="${arm_id == 'fr3' or arm_id == 'fer'}">
+        <xacro:property name="ee_color" value="white" />
+      </xacro:if>
+      <xacro:franka_hand
+        connected_to="$(arg connection)"
+        arm_id="${arm_id}"
+        ee_id="${ee_id}_${ee_color}"
+        ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/$(arg ee_id)/inertials.yaml')}"
+        rpy="$(arg rpy)"
+        xyz="$(arg xyz)"
+        tcp_xyz="$(arg tcp_xyz)"
+        tcp_rpy="$(arg tcp_rpy)"
+        safety_distance="$(arg safety_distance)"
+        gazebo="${gazebo}"
+        description_pkg="$(arg description_pkg)"
+        with_sc="${with_sc}"
+      />
+    </xacro:if>
+
+    <xacro:if value="${hand and ee_id != 'none' and ee_id != 'franka_hand'}">
+      <xacro:include
+        filename="$(find franka_description)/end_effectors/common/ee_with_one_link.xacro" />
+      <xacro:include filename="$(find franka_description)/end_effectors/common/utils.xacro" />
+      <xacro:include
+        filename="$(find franka_description)/end_effectors/$(arg ee_id)/$(arg ee_id)_arguments.xacro" />
+      <xacro:ee_with_one_link
+        connected_to="$(arg connection)"
+        arm_id="${arm_id}"
+        ee_id="${ee_id}"
+        ee_inertials="${xacro.load_yaml('$(find franka_description)/end_effectors/$(arg ee_id)/inertials.yaml')}"
+        rpy="$(arg rpy)"
+        xyz="$(arg xyz)"
+        tcp_xyz="$(arg tcp_xyz)"
+        tcp_rpy="$(arg tcp_rpy)"
+        safety_distance="$(arg safety_distance)"
+        gazebo="${gazebo}"
+        description_pkg="$(arg description_pkg)"
+        with_sc="${with_sc}"
+      />
+    </xacro:if>
+
+    <link name="${parent}" />
+    <joint name="${parent}_joint" type="fixed">
+      <origin xyz="${xyz}" rpy="${rpy}" />
+      <parent link="${parent}" />
+      <child link="${arm_id}_link0" />
+    </joint>
+
+  </xacro:macro>
+</robot>

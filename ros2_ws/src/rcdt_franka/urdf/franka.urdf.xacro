@@ -6,43 +6,51 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="franka">
 
-  <!-- Global Franka definitions: -->
+  <!-- arguments: -->
   <xacro:arg name="arm_id" default="fr3" />
   <xacro:arg name="ee_id" default="franka_hand" />
-
-  <!-- Franka related: -->
+  <xacro:arg name="namespace" default="" />
   <xacro:arg name="parent" default="world" />
   <xacro:arg name="xyz" default="0 0 0" />
   <xacro:arg name="gazebo" default="false" />
-  <xacro:arg name="ign_ros2_control" default="false" />
   <xacro:arg name="robot_ip" default="" />
-
-  <!-- Realsense related: -->
   <xacro:arg name="load_realsense" default="false" />
 
-  <!-- Load arm: -->
-  <xacro:include filename="$(find franka_description)/robots/common/franka_robot.xacro" />
+  <!-- robot definition: -->
+  <xacro:include filename="$(find rcdt_franka)/urdf/franka_robot.urdf.xacro" />
   <xacro:franka_robot
-    arm_id="$(arg arm_id)"
-    joint_limits="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/joint_limits.yaml')}"
-    inertials="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/inertials.yaml')}"
-    kinematics="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/kinematics.yaml')}"
-    dynamics="${xacro.load_yaml('$(find franka_description)/robots/$(arg arm_id)/dynamics.yaml')}"
-    parent="$(arg parent)"
-    ee_id="$(arg ee_id)"
+    arm_id="fr3"
+    joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
+    inertials="${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')}"
+    kinematics="${xacro.load_yaml('$(find franka_description)/robots/fr3/kinematics.yaml')}"
+    dynamics="${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')}"
     gazebo="$(arg gazebo)"
-    xyz="$(arg xyz)" />
+    ee_id="$(arg ee_id)"
+    parent="$(arg parent)"
+  />
 
-  <!-- Load ros2 control. gazebo to LOAD and USE plugin. ign_ros2_control to only USE plugin. -->
-  <xacro:include filename="$(find franka_description)/robots/common/franka_arm.ros2_control.xacro" />
-  <xacro:franka_arm_ros2_control
+  <!-- ros2_control definition: -->
+  <xacro:include filename="$(find rcdt_franka)/urdf/franka_ros2_control.urdf.xacro" />
+  <xacro:franka_ros2_control
     arm_id="$(arg arm_id)"
     robot_ip="$(arg robot_ip)"
-    hand="true"
     gazebo="$(arg gazebo)"
-    ign_ros2_control="$(arg ign_ros2_control)" />
+    hand="true"
+  />
 
-  <!-- Load realsense: -->
+  <!-- gazebo plugins: -->
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(find rcdt_gazebo)/config/controllers.yaml</parameters>
+      <ros>
+        <namespace>$(arg namespace)</namespace>
+        <xacro:include filename="$(find rcdt_gazebo)/urdf/remappings.urdf.xacro" />
+        <xacro:remappings />
+      </ros>
+    </plugin>
+  </gazebo>
+
+  <!-- realsense: -->
   <xacro:if value="$(arg load_realsense)">
     <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_realsense_d435.urdf.xacro" />
     <link name="realsense_link" />
