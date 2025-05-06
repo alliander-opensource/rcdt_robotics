@@ -15,6 +15,7 @@ from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.events.process import ProcessExited
 from launch.substitutions import LaunchConfiguration
+from launch_testing_examples.check_multiple_nodes_launch_test import WaitForNodes
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rclpy.executors import Executor
 from rclpy.logging import get_logger
@@ -123,3 +124,20 @@ def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
     assert received, (
         f"No message received of type {message_type.__name__} on topic {topic} within {timeout} seconds."
     )
+
+
+def assert_for_nodes(node_list: List[str], timeout: int) -> bool:
+    """
+    Assert that all specified ROS 2 nodes are available within the given timeout.
+
+    Args:
+        node_list (List[str]): A list of node names to wait for.
+        timeout (int): Timeout duration in seconds.
+
+    Returns:
+        bool: True if all nodes were found, otherwise raises AssertionError.
+    """
+    wait_for_nodes_1 = WaitForNodes(node_list, timeout=timeout)
+    assert wait_for_nodes_1.wait()
+    assert wait_for_nodes_1.get_nodes_not_found() == set()
+    wait_for_nodes_1.shutdown()
