@@ -14,7 +14,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Shared folders:
 install(
-  DIRECTORY launch config worlds urdf
+  DIRECTORY config launch models worlds urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -24,4 +24,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.sh.in")
 ament_package()

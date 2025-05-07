@@ -34,8 +34,6 @@ jobs:
           source /home/rcdt/.bashrc
           source .env
           echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          echo "PWD: ${PWD}"
-          ls
           cd ros2_ws
           source install/setup.bash
           pytest-3 src/
