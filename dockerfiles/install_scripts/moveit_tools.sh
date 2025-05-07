@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -22,7 +24,6 @@ cd /home/$UNAME/bio_ik_ws/src
 git clone https://github.com/PickNikRobotics/bio_ik.git -b ros2
 
 cd /home/$UNAME/bio_ik_ws/
-. /opt/ros/humble/setup.sh
-. /home/$UNAME/moveit_ws/install/setup.sh
+source /home/$UNAME/.bashrc
 colcon build
 echo "source /home/$UNAME/bio_ik_ws/install/setup.bash" >>/home/$UNAME/.bashrc

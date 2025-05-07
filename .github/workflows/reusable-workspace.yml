@@ -35,6 +35,7 @@ jobs:
           GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src"
           GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/models"
           GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/worlds"
+          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/franka_ws/src/
           cd ros2_ws
           source install/setup.bash
           pytest-3 src/
