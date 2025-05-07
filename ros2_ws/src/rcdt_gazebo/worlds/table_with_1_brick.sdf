@@ -63,14 +63,14 @@ SPDX-License-Identifier: Apache-2.0
       <static>1</static>
       <pose>0 -0.4 0 0 0 0</pose>
       <include>
-        <uri>model://basket</uri>
+        <uri>model://rcdt_gazebo/models/basket</uri>
       </include>
     </model>
 
     <model name='brick0'>
       <pose>0.5 0 0 0 0 0</pose>
       <include>
-        <uri>model://brick</uri>
+        <uri>model://rcdt_gazebo/models/brick</uri>
       </include>
     </model>
 
