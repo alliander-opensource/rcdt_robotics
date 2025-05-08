@@ -34,12 +34,28 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Scene-->
 
-
-    <model name="dining_table">
-      <pose>0.5 0 -0.83 0 0 0</pose>
-      <include>
-        <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Dining Table</uri>
-      </include>
+    <model name='table'>
+      <static>true</static>
+      <pose>0.5 0 -0.01 0 0 0</pose>
+      <link name='box'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>1 1.5 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>0.87 0.72 0.53 1</diffuse>
+          </material>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>1 1.5 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
     </model>
 
 
@@ -47,14 +63,14 @@ SPDX-License-Identifier: Apache-2.0
       <static>1</static>
       <pose>0 -0.4 0 0 0 0</pose>
       <include>
-        <uri>mode://basket</uri>
+        <uri>model://rcdt_gazebo/models/basket</uri>
       </include>
     </model>
 
     <model name='brick0'>
       <pose>0.5 0 0 0 0 0</pose>
       <include>
-        <uri>model://brick</uri>
+        <uri>model://rcdt_gazebo/models/brick</uri>
       </include>
     </model>
 

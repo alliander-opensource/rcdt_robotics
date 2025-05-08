@@ -4,7 +4,6 @@
 
 import os
 from os import environ
-from typing import List
 
 from ament_index_python.packages import get_package_share_directory
 from catkin_pkg.package import (
@@ -14,24 +13,14 @@ from catkin_pkg.package import (
     Package,
     parse_package,
 )
-from launch import LaunchContext, LaunchDescription
-from launch.actions import ExecuteProcess, OpaqueFunction
-from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 from ros2pkg.api import get_package_names
-
-load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-world_arg = LaunchArgument("world", "empty_camera.sdf")
-namespace_arg = LaunchArgument("namespace", "")
-use_realsense_arg = LaunchArgument("realsense", False, [True, False])
-use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 class GazeboRosPaths:
     """
     Based on: https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_sim/launch/gz_sim.launch.py.in.
 
-    By copying instead of using that launch file we are able to launch Gazebo as process with shell=False.
+    By using our own launch file we are able to launch Gazebo as process with shell=False.
     This avoids ghost processes of Gazebo continuing and might be implemented in the original launch file in the future:
     https://github.com/gazebosim/ros_gz/issues/563
     """
@@ -94,71 +83,3 @@ class GazeboRosPaths:
             ),
         }
         return env
-
-
-def launch_setup(context: LaunchContext) -> List:
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = world_arg.value(context)
-    namespace = namespace_arg.value(context)
-    use_realsense = use_realsense_arg.value(context)
-    use_velodyne = use_velodyne_arg.value(context)
-
-    sdf_file = get_file_path("rcdt_gz_worlds", ["worlds"], world)
-    cmd = ["ign", "gazebo", sdf_file, "-r"]
-    if not load_gazebo_ui:
-        cmd.append("-s")
-    gazebo = ExecuteProcess(
-        cmd=cmd,
-        shell=False,
-        additional_env=GazeboRosPaths.get_env(),
-    )
-
-    spawn_robot = Node(
-        package="ros_gz_sim",
-        executable="create",
-        arguments=["-topic", f"{namespace}/robot_description"],
-        output="screen",
-    )
-
-    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"]
-    if use_realsense:
-        bridge_topics.extend(
-            [
-                "/camera/camera/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/camera/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
-            ]
-        )
-    if use_velodyne:
-        bridge_topics.extend(
-            [
-                "/panther/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
-            ]
-        )
-
-    bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
-        arguments=bridge_topics,
-    )
-
-    return [
-        gazebo,
-        spawn_robot,
-        bridge,
-    ]
-
-
-def generate_launch_description() -> LaunchDescription:
-    return LaunchDescription(
-        [
-            load_gazebo_ui_arg.declaration,
-            world_arg.declaration,
-            namespace_arg.declaration,
-            use_realsense_arg.declaration,
-            use_velodyne_arg.declaration,
-            OpaqueFunction(function=launch_setup),
-        ]
-    )

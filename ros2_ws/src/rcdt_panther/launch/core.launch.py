@@ -37,7 +37,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     robot = IncludeLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "gazebo_robot.launch.py"),
+        get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "world": world,
             "namespace": "panther",

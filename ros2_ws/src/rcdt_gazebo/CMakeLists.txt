@@ -3,14 +3,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.5)
-project(rcdt_gz_worlds)
+project(rcdt_gazebo)
 
 # CMake dependencies:
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+# Python package:
+ament_python_install_package(${PROJECT_NAME})
 
 # Shared folders:
 install(
-  DIRECTORY launch worlds
+  DIRECTORY config launch models worlds urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -20,4 +24,5 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.sh.in")
 ament_package()
