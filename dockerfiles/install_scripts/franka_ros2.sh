@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -22,7 +24,6 @@ cd /home/$UNAME/franka_ws/src/franka_ros2
 git checkout v0.1.15
 
 cd /home/$UNAME/franka_ws
-. /opt/ros/humble/setup.sh
-. /home/$UNAME/moveit_ws/install/setup.sh
+source /home/$UNAME/.bashrc
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-ignore franka_ign_ros2_control
 echo "source /home/$UNAME/franka_ws/install/setup.bash" >>/home/$UNAME/.bashrc
