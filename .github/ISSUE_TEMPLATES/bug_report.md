@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: Alliander N. V.
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 ---
 name: Bug Report
 about: Report a reproducible bug
