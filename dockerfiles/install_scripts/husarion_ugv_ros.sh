@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -20,6 +22,6 @@ rm -rf src/ros2_controllers
 rosdep update --rosdistro $ROS_DISTRO
 rosdep install --from-paths src -y -i
 
-. /opt/ros/humble/setup.sh
+source /home/$UNAME/.bashrc
 colcon build --packages-up-to panther --cmake-args -DCMAKE_BUILD_TYPE=Release
 echo "source /home/$UNAME/husarion_ws/install/setup.bash" >>/home/$UNAME/.bashrc
