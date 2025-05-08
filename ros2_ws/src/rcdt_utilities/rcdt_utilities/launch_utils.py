@@ -93,20 +93,27 @@ def spin_executor(executor: Executor) -> None:
         raise e
 
 
-def register_event_handler(target: Action, complete: LaunchDescription) -> None:
-    logger = get_logger(register_event_handler.__name__)
+def start_on_exit(
+    action_to_exit: Action, action_to_start: Action
+) -> RegisterEventHandler:
+    logger = get_logger(start_on_exit.__name__)
 
-    def on_completion(
-        event: ProcessExited, _context: LaunchContext
-    ) -> LaunchDescription:
+    def on_exit(event: ProcessExited, _context: LaunchContext) -> Action:
         if event.returncode == 0:
-            return complete
+            return action_to_start
         else:
             logger.error("Target did not start successfully. Please restart.")
 
     return RegisterEventHandler(
-        OnProcessExit(target_action=target, on_exit=on_completion)
+        OnProcessExit(target_action=action_to_exit, on_exit=on_exit)
     )
+
+
+def start_actions_in_sequence(actions: list[Action]) -> LaunchDescription:
+    sequence = [actions[0]]
+    for n in range(len(actions) - 1):
+        sequence.append(start_on_exit(actions[n], actions[n + 1]))
+    return LaunchDescription(sequence)
 
 
 def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:

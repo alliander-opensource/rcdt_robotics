@@ -32,9 +32,8 @@ jobs:
         shell: bash -ieo pipefail {0}
         run: |
           source /home/rcdt/.bashrc
-          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src"
-          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/models"
-          GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/$PWD/ros2_ws/src/rcdt_gz_worlds/worlds"
+          source .env
           cd ros2_ws
           source install/setup.bash
+          echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
           pytest-3 src/

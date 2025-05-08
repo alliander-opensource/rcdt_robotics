@@ -22,6 +22,7 @@ RUN ./libfranka.sh
 
 COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
+ENV GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/opt/ros/humble/share/"
 
 COPY ./install_scripts/husarion_ugv_ros.sh .
 RUN ./husarion_ugv_ros.sh

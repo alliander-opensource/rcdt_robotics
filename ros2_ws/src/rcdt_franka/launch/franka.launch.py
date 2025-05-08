@@ -9,7 +9,7 @@ from rcdt_utilities.launch_utils import (
     SKIP,
     LaunchArgument,
     get_file_path,
-    register_event_handler,
+    start_actions_in_sequence,
 )
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -128,8 +128,7 @@ def launch_setup(context: LaunchContext) -> None:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         core,
-        wait_for_joint_states,
-        register_event_handler(wait_for_joint_states, launch_description),
+        start_actions_in_sequence([wait_for_joint_states, launch_description]),
     ]
 
 

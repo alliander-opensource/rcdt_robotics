@@ -7,9 +7,10 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
+from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import JointState
 
-MSG_TYPES = {"JointState": JointState}
+MSG_TYPES = {"JointState": JointState, "Clock": Clock}
 WAIT = 3
 
 
