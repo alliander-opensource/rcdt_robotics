@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report a reproducible bug
-title: "[BUG] <short description>"
+title: "<short description>"
 labels: bug
 
 ---
