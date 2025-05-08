@@ -16,22 +16,16 @@ The repository uses git LFS for large files, in particular for 3D simulation ass
 
 ## Clone
 
-To use this repository, first clone it including the submodules. If you are a contributor with an SSH-key linked, clone via SSH:
+To use this repository, first clone it. If you are a contributor with an SSH-key linked, clone via SSH:
 
 ```bash
-git clone --recurse-submodules git@github.com:alliander-opensource/rcdt_robotics.git
+git clone git@github.com:alliander-opensource/rcdt_robotics.git
 ```
 
 If you only want to use the repository without contributing, you can clone via HTTP:
 
 ```bash
-git clone --recurse-submodules https://github.com/alliander-opensource/rcdt_robotics.git
-```
-
-In case you cloned the repository, but forgot to pass the `--recurse-submodules` flag, this can be fixed by running:
-
-```bash
-git submodule update --init --recursive
+git clone https://github.com/alliander-opensource/rcdt_robotics.git
 ```
 
 ## Run the container
