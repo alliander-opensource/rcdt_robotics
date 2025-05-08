@@ -40,7 +40,7 @@ def launch_setup(context: LaunchContext) -> None:
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "world": world,
-            "namespace": "panther",
+            "robots": "panther",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
         }.items(),
