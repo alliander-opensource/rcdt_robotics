@@ -45,7 +45,7 @@ class FrankaFullTests:
     ) -> None:
         """Test gripper open/close action and verify joint state."""
         assert call_trigger_service(singleton_node, service) is True
-
+        time.sleep(2) 
         joint_value = get_joint_position("fr3_finger_joint1")
         assert joint_value * 2 == pytest.approx(expected_value, abs=3e-3)
 
@@ -87,7 +87,7 @@ class FrankaFullTests:
 
         if expected_value is not None:
             # Wait for the gripper to move
-            time.sleep(1.0)
+            time.sleep(2.0)
             # Check the gripper position
             joint_value = get_joint_position("fr3_finger_joint1")
             assert joint_value * 2 == pytest.approx(expected_value, abs=3e-3)
