@@ -28,7 +28,7 @@ class CloseGripper(Node):
 
         cbg_client = MutuallyExclusiveCallbackGroup()
         self.client = ActionClient(
-            self, Grasp, "/fr3_gripper/grasp", callback_group=cbg_client
+            self, Grasp, "/franka/fr3_gripper/grasp", callback_group=cbg_client
         )
 
         self.create_goal()

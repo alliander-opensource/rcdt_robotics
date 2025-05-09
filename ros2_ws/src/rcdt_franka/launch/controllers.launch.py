@@ -2,35 +2,26 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
+from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 
 simulation_arg = LaunchArgument("simulation", True, [True, False])
-arm_controller_arg = LaunchArgument("arm_controller", "fr3_arm_controller")
-gripper_controller_arg = LaunchArgument("gripper_controller", "fr3_gripper")
 
-controllers_config = get_file_path(
-    "rcdt_franka", ["config"], "simulation_controllers.yaml"
-)
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
 
 
 def launch_setup(context: LaunchContext) -> None:
     simulation = simulation_arg.value(context)
-    arm_controller = arm_controller_arg.value(context)
-    gripper_controller = gripper_controller_arg.value(context)
 
-    controllers_yaml = (
-        "simulation_controllers.yaml" if simulation else "robot_controllers.yaml"
-    )
-    controllers_config = get_file_path("rcdt_franka", ["config"], controllers_yaml)
+    namespace = "franka"
 
-    fr3_arm_controller = Node(
+    fr3_arm_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["fr3_arm_controller", "-p", controllers_config],
+        arguments=["fr3_arm_controller"],
+        namespace=namespace,
     )
 
     if simulation:
@@ -38,6 +29,7 @@ def launch_setup(context: LaunchContext) -> None:
             package="rcdt_franka",
             executable="franka_gripper_simulation.py",
             output="screen",
+            namespace=namespace,
         )
     else:
         fr3_gripper = Node(
@@ -51,27 +43,27 @@ def launch_setup(context: LaunchContext) -> None:
                 },
                 gripper_config,
             ],
+            namespace=namespace,
         )
 
-    gripper_action = Node(
+    gripper_action_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["gripper_action_controller", "-p", controllers_config],
+        arguments=["gripper_action_controller"],
+        namespace=namespace,
     )
 
-    skip = LaunchDescriptionEntity()
     return [
-        fr3_arm_controller if arm_controller == "fr3_arm_controller" else skip,
-        fr3_gripper if gripper_controller == "fr3_gripper" else skip,
-        gripper_action if gripper_controller == "fr3_gripper" and simulation else skip,
+        fr3_arm_controller_spawner,
+        fr3_gripper,
+        gripper_action_controller_spawner if simulation else SKIP,
     ]
 
 
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
-            arm_controller_arg.declaration,
-            gripper_controller_arg.declaration,
+            simulation_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

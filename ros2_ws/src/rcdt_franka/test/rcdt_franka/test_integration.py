@@ -24,4 +24,4 @@ def core() -> LaunchDescription:
 
 @pytest.mark.launch(fixture=core)
 def test_joint_states_published() -> None:
-    assert_for_message(JointState, "/joint_states", 60)
+    assert_for_message(JointState, "/franka/joint_states", 60)
