@@ -43,9 +43,10 @@ class FrankaFullTests:
     ) -> None:
         """Test gripper open/close action and verify joint state."""
         assert call_trigger_service(singleton_node, service) is True
-        time.sleep(2)
-        joint_value = get_joint_position("fr3_finger_joint1")
-        assert joint_value * 2 == pytest.approx(expected_value, abs=0.005)
+        joint_value = get_joint_position("fr3_finger_joint1") * 2
+        assert joint_value == pytest.approx(expected_value, abs=0.005), (
+            f"The joint value is {joint_value}"
+        )
 
     def test_move_to_drop_configuration(self, singleton_node: rclpy.node.Node) -> None:
         """Test that MoveIt can move to a configuration."""
@@ -53,8 +54,9 @@ class FrankaFullTests:
         assert call_move_to_configuration_service(singleton_node, "drop") is True
         drop_values = [-1.57079632679, -0.65, 0, -2.4, 0, 1.75, 0.78539816339]
         for i in range(7):
-            assert get_joint_position(f"fr3_joint{i + 1}") == pytest.approx(
-                drop_values[i], abs=0.01
+            joint_value = get_joint_position(f"fr3_joint{i + 1}")
+            assert joint_value == pytest.approx(drop_values[i], abs=0.01), (
+                f"The joint value is {joint_value}"
             )
 
     @pytest.mark.parametrize(
@@ -87,5 +89,7 @@ class FrankaFullTests:
             # Wait for the gripper to move
             time.sleep(2.0)
             # Check the gripper position
-            joint_value = get_joint_position("fr3_finger_joint1")
-            assert joint_value * 2 == pytest.approx(expected_value, abs=3e-3)
+            joint_value = get_joint_position("fr3_finger_joint1") * 2
+            assert joint_value == pytest.approx(expected_value, abs=3e-3), (
+                f"The joint value is {joint_value}"
+            )

@@ -22,7 +22,7 @@ def franka_launch() -> LaunchDescription:
                 launch_arguments={
                     "rviz": "False",
                     "world": "empty_camera.sdf",
-                    "realsense": "True",
+                    "realsense": "False",
                 }.items(),
             ),
             launch_pytest.actions.ReadyToTest(),

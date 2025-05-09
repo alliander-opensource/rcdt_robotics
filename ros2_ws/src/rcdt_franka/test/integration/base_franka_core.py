@@ -37,10 +37,16 @@ class FrankaCoreTests:
         assert "gripper_action_controller" in result.stdout
 
     def test_can_move_fingers(self, singleton_node: rclpy.node.Node) -> None:
-        assert call_move_gripper_service(singleton_node, width=0.08, speed=0.03) is True
-        assert get_joint_position("fr3_finger_joint1") * 2 == pytest.approx(
-            0.08, abs=0.005
+        assert (
+            call_move_gripper_service(
+                singleton_node,
+                width=0.04,
+                action_name="/gripper_action_controller/gripper_cmd",
+            )
+            is True
         )
+        pos = get_joint_position("fr3_finger_joint1") * 2
+        assert pos == pytest.approx(0.08, abs=0.005), f"Got gripper position of {pos}"
 
     def test_follow_joint_trajectory_goal(
         self, singleton_node: rclpy.node.Node
@@ -49,5 +55,12 @@ class FrankaCoreTests:
             singleton_node,
             positions=[0.0, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0],
         )
-        assert get_joint_position("fr3_joint2") == pytest.approx(-0.5, abs=0.01)
-        assert get_joint_position("fr3_joint3") == pytest.approx(0.5, abs=0.01)
+        pos_joint2 = get_joint_position("fr3_joint2")
+        pos_joint3 = get_joint_position("fr3_joint3")
+
+        assert pos_joint2 == pytest.approx(-0.5, abs=0.01), (
+            f"Got joint position {pos_joint2}"
+        )
+        assert pos_joint3 == pytest.approx(0.5, abs=0.01), (
+            f"Got joint position {pos_joint3}"
+        )

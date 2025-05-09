@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
 import rclpy
 from builtin_interfaces.msg import Duration
-from control_msgs.action import FollowJointTrajectory
-from franka_msgs.action import Move as MoveGripper
+from control_msgs.action import FollowJointTrajectory, GripperCommand
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rcdt_messages.srv import MoveToConfiguration
 from rclpy.action import ActionClient
@@ -66,17 +66,16 @@ def call_move_to_configuration_service(
 
 
 def call_move_gripper_service(
-    node: rclpy.node.Node, width: float, speed: float
+    node: rclpy.node.Node, width: float, action_name: str
 ) -> bool:
-    """Call the gripper to go to a defined width with a defined speed."""
-    action_client = ActionClient(node, MoveGripper, "/fr3_gripper/move")
+    """Call the gripper to go to a defined width."""
+    action_client = ActionClient(node, GripperCommand, action_name=action_name)
 
     if not action_client.wait_for_server():
-        raise RuntimeError("Action server /fr3_gripper/move not available")
+        raise RuntimeError(f"Action server {action_name} not available")
 
-    goal_msg = MoveGripper.Goal()
-    goal_msg.width = width
-    goal_msg.speed = speed
+    goal_msg = GripperCommand.Goal()
+    goal_msg.command.position = width
 
     future = action_client.send_goal_async(goal_msg)
 
@@ -88,7 +87,7 @@ def call_move_gripper_service(
     result_future = goal_handle.get_result_async()
     rclpy.spin_until_future_complete(node, result_future)
     result = result_future.result().result
-    return result.success
+    return result.reached_goal
 
 
 def follow_joint_trajectory_goal(
