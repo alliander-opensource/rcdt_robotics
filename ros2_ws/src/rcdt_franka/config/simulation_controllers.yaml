@@ -2,6 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+controller_manager:
+  ros__parameters:
+    update_rate: 1000
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
 fr3_arm_controller:
   ros__parameters:
     type: joint_trajectory_controller/JointTrajectoryController

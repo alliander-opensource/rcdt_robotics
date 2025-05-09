@@ -20,8 +20,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          submodules: "true"
       - name: build workspace
         shell: bash -ieo pipefail {0}
         run: |
