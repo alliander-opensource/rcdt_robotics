@@ -2,16 +2,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
 import launch_pytest
 import pytest
+from base_franka_core import FrankaCoreTests
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from rcdt_utilities.launch_utils import assert_for_message, get_file_path
-from sensor_msgs.msg import JointState
+from rcdt_utilities.launch_utils import get_file_path
 
 
 @launch_pytest.fixture(scope="module")
-def core() -> LaunchDescription:
+def core_launch() -> LaunchDescription:
     return LaunchDescription(
         [
             IncludeLaunchDescription(
@@ -22,6 +23,6 @@ def core() -> LaunchDescription:
     )
 
 
-@pytest.mark.launch(fixture=core)
-def test_joint_states_published() -> None:
-    assert_for_message(JointState, "/joint_states", 60)
+@pytest.mark.launch(fixture=core_launch)
+class TestCoreLaunch(FrankaCoreTests):
+    """Run all the FrankaLaunchTests under core.launch.py"""

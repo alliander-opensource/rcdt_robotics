@@ -70,6 +70,7 @@ def launch_setup(context: LaunchContext) -> None:
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
+            simulation_arg.declaration,
             arm_controller_arg.declaration,
             gripper_controller_arg.declaration,
             OpaqueFunction(function=launch_setup),
