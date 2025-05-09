@@ -54,7 +54,7 @@ joint_state_publisher = Node(
 def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
-            # settings_setter,
+            settings_setter,
             ros2_control_node,
             joint_state_publisher,
         ]
