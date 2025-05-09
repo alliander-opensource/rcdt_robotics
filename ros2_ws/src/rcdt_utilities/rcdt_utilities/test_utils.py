@@ -48,7 +48,6 @@ def call_trigger_service(node: rclpy.node.Node, service_name: str) -> bool:
 
 def call_move_to_configuration_service(
     node: rclpy.node.Node, configuration: str = "drop"
-
 ) -> bool:
     """Call the move_to_configuration service and return True if the service was called"""
     client = node.create_client(
@@ -93,9 +92,9 @@ def call_move_gripper_service(
 
 
 def follow_joint_trajectory_goal(
-    singleton_node: rclpy.node.Node, positions: list[float],  controller: str = "fr3_arm_controller",
-    timeout_server: float = 10.0,
-    timeout_result: float = 30.0,
+    singleton_node: rclpy.node.Node,
+    positions: list[float],
+    controller: str = "fr3_arm_controller",
     time_from_start: int = 3,
 ) -> bool:
     """Test sending a joint trajectory goal to the arm controller."""

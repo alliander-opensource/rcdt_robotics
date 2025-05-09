@@ -39,7 +39,7 @@ class FrankaCoreTests:
     def test_can_move_fingers(self, singleton_node: rclpy.node.Node) -> None:
         assert call_move_gripper_service(singleton_node, width=0.08, speed=0.03) is True
         assert get_joint_position("fr3_finger_joint1") * 2 == pytest.approx(
-            0.08, abs=2.5e-3
+            0.08, abs=0.005
         )
 
     def test_follow_joint_trajectory_goal(

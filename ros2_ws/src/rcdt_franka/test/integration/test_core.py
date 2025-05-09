@@ -5,14 +5,13 @@
 
 import launch_pytest
 import pytest
+from base_franka_core import FrankaCoreTests
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from rcdt_utilities.launch_utils import get_file_path
 
-from base_franka_core import FrankaCoreTests
 
-
-@launch_pytest.fixture(scope="class")
+@launch_pytest.fixture(scope="module")
 def core_launch() -> LaunchDescription:
     return LaunchDescription(
         [

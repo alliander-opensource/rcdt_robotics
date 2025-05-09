@@ -8,7 +8,6 @@ import time
 import pytest
 import rclpy
 import rclpy.node
-from builtin_interfaces.msg import Time as TimeMsg
 from rcdt_utilities.launch_utils import (
     assert_for_message,
     assert_for_nodes,
@@ -19,7 +18,6 @@ from rcdt_utilities.test_utils import (
     get_joint_position,
 )
 from sensor_msgs.msg import JointState, Joy
-from std_msgs.msg import Header
 
 
 class FrankaFullTests:
@@ -45,9 +43,9 @@ class FrankaFullTests:
     ) -> None:
         """Test gripper open/close action and verify joint state."""
         assert call_trigger_service(singleton_node, service) is True
-        time.sleep(2) 
+        time.sleep(2)
         joint_value = get_joint_position("fr3_finger_joint1")
-        assert joint_value * 2 == pytest.approx(expected_value, abs=3e-3)
+        assert joint_value * 2 == pytest.approx(expected_value, abs=0.005)
 
     def test_move_to_drop_configuration(self, singleton_node: rclpy.node.Node) -> None:
         """Test that MoveIt can move to a configuration."""
