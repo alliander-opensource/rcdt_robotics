@@ -5,7 +5,12 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import (
+    SKIP,
+    LaunchArgument,
+    get_file_path,
+    start_actions_in_sequence,
+)
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -45,6 +50,10 @@ def launch_setup(context: LaunchContext) -> None:
             "velodyne": str(use_velodyne),
             "world": world,
         }.items(),
+    )
+
+    controllers = IncludeLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
     )
 
     if use_nav2:
@@ -89,6 +98,14 @@ def launch_setup(context: LaunchContext) -> None:
         ],
     )
 
+    joystick = LaunchDescription(
+        [
+            joy,
+            joy_topic_manager,
+            joy_to_twist_panther,
+        ]
+    )
+
     slam = IncludeLaunchDescription(
         get_file_path("slam_toolbox", ["launch"], "online_async_launch.py"),
         launch_arguments={
@@ -98,11 +115,16 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
+    wait_for_panther = Node(
+        package="rcdt_utilities",
+        executable="wait_for_topic.py",
+        parameters=[{"topic": "/panther/joint_states"}, {"msg_type": "JointState"}],
+    )
+
     launch_description = LaunchDescription(
         [
-            joy,
-            joy_topic_manager,
-            joy_to_twist_panther,
+            controllers,
+            joystick,
             rviz if use_rviz else SKIP,
             slam if use_slam else SKIP,
         ]
@@ -111,7 +133,7 @@ def launch_setup(context: LaunchContext) -> None:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         core if use_sim else SKIP,
-        launch_description,
+        start_actions_in_sequence([wait_for_panther, launch_description]),
     ]
 
 
