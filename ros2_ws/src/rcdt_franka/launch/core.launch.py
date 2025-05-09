@@ -33,8 +33,7 @@ def launch_setup(context: LaunchContext) -> None:
 
     xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
     xacro_arguments = {}
-    xacro_arguments["robot_ip"] = "172.16.0.2"
-    xacro_arguments["gazebo"] = "true" if use_sim else "false"
+    xacro_arguments["simulation"] = "true" if use_sim else "false"
     xacro_arguments["namespace"] = namespace
     xacro_arguments["parent"] = base_link
     xacro_arguments["load_realsense"] = "true" if use_realsense else "false"

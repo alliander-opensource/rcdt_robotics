@@ -29,6 +29,7 @@ def launch_setup(context: LaunchContext) -> None:
             package="rcdt_franka",
             executable="franka_gripper_simulation.py",
             output="screen",
+            namespace=namespace,
         )
     else:
         fr3_gripper = Node(
@@ -42,6 +43,7 @@ def launch_setup(context: LaunchContext) -> None:
                 },
                 gripper_config,
             ],
+            namespace=namespace,
         )
 
     gripper_action_controller_spawner = Node(

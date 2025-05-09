@@ -27,7 +27,7 @@ def launch_setup(context: LaunchContext) -> None:
     use_realsense = use_realsense_arg.value(context)
 
     namespace = "franka"
-    ns_topic = f"/{namespace}" if namespace else ""
+    ns = f"/{namespace}" if namespace else ""
 
     core = IncludeLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
@@ -87,7 +87,7 @@ def launch_setup(context: LaunchContext) -> None:
         executable="joy_to_twist.py",
         parameters=[
             {"sub_topic": "/franka/joy"},
-            {"pub_topic": f"{ns_topic}/servo_node/delta_twist_cmds"},
+            {"pub_topic": f"{ns}/servo_node/delta_twist_cmds"},
             {"config_pkg": "rcdt_franka"},
             {"pub_frame": "fr3_hand"},
         ],
