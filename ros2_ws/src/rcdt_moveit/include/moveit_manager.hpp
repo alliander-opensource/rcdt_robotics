@@ -42,7 +42,6 @@ public:
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::Node::SharedPtr client_node;
-  std::string planning_group = "fr3_arm";
   moveit::planning_interface::MoveGroupInterface move_group;
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
   const moveit::core::JointModelGroup *joint_model_group;

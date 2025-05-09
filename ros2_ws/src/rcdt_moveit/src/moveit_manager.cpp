@@ -13,7 +13,13 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
-    : node(node_), move_group(node, planning_group),
+    : node(node_),
+      move_group(
+          node,
+          moveit::planning_interface::MoveGroupInterface::Options(
+              "fr3_arm",
+              moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
+              "/franka")),
       moveit_visual_tools(node, "world", "/rviz_markers") {
 
   move_group.setEndEffectorLink("fr3_hand");
@@ -28,7 +34,7 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
 void MoveitManager::initialize_clients() {
   client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
   switch_servo_type_client = client_node->create_client<ServoCommandType>(
-      "/servo_node/switch_command_type");
+      "/franka/servo_node/switch_command_type");
   express_pose_in_other_frame_client =
       client_node->create_client<ExpressPoseInOtherFrame>(
           "/express_pose_in_other_frame");

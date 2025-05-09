@@ -28,7 +28,7 @@ class OpenGripper(Node):
 
         cbg_client = MutuallyExclusiveCallbackGroup()
         self.client = ActionClient(
-            self, Move, "/fr3_gripper/move", callback_group=cbg_client
+            self, Move, "/franka/fr3_gripper/move", callback_group=cbg_client
         )
 
         self.create_goal()
