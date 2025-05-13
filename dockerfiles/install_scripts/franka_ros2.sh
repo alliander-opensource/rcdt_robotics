@@ -6,20 +6,12 @@
 
 set -e
 
-#Install ros2 franka: https://github.com/frankaemika/franka_ros2
+#Install ros2 franka: https://github.com/frankaemika/franka_ros2/tree/v1.0.0
 apt update
-apt install -y \
-    ros-humble-angles \
-    ros-humble-generate-parameter-library \
-    ros-humble-joint-state-publisher \
-    ros-humble-joint-state-publisher-gui \
-    ros-humble-pinocchio \
-    ros-humble-realtime-tools \
-    ros-humble-hardware-interface
-
+apt install -y ros-humble-dev-tools
 mkdir -p /home/$UNAME/franka_ws/src
 cd /home/$UNAME/franka_ws/src
-git clone -b v0.1.15 https://github.com/frankaemika/franka_ros2.git
+git clone -b v1.0.0 https://github.com/frankaemika/franka_ros2.git
 git clone -b 0.4.0 https://github.com/frankaemika/franka_description.git
 cd /home/$UNAME/franka_ws
 rosdep install --from-paths src --ignore-src --rosdistro humble -y
