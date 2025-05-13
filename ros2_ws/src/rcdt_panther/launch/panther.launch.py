@@ -5,7 +5,12 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import (
+    SKIP,
+    LaunchArgument,
+    get_file_path,
+    start_actions_in_sequence,
+)
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -27,6 +32,9 @@ def launch_setup(context: LaunchContext) -> None:
     use_slam = use_slam_arg.value(context)
     use_nav2 = use_nav2_arg.value(context)
 
+    namespace = "panther"
+    ns = f"/{namespace}" if namespace else ""
+
     if use_collision_monitor:
         use_velodyne = True
 
@@ -47,6 +55,10 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
+    controllers = IncludeLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
+    )
+
     if use_nav2:
         rviz_display_config = "panther_nav2.rviz"
     elif use_collision_monitor:
@@ -60,7 +72,7 @@ def launch_setup(context: LaunchContext) -> None:
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_frame": "map" if use_slam else "/panther/odom",
+            "rviz_frame": "map" if use_slam else f"{ns}/odom",
             "rviz_display_config": rviz_display_config,
         }.items(),
     )
@@ -82,11 +94,19 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_utilities",
         executable="joy_to_twist.py",
         parameters=[
-            {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/cmd_vel" if use_collision_monitor else "/panther/cmd_vel"},
+            {"sub_topic": f"{ns}/joy"},
+            {"pub_topic": "/cmd_vel" if use_collision_monitor else f"{ns}/cmd_vel"},
             {"stamped": False},
             {"config_pkg": "rcdt_panther"},
         ],
+    )
+
+    joystick = LaunchDescription(
+        [
+            joy,
+            joy_topic_manager,
+            joy_to_twist_panther,
+        ]
     )
 
     slam = IncludeLaunchDescription(
@@ -98,11 +118,16 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
+    wait_for_panther = Node(
+        package="rcdt_utilities",
+        executable="wait_for_topic.py",
+        parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
+    )
+
     launch_description = LaunchDescription(
         [
-            joy,
-            joy_topic_manager,
-            joy_to_twist_panther,
+            controllers,
+            joystick,
             rviz if use_rviz else SKIP,
             slam if use_slam else SKIP,
         ]
@@ -111,7 +136,7 @@ def launch_setup(context: LaunchContext) -> None:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         core if use_sim else SKIP,
-        launch_description,
+        start_actions_in_sequence([wait_for_panther, launch_description]),
     ]
 
 

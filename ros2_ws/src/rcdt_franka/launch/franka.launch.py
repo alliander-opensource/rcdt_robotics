@@ -47,7 +47,7 @@ def launch_setup(context: LaunchContext) -> None:
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_frame": "/franka/fr3_link0",
+            "rviz_frame": f"{ns}/fr3_link0",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "rviz_display_config": display_config,
@@ -86,7 +86,7 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_utilities",
         executable="joy_to_twist.py",
         parameters=[
-            {"sub_topic": "/franka/joy"},
+            {"sub_topic": f"{ns}/joy"},
             {"pub_topic": f"{ns}/servo_node/delta_twist_cmds"},
             {"config_pkg": "rcdt_franka"},
             {"pub_frame": "fr3_hand"},
@@ -122,7 +122,7 @@ def launch_setup(context: LaunchContext) -> None:
     wait_for_franka = Node(
         package="rcdt_utilities",
         executable="wait_for_topic.py",
-        parameters=[{"topic": "/franka/joint_states"}, {"msg_type": "JointState"}],
+        parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
     )
 
     launch_description = LaunchDescription(
