@@ -4,6 +4,7 @@
 
 
 import rclpy
+from rclpy.node import Node
 from builtin_interfaces.msg import Duration
 from control_msgs.action import FollowJointTrajectory, GripperCommand
 from launch_testing_ros.wait_for_topics import WaitForTopics
@@ -35,7 +36,7 @@ def get_joint_position(name: str) -> float:
     return position
 
 
-def call_trigger_service(node: rclpy.node.Node, service_name: str) -> bool:
+def call_trigger_service(node: Node, service_name: str) -> bool:
     """Call a trigger service and return True if the service was called successfully."""
     client = node.create_client(Trigger, service_name)
     if not client.wait_for_service():
@@ -46,27 +47,8 @@ def call_trigger_service(node: rclpy.node.Node, service_name: str) -> bool:
     return future.result() is not None
 
 
-def call_move_to_configuration_service(
-    node: rclpy.node.Node, configuration: str = "drop"
-) -> bool:
-    """Call the move_to_configuration service and return True if the service was called"""
-    client = node.create_client(
-        MoveToConfiguration, "/moveit_manager/move_to_configuration"
-    )
-    if not client.wait_for_service():
-        raise RuntimeError(
-            "Service /moveit_manager/move_to_configuration not available"
-        )
-
-    request = MoveToConfiguration.Request()
-    request.configuration = configuration
-    future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future=future)
-    return future.result() is not None
-
-
 def call_move_gripper_service(
-    node: rclpy.node.Node, width: float, action_name: str
+    node: Node, width: float, action_name: str
 ) -> bool:
     """Call the gripper to go to a defined width."""
     action_client = ActionClient(node, GripperCommand, action_name=action_name)
@@ -91,7 +73,7 @@ def call_move_gripper_service(
 
 
 def follow_joint_trajectory_goal(
-    singleton_node: rclpy.node.Node,
+    singleton_node: Node,
     positions: list[float],
     controller: str = "fr3_arm_controller",
     time_from_start: int = 3,

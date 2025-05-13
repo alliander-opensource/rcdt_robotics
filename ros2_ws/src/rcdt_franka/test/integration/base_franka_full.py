@@ -13,7 +13,6 @@ from rcdt_utilities.launch_utils import (
     assert_for_nodes,
 )
 from rcdt_utilities.test_utils import (
-    call_move_to_configuration_service,
     call_trigger_service,
     get_joint_position,
 )
@@ -48,7 +47,7 @@ class FrankaFullTests:
             f"The joint value is {joint_value}"
         )
 
-    def test_move_to_drop_configuration(self, singleton_node: rclpy.node.Node) -> None:
+    def test_move_to_drop_configuration(self, singleton_node: rclpy.node.Node,call_move_to_configuration_service ) -> None:
         """Test that MoveIt can move to a configuration."""
 
         assert call_move_to_configuration_service(singleton_node, "drop") is True
