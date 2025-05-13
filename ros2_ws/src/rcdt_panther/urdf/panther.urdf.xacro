@@ -6,46 +6,19 @@ SPDX-License-Identifier: Apache-2.0
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panther">
 
-  <!-- arguments: -->
-  <xacro:arg name="namespace" default="" />
-  <xacro:arg name="connect_with_franka" default="false" />
+  <!-- Set use_sim argument to let panther xacro load gazebo plugin: -->
+  <xacro:arg name="simulation" default="true" />
+  <xacro:arg name="connected_to" default="" />
 
-  <!-- robot definition: -->
-  <xacro:include filename="$(find rcdt_panther)/urdf/panther_robot.urdf.xacro" />
-  <xacro:panther_robot
+  <!-- Load panther: -->
+  <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro" ns="husarion" />
+  <xacro:husarion.panther_robot
     panther_version="1.0"
+    use_sim="$(arg simulation)"
     wheel_config_file="$(find panther_description)/config/WH01.yaml"
-    namespace="$(arg namespace)"
-  />
-
-  <!-- ros2_control definition: -->
-  <xacro:include filename="$(find rcdt_panther)/urdf/panther_ros2_control.urdf.xacro" />
-  <xacro:panther_ros2_control
-    panther_version="1.0"
-    use_sim="true"
-    namespace="$(arg namespace)"
-  />
-
-  <!-- gazebo plugins: -->
-  <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <parameters>$(find rcdt_gazebo)/config/controllers.yaml</parameters>
-      <ros>
-        <namespace>$(arg namespace)</namespace>
-        <xacro:include filename="$(find rcdt_gazebo)/urdf/remappings.urdf.xacro" />
-        <xacro:remappings />
-      </ros>
-    </plugin>
-    <xacro:if value="$(arg connect_with_franka)">
-      <plugin filename="libignition-gazebo-detachable-joint-system.so"
-        name="ignition::gazebo::systems::DetachableJoint">
-        <parent_link>base_link</parent_link>
-        <child_model>franka</child_model>
-        <child_link>link_to_panther</child_link>
-      </plugin>
-    </xacro:if>
-  </gazebo>
-
-  <!-- velodyne: -->
+    controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
+    battery_config_file=""
+    namespace="panther"
+    connected_to="$(arg connected_to)" />
 
 </robot>

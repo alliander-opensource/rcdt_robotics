@@ -32,6 +32,9 @@ def launch_setup(context: LaunchContext) -> None:
     use_slam = use_slam_arg.value(context)
     use_nav2 = use_nav2_arg.value(context)
 
+    namespace = "panther"
+    ns = f"/{namespace}" if namespace else ""
+
     if use_collision_monitor:
         use_velodyne = True
 
@@ -69,7 +72,7 @@ def launch_setup(context: LaunchContext) -> None:
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_frame": "map" if use_slam else "/panther/odom",
+            "rviz_frame": "map" if use_slam else f"{ns}/odom",
             "rviz_display_config": rviz_display_config,
         }.items(),
     )
@@ -91,8 +94,8 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_utilities",
         executable="joy_to_twist.py",
         parameters=[
-            {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/cmd_vel" if use_collision_monitor else "/panther/cmd_vel"},
+            {"sub_topic": f"{ns}/joy"},
+            {"pub_topic": "/cmd_vel" if use_collision_monitor else f"{ns}/cmd_vel"},
             {"stamped": False},
             {"config_pkg": "rcdt_panther"},
         ],
@@ -118,7 +121,7 @@ def launch_setup(context: LaunchContext) -> None:
     wait_for_panther = Node(
         package="rcdt_utilities",
         executable="wait_for_topic.py",
-        parameters=[{"topic": "/panther/joint_states"}, {"msg_type": "JointState"}],
+        parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
     )
 
     launch_description = LaunchDescription(

@@ -21,15 +21,12 @@ def launch_setup(context: LaunchContext) -> None:
 
     franka_core = IncludeLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
-        launch_arguments={
-            "start_robot": "False",
-            "base_link": "link_to_panther",
-        }.items(),
+        launch_arguments={"parent": "panther"}.items(),
     )
 
     panther_core = IncludeLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
-        launch_arguments={"start_robot": "False", "connect_with": "franka"}.items(),
+        launch_arguments={"child": "franka"}.items(),
     )
 
     robots = [
@@ -58,7 +55,7 @@ def launch_setup(context: LaunchContext) -> None:
             "--frame-id",
             "/panther/base_link",
             "--child-frame-id",
-            "/franka/link_to_panther",
+            "/franka/fr3_link0",
             "--z",
             f"{FRANKA_HEIGHT}",
         ],

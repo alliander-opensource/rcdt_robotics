@@ -13,8 +13,7 @@ from rcdt_utilities.launch_utils import (
 )
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-start_robot_arg = LaunchArgument("start_robot", True, [True, False])
-connect_with_arg = LaunchArgument("connect_with", "")
+child_arg = LaunchArgument("child", "", ["", "franka"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
@@ -22,30 +21,33 @@ use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 def launch_setup(context: LaunchContext) -> None:
     use_sim = use_sim_arg.value(context)
-    start_robot = start_robot_arg.value(context)
-    connect_with = connect_with_arg.value(context)
+    child = child_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = str(world_arg.value(context))
     use_velodyne = use_velodyne_arg.value(context)
 
+    namespace = "panther"
+    frame_prefix = namespace + "/" if namespace else ""
+    is_mobile_manipulator = bool(child)
+
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
-    xacro_arguments = {"use_sim": "true", "namespace": "panther"}
-    xacro_arguments["load_velodyne"] = str(use_velodyne).lower()
-    xacro_arguments["connect_with_franka"] = str(connect_with == "franka").lower()
+    xacro_arguments = {"simulation": "true"}
+    xacro_arguments["connected_to"] = child
+    xacro_arguments["load_velodyne"] = "true" if use_velodyne else "false"
     robot_description = get_robot_description(xacro_path, xacro_arguments)
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        namespace="panther",
-        parameters=[robot_description, {"frame_prefix": "panther/"}],
+        namespace=namespace,
+        parameters=[robot_description, {"frame_prefix": frame_prefix}],
     )
 
     robot = IncludeLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "world": world,
-            "robots": "panther",
+            "robots": namespace,
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
         }.items(),
@@ -55,13 +57,13 @@ def launch_setup(context: LaunchContext) -> None:
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster"],
-        namespace="panther",
+        namespace=namespace,
     )
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         robot_state_publisher,
-        robot if start_robot else SKIP,
+        robot if not is_mobile_manipulator else SKIP,
         joint_state_broadcaster,
     ]
 
@@ -70,8 +72,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
-            start_robot_arg.declaration,
-            connect_with_arg.declaration,
+            child_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
             use_velodyne_arg.declaration,
