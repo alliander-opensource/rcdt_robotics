@@ -92,9 +92,9 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
     <xacro:if value="${gazebo}">
       <gazebo>
         <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-          <parameters>$(find rcdt_franka)/config/simulation_controllers.yaml</parameters>
+          <parameters>$(find rcdt_gazebo)/config/controllers.yaml</parameters>
           <ros>
-            <namespace>${namespace}</namespace>
+            <namespace>$(arg namespace)</namespace>
             <xacro:include filename="$(find rcdt_gazebo)/urdf/remappings.urdf.xacro" />
             <xacro:remappings />
           </ros>
