@@ -32,7 +32,7 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[
             {"config_pkg": "rcdt_franka"},
         ],
-        namespace="franka"
+        namespace="franka",
     )
 
     joy_to_twist_franka = Node(
@@ -44,7 +44,7 @@ def launch_setup(context: LaunchContext) -> list:
             {"config_pkg": "rcdt_franka"},
             {"pub_frame": "fr3_hand"},
         ],
-        namespace="franka"
+        namespace="franka",
     )
 
     joy_to_twist_panther = Node(
@@ -56,7 +56,7 @@ def launch_setup(context: LaunchContext) -> list:
             {"config_pkg": "rcdt_panther"},
             {"stamped": False},
         ],
-        namespace="panther"
+        namespace="panther",
     )
 
     return [
