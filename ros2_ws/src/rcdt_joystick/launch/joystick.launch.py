@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+from launch import LaunchContext, LaunchDescription
+from launch.actions import OpaqueFunction
+from launch_ros.actions import Node
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument
+
+robots_arg = LaunchArgument("robots", "")
+
+
+def launch_setup(context: LaunchContext) -> list:
+    robots = robots_arg.value(context).split(" ")
+
+    joy = Node(
+        package="joy",
+        executable="game_controller_node",
+        parameters=[
+            {"sticky_buttons": True},
+        ],
+    )
+
+    joy_topic_manager = Node(
+        package="rcdt_joystick",
+        executable="joy_topic_manager.py",
+    )
+
+    joy_to_gripper_franka = Node(
+        package="rcdt_joystick",
+        executable="joy_to_gripper.py",
+        parameters=[
+            {"config_pkg": "rcdt_franka"},
+        ],
+        namespace="franka"
+    )
+
+    joy_to_twist_franka = Node(
+        package="rcdt_joystick",
+        executable="joy_to_twist.py",
+        parameters=[
+            {"sub_topic": "/franka/joy"},
+            {"pub_topic": "/franka/servo_node/delta_twist_cmds"},
+            {"config_pkg": "rcdt_franka"},
+            {"pub_frame": "fr3_hand"},
+        ],
+        namespace="franka"
+    )
+
+    joy_to_twist_panther = Node(
+        package="rcdt_joystick",
+        executable="joy_to_twist.py",
+        parameters=[
+            {"sub_topic": "/panther/joy"},
+            {"pub_topic": "/panther/cmd_vel"},
+            {"config_pkg": "rcdt_panther"},
+            {"stamped": False},
+        ],
+        namespace="panther"
+    )
+
+    return [
+        joy if robots != [""] else SKIP,
+        joy_topic_manager if robots != [""] else SKIP,
+        joy_to_gripper_franka if "franka" in robots else SKIP,
+        joy_to_twist_franka if "franka" in robots else SKIP,
+        joy_to_twist_panther if "panther" in robots else SKIP,
+    ]
+
+
+def generate_launch_description() -> LaunchDescription:
+    return LaunchDescription(
+        [
+            robots_arg.declaration,
+            OpaqueFunction(function=launch_setup),
+        ]
+    )

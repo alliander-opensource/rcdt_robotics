@@ -35,7 +35,7 @@ class JoyTopicManager(Node):
         self.declare_parameter("joy_topic", value="/joy")
         joy_input = self.get_parameter("joy_topic").get_parameter_value().string_value
 
-        file = get_file_path("rcdt_mobile_manipulator", ["config"], "joy_topics.yaml")
+        file = get_file_path("rcdt_joystick", ["config"], "joy_topics.yaml")
         yaml = get_yaml(file)
 
         self.outputs = [yaml_codec.decode(str(yaml[output]), Output) for output in yaml]
