@@ -4,14 +4,10 @@
 
 
 import rclpy
-from builtin_interfaces.msg import Duration
-from control_msgs.action import FollowJointTrajectory, GripperCommand
 from launch_testing_ros.wait_for_topics import WaitForTopics
-from rcdt_messages.srv import MoveToConfiguration
-from rclpy.action import ActionClient
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Trigger
-from trajectory_msgs.msg import JointTrajectoryPoint
+
 
 def call_trigger_service(node: rclpy.node.Node, service_name: str) -> bool:
     """Call a trigger service and return True if the service was called successfully."""
@@ -22,6 +18,7 @@ def call_trigger_service(node: rclpy.node.Node, service_name: str) -> bool:
     future = client.call_async(Trigger.Request())
     rclpy.spin_until_future_complete(node, future=future)
     return future.result() is not None
+
 
 def get_joint_position(name: str) -> float:
     """Get the joint position of a joint by name. This is done by calling the

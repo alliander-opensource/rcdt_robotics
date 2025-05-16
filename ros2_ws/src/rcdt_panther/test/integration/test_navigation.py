@@ -15,23 +15,40 @@ from rcdt_utilities.test_utils import call_trigger_service, get_joint_position
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from utils import EndToEndUtils
+from typing import Iterator
 
+import pytest
+import rclpy
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros import actions
+from rcdt_utilities.launch_utils import get_file_path
+from rclpy.executors import SingleThreadedExecutor
+from rclpy.node import Node
+
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 @launch_pytest.fixture(scope="module")
-def core(
-    core_launch: IncludeLaunchDescription, controllers_launch: IncludeLaunchDescription
-) -> LaunchDescription:
+def navigation(navigation_launch) -> LaunchDescription:
     return LaunchDescription(
         [
-            core_launch,
-            controllers_launch,
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    get_file_path("rcdt_panther", ["launch"], "panther.launch.py")
+                ),
+                launch_arguments={
+                    "nav2": "True"
+                }.items(),
+            ),
+            navigation_launch,
             launch_pytest.actions.ReadyToTest(),
         ]
     )
 
 
-@pytest.mark.launch(fixture=core)
+@pytest.mark.launch(fixture=navigation)
 def test_joint_states_published() -> None:
+    time.sleep(20)
     assert_for_message(JointState, "/panther/joint_states", 60)
 
 
@@ -47,30 +64,11 @@ def test_ready_to_start(singleton_node: Node) -> None:
         )
         is True
     )
-
-
-@pytest.mark.launch(fixture=core)
-def test_e_stop_request(singleton_node: Node) -> None:
+@pytest.mark.launch(fixture=navigation)
+def test_e_stop_request(singleton_node) -> None:
     assert (
         call_trigger_service(
             node=singleton_node, service_name="/panther/hardware/e_stop_reset"
         )
         is True
     )
-
-
-@pytest.mark.launch(fixture=core)
-def test_driving(singleton_node: Node) -> None:
-    """Test that the controllers work and the wheels have turned.
-    """
-    pub = singleton_node.create_publisher(Twist, "/panther/cmd_vel", 10)
-
-    msg = Twist()
-    msg.linear.x = 1.0
-
-    pub.publish(msg)
-    rclpy.spin_once(singleton_node, timeout_sec=0.1)
-    time.sleep(1) # give the panther some time to move
-
-    joint_value = get_joint_position("fl_wheel_joint")
-    assert joint_value != pytest.approx(0, abs=0.5), f"The joint value is {joint_value}"

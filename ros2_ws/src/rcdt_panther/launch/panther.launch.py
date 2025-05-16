@@ -117,6 +117,11 @@ def launch_setup(context: LaunchContext) -> None:
             ),
         }.items(),
     )
+    
+    navigation = IncludeLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
+        
+    )
 
     wait_for_panther = Node(
         package="rcdt_utilities",
@@ -126,6 +131,7 @@ def launch_setup(context: LaunchContext) -> None:
 
     launch_description = LaunchDescription(
         [
+            navigation,
             controllers,
             joystick,
             rviz if use_rviz else SKIP,
