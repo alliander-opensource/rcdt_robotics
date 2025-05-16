@@ -4,6 +4,7 @@
 
 import ast
 import os
+import time
 from typing import List
 
 import rclpy
@@ -15,7 +16,6 @@ from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.events.process import ProcessExited
 from launch.substitutions import LaunchConfiguration
-from launch_testing_examples.check_multiple_nodes_launch_test import WaitForNodes
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rclpy.executors import Executor
 from rclpy.logging import get_logger
@@ -126,18 +126,31 @@ def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
     )
 
 
-def assert_for_nodes(node_list: List[str], timeout: int) -> bool:
+# TODO this is already in Rolling, but not in Humble. See https://github.com/ros2/rclpy/pull/930
+def assert_for_node(
+    fully_qualified_node_name: str, singleton_node: Node, timeout: int
+) -> bool:
     """
-    Assert that all specified ROS 2 nodes are available within the given timeout.
+    Wait until node name is present in the system or timeout.
+    The node name should be the full name with namespace.
 
-    Args:
-        node_list (List[str]): A list of node names to wait for.
-        timeout (int): Timeout duration in seconds.
+    :param node_name: fully qualified name of the node to wait for.
+    :param timeout: seconds to wait for the node to be present. If negative, the function won't timeout.
 
-    Returns:
-        bool: True if all nodes were found, otherwise raises AssertionError.
+    :return: True if the node was found, False if timeout.
     """
-    wait_for_nodes_1 = WaitForNodes(node_list, timeout=timeout)
-    assert wait_for_nodes_1.wait()
-    assert wait_for_nodes_1.get_nodes_not_found() == set()
-    wait_for_nodes_1.shutdown()
+    if not fully_qualified_node_name.startswith("/"):
+        fully_qualified_node_name = f"/{fully_qualified_node_name}"
+
+    start = time.time()
+    flag = False
+    while time.time() - start < timeout and not flag:
+        names_and_namespaces = singleton_node.get_node_names_and_namespaces()
+        fully_qualified_node_names = [
+            ns + ("" if ns.endswith("/") else "/") + name
+            for name, ns in names_and_namespaces
+        ]
+
+        flag = fully_qualified_node_name in fully_qualified_node_names
+        time.sleep(0.1)
+    return flag
