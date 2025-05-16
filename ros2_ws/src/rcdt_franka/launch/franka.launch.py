@@ -15,7 +15,9 @@ from rcdt_utilities.launch_utils import (
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
-world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
+world_arg = LaunchArgument(
+    "world", "table_with_1_brick.sdf", ["table_with_1_brick.sdf", "empty_camera.sdf"]
+)
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
