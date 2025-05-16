@@ -77,36 +77,9 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    joy = Node(
-        package="joy",
-        executable="game_controller_node",
-        parameters=[
-            {"sticky_buttons": True},
-        ],
-    )
-
-    joy_topic_manager = Node(
-        package="rcdt_mobile_manipulator",
-        executable="joy_topic_manager.py",
-    )
-
-    joy_to_twist_panther = Node(
-        package="rcdt_utilities",
-        executable="joy_to_twist.py",
-        parameters=[
-            {"sub_topic": f"{ns}/joy"},
-            {"pub_topic": "/cmd_vel" if use_collision_monitor else f"{ns}/cmd_vel"},
-            {"stamped": False},
-            {"config_pkg": "rcdt_panther"},
-        ],
-    )
-
-    joystick = LaunchDescription(
-        [
-            joy,
-            joy_topic_manager,
-            joy_to_twist_panther,
-        ]
+    joystick = IncludeLaunchDescription(
+        get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
+        launch_arguments={"robots": "panther"}.items(),
     )
 
     slam = IncludeLaunchDescription(
