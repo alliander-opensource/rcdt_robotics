@@ -11,10 +11,9 @@ from launch_ros import actions
 from rcdt_utilities.launch_utils import (
     assert_for_message,
 )
-from rcdt_utilities.test_utils import get_joint_position
+from rcdt_utilities.test_utils import call_trigger_service, get_joint_position
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from utils import call_trigger_service
 
 
 @launch_pytest.fixture(scope="module")
@@ -45,15 +44,18 @@ def test_joint_states_published() -> None:
     "service, expected_value",
     [
         ("/close_gripper", 0.00),
-        ("/open_gripper", 0.08),
+        ("/open_gripper", 0.04),
     ],
 )
 def test_gripper_action(
-    service: str, expected_value: float, singleton_node: Node
+    service: str,
+    expected_value: float,
+    test_node: Node,
+    finger_joint_fault_tolerance: float,
 ) -> None:
     """Test gripper open/close action and verify joint state."""
-    assert call_trigger_service(singleton_node, service) is True
-    joint_value = get_joint_position(name_space="franka", joint="fr3_finger_joint1") * 2
-    assert joint_value == pytest.approx(expected_value, abs=0.005), (
-        f"The joint value is {joint_value}"
-    )
+    assert call_trigger_service(test_node, service) is True
+    joint_value = get_joint_position(namespace="franka", joint="fr3_finger_joint1")
+    assert joint_value == pytest.approx(
+        expected_value, abs=finger_joint_fault_tolerance
+    ), f"The joint value is {joint_value}"

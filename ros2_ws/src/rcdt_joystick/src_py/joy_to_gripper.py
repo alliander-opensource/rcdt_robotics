@@ -45,15 +45,13 @@ class JoyToGripper(Node):
         self.button_actions: dict = self.mapping.get("buttons", {})
         self.button_states = {}
         for button in self.button_actions:
-            self.button_states[button] = None
+            self.button_states[button] = 0
 
         self.busy = False
 
     def handle_input(self, sub_msg: Joy) -> None:
         for button, action in self.button_actions.items():
             state = sub_msg.buttons[button]
-            if self.button_states[button] is None:
-                self.button_states[button] = state
             if state == self.button_states[button]:
                 continue
             self.button_states[button] = state

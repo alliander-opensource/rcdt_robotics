@@ -15,13 +15,13 @@ from geometry_msgs.msg import PoseStamped
 from rcdt_messages.srv import ExpressPoseInOtherFrame
 from rcdt_messages.srv._move_to_configuration import MoveToConfiguration
 from rcdt_utilities.test_utils import (
+    create_ready_action_client,
+    create_ready_service_client,
     get_joint_position,
 )
-from rclpy.action import ActionClient
 from rclpy.action.client import ClientGoalHandle
 from rclpy.node import Node
 from rclpy.task import Future
-from std_srvs.srv import Trigger
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 
@@ -37,12 +37,9 @@ class EndToEndUtils:
 
         Returns:
             List[ControllerState]: List of current controller states."""
-        client = node.create_client(
-            ListControllers, f"{controller_manager_name}/list_controllers"
+        client = create_ready_service_client(
+            node, ListControllers, f"{controller_manager_name}/list_controllers"
         )
-        if not client.wait_for_service(timeout_sec=5.0):
-            raise RuntimeError("list_controllers service not available")
-
         request = ListControllers.Request()
         future: Future = client.call_async(request)
         rclpy.spin_until_future_complete(node, future)
@@ -109,7 +106,7 @@ class EndToEndUtils:
 
     def wait_until_reached_joint(
         self,
-        name_space: str,
+        namespace: str,
         joint: str,
         expected_value: float,
         tolerance: float = 0.025,
@@ -118,7 +115,7 @@ class EndToEndUtils:
         """Wait until a joint reaches the expected value within a tolerance.
 
         Args:
-            name_space (str): Namespace of the robot (e.g., 'franka').
+            namespace (str): Namespace of the robot (e.g., 'franka').
             joint (str): Name of the joint to check.
             expected_value (float): Target joint value in radians.
             tolerance (float): Acceptable deviation from the expected value.
@@ -130,7 +127,7 @@ class EndToEndUtils:
         end_time = time.time() + timeout_sec
         while time.time() < end_time:
             try:
-                joint_value = get_joint_position(name_space=name_space, joint=joint)
+                joint_value = get_joint_position(namespace=namespace, joint=joint)
                 if joint_value == pytest.approx(expected_value, abs=tolerance):
                     print("The joint reached its expected value!")
                     time.sleep(0.25)
@@ -142,27 +139,11 @@ class EndToEndUtils:
         return (False, joint_value)
 
 
-def call_trigger_service(node: Node, service_name: str) -> bool:
-    """Call a trigger service and return True if the service was called successfully."""
-    client = node.create_client(Trigger, service_name)
-    if not client.wait_for_service():
-        raise RuntimeError(f"Service {service_name} not available")
-
-    future = client.call_async(Trigger.Request())
-    rclpy.spin_until_future_complete(node, future=future)
-    return future.result() is not None
-
-
 def call_move_to_configuration_service(node: Node, configuration: str = "drop") -> bool:
-    """Call the move_to_configuration service and return True if the service was called"""
-    client = node.create_client(
-        MoveToConfiguration, "franka/moveit_manager/move_to_configuration"
+    """Call the move_to_configuration service and return True if a response from the service was received."""
+    client = create_ready_service_client(
+        node, MoveToConfiguration, "franka/moveit_manager/move_to_configuration"
     )
-    if not client.wait_for_service():
-        raise RuntimeError(
-            "Service /moveit_manager/move_to_configuration not available"
-        )
-
     request = MoveToConfiguration.Request()
     request.configuration = configuration
     future = client.call_async(request)
@@ -172,10 +153,8 @@ def call_move_to_configuration_service(node: Node, configuration: str = "drop") 
 
 def call_move_gripper_service(node: Node, width: float, action_name: str) -> bool:
     """Call the gripper to go to a defined width."""
-    action_client = ActionClient(node, GripperCommand, action_name=action_name)
 
-    if not action_client.wait_for_server():
-        raise RuntimeError(f"Action server {action_name} not available")
+    action_client = create_ready_action_client(node, GripperCommand, action_name)
 
     goal_msg = GripperCommand.Goal()
     goal_msg.command.position = width
@@ -194,21 +173,16 @@ def call_move_gripper_service(node: Node, width: float, action_name: str) -> boo
 
 
 def follow_joint_trajectory_goal(
-    singleton_node: Node,
+    node: Node,
     positions: list[float],
     controller: str,
     time_from_start: int = 3,
-) -> bool:
+) -> None:
     """Test sending a joint trajectory goal to the arm controller."""
 
-    action_client = ActionClient(
-        singleton_node,
-        FollowJointTrajectory,
-        f"/{controller}/follow_joint_trajectory",
+    action_client = create_ready_action_client(
+        node, FollowJointTrajectory, f"/{controller}/follow_joint_trajectory"
     )
-
-    if not action_client.wait_for_server():
-        raise RuntimeError("Action server not available")
 
     goal_msg = FollowJointTrajectory.Goal()
     goal_msg.trajectory.joint_names = [
@@ -228,16 +202,12 @@ def follow_joint_trajectory_goal(
     goal_msg.trajectory.points.append(point)
 
     future = action_client.send_goal_async(goal_msg)
-    rclpy.spin_until_future_complete(singleton_node, future)
+    rclpy.spin_until_future_complete(node, future)
     goal_handle: ClientGoalHandle = future.result()
     assert goal_handle.accepted
 
     result_future: Future = goal_handle.get_result_async()
-    rclpy.spin_until_future_complete(singleton_node, result_future)
-    response: FollowJointTrajectory.Impl.GetResultService.Response = (
-        result_future.result()
-    )
-    return response.result
+    rclpy.spin_until_future_complete(node, result_future)
 
 
 def call_express_pose_in_other_frame(
@@ -255,10 +225,10 @@ def call_express_pose_in_other_frame(
     Returns:
         ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
     """
-    client = node.create_client(ExpressPoseInOtherFrame, "/express_pose_in_other_frame")
 
-    if not client.wait_for_service(timeout_sec=timeout_sec):
-        raise RuntimeError("express_pose_in_other_frame service not available")
+    client = create_ready_service_client(
+        node, ExpressPoseInOtherFrame, "/express_pose_in_other_frame"
+    )
 
     request = ExpressPoseInOtherFrame.Request()
     request.pose = pose

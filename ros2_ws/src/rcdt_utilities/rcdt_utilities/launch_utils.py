@@ -128,7 +128,7 @@ def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
 
 # TODO this is already in Rolling, but not in Humble. See https://github.com/ros2/rclpy/pull/930
 def assert_for_node(
-    fully_qualified_node_name: str, singleton_node: Node, timeout: int
+    fully_qualified_node_name: str, test_node: Node, timeout: int
 ) -> bool:
     """
     Wait until node name is present in the system or timeout.
@@ -145,7 +145,7 @@ def assert_for_node(
     start = time.time()
     flag = False
     while time.time() - start < timeout and not flag:
-        names_and_namespaces = singleton_node.get_node_names_and_namespaces()
+        names_and_namespaces = test_node.get_node_names_and_namespaces()
         fully_qualified_node_names = [
             ns + ("" if ns.endswith("/") else "/") + name
             for name, ns in names_and_namespaces
