@@ -16,7 +16,7 @@ class SettingsSetter(Node):
         super().__init__("settings_setter")
         self.client = self.create_client(
             SetForceTorqueCollisionBehavior,
-            "/service_server/set_force_torque_collision_behavior",
+            "/franka/service_server/set_force_torque_collision_behavior",
         )
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("service not available, waiting again...")

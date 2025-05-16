@@ -26,6 +26,9 @@ def launch_setup(context: LaunchContext) -> None:
     world = str(world_arg.value(context))
     use_realsense = use_realsense_arg.value(context)
 
+    namespace = "franka"
+    ns = f"/{namespace}" if namespace else ""
+
     core = IncludeLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
         launch_arguments={
@@ -36,12 +39,15 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    display_config = (
-        "franka_realsense.rviz" if use_realsense else "franka_planning.rviz"
+    controllers = IncludeLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
     )
+
+    display_config = "franka_general.rviz"
     rviz = IncludeLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
+            "rviz_frame": f"{ns}/fr3_link0",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "rviz_display_config": display_config,
@@ -54,6 +60,7 @@ def launch_setup(context: LaunchContext) -> None:
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "servo_params_package": "rcdt_franka",
+            "namespace": namespace,
         }.items(),
     )
 
@@ -78,10 +85,9 @@ def launch_setup(context: LaunchContext) -> None:
     joy_to_twist_franka = Node(
         package="rcdt_utilities",
         executable="joy_to_twist.py",
-        namespace="franka",
         parameters=[
-            {"sub_topic": "/franka/joy"},
-            {"pub_topic": "/servo_node/delta_twist_cmds"},
+            {"sub_topic": f"{ns}/joy"},
+            {"pub_topic": f"{ns}/servo_node/delta_twist_cmds"},
             {"config_pkg": "rcdt_franka"},
             {"pub_frame": "fr3_hand"},
         ],
@@ -91,6 +97,16 @@ def launch_setup(context: LaunchContext) -> None:
         package="rcdt_franka",
         executable="joy_to_gripper.py",
     )
+
+    joystick = LaunchDescription(
+        [
+            joy,
+            joy_topic_manager,
+            joy_to_twist_franka,
+            joy_to_gripper,
+        ]
+    )
+
     open_gripper = Node(
         package="rcdt_franka",
         executable="open_gripper.py",
@@ -103,32 +119,30 @@ def launch_setup(context: LaunchContext) -> None:
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
     action_executor = Node(package="rcdt_actions", executable="action_executor.py")
 
-    wait_for_joint_states = Node(
+    wait_for_franka = Node(
         package="rcdt_utilities",
         executable="wait_for_topic.py",
-        parameters=[{"topic": "/joint_states"}, {"msg_type": "JointState"}],
+        parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
     )
 
     launch_description = LaunchDescription(
         [
-            rviz if use_rviz else SKIP,
+            controllers,
             moveit,
-            realsense if use_realsense else SKIP,
-            joy,
-            joy_topic_manager,
-            joy_to_twist_franka,
-            joy_to_gripper,
             open_gripper,
             close_gripper,
+            joystick,
             manipulate_pose,
             action_executor,
+            rviz if use_rviz else SKIP,
+            realsense if use_realsense else SKIP,
         ]
     )
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         core,
-        start_actions_in_sequence([wait_for_joint_states, launch_description]),
+        start_actions_in_sequence([wait_for_franka, launch_description]),
     ]
 
 

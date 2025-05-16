@@ -15,7 +15,7 @@ def core() -> LaunchDescription:
     return LaunchDescription(
         [
             IncludeLaunchDescription(
-                get_file_path("rcdt_franka", ["launch"], "core.launch.py")
+                get_file_path("rcdt_mobile_manipulator", ["launch"], "core.launch.py")
             ),
             launch_pytest.actions.ReadyToTest(),
         ]
@@ -23,5 +23,10 @@ def core() -> LaunchDescription:
 
 
 @pytest.mark.launch(fixture=core)
-def test_joint_states_published() -> None:
+def test_joint_states_franka() -> None:
     assert_for_message(JointState, "/franka/joint_states", 60)
+
+
+@pytest.mark.launch(fixture=core)
+def test_joint_states_panther() -> None:
+    assert_for_message(JointState, "/panther/joint_states", 60)

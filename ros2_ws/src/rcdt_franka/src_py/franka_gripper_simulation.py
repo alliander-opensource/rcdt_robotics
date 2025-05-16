@@ -20,7 +20,7 @@ class GripperActionControllerClient(Node):
     def __init__(self):
         super().__init__("gripper_action_controller_client")
         self.client = ActionClient(
-            self, GripperCommand, "/gripper_action_controller/gripper_cmd"
+            self, GripperCommand, "/franka/gripper_action_controller/gripper_cmd"
         )
 
     def move(self, width: float) -> bool:
