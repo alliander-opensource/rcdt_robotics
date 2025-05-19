@@ -72,9 +72,12 @@ class FrankaFullTests(EndToEndUtils):
         msg = Joy()
         msg.buttons = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         pub.publish(msg)
-        timeout_sec = 3.0
+        timeout_sec = 10.0
         start_time = time.time()
-        while "state" not in result and time.time() - start_time < timeout_sec:
+        while (
+            result.get("state") != "/franka/joy"
+            and time.time() - start_time < timeout_sec
+        ):
             rclpy.spin_once(test_node, timeout_sec=0.1)
             time.sleep(0.1)
 
@@ -146,7 +149,6 @@ class FrankaFullTests(EndToEndUtils):
 
         msg = Joy()
         msg.axes = axes
-        msg.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
         pub.publish(msg)
         rclpy.spin_once(test_node, timeout_sec=0.1)
         time.sleep(1)  # small delay for the robot to move

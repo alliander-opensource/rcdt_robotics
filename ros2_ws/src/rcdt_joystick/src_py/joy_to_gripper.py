@@ -9,14 +9,12 @@ from typing import Literal
 
 import rclpy
 from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
-from rclpy import logging
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
 
-ros_logger = logging.get_logger(__name__)
 
 
 class JoyToGripper(Node):
@@ -51,6 +49,11 @@ class JoyToGripper(Node):
 
     def handle_input(self, sub_msg: Joy) -> None:
         for button, action in self.button_actions.items():
+            if button >= len(sub_msg.buttons):
+                self.get_logger().warn(
+                    f"Button index {button} out of range (buttons: {len(sub_msg.buttons)})."
+                )
+                continue
             state = sub_msg.buttons[button]
             if state == self.button_states[button]:
                 continue
