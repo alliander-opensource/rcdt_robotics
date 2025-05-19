@@ -6,6 +6,7 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.register import Register
 
 simulation_arg = LaunchArgument("simulation", True, [True, False])
 
@@ -54,9 +55,11 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     return [
-        fr3_arm_controller_spawner,
-        fr3_gripper,
-        gripper_action_controller_spawner if simulation else SKIP,
+        Register.on_exit(fr3_arm_controller_spawner, context),
+        Register.on_start(fr3_gripper, context),
+        Register.on_exit(gripper_action_controller_spawner, context)
+        if simulation
+        else SKIP,
     ]
 
 

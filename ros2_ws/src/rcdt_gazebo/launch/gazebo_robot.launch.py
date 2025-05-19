@@ -10,11 +10,8 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_gazebo.gazebo_ros_paths import GazeboRosPaths
-from rcdt_utilities.launch_utils import (
-    LaunchArgument,
-    get_file_path,
-    start_actions_in_sequence,
-)
+from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.register import Register
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
@@ -68,12 +65,6 @@ def launch_setup(context: LaunchContext) -> List:
         arguments=bridge_topics,
     )
 
-    wait_for_clock = Node(
-        package="rcdt_utilities",
-        executable="wait_for_topic.py",
-        parameters=[{"topic": "/clock"}, {"msg_type": "Clock"}],
-    )
-
     spawn_robots: list[Node] = []
     for robot, position in zip(robots, positions):
         namespace = "" if robot == "" else f"/{robot}"
@@ -114,9 +105,10 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     return [
-        gazebo,
-        bridge,
-        start_actions_in_sequence([wait_for_clock, *spawn_robots, unpause_sim]),
+        Register.on_start(gazebo, context),
+        Register.on_log(bridge, "Creating GZ->ROS Bridge", context),
+        *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
+        Register.on_start(unpause_sim, context),
     ]
 
 

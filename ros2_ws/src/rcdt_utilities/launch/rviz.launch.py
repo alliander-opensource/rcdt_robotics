@@ -7,6 +7,7 @@ from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.register import Register
 
 rviz_frame_arg = LaunchArgument("rviz_frame", "world")
 rviz_display_config_arg = LaunchArgument("rviz_display_config", "general.rviz")
@@ -42,7 +43,9 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=parameters,
     )
 
-    return [rviz]
+    return [
+        Register.on_log(rviz, "OpenGl version:", context),
+    ]
 
 
 def generate_launch_description() -> LaunchDescription:
