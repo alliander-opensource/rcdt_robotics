@@ -90,10 +90,9 @@ def launch_setup(context: LaunchContext) -> None:
             ),
         }.items(),
     )
-    
+
     navigation = IncludeLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
-        
     )
 
     wait_for_panther = Node(

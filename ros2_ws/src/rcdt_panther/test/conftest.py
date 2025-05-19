@@ -14,7 +14,7 @@ from rcdt_utilities.test_utils import singleton_node  # noqa
 def core_launch() -> IncludeLaunchDescription:
     """Fixture to create launch file for the panther core."""
     return IncludeLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "core.launch.py")
+        get_file_path("rcdt_panther", ["launch"], "core.launch.py")
     )
 
 
@@ -22,7 +22,7 @@ def core_launch() -> IncludeLaunchDescription:
 def controllers_launch() -> IncludeLaunchDescription:
     """Fixture to create launch file for the panther controllers."""
     return IncludeLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
+        get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
     )
 
 
@@ -30,6 +30,5 @@ def controllers_launch() -> IncludeLaunchDescription:
 def navigation_launch() -> IncludeLaunchDescription:
     """Fixture to create launch file for the panther navigation."""
     return IncludeLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "navigation.launch.py")
+        get_file_path("rcdt_panther", ["launch"], "navigation.launch.py")
     )
-

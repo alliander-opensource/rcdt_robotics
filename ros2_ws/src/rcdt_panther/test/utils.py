@@ -9,11 +9,11 @@ import pytest
 import rclpy
 from controller_manager_msgs.msg import ControllerState
 from controller_manager_msgs.srv import ListControllers
-from rcdt_utilities.test_utils import (
-    get_joint_position,
-)
+from rcdt_utilities.test_utils import get_joint_position, create_ready_service_client
 from rclpy.node import Node
 from rclpy.task import Future
+from geometry_msgs.msg import PoseStamped
+from rcdt_messages.srv import ExpressPoseInOtherFrame
 
 
 class EndToEndUtils:
@@ -122,3 +122,37 @@ class EndToEndUtils:
 
             time.sleep(0.25)
         return (False, joint_value)
+
+
+def call_express_pose_in_other_frame(
+    node: Node, pose: PoseStamped, target_frame: str, timeout_sec: float = 5.0
+) -> ExpressPoseInOtherFrame.Response:
+    """
+    Calls the /express_pose_in_other_frame service.
+
+    Args:
+        node (Node): An active rclpy Node.
+        pose (PoseStamped): The pose to transform.
+        target_frame (str): The frame to express the pose in.
+        timeout_sec (float): Timeout for waiting on service and result.
+
+    Returns:
+        ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
+    """
+
+    client = create_ready_service_client(
+        node, ExpressPoseInOtherFrame, "/express_pose_in_other_frame"
+    )
+
+    request = ExpressPoseInOtherFrame.Request()
+    request.pose = pose
+    request.target_frame = target_frame
+
+    future: Future = client.call_async(request)
+    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout_sec)
+
+    response = future.result()
+    if response is None:
+        raise RuntimeError("Service call failed or timed out")
+
+    return response

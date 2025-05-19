@@ -110,6 +110,7 @@ def singleton_node() -> Iterator[Node]:
     node.destroy_node()
     rclpy.shutdown()
 
+
 def assert_joy_topic_switch(
     node: Node,
     expected_topic: str,
