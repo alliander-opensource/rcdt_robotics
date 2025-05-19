@@ -15,7 +15,9 @@ from rcdt_utilities.launch_utils import (
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
-world_arg = LaunchArgument("world", "table_with_1_brick.sdf")
+world_arg = LaunchArgument(
+    "world", "table_with_1_brick.sdf", ["table_with_1_brick.sdf", "empty_camera.sdf"]
+)
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
@@ -69,51 +71,20 @@ def launch_setup(context: LaunchContext) -> None:
         launch_arguments={"simulation": str(use_sim)}.items(),
     )
 
-    joy = Node(
-        package="joy",
-        executable="game_controller_node",
-        parameters=[
-            {"sticky_buttons": True},
-        ],
-    )
-
-    joy_topic_manager = Node(
-        package="rcdt_mobile_manipulator",
-        executable="joy_topic_manager.py",
-    )
-
-    joy_to_twist_franka = Node(
-        package="rcdt_utilities",
-        executable="joy_to_twist.py",
-        parameters=[
-            {"sub_topic": f"{ns}/joy"},
-            {"pub_topic": f"{ns}/servo_node/delta_twist_cmds"},
-            {"config_pkg": "rcdt_franka"},
-            {"pub_frame": "fr3_hand"},
-        ],
-    )
-
-    joy_to_gripper = Node(
-        package="rcdt_franka",
-        executable="joy_to_gripper.py",
-    )
-
-    joystick = LaunchDescription(
-        [
-            joy,
-            joy_topic_manager,
-            joy_to_twist_franka,
-            joy_to_gripper,
-        ]
+    joystick = IncludeLaunchDescription(
+        get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
+        launch_arguments={"robots": "franka"}.items(),
     )
 
     open_gripper = Node(
         package="rcdt_franka",
         executable="open_gripper.py",
+        namespace=namespace,
     )
     close_gripper = Node(
         package="rcdt_franka",
         executable="close_gripper.py",
+        namespace=namespace,
     )
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")

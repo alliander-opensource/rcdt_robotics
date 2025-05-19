@@ -4,6 +4,7 @@
 
 import ast
 import os
+import time
 from typing import List
 
 import rclpy
@@ -123,3 +124,33 @@ def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
     assert received, (
         f"No message received of type {message_type.__name__} on topic {topic} within {timeout} seconds."
     )
+
+
+# TODO this is already in Rolling, but not in Humble. See https://github.com/ros2/rclpy/pull/930
+def assert_for_node(
+    fully_qualified_node_name: str, test_node: Node, timeout: int
+) -> bool:
+    """
+    Wait until node name is present in the system or timeout.
+    The node name should be the full name with namespace.
+
+    :param node_name: fully qualified name of the node to wait for.
+    :param timeout: seconds to wait for the node to be present. If negative, the function won't timeout.
+
+    :return: True if the node was found, False if timeout.
+    """
+    if not fully_qualified_node_name.startswith("/"):
+        fully_qualified_node_name = f"/{fully_qualified_node_name}"
+
+    start = time.time()
+    flag = False
+    while time.time() - start < timeout and not flag:
+        names_and_namespaces = test_node.get_node_names_and_namespaces()
+        fully_qualified_node_names = [
+            ns + ("" if ns.endswith("/") else "/") + name
+            for name, ns in names_and_namespaces
+        ]
+
+        flag = fully_qualified_node_name in fully_qualified_node_names
+        time.sleep(0.1)
+    return flag
