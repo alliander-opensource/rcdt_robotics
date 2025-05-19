@@ -11,7 +11,6 @@ from rcdt_utilities.launch_utils import (
     get_file_path,
     get_robot_description,
 )
-from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 parent_arg = LaunchArgument("parent", "world", ["world", "panther"])
@@ -85,7 +84,7 @@ def launch_setup(context: LaunchContext) -> None:
         SetParameter(name="use_sim_time", value=use_sim),
         robot_state_publisher,
         robot if not is_mobile_manipulator else SKIP,
-        Register.on_exit(joint_state_broadcaster),
+        joint_state_broadcaster,
         static_transform_publisher if not is_mobile_manipulator else SKIP,
     ]
 

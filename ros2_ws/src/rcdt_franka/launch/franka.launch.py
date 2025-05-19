@@ -11,7 +11,6 @@ from rcdt_utilities.launch_utils import (
     get_file_path,
     start_actions_in_sequence,
 )
-from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -135,8 +134,8 @@ def launch_setup(context: LaunchContext) -> None:
             joystick,
             manipulate_pose,
             action_executor,
+            rviz if use_rviz else SKIP,
             realsense if use_realsense else SKIP,
-            Register.on_all_started(rviz) if use_rviz else SKIP,
         ]
     )
 

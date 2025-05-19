@@ -6,9 +6,8 @@
 
 set -e
 
+# Install pytest-timeout:
 pip install pytest-timeout
-pip install termcolor
-pip install ruff
 
 # Specifying numpy range to work with ROS and Ultralytics:
 pip install "numpy>=1.23.0,<2.0"

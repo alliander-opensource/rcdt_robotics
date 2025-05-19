@@ -4,10 +4,9 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter
+from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path, get_yaml
-from rcdt_utilities.register import Register
 
 robot_name_arg = LaunchArgument("robot_name", "")
 moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
@@ -61,10 +60,9 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     return [
-        SetParameter(name="use_sim_time", value=True),
-        Register.on_log(move_group, "MoveGroup context initialization complete"),
-        Register.on_log(moveit_servo, "Servo initialized successfully"),
-        Register.on_log(moveit_manager, "Ready to take commands for planning group"),
+        move_group,
+        moveit_servo,
+        moveit_manager,
     ]
 
 
