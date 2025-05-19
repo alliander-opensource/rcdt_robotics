@@ -14,6 +14,12 @@ from rclpy.node import Node
 from rclpy.service import Service
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Trigger
+import time
+
+from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
+from sensor_msgs.msg import Joy
+from std_msgs.msg import String
 
 
 def get_joint_position(namespace: str, joint: str) -> float:
@@ -103,15 +109,6 @@ def singleton_node() -> Iterator[Node]:
     yield node
     node.destroy_node()
     rclpy.shutdown()
-
-
-import time
-
-from rclpy.node import Node
-from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
-from sensor_msgs.msg import Joy
-from std_msgs.msg import String
-
 
 def assert_joy_topic_switch(
     node: Node,

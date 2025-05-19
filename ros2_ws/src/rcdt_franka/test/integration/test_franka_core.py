@@ -37,32 +37,36 @@ def test_joint_states_published() -> None:
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_can_move_fingers(singleton_node: Node) -> None:
+def test_can_move_fingers(test_node: Node, finger_joint_fault_tolerance: float) -> None:
     assert (
         call_move_gripper_service(
-            singleton_node,
+            test_node,
             width=0.04,
             action_name="/franka/gripper_action_controller/gripper_cmd",
         )
         is True
     )
-    pos = get_joint_position(name_space="franka", joint="fr3_finger_joint1") * 2
-    assert pos == pytest.approx(0.08, abs=0.005), f"Got gripper position of {pos}"
+    pos = get_joint_position(namespace="franka", joint="fr3_finger_joint1")
+    assert pos == pytest.approx(0.04, abs=finger_joint_fault_tolerance), (
+        f"Got gripper position of {pos}"
+    )
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_follow_joint_trajectory_goal(singleton_node: Node) -> None:
+def test_follow_joint_trajectory_goal(
+    test_node: Node, joint_movement_tolerance: float
+) -> None:
     follow_joint_trajectory_goal(
-        singleton_node,
+        test_node,
         positions=[0.0, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0],
         controller="franka/fr3_arm_controller",
     )
-    pos_joint2 = get_joint_position(name_space="franka", joint="fr3_joint2")
-    pos_joint3 = get_joint_position(name_space="franka", joint="fr3_joint3")
+    pos_joint2 = get_joint_position(namespace="franka", joint="fr3_joint2")
+    pos_joint3 = get_joint_position(namespace="franka", joint="fr3_joint3")
 
-    assert pos_joint2 == pytest.approx(-0.5, abs=0.01), (
+    assert pos_joint2 == pytest.approx(-0.5, abs=joint_movement_tolerance), (
         f"Got joint position {pos_joint2}"
     )
-    assert pos_joint3 == pytest.approx(0.5, abs=0.01), (
+    assert pos_joint3 == pytest.approx(0.5, abs=joint_movement_tolerance), (
         f"Got joint position {pos_joint3}"
     )

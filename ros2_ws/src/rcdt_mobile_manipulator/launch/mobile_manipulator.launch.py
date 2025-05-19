@@ -62,66 +62,21 @@ def launch_setup(context: LaunchContext) -> None:
         }.items(),
     )
 
-    joy = Node(
-        package="joy",
-        executable="game_controller_node",
-        parameters=[
-            {"sticky_buttons": True},
-        ],
-    )
-
-    joy_topic_manager = Node(
-        package="rcdt_mobile_manipulator",
-        executable="joy_topic_manager.py",
-    )
-
-    joy_to_twist_franka = Node(
-        package="rcdt_utilities",
-        executable="joy_to_twist.py",
-        namespace="franka",
-        parameters=[
-            {"sub_topic": "/franka/joy"},
-            {"pub_topic": "/franka/servo_node/delta_twist_cmds"},
-            {"config_pkg": "rcdt_franka"},
-            {"pub_frame": "fr3_hand"},
-        ],
-    )
-
-    joy_to_twist_panther = Node(
-        package="rcdt_utilities",
-        executable="joy_to_twist.py",
-        parameters=[
-            {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/panther/cmd_vel"},
-            {"config_pkg": "rcdt_panther"},
-            {"stamped": False},
-        ],
-    )
-
-    joy_to_gripper = Node(
-        package="rcdt_franka",
-        executable="joy_to_gripper.py",
-        parameters=[{"sub_topic": "/franka/joy"}],
-    )
-
-    joystick = LaunchDescription(
-        [
-            joy,
-            joy_topic_manager,
-            joy_to_twist_franka,
-            joy_to_twist_panther,
-            joy_to_gripper,
-        ]
+    joystick = IncludeLaunchDescription(
+        get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
+        launch_arguments={"robots": "franka panther"}.items(),
     )
 
     open_gripper = Node(
         package="rcdt_franka",
         executable="open_gripper.py",
+        namespace="franka",
     )
 
     close_gripper = Node(
         package="rcdt_franka",
         executable="close_gripper.py",
+        namespace="franka",
     )
 
     wait_for_franka = Node(

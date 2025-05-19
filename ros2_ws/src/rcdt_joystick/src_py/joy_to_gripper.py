@@ -23,34 +23,35 @@ class JoyToGripper(Node):
     def __init__(self):
         super().__init__("joy_to_gripper")
 
+        self.declare_parameter("config_pkg")
+        config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
+
+        ns = self.get_namespace()
+
         cbg_open_gripper = MutuallyExclusiveCallbackGroup()
         self.open_gripper = self.create_client(
-            Trigger, "open_gripper", callback_group=cbg_open_gripper
+            Trigger, f"{ns}/open_gripper", callback_group=cbg_open_gripper
         )
 
         cbg_close_gripper = MutuallyExclusiveCallbackGroup()
         self.close_gripper = self.create_client(
-            Trigger, "close_gripper", callback_group=cbg_close_gripper
+            Trigger, f"{ns}/close_gripper", callback_group=cbg_close_gripper
         )
 
-        self.declare_parameter("sub_topic", value="/joy")
-        sub_topic = self.get_parameter("sub_topic").get_parameter_value().string_value
-        self.create_subscription(Joy, sub_topic, self.handle_input, 10)
+        self.create_subscription(Joy, f"{ns}/joy", self.handle_input, 10)
 
-        config = get_file_path("rcdt_franka", ["config"], "gamepad_mapping.yaml")
+        config = get_file_path(config_pkg, ["config"], "gamepad_mapping.yaml")
         self.mapping: dict = get_yaml(config)
         self.button_actions: dict = self.mapping.get("buttons", {})
         self.button_states = {}
         for button in self.button_actions:
-            self.button_states[button] = None
+            self.button_states[button] = 0
 
         self.busy = False
 
     def handle_input(self, sub_msg: Joy) -> None:
         for button, action in self.button_actions.items():
             state = sub_msg.buttons[button]
-            if self.button_states[button] is None:
-                self.button_states[button] = state
             if state == self.button_states[button]:
                 continue
             self.button_states[button] = state
