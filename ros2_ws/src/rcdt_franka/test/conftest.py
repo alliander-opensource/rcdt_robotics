@@ -2,24 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Iterator
 
 import pytest
-import rclpy
 from launch.actions import IncludeLaunchDescription
 from launch_ros import actions
 from rcdt_utilities.launch_utils import get_file_path
-from rclpy.node import Node
-
-
-@pytest.fixture(scope="session")
-def test_node() -> Iterator[Node]:
-    """Fixture to create a singleton node for testing."""
-    rclpy.init()
-    node = Node("test_node")
-    yield node
-    node.destroy_node()
-    rclpy.shutdown()
+from rcdt_utilities.test_utils import *  # noqa
 
 
 @pytest.fixture(scope="module")

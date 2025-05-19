@@ -3,20 +3,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import time
-
 import pytest
 import rclpy
-from geometry_msgs.msg import PoseStamped
 from rcdt_utilities.launch_utils import assert_for_message, assert_for_node
+from rcdt_utilities.test_utils import (
+    assert_joy_topic_switch,
+    assert_movements_with_joy,
+    wait_until_active,
+    wait_until_reached_joint,
+)
 from rclpy.node import Node
-from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from sensor_msgs.msg import JointState, Joy
-from std_msgs.msg import String
-from utils import EndToEndUtils, call_express_pose_in_other_frame
 
 
-class FrankaFullTests(EndToEndUtils):
+class FrankaFullTests:
     def test_joint_states_published(self) -> None:
         """Test that joint states are published. This is a basic test to check that the
         launch file is working and that the robot is publishing joint states."""
@@ -42,7 +42,7 @@ class FrankaFullTests(EndToEndUtils):
             is True
         )
         assert (
-            self.wait_until_active(
+            wait_until_active(
                 node=test_node, controller_name="gripper_action_controller"
             )
             is True
@@ -50,39 +50,10 @@ class FrankaFullTests(EndToEndUtils):
 
     def test_switch_joy_to_franka_topic(self, test_node: Node) -> None:
         """Test to see if the switch to Franka mode is correct."""
-        latched_qos = QoSProfile(
-            depth=1,
-            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
-            history=QoSHistoryPolicy.KEEP_LAST,
-        )
-        result = {}
-
-        def listener_callback(msg: String) -> None:
-            result["state"] = msg.data
-
-        # Subscribe to the correct topic
-        test_node.create_subscription(
-            String,
-            "/joy_topic_manager/state",  # this matches ~/state in JoyTopicManager
-            listener_callback,
-            qos_profile=latched_qos,
-        )
-
-        pub = test_node.create_publisher(Joy, "/joy", 10)
-        msg = Joy()
-        msg.buttons = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        pub.publish(msg)
-        timeout_sec = 10.0
-        start_time = time.time()
-        while (
-            result.get("state") != "/franka/joy"
-            and time.time() - start_time < timeout_sec
-        ):
-            rclpy.spin_once(test_node, timeout_sec=0.1)
-            time.sleep(0.1)
-
-        assert result.get("state") == "/franka/joy", (
-            f"Unexpected state: {result.get('state')}"
+        assert_joy_topic_switch(
+            node=test_node,
+            expected_topic="/franka/joy",
+            button_config=[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         )
 
     @pytest.mark.parametrize(
@@ -112,7 +83,7 @@ class FrankaFullTests(EndToEndUtils):
         pub.publish(msg)
         rclpy.spin_once(test_node, timeout_sec=0.1)
 
-        reached_goal, joint_value = self.wait_until_reached_joint(
+        reached_goal, joint_value = wait_until_reached_joint(
             namespace="franka",
             joint="fr3_finger_joint1",
             expected_value=expected_value,
@@ -139,30 +110,13 @@ class FrankaFullTests(EndToEndUtils):
     ) -> None:
         """Tests the linear movements of the hand while controlling with the joystick.
         Assert if it moves above a certain movement_threshold."""
-        pose = PoseStamped()
-        pose.header.frame_id = "franka/fr3_hand"
-        first_pose = call_express_pose_in_other_frame(
-            node=test_node, pose=pose, target_frame="franka/fr3_link0"
-        ).pose.pose
-
-        pub = test_node.create_publisher(Joy, "/joy", 10)
-
-        msg = Joy()
-        msg.axes = axes
-        pub.publish(msg)
-        rclpy.spin_once(test_node, timeout_sec=0.1)
-        time.sleep(1)  # small delay for the robot to move
-
-        pose = PoseStamped()
-        pose.header.frame_id = "franka/fr3_hand"
-        moved_pose = call_express_pose_in_other_frame(
-            node=test_node, pose=pose, target_frame="franka/fr3_link0"
-        ).pose.pose
-
-        delta = getattr(moved_pose.position, direction) - getattr(
-            first_pose.position, direction
-        )
-
-        assert abs(delta) > movement_threshold, (
-            f"{direction} position did not change after input. Δ = {delta:.4f}"
+        assert_movements_with_joy(
+            node=test_node,
+            joy_axes=axes,
+            compare_fn=lambda p1, p2: getattr(p2.position, direction)
+            - getattr(p1.position, direction),
+            threshold=movement_threshold,
+            description=f"{direction} position",
+            frame_base="franka/fr3_hand",
+            frame_target="franka/fr3_link0",
         )

@@ -5,9 +5,8 @@
 
 import pytest
 from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from rcdt_utilities.launch_utils import get_file_path
-from rcdt_utilities.test_utils import singleton_node  # noqa
+from rcdt_utilities.test_utils import *  # noqa
 
 
 @pytest.fixture(scope="module")

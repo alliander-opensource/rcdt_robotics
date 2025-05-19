@@ -101,11 +101,14 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
     )
 
+    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+
     launch_description = LaunchDescription(
         [
             navigation,
             controllers,
             joystick,
+            manipulate_pose,
             rviz if use_rviz else SKIP,
             slam if use_slam else SKIP,
         ]
