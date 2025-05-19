@@ -61,8 +61,7 @@ def test_e_stop_request(singleton_node: Node) -> None:
 
 @pytest.mark.launch(fixture=core)
 def test_driving(singleton_node: Node) -> None:
-    """Test that the controllers work and the wheels have turned.
-    """
+    """Test that the controllers work and the wheels have turned."""
     pub = singleton_node.create_publisher(Twist, "/panther/cmd_vel", 10)
 
     msg = Twist()
@@ -70,7 +69,7 @@ def test_driving(singleton_node: Node) -> None:
 
     pub.publish(msg)
     rclpy.spin_once(singleton_node, timeout_sec=0.1)
-    time.sleep(1) # give the panther some time to move
+    time.sleep(1)  # give the panther some time to move
 
-    joint_value = get_joint_position("fl_wheel_joint")
+    joint_value = get_joint_position("panther", "fl_wheel_joint")
     assert joint_value != pytest.approx(0, abs=0.5), f"The joint value is {joint_value}"
