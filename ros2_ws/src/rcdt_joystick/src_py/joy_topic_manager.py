@@ -10,7 +10,16 @@ import mashumaro.codecs.yaml as yaml_codec
 import rclpy
 from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy.node import Node, Publisher
+from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from sensor_msgs.msg import Joy
+from std_msgs.msg import String
+
+# Define the latched QoS profile
+latched_qos = QoSProfile(
+    depth=1,
+    durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+    history=QoSHistoryPolicy.KEEP_LAST,
+)
 
 
 @dataclass
@@ -18,15 +27,13 @@ class Output:
     button: int
     topic: str | None = None
     moveit: bool = False
-    state: int | None = None
+    state: int = 0
 
     def state_changed(self, state: bool) -> bool:
-        if self.state in [None, state]:
-            self.state = state
+        if self.state == state:
             return False
-        else:
-            self.state = state
-            return True
+        self.state = state
+        return True
 
 
 class JoyTopicManager(Node):
@@ -46,6 +53,9 @@ class JoyTopicManager(Node):
 
         self.topic = None
         self.create_subscription(Joy, joy_input, self.handle_joy_message, 10)
+        self.state_pub = self.create_publisher(
+            String, "~/state", qos_profile=latched_qos
+        )
 
     def handle_joy_message(self, msg: Joy) -> None:
         self.apply_output_changes(msg)
@@ -53,6 +63,11 @@ class JoyTopicManager(Node):
 
     def apply_output_changes(self, msg: Joy) -> None:
         for output in self.outputs:
+            if output.button >= len(msg.buttons):
+                self.get_logger().warn(
+                    f"Button index {output.button} out of range in Joy message with {len(msg.buttons)} buttons."
+                )
+                continue
             state = msg.buttons[output.button]
             if output.state_changed(state):
                 self.topic_changed(output.topic)
@@ -61,6 +76,11 @@ class JoyTopicManager(Node):
         if self.topic == topic:
             return False
         self.topic = topic
+
+        msg = String()
+        msg.data = self.topic if self.topic is not None else ""
+        self.state_pub.publish(msg)
+
         if self.topic is None:
             self.get_logger().info("Joy topic passing stopped.")
         else:
