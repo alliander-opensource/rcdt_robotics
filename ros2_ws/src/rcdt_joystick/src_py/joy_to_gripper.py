@@ -16,7 +16,6 @@ from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
 
 
-
 class JoyToGripper(Node):
     def __init__(self):
         super().__init__("joy_to_gripper")
