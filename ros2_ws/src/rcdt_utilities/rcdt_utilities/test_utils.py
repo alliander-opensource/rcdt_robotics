@@ -6,6 +6,7 @@
 from typing import Iterator, Type
 
 import pytest
+from typing import Type
 import rclpy
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rclpy.action import ActionClient
