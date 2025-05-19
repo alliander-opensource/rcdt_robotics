@@ -37,6 +37,8 @@ class Register:
 
     group_id = 0
     register: list[Union["Register", str]] = []
+    actions = 0
+    started = 0
 
     @staticmethod
     def get_unique_group_id() -> str:
@@ -53,11 +55,13 @@ class Register:
         There are no registered items left to start when the length of the register list equals 1, so then we return en empty launch description.
         """
         item = None
+        Register.started += 1
         while not isinstance(item, Register):
             if len(Register.register) == 1:
+                log_progress()
                 return LaunchDescription([])
             item = Register.register.pop(1)
-        log_action_start(item.action)
+        log_progress(item.action)
         return item.action
 
     @staticmethod
@@ -147,19 +151,33 @@ class Register:
         group = context.launch_configurations.get(CONF_NAME)
         index = Register.register.index(group) if group else len(Register.register)
         Register.register.insert(index, self)
+        Register.actions += 1
 
         if index == 0:
-            log_action_start(action)
+            log_progress(action)
             return LaunchDescription([action, event_handler])
         else:
             return LaunchDescription([event_handler])
 
 
-def log_action_start(action: Union[Node, ExecuteProcess]) -> None:
-    if isinstance(action, Node):
-        name = "[node]: " + action.node_executable
+def log_progress(action: Union[Node, ExecuteProcess] = None) -> None:
+    msg = "[Register]"
+    if Register.started == 0:
+        msg += " INIT"
     else:
-        name = "[process]: "
+        msg += f" [{Register.started}/{Register.actions}]"
+
+    if not action:
+        msg += " ALL READY!"
+        cprint(msg, "blue")
+        return
+
+    if isinstance(action, Node):
+        name = "(node): " + action.node_executable
+    else:
+        name = "(process): "
         for part in action.cmd:
             name += part[0].text + " "
-    cprint(f"starting: {name}", "blue")
+
+    msg += f" START: {name}"
+    cprint(msg, "blue")
