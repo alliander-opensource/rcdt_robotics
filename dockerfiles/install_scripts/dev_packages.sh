@@ -6,6 +6,8 @@
 
 set -e
 
+pip install pre-commit
+
 # Install pytest-timeout:
 pip install pytest-timeout
 

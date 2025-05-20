@@ -21,6 +21,24 @@ Checks the format of the .cpp, .h and .hpp files in this repository.
 - **reuse**:\
 Checks all files in this repository on usage of copyright terms.
 
+### Local Development
+
+You can run these checks locally before committing by using the [`pre-commit`](https://pre-commit.com/) framework:
+
+1. Set it up in your working folder:
+
+   ```bash
+   pre-commit install
+   ```
+
+2. (Optional) Run all hooks manually on all files:
+
+   ```bash
+   pre-commit run --all-files
+   ```
+
+This will help you catch issues early and avoid failing commits in CI.
+
 ## Documentation
 
 The Documentation workflow automatically builds HTML pages form the files in the docs folder of this repository using Sphinx. Next, the HTML pages are automatically pushed to the Github Pages of this repository.
