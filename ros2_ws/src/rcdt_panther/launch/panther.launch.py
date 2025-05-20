@@ -90,7 +90,7 @@ def launch_setup(context: LaunchContext) -> None:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,
-        Register.group(controllers, context),
+        Register.group(controllers, context) if use_sim else SKIP,
         Register.group(joystick, context),
         Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
