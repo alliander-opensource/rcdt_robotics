@@ -91,12 +91,15 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=[{"topic": "/panther/joint_states"}, {"msg_type": "JointState"}],
     )
 
+    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+
     launch_description = LaunchDescription(
         [
             franka_controllers,
             panther_controllers,
             open_gripper,
             close_gripper,
+            manipulate_pose,
             joystick,
             moveit,
             rviz if use_rviz else SKIP,

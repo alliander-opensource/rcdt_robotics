@@ -15,6 +15,9 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Python package:
+ament_python_install_package(${PROJECT_NAME})
+
 # Default test:
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

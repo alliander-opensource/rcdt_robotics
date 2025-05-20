@@ -5,9 +5,9 @@
 
 import launch_pytest
 import pytest
-from end_to_end.base_franka import FrankaFullTests
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
+from rcdt_franka.test.base_franka import FrankaFullTests
 from rcdt_utilities.launch_utils import (
     get_file_path,
 )
