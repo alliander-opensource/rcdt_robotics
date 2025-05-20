@@ -24,4 +24,4 @@ def mobile_manipulator_launch(
 
 @pytest.mark.launch(fixture=mobile_manipulator_launch)
 class TestCoreLaunch(PantherFullTests):
-    """Run all the FrankaLaunchTests under franka.launch.py"""
+    """Run all the PantherFullTests under mobile_manipulator.launch.py"""
