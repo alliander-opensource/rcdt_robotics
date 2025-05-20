@@ -61,13 +61,6 @@ def launch_setup(context: LaunchContext) -> None:
             get_file_path("rcdt_franka", ["launch"], "robot.launch.py")
         )
 
-    joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
-        namespace=namespace,
-    )
-
     # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
     static_transform_publisher = Node(
         package="tf2_ros",
@@ -85,7 +78,6 @@ def launch_setup(context: LaunchContext) -> None:
         SetParameter(name="use_sim_time", value=use_sim),
         Register.on_start(robot_state_publisher, context),
         Register.group(robot, context) if not is_mobile_manipulator else SKIP,
-        Register.on_exit(joint_state_broadcaster, context),
         Register.on_log(static_transform_publisher, "publishing transform", context)
         if not is_mobile_manipulator
         else SKIP,

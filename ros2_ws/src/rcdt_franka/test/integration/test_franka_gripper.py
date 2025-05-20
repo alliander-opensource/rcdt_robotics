@@ -6,32 +6,31 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from launch_ros import actions
-from rcdt_utilities.launch_utils import (
-    assert_for_message,
+from rcdt_utilities.launch_utils import assert_for_message
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.test_utils import (
+    call_trigger_service,
+    get_joint_position,
+    wait_for_register,
 )
-from rcdt_utilities.test_utils import call_trigger_service, get_joint_position
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
 
 @launch_pytest.fixture(scope="module")
 def franka_and_gripper_launch(
-    core_launch: IncludeLaunchDescription,
-    controllers_launch: IncludeLaunchDescription,
-    open_gripper: actions.Node,
-    close_gripper: actions.Node,
+    core_launch: RegisteredLaunchDescription,
+    controllers_launch: RegisteredLaunchDescription,
+    gripper_services_launch: RegisteredLaunchDescription,
 ) -> LaunchDescription:
-    return LaunchDescription(
-        [
-            core_launch,
-            controllers_launch,
-            open_gripper,
-            close_gripper,
-            launch_pytest.actions.ReadyToTest(),
-        ]
+    return Register.connect_context(
+        [core_launch, controllers_launch, gripper_services_launch]
     )
+
+
+@pytest.mark.launch(fixture=franka_and_gripper_launch)
+def test_wait_for_register() -> None:
+    wait_for_register()
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
@@ -43,8 +42,8 @@ def test_joint_states_published() -> None:
 @pytest.mark.parametrize(
     "service, expected_value",
     [
-        ("/close_gripper", 0.00),
-        ("/open_gripper", 0.04),
+        ("/franka/close_gripper", 0.00),
+        ("/franka/open_gripper", 0.04),
     ],
 )
 def test_gripper_action(

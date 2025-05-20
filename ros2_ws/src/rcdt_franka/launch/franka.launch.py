@@ -72,15 +72,8 @@ def launch_setup(context: LaunchContext) -> None:
         launch_arguments={"robots": "franka"},
     )
 
-    open_gripper = Node(
-        package="rcdt_franka",
-        executable="open_gripper.py",
-        namespace=namespace,
-    )
-    close_gripper = Node(
-        package="rcdt_franka",
-        executable="close_gripper.py",
-        namespace=namespace,
+    gripper_services = RegisteredLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
@@ -89,8 +82,7 @@ def launch_setup(context: LaunchContext) -> None:
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context),
         Register.group(controllers, context),
-        Register.on_start(open_gripper, context),
-        Register.on_start(close_gripper, context),
+        Register.group(gripper_services, context),
         Register.group(moveit, context),
         Register.group(joystick, context),
         Register.on_start(manipulate_pose, context),

@@ -6,13 +6,9 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from rcdt_utilities.launch_utils import (
-    assert_for_message,
-)
-from rcdt_utilities.test_utils import (
-    get_joint_position,
-)
+from rcdt_utilities.launch_utils import assert_for_message
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.test_utils import get_joint_position, wait_for_register
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from utils import call_move_gripper_service, follow_joint_trajectory_goal
@@ -20,15 +16,15 @@ from utils import call_move_gripper_service, follow_joint_trajectory_goal
 
 @launch_pytest.fixture(scope="module")
 def franka_core_launch(
-    core_launch: IncludeLaunchDescription, controllers_launch: IncludeLaunchDescription
+    core_launch: RegisteredLaunchDescription,
+    controllers_launch: RegisteredLaunchDescription,
 ) -> LaunchDescription:
-    return LaunchDescription(
-        [
-            core_launch,
-            controllers_launch,
-            launch_pytest.actions.ReadyToTest(),
-        ]
-    )
+    return Register.connect_context([core_launch, controllers_launch])
+
+
+@pytest.mark.launch(fixture=franka_core_launch)
+def test_wait_for_register() -> None:
+    wait_for_register()
 
 
 @pytest.mark.launch(fixture=franka_core_launch)

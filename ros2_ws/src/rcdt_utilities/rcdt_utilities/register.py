@@ -8,6 +8,7 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import (
     ExecuteProcess,
     IncludeLaunchDescription,
+    OpaqueFunction,
     RegisterEventHandler,
 )
 from launch.event_handlers import OnProcessExit, OnProcessIO, OnProcessStart
@@ -39,11 +40,19 @@ class Register:
     register: list[Union["Register", str]] = []
     actions = 0
     started = 0
+    all_started = False
 
     @staticmethod
     def get_unique_group_id() -> str:
         Register.group_id += 1
         return f"group_{Register.group_id}"
+
+    @staticmethod
+    def reset() -> None:
+        Register.group_id = 0
+        Register.register = []
+        Register.actions = 0
+        Register.started = 0
 
     @staticmethod
     def next(*_: any) -> Node | ExecuteProcess:
@@ -59,6 +68,8 @@ class Register:
         while not isinstance(item, Register):
             if len(Register.register) == 1:
                 log_progress()
+                Register.all_started = True
+                Register.reset()
                 return LaunchDescription([])
             item = Register.register.pop(1)
         log_progress(item.action)
@@ -82,6 +93,30 @@ class Register:
         else:
             Register.register.append(name)
         return launch_description
+
+    @staticmethod
+    def connect_context(
+        groups: list[RegisteredLaunchDescription],
+    ) -> LaunchDescription:
+        """
+        Returns a LaunchDescription of an OpaqueFunction, so that LaunchContext is available.
+
+        This LaunchContext is required for the Register methods to correctly link the different groups of included launch files.
+        """
+
+        def launch_setup(
+            context: LaunchContext,
+            registered_launch_descriptions: list[RegisteredLaunchDescription],
+        ) -> LaunchDescription:
+            launch_items = []
+            for description in registered_launch_descriptions:
+                if not isinstance(description, RegisteredLaunchDescription):
+                    raise TypeError
+                launch_items.append(Register.group(description, context))
+            return launch_items
+
+        opaque_function = OpaqueFunction(function=launch_setup, args=[groups])
+        return LaunchDescription([opaque_function])
 
     def __init__(self):
         self.action: Union[Node | ExecuteProcess]
@@ -155,6 +190,7 @@ class Register:
 
         if index == 0:
             log_progress(action)
+            Register.all_started = False
             return LaunchDescription([action, event_handler])
         else:
             return LaunchDescription([event_handler])

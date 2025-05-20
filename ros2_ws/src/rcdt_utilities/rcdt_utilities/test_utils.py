@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from time import sleep
 from typing import Type
 
 import rclpy
@@ -13,6 +14,9 @@ from rclpy.node import Node
 from rclpy.service import Service
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Trigger
+from termcolor import cprint
+
+from rcdt_utilities.register import Register
 
 
 def get_joint_position(namespace: str, joint: str) -> float:
@@ -92,3 +96,9 @@ def create_ready_action_client(
     if not client.wait_for_server(timeout_sec=timeout_sec):
         raise RuntimeError(f"Action server {action_name} not available")
     return client
+
+
+def wait_for_register() -> None:
+    while not Register.all_started:
+        sleep(1)
+    cprint("Register is ready, start testing!", "green")

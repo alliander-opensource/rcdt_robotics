@@ -6,9 +6,9 @@ from typing import Iterator
 
 import pytest
 import rclpy
-from launch.actions import IncludeLaunchDescription
 from launch_ros import actions
 from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.register import RegisteredLaunchDescription
 from rclpy.node import Node
 
 
@@ -23,32 +23,40 @@ def test_node() -> Iterator[Node]:
 
 
 @pytest.fixture(scope="module")
-def controllers_launch() -> IncludeLaunchDescription:
+def controllers_launch() -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers."""
-    return IncludeLaunchDescription(
+    return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
     )
 
 
 @pytest.fixture(scope="module")
-def core_launch() -> IncludeLaunchDescription:
+def core_launch() -> RegisteredLaunchDescription:
     """Fixture to create launch file for the franka core."""
-    return IncludeLaunchDescription(
+    return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py")
     )
 
 
 @pytest.fixture(scope="module")
-def moveit_launch() -> IncludeLaunchDescription:
+def moveit_launch() -> RegisteredLaunchDescription:
     """Fixture to launch moveit."""
-    return IncludeLaunchDescription(
+    return RegisteredLaunchDescription(
         get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
         launch_arguments={
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "servo_params_package": "rcdt_franka",
             "namespace": "franka",
-        }.items(),
+        },
+    )
+
+
+@pytest.fixture(scope="module")
+def gripper_services_launch() -> RegisteredLaunchDescription:
+    """Fixture to create launch file for controllers."""
+    return RegisteredLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
 
 

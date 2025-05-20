@@ -18,6 +18,13 @@ def launch_setup(context: LaunchContext) -> None:
 
     namespace = "franka"
 
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+        namespace=namespace,
+    )
+
     fr3_arm_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -55,6 +62,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     return [
+        Register.on_exit(joint_state_broadcaster_spawner, context),
         Register.on_exit(fr3_arm_controller_spawner, context),
         Register.on_start(fr3_gripper, context),
         Register.on_exit(gripper_action_controller_spawner, context)
