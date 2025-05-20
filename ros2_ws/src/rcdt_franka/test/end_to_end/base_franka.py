@@ -18,7 +18,6 @@ from utils import EndToEndUtils, call_express_pose_in_other_frame
 
 
 class FrankaFullTests(EndToEndUtils):
-
     def test_wait_for_register(self) -> None:
         wait_for_register()
 
