@@ -53,8 +53,8 @@ class PantherFullTests:
             threshold=0.1,
             description="x position",
             frame_base="panther/base_link",
-            frame_target="panther/odom"
-            )
+            frame_target="panther/odom",
+        )
 
     def test_rotate_panther_with_joy(self, test_node: Node) -> None:
         assert_movements_with_joy(
@@ -64,5 +64,5 @@ class PantherFullTests:
             threshold=0.01,
             description="orientation.w",
             frame_base="panther/base_link",
-            frame_target="panther/odom"
+            frame_target="panther/odom",
         )

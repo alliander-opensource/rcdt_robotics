@@ -43,7 +43,9 @@ class FrankaFullTests:
         )
         assert (
             wait_until_active(
-                node=test_node, controller_name="gripper_action_controller", controller_manager_name="/franka/controller_manager"
+                node=test_node,
+                controller_name="gripper_action_controller",
+                controller_manager_name="/franka/controller_manager",
             )
             is True
         )

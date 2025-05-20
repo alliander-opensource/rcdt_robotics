@@ -85,7 +85,7 @@ def call_trigger_service(node: Node, service_name: str) -> bool:
     client = create_ready_service_client(node, Trigger, service_name)
 
     future = client.call_async(Trigger.Request())
-    rclpy.spin_until_future_complete(node, future=future,timeout_sec=90)
+    rclpy.spin_until_future_complete(node, future=future, timeout_sec=90)
     return future.result() is not None
 
 
@@ -144,7 +144,7 @@ def assert_joy_topic_switch(
     node.create_subscription(
         msg_type=String,
         topic=state_topic,
-        callback = callback_function,
+        callback=callback_function,
         qos_profile=qos,
     )
 
@@ -155,8 +155,7 @@ def assert_joy_topic_switch(
 
     start_time = time.time()
     while (
-        result.get("state") != expected_topic
-        and time.time() - start_time < timeout_sec
+        result.get("state") != expected_topic and time.time() - start_time < timeout_sec
     ):
         rclpy.spin_once(node, timeout_sec=0.1)
         time.sleep(0.1)
@@ -246,9 +245,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     )
 
 
-def list_controllers(
-    node: Node, controller_manager_name: str
-) -> list[ControllerState]:
+def list_controllers(node: Node, controller_manager_name: str) -> list[ControllerState]:
     """Query the controller manager for all currently loaded controllers.
 
     Args:
