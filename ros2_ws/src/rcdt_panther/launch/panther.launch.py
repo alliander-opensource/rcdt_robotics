@@ -105,7 +105,7 @@ def launch_setup(context: LaunchContext) -> None:
 
     launch_description = LaunchDescription(
         [
-            navigation,
+            navigation if use_collision_monitor else SKIP,
             controllers,
             joystick,
             manipulate_pose,

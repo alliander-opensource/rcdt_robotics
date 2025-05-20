@@ -45,7 +45,7 @@ def call_move_gripper_service(node: Node, width: float, action_name: str) -> boo
         return False
 
     repsonse_future: Future = goal_handle.get_result_async()
-    rclpy.spin_until_future_complete(node, repsonse_future)
+    rclpy.spin_until_future_complete(node, repsonse_future, timeout_sec=90)
     repsonse: GripperCommand.Impl.GetResultService.Response = repsonse_future.result()
     return repsonse.result.reached_goal
 

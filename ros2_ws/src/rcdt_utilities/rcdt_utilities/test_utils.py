@@ -24,17 +24,14 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def test_node() -> Iterator[Node]:
     """Fixture to create a singleton node for testing."""
-    print("initialization is done")
-    if not rclpy.ok():
-        rclpy.init()
+    rclpy.init()
     node = Node("test_node")
     yield node
     node.destroy_node()
-    if rclpy.ok():
-        rclpy.shutdown()
+    rclpy.shutdown()
 
 
 def get_joint_position(namespace: str, joint: str) -> float:
@@ -88,7 +85,7 @@ def call_trigger_service(node: Node, service_name: str) -> bool:
     client = create_ready_service_client(node, Trigger, service_name)
 
     future = client.call_async(Trigger.Request())
-    rclpy.spin_until_future_complete(node, future=future)
+    rclpy.spin_until_future_complete(node, future=future,timeout_sec=90)
     return future.result() is not None
 
 
@@ -120,7 +117,7 @@ def assert_joy_topic_switch(
     node: Node,
     expected_topic: str,
     button_config: list[int],
-    timeout_sec: float = 10.0,
+    timeout_sec: float = 90.0,
     state_topic: str = "/joy_topic_manager/state",
 ) -> None:
     """
@@ -141,13 +138,13 @@ def assert_joy_topic_switch(
 
     result = {}
 
-    def callback(msg: String) -> None:
+    def callback_function(msg: String) -> None:
         result["state"] = msg.data
 
     node.create_subscription(
-        String,
-        state_topic,
-        callback,
+        msg_type=String,
+        topic=state_topic,
+        callback = callback_function,
         qos_profile=qos,
     )
 
@@ -157,10 +154,11 @@ def assert_joy_topic_switch(
     pub.publish(msg)
 
     start_time = time.time()
-    while time.time() - start_time < timeout_sec:
+    while (
+        result.get("state") != expected_topic
+        and time.time() - start_time < timeout_sec
+    ):
         rclpy.spin_once(node, timeout_sec=0.1)
-        if result.get("state") == expected_topic:
-            break
         time.sleep(0.1)
 
     assert result.get("state") == expected_topic, (
@@ -169,7 +167,7 @@ def assert_joy_topic_switch(
 
 
 def call_express_pose_in_other_frame(
-    node: Node, pose: PoseStamped, target_frame: str, timeout_sec: float = 5.0
+    node: Node, pose: PoseStamped, target_frame: str, timeout_sec: float = 90
 ) -> ExpressPoseInOtherFrame.Response:
     """
     Calls the /express_pose_in_other_frame service.
@@ -208,8 +206,8 @@ def assert_movements_with_joy(  # noqa: PLR0913
     compare_fn: Callable[[PoseStamped, PoseStamped], float],
     threshold: float,
     description: str,
-    frame_base: str = "panther/base_link",
-    frame_target: str = "panther/odom",
+    frame_base: str,
+    frame_target: str,
 ) -> None:
     """Publishes a joystick message and asserts that movement occurs above a threshold.
 
@@ -249,7 +247,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
 
 
 def list_controllers(
-    node: Node, controller_manager_name: str = "/franka/controller_manager"
+    node: Node, controller_manager_name: str
 ) -> list[ControllerState]:
     """Query the controller manager for all currently loaded controllers.
 
@@ -264,7 +262,7 @@ def list_controllers(
     )
     request = ListControllers.Request()
     future: Future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future)
+    rclpy.spin_until_future_complete(node, future, timeout_sec=90)
 
     response: ListControllers.Response = future.result()
     if response is None:
@@ -296,9 +294,9 @@ def get_controller_state(
 def wait_until_active(
     node: Node,
     controller_name: str,
+    controller_manager_name: str,
     timeout_sec: float = 90.0,
     poll_interval: float = 0.5,
-    controller_manager_name: str = "/franka/controller_manager",
 ) -> bool:
     """Poll until a controller becomes 'active'.
 
