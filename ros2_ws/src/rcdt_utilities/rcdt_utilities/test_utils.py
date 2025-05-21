@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import sleep
+import time
 from typing import Type
 
+import pytest
 import rclpy
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rclpy.action import ActionClient
@@ -98,7 +99,11 @@ def create_ready_action_client(
     return client
 
 
-def wait_for_register() -> None:
-    while not Register.all_started:
-        sleep(1)
-    cprint("Register is ready, start testing!", "green")
+def wait_for_register(pytestconfig: pytest.Config) -> None:
+    timeout = int(pytestconfig.getini("timeout"))
+    start = time.time()
+    while not Register.all_started and time.time() - start < timeout:
+        time.sleep(1)
+    if Register.all_started:
+        cprint("Register is ready, start testing!", "green")
+    assert Register.all_started

@@ -18,8 +18,8 @@ from utils import EndToEndUtils, call_express_pose_in_other_frame
 
 
 class FrankaFullTests(EndToEndUtils):
-    def test_wait_for_register(self) -> None:
-        wait_for_register()
+    def test_wait_for_register(self, pytestconfig: pytest.Config) -> None:
+        wait_for_register(pytestconfig)
 
     def test_joint_states_published(self) -> None:
         """Test that joint states are published. This is a basic test to check that the

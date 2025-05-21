@@ -29,8 +29,8 @@ def franka_and_gripper_launch(
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
-def test_wait_for_register() -> None:
-    wait_for_register()
+def test_wait_for_register(pytestconfig: pytest.Config) -> None:
+    wait_for_register(pytestconfig)
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
