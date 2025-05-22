@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter
+from launch_ros.actions import SetParameter
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 

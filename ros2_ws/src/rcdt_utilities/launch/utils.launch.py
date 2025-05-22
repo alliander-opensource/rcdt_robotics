@@ -17,6 +17,7 @@ def launch_setup(context: LaunchContext) -> None:
         Register.on_start(manipulate_pose, context),
     ]
 
+
 def generate_launch_description() -> LaunchDescription:
     """Launches the utilities launch file."""
     return LaunchDescription([OpaqueFunction(function=launch_setup)])

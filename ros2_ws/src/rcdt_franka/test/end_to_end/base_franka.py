@@ -18,21 +18,21 @@ from sensor_msgs.msg import JointState, Joy
 
 
 class FrankaFullTests:
-    def test_wait_for_register(self, timeout:int) -> None:
+    def test_wait_for_register(self, timeout: int) -> None:
         wait_for_register(timeout=timeout)
 
-    def test_joint_states_published(self, timeout:int) -> None:
+    def test_joint_states_published(self, timeout: int) -> None:
         """Test that joint states are published. This is a basic test to check that the
         launch file is working and that the robot is publishing joint states."""
         assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
-    def test_switch_joy_to_franka_topic(self, test_node: Node, timeout:int) -> None:
+    def test_switch_joy_to_franka_topic(self, test_node: Node, timeout: int) -> None:
         """Test to see if the switch to Franka mode is correct."""
         assert_joy_topic_switch(
             node=test_node,
             expected_topic="/franka/joy",
             button_config=[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            timeout=timeout
+            timeout=timeout,
         )
 
     @pytest.mark.parametrize(
@@ -68,7 +68,7 @@ class FrankaFullTests:
             joint="fr3_finger_joint1",
             expected_value=expected_value,
             tolerance=finger_joint_fault_tolerance,
-            timeout_sec=timeout
+            timeout_sec=timeout,
         )
         assert reached_goal is True, (
             f"The joint did not reach the joint. Currently {joint_value}, expected {expected_value}"

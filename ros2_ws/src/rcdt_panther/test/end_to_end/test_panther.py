@@ -7,7 +7,6 @@ import launch_pytest
 import pytest
 from end_to_end.base_panther import PantherFullTests
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
@@ -20,11 +19,11 @@ def panther_launch() -> LaunchDescription:
                 get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
                 launch_arguments={
                     "rviz": "False",
-                }
+                },
             ),
             RegisteredLaunchDescription(
                 get_file_path("rcdt_utilities", ["launch"], "utils.launch.py"),
-            )
+            ),
         ]
     )
 

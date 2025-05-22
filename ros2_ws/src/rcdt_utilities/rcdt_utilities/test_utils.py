@@ -27,6 +27,8 @@ from termcolor import colored
 
 from rcdt_utilities.register import Register
 
+logger = get_logger("test_utils")
+
 
 @pytest.fixture(scope="module")
 def test_node() -> Iterator[Node]:
@@ -37,12 +39,14 @@ def test_node() -> Iterator[Node]:
     node.destroy_node()
     rclpy.shutdown()
 
+
 @pytest.fixture(scope="module")
 def timeout(pytestconfig: pytest.Config) -> int:
     """Fixture to get the timeout value from pytest config."""
     return int(pytestconfig.getini("timeout"))
 
-def get_joint_position(namespace: str, joint: str, timeout:int) -> float:
+
+def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
     """Get the joint position of a joint by name. This is done by calling the
     /joint_states topic and parsing the output. This is a workaround for the fact
     that the joint states are not published in a format that can be easily parsed.
@@ -88,9 +92,11 @@ def create_ready_service_client(
     return client
 
 
-def call_trigger_service(node: Node, service_name: str, timeout:int) -> bool:
+def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
     """Call a trigger service and return True if the service was called successfully."""
-    client = create_ready_service_client(node, Trigger, service_name, timeout_sec=timeout)
+    client = create_ready_service_client(
+        node, Trigger, service_name, timeout_sec=timeout
+    )
 
     future = client.call_async(Trigger.Request())
     rclpy.spin_until_future_complete(node, future=future, timeout_sec=timeout)
@@ -98,7 +104,7 @@ def call_trigger_service(node: Node, service_name: str, timeout:int) -> bool:
 
 
 def create_ready_action_client(
-    node: Node, action_type: Type, action_name: str, timeout :int
+    node: Node, action_type: Type, action_name: str, timeout: int
 ) -> ActionClient:
     """
     Create and wait for an ActionClient to become ready.
@@ -138,6 +144,7 @@ def assert_joy_topic_switch(
         timeout (float): Max time to wait for the result.
         state_topic (str): Topic to listen for state updates from joy_topic_manager.
     """
+    logger.info("Starting to assert joy topic switch")
     qos = QoSProfile(
         depth=1,
         durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
@@ -159,13 +166,11 @@ def assert_joy_topic_switch(
     pub = node.create_publisher(Joy, "/joy", 10)
     msg = Joy()
     msg.buttons = button_config
-    pub.publish(msg)
 
     start_time = time.time()
-    while (
-        result.get("state") != expected_topic and time.time() - start_time < timeout
-    ):
-        rclpy.spin_once(node, timeout_sec=0.1)
+    while result.get("state") != expected_topic and time.time() - start_time < timeout:
+        pub.publish(msg)
+        rclpy.spin_once(node, timeout_sec=1)
         time.sleep(0.1)
 
     assert result.get("state") == expected_topic, (
@@ -190,7 +195,10 @@ def call_express_pose_in_other_frame(
     """
 
     client = create_ready_service_client(
-        node, ExpressPoseInOtherFrame, "/express_pose_in_other_frame", timeout_sec=timeout
+        node,
+        ExpressPoseInOtherFrame,
+        "/express_pose_in_other_frame",
+        timeout_sec=timeout,
     )
 
     request = ExpressPoseInOtherFrame.Request()
@@ -215,7 +223,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     description: str,
     frame_base: str,
     frame_target: str,
-    timeout:int
+    timeout: int,
 ) -> None:
     """Publishes a joystick message and asserts that movement occurs above a threshold.
 
@@ -254,7 +262,9 @@ def assert_movements_with_joy(  # noqa: PLR0913
     )
 
 
-def list_controllers(node: Node, controller_manager_name: str, timeout:int) -> list[ControllerState]:
+def list_controllers(
+    node: Node, controller_manager_name: str, timeout: int
+) -> list[ControllerState]:
     """Query the controller manager for all currently loaded controllers.
 
     Args:
@@ -318,7 +328,9 @@ def wait_until_reached_joint(
     end_time = time.time() + timeout_sec
     while time.time() < end_time:
         try:
-            joint_value = get_joint_position(namespace=namespace, joint=joint, timeout=timeout_sec)
+            joint_value = get_joint_position(
+                namespace=namespace, joint=joint, timeout=timeout_sec
+            )
             if joint_value == pytest.approx(expected_value, abs=tolerance):
                 print("The joint reached its expected value!")
                 time.sleep(0.25)
@@ -330,7 +342,7 @@ def wait_until_reached_joint(
     return (False, joint_value)
 
 
-def wait_for_register(timeout:int) -> None:
+def wait_for_register(timeout: int) -> None:
     """
     Waits till all registerd actions are started.
 

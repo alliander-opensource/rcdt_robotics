@@ -6,7 +6,6 @@ import time
 
 import launch_pytest
 import pytest
-import rclpy
 from geometry_msgs.msg import Twist
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
@@ -34,36 +33,48 @@ def panther_core_launch(
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
-def test_wait_for_register(timeout:int) -> None:
+def test_wait_for_register(timeout: int) -> None:
     wait_for_register(timeout=timeout)
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
-def test_joint_states_published(timeout:int) -> None:
-    assert_for_message(JointState, "/panther/joint_states", timeout=timeout)    
+def test_joint_states_published(timeout: int) -> None:
+    assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
-def test_e_stop_request(test_node: Node, timeout:int) -> None:
+def test_e_stop_request(test_node: Node, timeout: int) -> None:
     assert (
         call_trigger_service(
-            node=test_node, service_name="/panther/hardware/e_stop_reset", timeout=timeout
+            node=test_node,
+            service_name="/panther/hardware/e_stop_reset",
+            timeout=timeout,
         )
         is True
     )
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
-def test_driving(test_node: Node, timeout:int) -> None:
+def test_driving(test_node: Node, timeout: int) -> None:
     """Test that the controllers work and the wheels have turned."""
-    pub = test_node.create_publisher(Twist, "/panther/cmd_vel", 10)
 
+    joint_value_before_driving = get_joint_position(
+        "panther", "fl_wheel_joint", timeout=timeout
+    )
+
+    pub = test_node.create_publisher(Twist, "/panther/cmd_vel", 10)
     msg = Twist()
     msg.linear.x = 1.0
-
     pub.publish(msg)
-    rclpy.spin_once(test_node, timeout_sec=0.1)
+
     time.sleep(1)  # give the panther some time to move
 
-    joint_value = get_joint_position("panther", "fl_wheel_joint", timeout=timeout)
-    assert joint_value != pytest.approx(0, abs=0.5), f"The joint value is {joint_value}"
+    joint_value_after_driving = get_joint_position(
+        "panther", "fl_wheel_joint", timeout=timeout
+    )
+
+    delta = joint_value_after_driving - joint_value_before_driving
+
+    assert delta != pytest.approx(0, abs=0.5), (
+        f"The current joint value is {joint_value_after_driving}, but it should be different from {joint_value_before_driving}."
+    )

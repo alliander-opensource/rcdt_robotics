@@ -17,15 +17,20 @@ from rclpy.task import Future
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 
-def call_move_to_configuration_service(node: Node, configuration: str, timeout:int) -> bool:
+def call_move_to_configuration_service(
+    node: Node, configuration: str, timeout: int
+) -> bool:
     """Call the move_to_configuration service and return True if a response from the service was received."""
     client = create_ready_service_client(
-        node, MoveToConfiguration, "franka/moveit_manager/move_to_configuration", timeout_sec=timeout
+        node,
+        MoveToConfiguration,
+        "franka/moveit_manager/move_to_configuration",
+        timeout_sec=timeout,
     )
     request = MoveToConfiguration.Request()
     request.configuration = configuration
     future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future=future)
+    rclpy.spin_until_future_complete(node, future=future, timeout_sec=timeout)
     return future.result() is not None
 
 
@@ -33,13 +38,16 @@ def follow_joint_trajectory_goal(
     node: Node,
     positions: list[float],
     controller: str,
-    timeout:int,
+    timeout: int,
     time_from_start: int = 3,
 ) -> None:
     """Test sending a joint trajectory goal to the arm controller."""
 
     action_client = create_ready_action_client(
-        node, FollowJointTrajectory, f"/{controller}/follow_joint_trajectory", timeout = timeout
+        node,
+        FollowJointTrajectory,
+        f"/{controller}/follow_joint_trajectory",
+        timeout=timeout,
     )
 
     goal_msg = FollowJointTrajectory.Goal()

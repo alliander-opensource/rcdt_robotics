@@ -23,13 +23,13 @@ def franka_core_launch(
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_wait_for_register(timeout:int) -> None:
+def test_wait_for_register(timeout: int) -> None:
     wait_for_register(timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_joint_states_published(timeout:int) -> None:
-    assert_for_message(JointState, "franka/joint_states",timeout=timeout)
+def test_joint_states_published(timeout: int) -> None:
+    assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
@@ -42,8 +42,12 @@ def test_follow_joint_trajectory_goal(
         controller="franka/fr3_arm_controller",
         timeout=timeout,
     )
-    pos_joint2 = get_joint_position(namespace="franka", joint="fr3_joint2", timeout=timeout)
-    pos_joint3 = get_joint_position(namespace="franka", joint="fr3_joint3", timeout=timeout)
+    pos_joint2 = get_joint_position(
+        namespace="franka", joint="fr3_joint2", timeout=timeout
+    )
+    pos_joint3 = get_joint_position(
+        namespace="franka", joint="fr3_joint3", timeout=timeout
+    )
 
     assert pos_joint2 == pytest.approx(-0.5, abs=joint_movement_tolerance), (
         f"Got joint position {pos_joint2}"

@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter
+from launch_ros.actions import SetParameter
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
@@ -79,7 +79,7 @@ def launch_setup(context: LaunchContext) -> None:
     utilities = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
     )
-    
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context),

@@ -25,12 +25,12 @@ def franka_and_moveit_launch(
 
 
 @pytest.mark.launch(fixture=franka_and_moveit_launch)
-def test_wait_for_register(timeout:int) -> None:
+def test_wait_for_register(timeout: int) -> None:
     wait_for_register(timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_and_moveit_launch)
-def test_joint_states_published(timeout) -> None:
+def test_joint_states_published(timeout: int) -> None:
     assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
 
@@ -54,10 +54,14 @@ def test_move_to_drop_configuration(
 ) -> None:
     """Test that MoveIt can move to a configuration."""
 
-    assert call_move_to_configuration_service(test_node, "drop", timeout=timeout) is True
+    assert (
+        call_move_to_configuration_service(test_node, "drop", timeout=timeout) is True
+    )
     drop_values = [-1.57079632679, -0.65, 0, -2.4, 0, 1.75, 0.78539816339]
     for i in range(7):
-        joint_value = get_joint_position(namespace="franka", joint=f"fr3_joint{i + 1}", timeout=timeout)
+        joint_value = get_joint_position(
+            namespace="franka", joint=f"fr3_joint{i + 1}", timeout=timeout
+        )
         assert joint_value == pytest.approx(
             drop_values[i], abs=joint_movement_tolerance
         ), f"The joint value is {joint_value}"
