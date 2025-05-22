@@ -87,14 +87,11 @@ def launch_setup(context: LaunchContext) -> None:
         },
     )
 
-    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
-
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
         Register.group(joystick, context),
-        Register.on_start(manipulate_pose, context),
         Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
     ]

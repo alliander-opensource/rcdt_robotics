@@ -29,13 +29,13 @@ def franka_and_gripper_launch(
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
-def test_wait_for_register(pytestconfig: pytest.Config) -> None:
-    wait_for_register(pytestconfig)
+def test_wait_for_register(timeout:int) -> None:
+    wait_for_register(timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
-def test_joint_states_published() -> None:
-    assert_for_message(JointState, "franka/joint_states", 60)
+def test_joint_states_published(timeout:int) -> None:
+    assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
@@ -51,10 +51,11 @@ def test_gripper_action(
     expected_value: float,
     test_node: Node,
     finger_joint_fault_tolerance: float,
+    timeout: int,
 ) -> None:
     """Test gripper open/close action and verify joint state."""
-    assert call_trigger_service(test_node, service) is True
-    joint_value = get_joint_position(namespace="franka", joint="fr3_finger_joint1")
+    assert call_trigger_service(test_node, service, timeout=timeout) is True
+    joint_value = get_joint_position(namespace="franka", joint="fr3_finger_joint1", timeout=timeout)
     assert joint_value == pytest.approx(
         expected_value, abs=finger_joint_fault_tolerance
     ), f"The joint value is {joint_value}"
