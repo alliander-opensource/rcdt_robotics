@@ -7,11 +7,9 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from rcdt_utilities.launch_utils import (
-    assert_for_message,
-    assert_for_node,
-)
-from rcdt_utilities.test_utils import get_joint_position
+from rcdt_utilities.launch_utils import assert_for_message, assert_for_node
+from rcdt_utilities.register import Register
+from rcdt_utilities.test_utils import get_joint_position, wait_for_register
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from utils import call_move_to_configuration_service
@@ -23,14 +21,12 @@ def franka_and_moveit_launch(
     controllers_launch: IncludeLaunchDescription,
     moveit_launch: IncludeLaunchDescription,
 ) -> LaunchDescription:
-    return LaunchDescription(
-        [
-            core_launch,
-            controllers_launch,
-            moveit_launch,
-            launch_pytest.actions.ReadyToTest(),
-        ]
-    )
+    return Register.connect_context([core_launch, controllers_launch, moveit_launch])
+
+
+@pytest.mark.launch(fixture=franka_and_moveit_launch)
+def test_wait_for_register(pytestconfig: pytest.Config) -> None:
+    wait_for_register(pytestconfig)
 
 
 @pytest.mark.launch(fixture=franka_and_moveit_launch)

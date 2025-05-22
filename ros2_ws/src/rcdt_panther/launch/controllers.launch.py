@@ -2,24 +2,42 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription
+from launch import LaunchContext, LaunchDescription
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
+from rcdt_utilities.register import Register
 
-drive_controller_spawner = Node(
-    package="controller_manager",
-    executable="spawner",
-    arguments=[
-        "drive_controller",
-        "--controller-manager",
-        "controller_manager",
-    ],
-    namespace="panther",
-)
+
+def launch_setup(context: LaunchContext) -> None:
+    namespace = "panther"
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+        namespace=namespace,
+    )
+
+    drive_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "drive_controller",
+            "--controller-manager",
+            "controller_manager",
+        ],
+        namespace=namespace,
+    )
+
+    return [
+        Register.on_exit(joint_state_broadcaster_spawner, context),
+        Register.on_exit(drive_controller_spawner, context),
+    ]
 
 
 def generate_launch_description() -> None:
     return LaunchDescription(
         [
-            drive_controller_spawner,
+            OpaqueFunction(function=launch_setup),
         ]
     )

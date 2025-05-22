@@ -8,9 +8,7 @@ import pytest
 from end_to_end.base_franka import FrankaFullTests
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from rcdt_utilities.launch_utils import (
-    get_file_path,
-)
+from rcdt_utilities.launch_utils import get_file_path
 
 
 @launch_pytest.fixture(scope="class")
@@ -24,8 +22,7 @@ def franka_launch() -> LaunchDescription:
                     "world": "empty_camera.sdf",
                     "realsense": "False",
                 }.items(),
-            ),
-            launch_pytest.actions.ReadyToTest(),
+            )
         ]
     )
 
