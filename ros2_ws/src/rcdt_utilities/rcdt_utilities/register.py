@@ -14,8 +14,10 @@ from launch.actions import (
 from launch.event_handlers import OnProcessExit, OnProcessIO, OnProcessStart
 from launch.events.process import ProcessIO
 from launch_ros.actions import Node
-from termcolor import cprint
+from rclpy import logging
+from termcolor import colored
 
+LOGGER = logging.get_logger("Register")
 CONF_NAME = "registered_group"
 
 
@@ -44,11 +46,13 @@ class Register:
 
     @staticmethod
     def get_unique_group_id() -> str:
+        """Get a unique group id based on a ascending counter."""
         Register.group_id += 1
         return f"group_{Register.group_id}"
 
     @staticmethod
     def reset() -> None:
+        """Reset the register. Useful for pytest since it can launch ros multiple times in the same session."""
         Register.group_id = 0
         Register.register = []
         Register.actions = 0
@@ -197,23 +201,19 @@ class Register:
 
 
 def log_progress(action: Union[Node, ExecuteProcess] = None) -> None:
-    msg = "[Register]"
+    """Log the start (INIT), progress ([started]/[registerd]) and when finished (ALL READY)."""
     if Register.started == 0:
-        msg += " INIT"
+        msg = "[START] "
     else:
-        msg += f" [{Register.started}/{Register.actions}]"
-
-    if not action:
-        msg += " ALL READY!"
-        cprint(msg, "blue")
-        return
+        msg = f"[{Register.started}/{Register.actions}] "
 
     if isinstance(action, Node):
-        name = "(node): " + action.node_executable
-    else:
-        name = "(process): "
+        msg += "(node) " + action.node_package + " " + action.node_executable
+    elif isinstance(action, ExecuteProcess):
+        msg += "(process) "
         for part in action.cmd:
-            name += part[0].text + " "
+            msg += part[0].text + " "
+    elif not action:
+        msg += "All actions are started!"
 
-    msg += f" START: {name}"
-    cprint(msg, "blue")
+    LOGGER.info(colored(msg, "blue"))

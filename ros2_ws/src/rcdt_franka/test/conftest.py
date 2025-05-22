@@ -6,7 +6,6 @@ from typing import Iterator
 
 import pytest
 import rclpy
-from launch_ros import actions
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
 from rclpy.node import Node
@@ -57,24 +56,6 @@ def gripper_services_launch() -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers."""
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
-    )
-
-
-@pytest.fixture(scope="module")
-def open_gripper() -> actions.Node:
-    """Fixture for launching the open_gripper node."""
-    return actions.Node(
-        package="rcdt_franka",
-        executable="open_gripper.py",
-    )
-
-
-@pytest.fixture(scope="module")
-def close_gripper() -> actions.Node:
-    """Fixture for launching the close_gripper node."""
-    return actions.Node(
-        package="rcdt_franka",
-        executable="close_gripper.py",
     )
 
 
