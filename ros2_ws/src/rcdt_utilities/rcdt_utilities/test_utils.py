@@ -15,6 +15,7 @@ from launch_testing_ros.wait_for_topics import WaitForTopics
 from rcdt_messages.srv import ExpressPoseInOtherFrame
 from rclpy.action import ActionClient
 from rclpy.client import Client
+from rclpy.logging import get_logger
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from rclpy.service import Service
@@ -22,6 +23,9 @@ from rclpy.task import Future
 from sensor_msgs.msg import JointState, Joy
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
+from termcolor import colored
+
+from rcdt_utilities.register import Register
 
 
 @pytest.fixture(scope="module")
@@ -355,3 +359,23 @@ def wait_until_reached_joint(
 
         time.sleep(0.25)
     return (False, joint_value)
+
+
+def wait_for_register(pytestconfig: pytest.Config) -> None:
+    """
+    Waits till all registerd actions are started.
+
+    This function should be called in every first test of a test file.
+    This ensures that all other tests are started after all actions are launched correctly.
+
+    If not all actions start correctly, pytest-timeout will cancel the test, but this does not stop the while loop.
+    Therefore, the while loop has it's own timeout which also uses the defined pytest-timeout variable.
+    """
+    logger = get_logger("wait_for_register")
+    timeout = int(pytestconfig.getini("timeout"))
+    start = time.time()
+    while not Register.all_started and time.time() - start < timeout:
+        time.sleep(1)
+    if Register.all_started:
+        logger.info(colored("Register is ready, start testing!", "green"))
+    assert Register.all_started

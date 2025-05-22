@@ -9,6 +9,7 @@ from rcdt_utilities.launch_utils import assert_for_message, assert_for_node
 from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,
     assert_movements_with_joy,
+    wait_for_register,
     wait_until_active,
     wait_until_reached_joint,
 )
@@ -17,6 +18,9 @@ from sensor_msgs.msg import JointState, Joy
 
 
 class FrankaFullTests:
+    def test_wait_for_register(self, pytestconfig: pytest.Config) -> None:
+        wait_for_register(pytestconfig)
+
     def test_joint_states_published(self) -> None:
         """Test that joint states are published. This is a basic test to check that the
         launch file is working and that the robot is publishing joint states."""

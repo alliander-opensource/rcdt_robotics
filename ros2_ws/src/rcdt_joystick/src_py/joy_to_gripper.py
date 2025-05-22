@@ -20,7 +20,7 @@ class JoyToGripper(Node):
     def __init__(self):
         super().__init__("joy_to_gripper")
 
-        self.declare_parameter("config_pkg")
+        self.declare_parameter("config_pkg", "")
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
 
         ns = self.get_namespace()
