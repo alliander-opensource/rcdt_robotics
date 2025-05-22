@@ -7,11 +7,11 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from rcdt_panther.test.base_panther import PantherFullTests
+from rcdt_panther.test.end_to_end.base_panther import PantherTestSuite
 
 
 @launch_pytest.fixture(scope="class")
-def mobile_manipulator_launch(
+def mobile_manipulator(
     mobile_manipulator_launch: IncludeLaunchDescription,
 ) -> LaunchDescription:
     return LaunchDescription(
@@ -22,6 +22,6 @@ def mobile_manipulator_launch(
     )
 
 
-@pytest.mark.launch(fixture=mobile_manipulator_launch)
-class TestCoreLaunch(PantherFullTests):
+@pytest.mark.launch(fixture=mobile_manipulator)
+class TestPantherMMLaunch(PantherTestSuite()):
     """Run all the PantherFullTests under mobile_manipulator.launch.py"""

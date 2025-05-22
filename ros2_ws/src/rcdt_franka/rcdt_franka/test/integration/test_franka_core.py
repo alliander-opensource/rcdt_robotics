@@ -7,6 +7,10 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
+from rcdt_franka.test.utils import (
+    call_move_gripper_service,
+    follow_joint_trajectory_goal,
+)
 from rcdt_utilities.launch_utils import (
     assert_for_message,
 )
@@ -15,7 +19,6 @@ from rcdt_utilities.test_utils import (
 )
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from utils import call_move_gripper_service, follow_joint_trajectory_goal
 
 
 @launch_pytest.fixture(scope="module")

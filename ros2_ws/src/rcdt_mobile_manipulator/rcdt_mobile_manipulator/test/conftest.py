@@ -23,6 +23,7 @@ def mobile_manipulator_launch() -> IncludeLaunchDescription:
 
 @pytest.fixture(scope="session")
 def finger_joint_fault_tolerance() -> float:
+    """Tolerance of testing finger joint movements."""
     return 0.025
 
 

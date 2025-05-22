@@ -312,7 +312,6 @@ def wait_until_active(
         try:
             state = get_controller_state(controllers, controller_name)
             if state == "active":
-                print("The controller is active!")
                 time.sleep(1)
                 return True
         except ValueError:
@@ -347,7 +346,6 @@ def wait_until_reached_joint(
         try:
             joint_value = get_joint_position(namespace=namespace, joint=joint)
             if joint_value == pytest.approx(expected_value, abs=tolerance):
-                print("The joint reached its expected value!")
                 time.sleep(0.25)
                 return (True, joint_value)
         except ValueError:

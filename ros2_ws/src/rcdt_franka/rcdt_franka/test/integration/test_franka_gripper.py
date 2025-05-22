@@ -23,6 +23,7 @@ def franka_and_gripper_launch(
     open_gripper: actions.Node,
     close_gripper: actions.Node,
 ) -> LaunchDescription:
+    """Fixture to launch the franka core and gripper."""
     return LaunchDescription(
         [
             core_launch,
@@ -36,6 +37,7 @@ def franka_and_gripper_launch(
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
 def test_joint_states_published() -> None:
+    """Test that joint states are published."""
     assert_for_message(JointState, "franka/joint_states", 60)
 
 

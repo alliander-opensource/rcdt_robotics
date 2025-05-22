@@ -16,13 +16,15 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState, Joy
 
 
-class FrankaFullTests:
-    def test_joint_states_published(self) -> None:
+def get_tests() -> dict:
+    """Test class for the Franka robot."""
+
+    def test_joint_states_published(_self: object) -> None:
         """Test that joint states are published. This is a basic test to check that the
         launch file is working and that the robot is publishing joint states."""
         assert_for_message(JointState, "franka/joint_states", 60)
 
-    def test_ready_to_start(self, test_node: Node) -> None:
+    def test_ready_to_start(_self: object, test_node: Node) -> None:
         """This test will ensure the tests are ready to start by waiting for the move_group and moveit_manager node.
         Also waits until the gripper_action_controller is active."""
         assert (
@@ -50,7 +52,7 @@ class FrankaFullTests:
             is True
         )
 
-    def test_switch_joy_to_franka_topic(self, test_node: Node) -> None:
+    def test_switch_joy_to_franka_topic(_self: object, test_node: Node) -> None:
         """Test to see if the switch to Franka mode is correct."""
         assert_joy_topic_switch(
             node=test_node,
@@ -66,7 +68,7 @@ class FrankaFullTests:
         ],
     )
     def test_joy_gripper_node(
-        self,
+        _self: object,
         buttons: list[int],
         expected_value: float,
         test_node: Node,
@@ -104,7 +106,7 @@ class FrankaFullTests:
         ],
     )
     def test_move_arm_with_joy(
-        self,
+        _self: object,
         axes: list[float],
         direction: str,
         test_node: Node,
@@ -122,3 +124,16 @@ class FrankaFullTests:
             frame_base="franka/fr3_hand",
             frame_target="franka/fr3_link0",
         )
+
+    # Collect all test methods defined above
+    tests = {
+        name: obj
+        for name, obj in locals().items()
+        if callable(obj) and name.startswith("test_")
+    }
+    return tests
+
+
+def FrankaTestSuite() -> object:  # noqa: N802
+    """Dynamically create a test class with the test methods."""
+    return type("FrankaFullTests", (), get_tests())

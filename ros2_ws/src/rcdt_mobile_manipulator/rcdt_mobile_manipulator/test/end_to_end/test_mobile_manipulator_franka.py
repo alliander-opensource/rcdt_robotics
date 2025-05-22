@@ -7,11 +7,11 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
-from rcdt_franka.test.base_franka import FrankaFullTests
+from rcdt_franka.test.end_to_end.base_franka import FrankaTestSuite
 
 
 @launch_pytest.fixture(scope="class")
-def mobile_manipulator_launch(
+def mobile_manipulator(
     mobile_manipulator_launch: IncludeLaunchDescription,
 ) -> LaunchDescription:
     return LaunchDescription(
@@ -22,6 +22,6 @@ def mobile_manipulator_launch(
     )
 
 
-@pytest.mark.launch(fixture=mobile_manipulator_launch)
-class TestCoreLaunch(FrankaFullTests):
-    """Run all the FrankaLaunchTests under mobile_manipulator.launch.py"""
+@pytest.mark.launch(fixture=mobile_manipulator)
+class TestCoreLaunch(FrankaTestSuite()):
+    """Run all the FrankaLaunchTests under franka.launch.py"""
