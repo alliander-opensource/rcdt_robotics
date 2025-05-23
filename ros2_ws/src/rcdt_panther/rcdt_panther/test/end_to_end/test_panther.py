@@ -13,19 +13,16 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 @launch_pytest.fixture(scope="module")
 def panther_launch() -> LaunchDescription:
-    return Register.connect_context(
-        [
-            RegisteredLaunchDescription(
-                get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
-                launch_arguments={
-                    "rviz": "False",
-                },
-            ),
-            RegisteredLaunchDescription(
-                get_file_path("rcdt_utilities", ["launch"], "utils.launch.py"),
-            ),
-        ]
+    panther = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
+        launch_arguments={
+            "rviz": "False",
+        },
     )
+    utils_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "utils.launch.py"),
+    )
+    return Register.connect_context([panther, utils_launch])
 
 
 @pytest.mark.launch(fixture=panther_launch)

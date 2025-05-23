@@ -4,7 +4,7 @@
 
 
 import time
-from typing import Callable, Iterator, Type
+from typing import Callable, Type
 
 import pytest
 import rclpy
@@ -28,22 +28,6 @@ from termcolor import colored
 from rcdt_utilities.register import Register
 
 logger = get_logger("test_utils")
-
-
-@pytest.fixture(scope="module")
-def test_node() -> Iterator[Node]:
-    """Fixture to create a singleton node for testing."""
-    rclpy.init()
-    node = Node("test_node")
-    yield node
-    node.destroy_node()
-    rclpy.shutdown()
-
-
-@pytest.fixture(scope="module")
-def timeout(pytestconfig: pytest.Config) -> int:
-    """Fixture to get the timeout value from pytest config."""
-    return int(pytestconfig.getini("timeout"))
 
 
 def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
@@ -247,7 +231,6 @@ def assert_movements_with_joy(  # noqa: PLR0913
     msg = Joy()
     msg.axes = joy_axes
     pub.publish(msg)
-    rclpy.spin_once(node, timeout_sec=0.1)
     time.sleep(1)  # let the robot move
 
     pose = PoseStamped()

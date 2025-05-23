@@ -4,7 +4,6 @@
 
 
 import pytest
-import rclpy
 from rcdt_utilities.geometry import Pose
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
@@ -65,7 +64,6 @@ def get_tests() -> dict:
         msg = Joy()
         msg.buttons = buttons
         pub.publish(msg)
-        rclpy.spin_once(test_node, timeout_sec=0.1)
 
         reached_goal, joint_value = wait_until_reached_joint(
             namespace="franka",
