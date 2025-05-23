@@ -67,6 +67,10 @@ def launch_setup(context: LaunchContext) -> None:
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
 
+    utilities = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
+    )
+
     return [
         SetParameter(name="use_sim_time", value=True),
         Register.group(core, context),
@@ -75,6 +79,7 @@ def launch_setup(context: LaunchContext) -> None:
         Register.group(gripper_services, context),
         Register.group(moveit, context),
         Register.group(joystick, context),
+        Register.group(utilities, context),
         Register.group(rviz, context) if use_rviz else SKIP,
     ]
 

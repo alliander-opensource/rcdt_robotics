@@ -5,8 +5,8 @@
 
 import launch_pytest
 import pytest
-from end_to_end.base_panther import PantherFullTests
 from launch import LaunchDescription
+from rcdt_panther.test.end_to_end.base_panther import PantherTestSuite
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
@@ -26,5 +26,5 @@ def panther_launch() -> LaunchDescription:
 
 
 @pytest.mark.launch(fixture=panther_launch)
-class TestEndToEndLaunch(PantherFullTests):
-    """Run all the PantherFullTests under panther.launch.py"""
+class TestPantherFullSuite(PantherTestSuite()):
+    """Re-run all tests from PantherFullTests using panther.launch.py"""
