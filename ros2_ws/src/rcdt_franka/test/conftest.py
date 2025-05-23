@@ -6,7 +6,6 @@
 import pytest
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
-from rcdt_utilities.test_utils import *  # noqa
 
 
 @pytest.fixture(scope="module")
@@ -45,14 +44,3 @@ def gripper_services_launch() -> RegisteredLaunchDescription:
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
-
-
-@pytest.fixture(scope="session")
-def finger_joint_fault_tolerance() -> float:
-    return 0.025
-
-
-@pytest.fixture(scope="session")
-def joint_movement_tolerance() -> float:
-    """Tolerance of testing joint movements."""
-    return 0.01
