@@ -10,6 +10,7 @@ from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,
     assert_movements_with_joy,
     wait_for_register,
+    wait_for_subscriber,
     wait_until_reached_joint,
 )
 from rclpy.node import Node
@@ -60,6 +61,7 @@ def get_tests() -> dict:
         """
 
         pub = test_node.create_publisher(Joy, "/joy", 10)
+        wait_for_subscriber(pub, timeout)
 
         msg = Joy()
         msg.buttons = buttons

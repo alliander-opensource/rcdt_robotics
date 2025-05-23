@@ -17,6 +17,7 @@ from rclpy.action import ActionClient
 from rclpy.client import Client
 from rclpy.logging import get_logger
 from rclpy.node import Node
+from rclpy.publisher import Publisher
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from rclpy.service import Service
 from rclpy.task import Future
@@ -28,6 +29,17 @@ from termcolor import colored
 from rcdt_utilities.register import Register
 
 logger = get_logger("test_utils")
+
+
+def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
+    """
+    Make sure there is at least one subscriber to the given publisher.
+    This avoids problems in tests where a publisher is created and instantly sends a message,
+    before the intended subscriber is ready.
+    """
+    start_time = time.time()
+    while pub.get_subscription_count() == 0 and time.time() - start_time < timeout:
+        time.sleep(0.1)
 
 
 def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
@@ -148,12 +160,14 @@ def assert_joy_topic_switch(
     )
 
     pub = node.create_publisher(Joy, "/joy", 10)
+    wait_for_subscriber(pub, timeout)
+
     msg = Joy()
     msg.buttons = button_config
+    pub.publish(msg)
 
     start_time = time.time()
     while result.get("state") != expected_topic and time.time() - start_time < timeout:
-        pub.publish(msg)
         rclpy.spin_once(node, timeout_sec=1)
         time.sleep(0.1)
 
@@ -227,6 +241,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     ).pose.pose
 
     pub = node.create_publisher(Joy, "/joy", 10)
+    wait_for_subscriber(pub, timeout)
 
     msg = Joy()
     msg.axes = joy_axes
