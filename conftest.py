@@ -6,8 +6,9 @@
 Global pytest fixtures for ROS 2 integration testing.
 """
 
-import pytest
 from typing import Iterator
+
+import pytest
 import rclpy
 from rclpy.node import Node
 
