@@ -13,7 +13,7 @@ from rcdt_utilities.test_utils import add_tests_to_class
 
 
 @launch_pytest.fixture(scope="class")
-def franka() -> LaunchDescription:
+def franka(request: pytest.FixtureRequest) -> LaunchDescription:
     """Fixture to create a launch description for the Franka robot.
 
     This fixture sets up the Franka robot with the necessary configurations and
@@ -29,6 +29,7 @@ def franka() -> LaunchDescription:
             "rviz": "False",
             "world": "empty_camera.sdf",
             "realsense": "False",
+            "simulation": request.config.getoption("simulation"),
         },
     )
     return Register.connect_context([franka_launch])
