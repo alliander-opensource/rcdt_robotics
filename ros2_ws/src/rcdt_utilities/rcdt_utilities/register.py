@@ -24,7 +24,9 @@ CONF_NAME = "registered_group"
 class RegisteredLaunchDescription(IncludeLaunchDescription):
     """Extends on the default IncludeLaunchDescription, to automatically register an unique group_id."""
 
-    def __init__(self, launch_description_source: str, launch_arguments: dict | None = None):
+    def __init__(
+        self, launch_description_source: str, launch_arguments: dict | None = None
+    ):
         if launch_arguments is None:
             launch_arguments = {}
         self.group_id = Register.get_unique_group_id()
@@ -200,7 +202,7 @@ class Register:
             return LaunchDescription([event_handler])
 
 
-def log_progress(action: Node | ExecuteProcess| None = None) -> None:
+def log_progress(action: Node | ExecuteProcess | None = None) -> None:
     """Log the start (INIT), progress ([started]/[registerd]) and when finished (ALL READY)."""
     if Register.started == 0:
         msg = "[START] "
