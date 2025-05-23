@@ -15,7 +15,7 @@ servo_params_package_arg = LaunchArgument("servo_params_package", "rcdt_franka")
 namespace_arg = LaunchArgument("namespace", "")
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     robot_name = robot_name_arg.value(context)
     package_name = moveit_package_name_arg.value(context)
     servo_params_package = servo_params_package_arg.value(context)

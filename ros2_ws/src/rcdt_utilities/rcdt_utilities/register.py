@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Union
+from typing import Any, Union
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import (
@@ -24,7 +24,7 @@ CONF_NAME = "registered_group"
 class RegisteredLaunchDescription(IncludeLaunchDescription):
     """Extends on the default IncludeLaunchDescription, to automatically register an unique group_id."""
 
-    def __init__(self, launch_description_source: str, launch_arguments: dict = None):
+    def __init__(self, launch_description_source: str, launch_arguments: dict | None = None):
         if launch_arguments is None:
             launch_arguments = {}
         self.group_id = Register.get_unique_group_id()
@@ -59,7 +59,7 @@ class Register:
         Register.started = 0
 
     @staticmethod
-    def next(*_: any) -> Node | ExecuteProcess:
+    def next(*_: Any) -> LaunchDescription:
         """
         Returns the executable of the next registered item that should start.
 
@@ -77,7 +77,7 @@ class Register:
                 return LaunchDescription([])
             item = Register.register.pop(1)
         log_progress(item.action)
-        return item.action
+        return LaunchDescription([item.action])
 
     @staticmethod
     def group(
@@ -111,7 +111,7 @@ class Register:
         def launch_setup(
             context: LaunchContext,
             registered_launch_descriptions: list[RegisteredLaunchDescription],
-        ) -> LaunchDescription:
+        ) -> list:
             launch_items = []
             for description in registered_launch_descriptions:
                 if not isinstance(description, RegisteredLaunchDescription):
@@ -200,7 +200,7 @@ class Register:
             return LaunchDescription([event_handler])
 
 
-def log_progress(action: Union[Node, ExecuteProcess] = None) -> None:
+def log_progress(action: Node | ExecuteProcess| None = None) -> None:
     """Log the start (INIT), progress ([started]/[registerd]) and when finished (ALL READY)."""
     if Register.started == 0:
         msg = "[START] "

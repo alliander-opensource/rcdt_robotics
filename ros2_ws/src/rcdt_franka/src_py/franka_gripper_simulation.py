@@ -82,7 +82,7 @@ class FrankaGripperSimulation(Node):
         return result
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
 

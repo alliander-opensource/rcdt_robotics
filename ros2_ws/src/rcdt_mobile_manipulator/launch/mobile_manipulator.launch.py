@@ -14,7 +14,7 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)

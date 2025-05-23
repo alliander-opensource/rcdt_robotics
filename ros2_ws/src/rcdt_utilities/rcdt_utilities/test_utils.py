@@ -8,8 +8,6 @@ from typing import Callable, Type
 
 import pytest
 import rclpy
-from controller_manager_msgs.msg import ControllerState
-from controller_manager_msgs.srv import ListControllers
 from geometry_msgs.msg import PoseStamped
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rcdt_messages.srv import ExpressPoseInOtherFrame
@@ -19,7 +17,6 @@ from rclpy.logging import get_logger
 from rclpy.node import Node
 from rclpy.publisher import Publisher
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
-from rclpy.service import Service
 from rclpy.task import Future
 from sensor_msgs.msg import JointState, Joy
 from std_msgs.msg import String
@@ -65,7 +62,7 @@ def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
 
 
 def create_ready_service_client(
-    node: Node, srv_type: Service, service_name: str, timeout_sec: int
+    node: Node, srv_type: Type, service_name: str, timeout_sec: int
 ) -> Client:
     """
     Create and wait for a service client to become available.
@@ -258,51 +255,6 @@ def assert_movements_with_joy(  # noqa: PLR0913
     assert abs(delta) > threshold, (
         f"{description} did not change after input. Δ = {delta:.4f}"
     )
-
-
-def list_controllers(
-    node: Node, controller_manager_name: str, timeout: int
-) -> list[ControllerState]:
-    """Query the controller manager for all currently loaded controllers.
-
-    Args:
-        node (Node): The rclpy node used to create the service client.
-        controller_manager_name (str): Name or namespace of the controller manager.
-
-    Returns:
-        List[ControllerState]: List of current controller states."""
-    client = create_ready_service_client(
-        node, ListControllers, f"{controller_manager_name}/list_controllers"
-    )
-    request = ListControllers.Request()
-    future: Future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-
-    response: ListControllers.Response = future.result()
-    if response is None:
-        raise RuntimeError("Failed to get response from list_controllers")
-
-    return response.controller
-
-
-def get_controller_state(
-    controllers: list[ControllerState], controller_name: str
-) -> str:
-    """Retrieve the state of a controller by name.
-
-    Args:
-        controllers (List[ControllerState]): List of controllers.
-        controller_name (str): Name of the controller to find.
-
-    Returns:
-        str: The current state of the controller.
-
-    Raises:
-        ValueError: If the controller is not found."""
-    for controller in controllers:
-        if controller.name == controller_name:
-            return controller.state
-    raise ValueError(f"Controller '{controller_name}' not found")
 
 
 def wait_until_reached_joint(

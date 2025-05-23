@@ -15,7 +15,7 @@ robot_name_arg = LaunchArgument("robot_name", "")
 moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     rviz_frame = rviz_frame_arg.value(context)
     rviz_display_config = rviz_display_config_arg.value(context)
     robot_name = robot_name_arg.value(context)

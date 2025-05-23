@@ -55,7 +55,7 @@ class OpenGripper(Node):
         return result.result.success
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
     node = OpenGripper()

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from rcdt_utilities.geometry import Pose
+from geometry_msgs.msg import Pose
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,

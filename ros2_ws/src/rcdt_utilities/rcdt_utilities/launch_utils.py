@@ -26,7 +26,7 @@ class LaunchArgument:
         self,
         name: str,
         default_value: str | bool | int | float,
-        choices: List = None,
+        choices: List | None = None,
     ) -> None:
         self.configuration = LaunchConfiguration(name)
         if choices is not None:
@@ -57,15 +57,15 @@ def get_file_path(package: str, folders: List[str], file: str) -> str:
     return os.path.join(package_path, *folders, file)
 
 
-def get_yaml(file_path: str) -> yaml.YAMLObject:
+def get_yaml(file_path: str) -> dict:
     try:
         with open(file_path, "r") as file:
             return yaml.safe_load(file)
     except EnvironmentError:
-        return None
+        return {}
 
 
-def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
+def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) -> dict:
     if xacro_arguments is None:
         xacro_arguments = {}
     robot_description_config = xacro.process_file(xacro_path, mappings=xacro_arguments)
@@ -90,7 +90,7 @@ def spin_executor(executor: Executor) -> None:
         raise e
 
 
-def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
+def assert_for_message(message_type: type, topic: str, timeout: int) -> None:
     wait_for_topics = WaitForTopics([(topic, message_type)], timeout)
     received = wait_for_topics.wait()
     wait_for_topics.shutdown()
