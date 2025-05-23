@@ -1,16 +1,16 @@
 # SPDX-FileCopyrightText: Alliander N. V.
-# 
+#
 # SPDX-License-Identifier: Apache-2.0
 
 """
-Fixtures for testing with pytest and ROS 2 that will be used project wise.
-This module provides fixtures for launching nodes and setting up the testing environment.
+Global pytest fixtures for ROS 2 integration testing.
 """
 
 import pytest
 from typing import Iterator
 import rclpy
 from rclpy.node import Node
+
 
 @pytest.fixture(scope="module")
 def test_node() -> Iterator[Node]:
@@ -30,6 +30,7 @@ def timeout(pytestconfig: pytest.Config) -> int:
 
 @pytest.fixture(scope="session")
 def finger_joint_fault_tolerance() -> float:
+    """Tolerance of testing finger joint movements."""
     return 0.025
 
 
