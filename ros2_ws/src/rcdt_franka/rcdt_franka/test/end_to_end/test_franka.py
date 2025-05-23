@@ -12,13 +12,14 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 
 @launch_pytest.fixture(scope="class")
-def franka() -> LaunchDescription:
+def franka(request: pytest.FixtureRequest) -> LaunchDescription:
     franka_launch = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "franka.launch.py"),
         launch_arguments={
             "rviz": "False",
             "world": "empty_camera.sdf",
             "realsense": "False",
+            "simulation": request.config.getoption("simulation"),
         },
     )
     return Register.connect_context([franka_launch])

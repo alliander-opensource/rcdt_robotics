@@ -11,3 +11,4 @@ ignore = ["E501", "ANN204"]
 
 [tool.pytest.ini_options]
 timeout = 90
+norecursedirs = ["install", "build", "log"]

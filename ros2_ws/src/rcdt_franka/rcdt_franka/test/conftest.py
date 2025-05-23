@@ -9,18 +9,20 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 
 
 @pytest.fixture(scope="module")
-def controllers_launch() -> RegisteredLaunchDescription:
+def controllers_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers."""
     return RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
+        launch_arguments={"simulation": request.config.getoption("simulation")},
     )
 
 
 @pytest.fixture(scope="module")
-def core_launch() -> RegisteredLaunchDescription:
+def core_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescription:
     """Fixture to create launch file for the franka core."""
     return RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "core.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
+        launch_arguments={"simulation": request.config.getoption("simulation")},
     )
 
 
@@ -39,8 +41,11 @@ def moveit_launch() -> RegisteredLaunchDescription:
 
 
 @pytest.fixture(scope="module")
-def gripper_services_launch() -> RegisteredLaunchDescription:
+def gripper_services_launch(
+    request: pytest.FixtureRequest,
+) -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers."""
     return RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py"),
+        launch_arguments={"simulation": request.config.getoption("simulation")},
     )
