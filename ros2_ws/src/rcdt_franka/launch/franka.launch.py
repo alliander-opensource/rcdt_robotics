@@ -38,7 +38,8 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     controllers = RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
     display_config = "franka_general.rviz"
