@@ -74,7 +74,7 @@ class JoyToGripper(Node):
         self.busy = False
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
     node = JoyToGripper()

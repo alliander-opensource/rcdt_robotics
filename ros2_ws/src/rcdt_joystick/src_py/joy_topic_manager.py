@@ -37,7 +37,7 @@ class Output:
 
 
 class JoyTopicManager(Node):
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         super().__init__("joy_topic_manager")
         self.declare_parameter("joy_topic", value="/joy")
         joy_input = self.get_parameter("joy_topic").get_parameter_value().string_value
@@ -94,7 +94,7 @@ class JoyTopicManager(Node):
         pub.publish(msg)
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     node = JoyTopicManager()
     spin_node(node)

@@ -15,7 +15,7 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 FRANKA_HEIGHT = 0.34
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = str(world_arg.value(context))

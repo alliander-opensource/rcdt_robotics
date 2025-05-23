@@ -15,7 +15,7 @@ ros_logger = logging.get_logger(__name__)
 
 
 class CombineCameraTopics(Node):
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         super().__init__("combine_camera_topics")
         self.declare_parameter("rgb", "/camera/camera/color/image_raw")
         self.declare_parameter("depth", "/camera/camera/depth/image_rect_raw")
@@ -54,7 +54,7 @@ class CombineCameraTopics(Node):
         self.rgbd.depth_camera_info = msg
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     node = CombineCameraTopics()
     spin_node(node)

@@ -13,7 +13,7 @@ simulation_arg = LaunchArgument("simulation", True, [True, False])
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     simulation = simulation_arg.value(context)
 
     namespace = "franka"

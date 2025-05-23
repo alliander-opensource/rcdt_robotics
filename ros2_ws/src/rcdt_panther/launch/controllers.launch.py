@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.register import Register
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     namespace = "panther"
 
     joint_state_broadcaster_spawner = Node(
@@ -35,7 +35,7 @@ def launch_setup(context: LaunchContext) -> None:
     ]
 
 
-def generate_launch_description() -> None:
+def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             OpaqueFunction(function=launch_setup),

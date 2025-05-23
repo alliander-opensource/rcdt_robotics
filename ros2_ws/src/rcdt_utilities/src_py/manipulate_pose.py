@@ -91,7 +91,7 @@ def apply_transform_relative(pose: PoseStamped, transform: Transform) -> PoseSta
     return pose
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     node = ManipulatePose()
     spin_node(node)

@@ -15,7 +15,7 @@ ros_logger = logging.get_logger(__name__)
 
 
 class JoyToTwist(Node):
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         super().__init__("joy_to_twist_node")
         self.declare_parameter("sub_topic", "/joy")
         self.declare_parameter("pub_topic", "")
@@ -88,7 +88,7 @@ class JoyToTwist(Node):
             self.pub.publish(self.twist_msg)
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     node = JoyToTwist()
     spin_node(node)

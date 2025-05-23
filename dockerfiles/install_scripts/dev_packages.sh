@@ -9,6 +9,7 @@ set -e
 # Packages without specific version:
 pip install pytest-timeout
 pip install ruff
+pip install ty
 pip install termcolor
 
 # Specifying numpy range to work with ROS and Ultralytics:

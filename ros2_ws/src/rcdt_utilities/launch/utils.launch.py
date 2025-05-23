@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.register import Register
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     """Launches the utilities launch file."""
 
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")

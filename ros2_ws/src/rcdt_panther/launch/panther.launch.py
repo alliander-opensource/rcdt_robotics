@@ -18,7 +18,7 @@ use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
