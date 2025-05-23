@@ -6,18 +6,17 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
 from rcdt_panther.test.end_to_end.base_panther import PantherTestSuite
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 
 @launch_pytest.fixture(scope="class")
 def mobile_manipulator(
-    mobile_manipulator_launch: IncludeLaunchDescription,
+    mobile_manipulator_launch: RegisteredLaunchDescription,
 ) -> LaunchDescription:
-    return LaunchDescription(
+    return Register.connect_context(
         [
             mobile_manipulator_launch,
-            launch_pytest.actions.ReadyToTest(),
         ]
     )
 

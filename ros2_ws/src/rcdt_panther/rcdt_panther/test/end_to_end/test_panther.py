@@ -6,26 +6,28 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
 from rcdt_panther.test.end_to_end.base_panther import PantherTestSuite
 from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 
-@launch_pytest.fixture(scope="class")
-def panther() -> LaunchDescription:
-    return LaunchDescription(
+@launch_pytest.fixture(scope="module")
+def panther_launch() -> LaunchDescription:
+    return Register.connect_context(
         [
-            IncludeLaunchDescription(
+            RegisteredLaunchDescription(
                 get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
                 launch_arguments={
                     "rviz": "False",
-                }.items(),
+                },
             ),
-            launch_pytest.actions.ReadyToTest(),
+            RegisteredLaunchDescription(
+                get_file_path("rcdt_utilities", ["launch"], "utils.launch.py"),
+            ),
         ]
     )
 
 
-@pytest.mark.launch(fixture=panther)
+@pytest.mark.launch(fixture=panther_launch)
 class TestPantherFullSuite(PantherTestSuite()):
     """Re-run all tests from PantherFullTests using panther.launch.py"""

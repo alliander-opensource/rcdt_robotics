@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter
 from rcdt_utilities.launch_utils import (
     SKIP,
@@ -11,6 +11,7 @@ from rcdt_utilities.launch_utils import (
     get_file_path,
     get_robot_description,
 )
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 child_arg = LaunchArgument("child", "", ["", "franka"])
@@ -43,28 +44,20 @@ def launch_setup(context: LaunchContext) -> None:
         parameters=[robot_description, {"frame_prefix": frame_prefix}],
     )
 
-    robot = IncludeLaunchDescription(
+    robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "world": world,
             "robots": namespace,
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
-        }.items(),
-    )
-
-    joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
-        namespace=namespace,
+        },
     )
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        robot_state_publisher,
-        robot if not is_mobile_manipulator else SKIP,
-        joint_state_broadcaster,
+        Register.on_start(robot_state_publisher, context),
+        Register.group(robot, context) if not is_mobile_manipulator else SKIP,
     ]
 
 
