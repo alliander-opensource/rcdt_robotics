@@ -14,6 +14,7 @@ from rcdt_utilities.test_utils import (
     call_trigger_service,
     get_joint_position,
     wait_for_register,
+    wait_for_subscriber,
 )
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
@@ -58,6 +59,8 @@ def test_driving(test_node: Node, timeout: int) -> None:
     )
 
     pub = test_node.create_publisher(Twist, "/panther/cmd_vel", 10)
+    wait_for_subscriber(pub, timeout)
+
     msg = Twist()
     msg.linear.x = 1.0
     pub.publish(msg)
