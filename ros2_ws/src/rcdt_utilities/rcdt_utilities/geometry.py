@@ -7,15 +7,9 @@ from math import atan2
 
 import cv2
 import numpy as np
-from geometry_msgs.msg import (
-    Point as ros_Point,
-)
-from geometry_msgs.msg import (
-    Pose as ros_Pose,
-)
-from geometry_msgs.msg import (
-    Quaternion as ros_Quaternion,
-)
+from geometry_msgs.msg import Point as ros_Point
+from geometry_msgs.msg import Pose as ros_Pose
+from geometry_msgs.msg import Quaternion as ros_Quaternion
 from tf_transformations import quaternion_from_euler
 
 

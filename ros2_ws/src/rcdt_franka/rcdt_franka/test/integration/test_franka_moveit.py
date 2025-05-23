@@ -7,9 +7,7 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from rcdt_franka.test.utils import call_move_to_configuration_service
-from rcdt_utilities.launch_utils import (
-    assert_for_message,
-)
+from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import get_joint_position, wait_for_register
 from rclpy.node import Node
