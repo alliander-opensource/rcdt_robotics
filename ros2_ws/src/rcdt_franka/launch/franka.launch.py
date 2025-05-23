@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter
+from launch_ros.actions import SetParameter
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
@@ -76,7 +76,9 @@ def launch_setup(context: LaunchContext) -> None:
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
 
-    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+    utilities = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
+    )
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
@@ -85,7 +87,7 @@ def launch_setup(context: LaunchContext) -> None:
         Register.group(gripper_services, context),
         Register.group(moveit, context),
         Register.group(joystick, context),
-        Register.on_start(manipulate_pose, context),
+        Register.group(utilities, context),
         Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(realsense, context) if use_realsense else SKIP,
     ]

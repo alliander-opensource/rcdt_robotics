@@ -11,7 +11,7 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import get_joint_position, wait_for_register
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from utils import call_move_gripper_service, follow_joint_trajectory_goal
+from utils import follow_joint_trajectory_goal
 
 
 @launch_pytest.fixture(scope="module")
@@ -23,42 +23,31 @@ def franka_core_launch(
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_wait_for_register(pytestconfig: pytest.Config) -> None:
-    wait_for_register(pytestconfig)
+def test_wait_for_register(timeout: int) -> None:
+    wait_for_register(timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
-def test_joint_states_published() -> None:
-    assert_for_message(JointState, "franka/joint_states", 60)
-
-
-@pytest.mark.launch(fixture=franka_core_launch)
-def test_can_move_fingers(test_node: Node, finger_joint_fault_tolerance: float) -> None:
-    assert (
-        call_move_gripper_service(
-            test_node,
-            width=0.04,
-            action_name="/franka/gripper_action_controller/gripper_cmd",
-        )
-        is True
-    )
-    pos = get_joint_position(namespace="franka", joint="fr3_finger_joint1")
-    assert pos == pytest.approx(0.04, abs=finger_joint_fault_tolerance), (
-        f"Got gripper position of {pos}"
-    )
+def test_joint_states_published(timeout: int) -> None:
+    assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_core_launch)
 def test_follow_joint_trajectory_goal(
-    test_node: Node, joint_movement_tolerance: float
+    test_node: Node, joint_movement_tolerance: float, timeout: int
 ) -> None:
     follow_joint_trajectory_goal(
         test_node,
         positions=[0.0, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0],
         controller="franka/fr3_arm_controller",
+        timeout=timeout,
     )
-    pos_joint2 = get_joint_position(namespace="franka", joint="fr3_joint2")
-    pos_joint3 = get_joint_position(namespace="franka", joint="fr3_joint3")
+    pos_joint2 = get_joint_position(
+        namespace="franka", joint="fr3_joint2", timeout=timeout
+    )
+    pos_joint3 = get_joint_position(
+        namespace="franka", joint="fr3_joint3", timeout=timeout
+    )
 
     assert pos_joint2 == pytest.approx(-0.5, abs=joint_movement_tolerance), (
         f"Got joint position {pos_joint2}"

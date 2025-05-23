@@ -7,24 +7,21 @@ import launch_pytest
 import pytest
 from end_to_end.base_franka import FrankaFullTests
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
 from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 
 @launch_pytest.fixture(scope="class")
 def franka_launch() -> LaunchDescription:
-    return LaunchDescription(
-        [
-            IncludeLaunchDescription(
-                get_file_path("rcdt_franka", ["launch"], "franka.launch.py"),
-                launch_arguments={
-                    "rviz": "False",
-                    "world": "empty_camera.sdf",
-                    "realsense": "False",
-                }.items(),
-            )
-        ]
+    franka = RegisteredLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "franka.launch.py"),
+        launch_arguments={
+            "rviz": "False",
+            "world": "empty_camera.sdf",
+            "realsense": "False",
+        },
     )
+    return Register.connect_context([franka])
 
 
 @pytest.mark.launch(fixture=franka_launch)

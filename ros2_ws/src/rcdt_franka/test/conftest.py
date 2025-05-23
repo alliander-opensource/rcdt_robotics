@@ -2,23 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Iterator
 
 import pytest
-import rclpy
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
-from rclpy.node import Node
-
-
-@pytest.fixture(scope="session")
-def test_node() -> Iterator[Node]:
-    """Fixture to create a singleton node for testing."""
-    rclpy.init()
-    node = Node("test_node")
-    yield node
-    node.destroy_node()
-    rclpy.shutdown()
 
 
 @pytest.fixture(scope="module")
@@ -57,14 +44,3 @@ def gripper_services_launch() -> RegisteredLaunchDescription:
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
-
-
-@pytest.fixture(scope="session")
-def finger_joint_fault_tolerance() -> float:
-    return 0.025
-
-
-@pytest.fixture(scope="session")
-def joint_movement_tolerance() -> float:
-    """Tolerance of testing joint movements."""
-    return 0.01

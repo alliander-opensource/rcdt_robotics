@@ -180,7 +180,7 @@ Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. 
 Don't forget to reset the E-STOP when the Panther should drive:
 
 ```bash
-ros2 service call /hardware/e_stop_reset std_srvs/srv/Trigger {}
+ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
 ```
 
 :::
