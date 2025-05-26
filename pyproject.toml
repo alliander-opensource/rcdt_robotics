@@ -15,3 +15,4 @@ convention = "google"
 
 [tool.pytest.ini_options]
 timeout = 90
+norecursedirs = ["install", "build", "log"]
