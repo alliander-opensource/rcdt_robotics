@@ -31,7 +31,11 @@ def launch_setup(context: LaunchContext) -> List:
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
-    world_name = sdf.getroot().find("world").attrib.get("name")
+    world_attribute = sdf.getroot().find("world")
+    if world_attribute is None:
+        raise ValueError("sdf file should contain a world attribute with a name.")
+    else:
+        world_name = world_attribute.attrib.get("name")
     cmd = ["ign", "gazebo", sdf_file]
     if not load_gazebo_ui:
         cmd.append("-s")
