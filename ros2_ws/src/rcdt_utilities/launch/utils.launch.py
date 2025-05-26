@@ -9,8 +9,11 @@ from rcdt_utilities.register import Register
 
 
 def launch_setup(context: LaunchContext) -> None:
-    """Launches the utilities launch file."""
+    """Launches the utilities launch file.
 
+    Args:
+        context (LaunchContext): The launch context.
+    """
     manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
 
     return [
@@ -19,5 +22,9 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
-    """Launches the utilities launch file."""
+    """Launches the utilities launch file.
+
+    Returns:
+        LaunchDescription: The launch description for the utilities launch file.
+    """
     return LaunchDescription([OpaqueFunction(function=launch_setup)])

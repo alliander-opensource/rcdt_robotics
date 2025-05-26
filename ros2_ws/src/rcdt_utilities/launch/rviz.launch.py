@@ -16,6 +16,11 @@ moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch description for RViz.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     rviz_frame = rviz_frame_arg.value(context)
     rviz_display_config = rviz_display_config_arg.value(context)
     robot_name = robot_name_arg.value(context)
@@ -49,6 +54,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for RViz.
+
+    Returns:
+        LaunchDescription: The launch description for RViz.
+    """
     return LaunchDescription(
         [
             rviz_frame_arg.declaration,

@@ -32,10 +32,12 @@ logger = get_logger("test_utils")
 
 
 def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
-    """
-    Make sure there is at least one subscriber to the given publisher.
-    This avoids problems in tests where a publisher is created and instantly sends a message,
-    before the intended subscriber is ready.
+    """Wait for a subscriber to be ready for a given publisher.
+
+    Args:
+        pub (Publisher): The publisher to wait for.
+        timeout (int): The maximum time to wait for a subscriber in seconds.
+
     """
     start_time = time.time()
     while pub.get_subscription_count() == 0 and time.time() - start_time < timeout:
@@ -43,14 +45,13 @@ def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
 
 
 def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
-    """Get the joint position of a joint by name. This is done by calling the
-    /joint_states topic and parsing the output. This is a workaround for the fact
-    that the joint states are not published in a format that can be easily parsed.
-    Also --field does not work with the /joint_states topic.
+    """Get the position of a joint from the joint states topic.
 
     Args:
-        namespace (str); The name space of the robot.
+        namespace (str): The name space of the robot.
         joint (str): The name of the joint.
+        timeout (int): Timeout in seconds to wait for the joint states topic.
+
     Returns:
         float: The position of the joint.
     """
@@ -67,8 +68,7 @@ def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
 def create_ready_service_client(
     node: Node, srv_type: Service, service_name: str, timeout_sec: int
 ) -> Client:
-    """
-    Create and wait for a service client to become available.
+    """Create and wait for a service client to become available.
 
     Args:
         node (Node): The rclpy node to use for client creation.
@@ -89,7 +89,16 @@ def create_ready_service_client(
 
 
 def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
-    """Call a trigger service and return True if the service was called successfully."""
+    """Call a trigger service and return True if the service was called successfully.
+
+    Args:
+        node (Node): The rclpy node used to create the service client.
+        service_name (str): The fully qualified name of the service.
+        timeout (int): Timeout in seconds to wait for the service.
+
+    Returns:
+        bool: True if the service call was successful, False otherwise.
+    """
     client = create_ready_service_client(
         node, Trigger, service_name, timeout_sec=timeout
     )
@@ -102,14 +111,13 @@ def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
 def create_ready_action_client(
     node: Node, action_type: Type, action_name: str, timeout: int
 ) -> ActionClient:
-    """
-    Create and wait for an ActionClient to become ready.
+    """Create and wait for an ActionClient to become ready.
 
     Args:
         node (Node): The rclpy node used to create the action client.
         action_type (Type): The action type class
         action_name (str): The fully qualified action name.
-        timeout_sec (float): Timeout in seconds to wait for the server.
+        timeout (float): Timeout in seconds to wait for the server.
 
     Returns:
         ActionClient: A ready ActionClient instance.
@@ -130,8 +138,7 @@ def assert_joy_topic_switch(
     timeout: int,
     state_topic: str = "/joy_topic_manager/state",
 ) -> None:
-    """
-    Publishes a Joy message and asserts that the expected topic is published on state_topic.
+    """Publishes a Joy message and asserts that the expected topic is published on state_topic.
 
     Args:
         node (Node): rclpy test node.
@@ -150,6 +157,11 @@ def assert_joy_topic_switch(
     result = {}
 
     def callback_function(msg: String) -> None:
+        """Callback function to handle messages from the state topic.
+
+        Args:
+            msg (String): The message received from the state topic.
+        """
         result["state"] = msg.data
 
     node.create_subscription(
@@ -179,19 +191,17 @@ def assert_joy_topic_switch(
 def call_express_pose_in_other_frame(
     node: Node, pose: PoseStamped, target_frame: str, timeout: int
 ) -> ExpressPoseInOtherFrame.Response:
-    """
-    Calls the /express_pose_in_other_frame service.
+    """Calls the /express_pose_in_other_frame service.
 
     Args:
         node (Node): An active rclpy Node.
         pose (PoseStamped): The pose to transform.
         target_frame (str): The frame to express the pose in.
-        timeout_sec (float): Timeout for waiting on service and result.
+        timeout (float): Timeout for waiting on service and result.
 
     Returns:
         ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
     """
-
     client = create_ready_service_client(
         node,
         ExpressPoseInOtherFrame,
@@ -226,13 +236,14 @@ def assert_movements_with_joy(  # noqa: PLR0913
     """Publishes a joystick message and asserts that movement occurs above a threshold.
 
     Args:
-        test_node: The ROS node used for publishing/subscribing.
-        joy_axes: A list of axes for the Joy message.
-        compare_fn: A function taking (first_pose, moved_pose) and returning a float delta.
-        threshold: The minimum delta required to pass the test.
-        description: Description of what is being tested (used in assertion message).
-        frame_base: The frame in which the original pose is defined.
-        frame_target: The frame to which the pose should be transformed.
+        node (Node): rclpy test node.
+        joy_axes (list[float]): Axes values to publish in the Joy message.
+        compare_fn (Callable[[PoseStamped, PoseStamped], float]): Function to compare poses.
+        threshold (float): Minimum change in pose to assert movement.
+        description (str): Description of the pose change being tested.
+        frame_base (str): Base frame of the robot.
+        frame_target (str): Target frame to express the pose in.
+        timeout (int): Max time to wait for the result.
     """
     pose = PoseStamped()
     pose.header.frame_id = frame_base
@@ -268,9 +279,14 @@ def list_controllers(
     Args:
         node (Node): The rclpy node used to create the service client.
         controller_manager_name (str): Name or namespace of the controller manager.
+        timeout (int): Timeout in seconds to wait for the service.
+
+    Raises:
+        RuntimeError: If the service call fails or times out.
 
     Returns:
-        List[ControllerState]: List of current controller states."""
+        List[ControllerState]: List of current controller states.
+    """
     client = create_ready_service_client(
         node, ListControllers, f"{controller_manager_name}/list_controllers"
     )
@@ -298,7 +314,8 @@ def get_controller_state(
         str: The current state of the controller.
 
     Raises:
-        ValueError: If the controller is not found."""
+        ValueError: If the controller is not found.
+    """
     for controller in controllers:
         if controller.name == controller_name:
             return controller.state
@@ -318,11 +335,12 @@ def wait_until_reached_joint(
         namespace (str): Namespace of the robot (e.g., 'franka').
         joint (str): Name of the joint to check.
         expected_value (float): Target joint value in radians.
-        tolerance (float): Acceptable deviation from the expected value.
         timeout_sec (int): Timeout duration in seconds.
+        tolerance (float): Acceptable deviation from the expected value.
 
     Returns:
-        Tuple[bool, float]: (True, joint_value) if target reached; otherwise (False"""
+        Tuple[bool, float]: (True, joint_value) if target reached; otherwise (False
+    """
     end_time = time.time() + timeout_sec
     while time.time() < end_time:
         try:
@@ -340,14 +358,16 @@ def wait_until_reached_joint(
 
 
 def wait_for_register(timeout: int) -> None:
-    """
-    Waits till all registerd actions are started.
+    """Waits till all registerd actions are started.
 
     This function should be called in every first test of a test file.
     This ensures that all other tests are started after all actions are launched correctly.
-
     If not all actions start correctly, pytest-timeout will cancel the test, but this does not stop the while loop.
     Therefore, the while loop has it's own timeout which also uses the defined pytest-timeout variable.
+
+    Args:
+        timeout (int): The maximum time in seconds to wait for the register to be ready.
+
     """
     logger = get_logger("wait_for_register")
     start = time.time()

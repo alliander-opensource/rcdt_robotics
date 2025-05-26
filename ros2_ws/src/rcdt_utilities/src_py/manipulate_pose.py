@@ -21,7 +21,16 @@ ros_logger = logging.get_logger(__name__)
 
 
 class ManipulatePose(Node):
+    """Node to manipulate poses in different frames and apply transformations.
+
+    Atributes:
+        tf_buffer (Buffer): Buffer to store transformations.
+        tf_listener (TransformListener): Listener to receive transformations.
+
+    """
+
     def __init__(self):
+        """Initialize the ManipulatePose node."""
         super().__init__("manipulate_pose")
 
         self.tf_buffer = Buffer()
@@ -42,6 +51,15 @@ class ManipulatePose(Node):
         request: ExpressPoseInOtherFrame.Request,
         response: ExpressPoseInOtherFrame.Response,
     ) -> ExpressPoseInOtherFrame.Response:
+        """Express a pose in another frame.
+
+        Args:
+            request (ExpressPoseInOtherFrame.Request): The request containing the pose and target frame.
+            response (ExpressPoseInOtherFrame.Response): The response to be filled with the transformed pose.
+
+        Returns:
+            ExpressPoseInOtherFrame.Response: The response containing the transformed pose and success status.
+        """
         source_frame = request.pose.header.frame_id
         target_frame = request.target_frame
 
@@ -62,6 +80,15 @@ class ManipulatePose(Node):
     def transform_pose(
         self, request: TransformPose.Request, response: TransformPose.Response
     ) -> TransformPose.Response:
+        """Transform a pose using a given transformation.
+
+        Args:
+            request (TransformPose.Request): The request containing the pose and transformation.
+            response (TransformPose.Response): The response to be filled with the transformed pose.
+
+        Returns:
+            TransformPose.Response: The response containing the transformed pose and success status.
+        """
         response.pose = apply_transform(request.pose, request.transform)
         response.success = True
         return response
@@ -69,12 +96,30 @@ class ManipulatePose(Node):
     def transform_pose_relative(
         self, request: TransformPose.Request, response: TransformPose.Response
     ) -> TransformPose.Response:
+        """Transform a pose relative to its current position using a given transformation.
+
+        Args:
+            request (TransformPose.Request): The request containing the pose and transformation.
+            response (TransformPose.Response): The response to be filled with the transformed pose.
+
+        Returns:
+            TransformPose.Response: The response containing the transformed pose and success status.
+        """
         response.pose = apply_transform_relative(request.pose, request.transform)
         response.success = True
         return response
 
 
 def apply_transform(pose: PoseStamped, transform: Transform) -> PoseStamped:
+    """Apply a transformation to a PoseStamped object.
+
+    Args:
+        pose (PoseStamped): The pose to be transformed.
+        transform (Transform): The transformation to apply.
+
+    Returns:
+        PoseStamped: The transformed pose.
+    """
     transform_stamped = TransformStamped()
     transform_stamped.transform = transform
     transform_stamped.header = pose.header
@@ -82,6 +127,15 @@ def apply_transform(pose: PoseStamped, transform: Transform) -> PoseStamped:
 
 
 def apply_transform_relative(pose: PoseStamped, transform: Transform) -> PoseStamped:
+    """Apply a transformation to a PoseStamped object relative to its current position.
+
+    Args:
+        pose (PoseStamped): The pose to be transformed.
+        transform (Transform): The transformation to apply.
+
+    Returns:
+        PoseStamped: The transformed pose with the original position added back.
+    """
     start_position = copy(pose.pose.position)
     pose.pose.position = Point()
     pose = apply_transform(pose, transform)
@@ -92,6 +146,11 @@ def apply_transform_relative(pose: PoseStamped, transform: Transform) -> PoseSta
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = ManipulatePose()
     spin_node(node)
