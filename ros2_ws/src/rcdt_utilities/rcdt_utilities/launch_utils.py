@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import ast
 import os
 from typing import List
 
@@ -31,9 +30,13 @@ class LaunchArgument:
         self.configuration = LaunchConfiguration(name)
         if choices is not None:
             choices = [str(choice) for choice in choices]
-        self.declaration = DeclareLaunchArgument(
-            name=name, default_value=str(default_value), choices=choices
-        )
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value), choices=choices
+            )
+        else:
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value)
+            )
 
     def string_value(self, context: LaunchContext) -> str:
         return self.configuration.perform(context)
