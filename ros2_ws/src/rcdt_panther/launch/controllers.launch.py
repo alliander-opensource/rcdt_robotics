@@ -9,6 +9,11 @@ from rcdt_utilities.register import Register
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch description for the Panther controllers.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     namespace = "panther"
 
     joint_state_broadcaster_spawner = Node(
@@ -36,6 +41,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> None:
+    """Generate the launch description for the Panther controllers.
+
+    Returns:
+        LaunchDescription: The launch description for the Panther controllers.
+    """
     return LaunchDescription(
         [
             OpaqueFunction(function=launch_setup),

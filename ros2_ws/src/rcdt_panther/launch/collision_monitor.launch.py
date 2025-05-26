@@ -10,6 +10,11 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch description for the collision monitor.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     use_sim = use_sim_arg.value(context)
 
     collision_monitor = IncludeLaunchDescription(
@@ -26,6 +31,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the collision monitor.
+
+    Returns:
+        LaunchDescription: The launch description for the collision monitor.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

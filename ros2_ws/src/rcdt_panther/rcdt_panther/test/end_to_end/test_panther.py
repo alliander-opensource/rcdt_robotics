@@ -13,6 +13,11 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 @launch_pytest.fixture(scope="module")
 def panther_launch() -> LaunchDescription:
+    """Fixture to create launch file for panther robot.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the panther robot.
+    """
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
@@ -27,4 +32,4 @@ def panther_launch() -> LaunchDescription:
 
 @pytest.mark.launch(fixture=panther_launch)
 class TestPantherFullSuite(PantherTestSuite()):
-    """Re-run all tests from PantherFullTests using panther.launch.py"""
+    """Re-run all tests from PantherFullTests using panther.launch.py."""
