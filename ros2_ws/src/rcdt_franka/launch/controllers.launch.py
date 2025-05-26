@@ -14,7 +14,7 @@ gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_nod
 
 
 def launch_setup(context: LaunchContext) -> list:
-    simulation = simulation_arg.value(context)
+    simulation = simulation_arg.bool_value(context)
 
     namespace = "franka"
 

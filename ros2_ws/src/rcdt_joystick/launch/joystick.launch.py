@@ -12,7 +12,7 @@ robots_arg = LaunchArgument("robots", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    robots = robots_arg.value(context).split(" ")
+    robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
         package="joy",

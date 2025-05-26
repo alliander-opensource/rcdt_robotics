@@ -11,7 +11,7 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
-    use_sim = use_sim_arg.value(context)
+    use_sim = use_sim_arg.bool_value(context)
 
     navigation = IncludeLaunchDescription(
         get_file_path("nav2_bringup", ["launch"], "navigation_launch.py"),
