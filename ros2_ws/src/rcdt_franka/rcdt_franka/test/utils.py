@@ -20,7 +20,16 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 def call_move_to_configuration_service(
     node: Node, configuration: str, timeout: int
 ) -> bool:
-    """Call the move_to_configuration service and return True if a response from the service was received."""
+    """Call the move_to_configuration service and return True if a response from the service was received.
+
+    Args:
+        node (Node): The ROS 2 node to use for the service call.
+        configuration (str): The configuration to move to.
+        timeout (int): The timeout in seconds for the service call.
+
+    Returns:
+        bool: True if the service call was successful, False otherwise.
+    """
     client = create_ready_service_client(
         node,
         MoveToConfiguration,
@@ -41,8 +50,15 @@ def follow_joint_trajectory_goal(
     timeout: int,
     time_from_start: int = 3,
 ) -> None:
-    """Test sending a joint trajectory goal to the arm controller."""
+    """Test sending a joint trajectory goal to the arm controller.
 
+    Args:
+        node (Node): The ROS 2 node to use for the action client.
+        positions (list[float]): The joint positions to move to.
+        controller (str): The name of the controller to use.
+        timeout (int): The timeout in seconds for the action client.
+        time_from_start (int, optional): The time from start in seconds. Defaults to 3.
+    """
     action_client = create_ready_action_client(
         node,
         FollowJointTrajectory,

@@ -18,6 +18,11 @@ use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch description for the Franka robot.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     use_rviz = use_rviz_arg.value(context)
@@ -94,6 +99,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka robot.
+
+    Returns:
+        LaunchDescription: The launch description for the Franka robot.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

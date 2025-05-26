@@ -10,7 +10,11 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 
 @pytest.fixture(scope="module")
 def controllers_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for controllers."""
+    """Fixture to create launch file for controllers.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the controllers.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
     )
@@ -18,7 +22,11 @@ def controllers_launch() -> RegisteredLaunchDescription:
 
 @pytest.fixture(scope="module")
 def core_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for the franka core."""
+    """Fixture to create launch file for the franka core.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the franka core.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py")
     )
@@ -26,7 +34,11 @@ def core_launch() -> RegisteredLaunchDescription:
 
 @pytest.fixture(scope="module")
 def moveit_launch() -> RegisteredLaunchDescription:
-    """Fixture to launch moveit."""
+    """Fixture to launch moveit.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for MoveIt.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
         launch_arguments={
@@ -40,7 +52,11 @@ def moveit_launch() -> RegisteredLaunchDescription:
 
 @pytest.fixture(scope="module")
 def gripper_services_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for controllers."""
+    """Fixture to create launch file for controllers.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the gripper services.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
