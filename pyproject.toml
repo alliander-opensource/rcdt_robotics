@@ -6,8 +6,11 @@
 split-on-trailing-comma = false
 
 [tool.ruff.lint]
-select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
-ignore = ["E501", "ANN204"]
+select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA", "D"]
+ignore = ["E501", "ANN204","D100", "D104"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.pytest.ini_options]
 timeout = 90
