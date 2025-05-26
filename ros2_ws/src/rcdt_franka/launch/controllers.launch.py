@@ -18,6 +18,9 @@ def launch_setup(context: LaunchContext) -> list:
 
     Args:
         context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
     """
     simulation = simulation_arg.bool_value(context)
 

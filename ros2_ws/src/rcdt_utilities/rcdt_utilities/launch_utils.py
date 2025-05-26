@@ -73,6 +73,9 @@ class LaunchArgument:
         Args:
             context (LaunchContext): The launch context in which to evaluate the argument.
 
+        Raises:
+            TypeError: If the string value cannot be interpreted as a boolean.
+
         Returns:
             bool: The boolean value of the launch argument.
         """

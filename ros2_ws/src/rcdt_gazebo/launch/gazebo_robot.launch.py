@@ -27,6 +27,9 @@ def launch_setup(context: LaunchContext) -> List:
     Args:
         context (LaunchContext): The launch context.
 
+    Raises:
+        ValueError: If the SDF file does not contain a world attribute with a name.
+
     Returns:
         List: A list of actions to be executed in the launch description.
     """
