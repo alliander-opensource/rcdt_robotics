@@ -75,11 +75,11 @@ class OpenGripper(Node):
         return result.result.success
 
 
-def main(args: str = None) -> None:
-    """Main function to initialize the OpenGripper node and start the executor.
+def main(args: list | None = None) -> None:
+    """Main function to run the OpenGripper node.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()

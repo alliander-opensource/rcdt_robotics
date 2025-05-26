@@ -15,15 +15,18 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 FRANKA_HEIGHT = 0.34
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the mobile manipulator core.
 
     Args:
         context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
     """
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = str(world_arg.value(context))
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = world_arg.string_value(context)
 
     franka_core = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),

@@ -8,11 +8,14 @@ from launch_ros.actions import Node
 from rcdt_utilities.register import Register
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the Panther controllers.
 
     Args:
         context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
     """
     namespace = "panther"
 
@@ -40,11 +43,11 @@ def launch_setup(context: LaunchContext) -> None:
     ]
 
 
-def generate_launch_description() -> None:
+def generate_launch_description() -> LaunchDescription:
     """Generate the launch description for the Panther controllers.
 
     Returns:
-        LaunchDescription: The launch description for the Panther controllers.
+        LaunchDescription: The launch description containing the Panther controllers.
     """
     return LaunchDescription(
         [

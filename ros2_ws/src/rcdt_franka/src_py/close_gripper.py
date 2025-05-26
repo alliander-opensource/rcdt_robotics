@@ -78,11 +78,11 @@ class CloseGripper(Node):
         return result.result.success
 
 
-def main(args: str = None) -> None:
-    """Main function to initialize the CloseGripper node and start the executor.
+def main(args: list | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start the executor.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()

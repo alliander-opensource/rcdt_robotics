@@ -4,7 +4,7 @@
 
 
 import pytest
-from rcdt_utilities.geometry import Pose
+from geometry_msgs.msg import Pose
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,
@@ -159,12 +159,3 @@ def get_tests() -> dict:
         if callable(obj) and name.startswith("test_")
     }
     return tests
-
-
-def FrankaTestSuite() -> object:  # noqa: N802
-    """Create a test suite for the Franka robot.
-
-    Returns:
-        object: A class containing the test methods for the Franka robot.
-    """
-    return type("FrankaFullTests", (), get_tests())

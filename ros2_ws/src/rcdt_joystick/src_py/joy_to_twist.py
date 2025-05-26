@@ -105,11 +105,11 @@ class JoyToTwist(Node):
             self.pub.publish(self.twist_msg)
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     """Main function to initialize the ROS2 node and spin it.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     node = JoyToTwist()

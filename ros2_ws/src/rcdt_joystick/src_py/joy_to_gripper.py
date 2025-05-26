@@ -99,11 +99,11 @@ class JoyToGripper(Node):
         self.busy = False
 
 
-def main(args: str = None) -> None:
-    """Main function to initialize the ROS2 node and spin it.
+def main(args: list | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start the executor.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()

@@ -52,14 +52,12 @@ class Point2D:
         """
         return np.array([self.x, self.y])
 
-    def surrounding_points(self, grid_size: np.ndarray = 5) -> "Point2DList":
-        """Return a dense list of 2D points around self with distance of up to grid_size.
-
+    def surrounding_points(self, grid_size: int = 5) -> "Point2DList":
+        """       Calculate surrounding points in a grid around the point. 
         Args:
-            grid_size (np.ndarray, optional): The size of the grid around the point. Defaults to 5.
-
+            grid_size (int): The size of the grid around the point. Defaults to 5.
         Returns:
-            Point2DList: A list of surrounding points.
+            Point2DList: A Point2DList containing the surrounding points in a grid around the point.
         """
         surrounding_points = []
         for x_pos in range(self.x - grid_size, self.x + grid_size):
@@ -119,33 +117,29 @@ class Quaternion:
 
     @staticmethod
     def from_eulerangles(x: float, y: float, z: float) -> "Quaternion":
-        """Create a quaternion from Euler angles (in radians).
-
+        """Create a quaternion from Euler angles in radians.
         Args:
             x (float): The roll angle in radians.
             y (float): The pitch angle in radians.
             z (float): The yaw angle in radians.
-
         Returns:
-            Quaternion: A quaternion representing the orientation defined by the Euler angles.
+            Quaternion: A Quaternion object representing the orientation defined by the Euler angles.
         """
-        return Quaternion(*quaternion_from_euler(x, y, z))
+        x, y, z, w = quaternion_from_euler(x, y, z)
+        return Quaternion(x, y, z, w)
 
     @staticmethod
     def from_eulerangles_deg(x: float, y: float, z: float) -> "Quaternion":
-        """Create a quaternion from Euler angles (in degrees).
-
+        """Create a quaternion from Euler angles in degrees.
         Args:
             x (float): The roll angle in degrees.
             y (float): The pitch angle in degrees.
             z (float): The yaw angle in degrees.
-
-        Returns:
-            Quaternion: A quaternion representing the orientation defined by the Euler angles.
+        Returns:  
+            Quaternion: A Quaternion object representing the orientation defined by the Euler angles.
         """
-        return Quaternion(
-            *quaternion_from_euler(np.deg2rad(x), np.deg2rad(y), np.deg2rad(z))
-        )
+        x, y, z, w = quaternion_from_euler(np.deg2rad(x), np.deg2rad(y), np.deg2rad(z))
+        return Quaternion(x, y, z, w)
 
     @property
     def as_ros_quaternion(self) -> ros_Quaternion:
@@ -194,12 +188,12 @@ class Point2DList:
 
     @property
     def mean(self) -> Point2D:
-        """Calculate the mean of all points in the list.
-
+        """Calculate the mean point of the list of points. 
         Returns:
-            Point2D: A Point2D object representing the mean of all points in the list.
+            Point2D: A Point2D object representing the mean point of the list.
         """
-        return Point2D(*np.mean([point.as_array for point in self.points], axis=0))
+        x, y = np.mean([point.as_array for point in self.points], axis=0)
+        return Point2D(x, y)
 
 
 @dataclass
@@ -217,11 +211,10 @@ class Line:
     @property
     def length(self) -> float:
         """Calculate the length of the line segment.
-
         Returns:
-            float: The length of the line segment.
+            float: The length of the line segment, calculated as the Euclidean distance between p1 and p2.
         """
-        return np.linalg.norm(self.p1.as_array - self.p2.as_array)
+        return float(np.linalg.norm(self.p1.as_array - self.p2.as_array))
 
     @property
     def flipped(self) -> "Line":
@@ -243,7 +236,7 @@ class Line:
         """
         points = np.linspace(self.p1.as_array, self.p2.as_array, n + 2, dtype=int)
         points = points[1:-1]  # remove edges
-        return [Point2D(*point) for point in points]
+        return [Point2D(point[0], point[1]) for point in points]
 
     def angle(self) -> float:
         """Calculate the angle of the line segment in radians.

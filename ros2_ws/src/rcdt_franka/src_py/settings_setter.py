@@ -41,11 +41,11 @@ class SettingsSetter(Node):
         return future.result()
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     """Main function to initialize the ROS 2 node and set the thresholds.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     settings_setter = SettingsSetter()

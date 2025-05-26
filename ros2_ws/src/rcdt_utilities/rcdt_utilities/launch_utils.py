@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import ast
 import os
 from typing import List
 
@@ -37,7 +36,7 @@ class LaunchArgument:
         self,
         name: str,
         default_value: str | bool | int | float,
-        choices: List = None,
+        choices: List | None = None,
     ) -> None:
         """Initializes a LaunchArgument instance.
 
@@ -49,24 +48,65 @@ class LaunchArgument:
         self.configuration = LaunchConfiguration(name)
         if choices is not None:
             choices = [str(choice) for choice in choices]
-        self.declaration = DeclareLaunchArgument(
-            name=name, default_value=str(default_value), choices=choices
-        )
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value), choices=choices
+            )
+        else:
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value)
+            )
 
-    def value(self, context: LaunchContext) -> str | bool | int | float:
-        """Retrieves the value of the launch argument in the given context.
+    def string_value(self, context: LaunchContext) -> str:
+        """Retrieve the string value of the launch argument in a given context.
 
         Args:
             context (LaunchContext): The launch context in which to evaluate the argument.
 
         Returns:
-            str | bool | int | float: The evaluated value of the launch argument.
+            str: The string value of the launch argument.
         """
-        string_value = self.configuration.perform(context)
-        try:
-            return ast.literal_eval(string_value)
-        except Exception:
-            return string_value
+        return self.configuration.perform(context)
+
+    def bool_value(self, context: LaunchContext) -> bool:
+        """Retrieve the boolean value of the launch argument in a given context.
+
+        Args:
+            context (LaunchContext): The launch context in which to evaluate the argument.
+
+        Returns:
+            bool: The boolean value of the launch argument.
+        """
+        string_value = self.string_value(context)
+        if string_value in {"True", "true"}:
+            return True
+        elif string_value in {"False", "false"}:
+            return False
+        else:
+            raise TypeError
+
+    def int_value(self, context: LaunchContext) -> int:
+        """Retrieve the integer value of the launch argument in a given context.
+
+        Args:
+            context (LaunchContext): The launch context in which to evaluate the argument.
+
+        Returns:
+            int: The integer value of the launch argument.
+        """
+        string_value = self.string_value(context)
+        return int(string_value)
+
+    def float_value(self, context: LaunchContext) -> float:
+        """Retrieve the float value of the launch argument in a given context.
+
+        Args:
+            context (LaunchContext): The launch context in which to evaluate the argument.
+
+        Returns:
+            float: The float value of the launch argument.
+        """
+        string_value = self.string_value(context)
+        return float(string_value)
 
 
 def get_package_path(package: str) -> str:
@@ -109,23 +149,23 @@ def get_file_path(package: str, folders: List[str], file: str) -> str:
     return os.path.join(package_path, *folders, file)
 
 
-def get_yaml(file_path: str) -> yaml.YAMLObject:
-    """Load a YAML file and return its contents.
+def get_yaml(file_path: str) -> dict:
+    """Load a YAML file and return its contents as a dictionary.
 
     Args:
         file_path (str): The path to the YAML file.
 
     Returns:
-        yaml.YAMLObject: The contents of the YAML file, or None if the file cannot be read.
+        dict: The contents of the YAML file as a dictionary.
     """
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return yaml.safe_load(file)
     except EnvironmentError:
-        return None
+        return {}
 
 
-def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
+def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) -> dict:
     """Process a Xacro file to generate the robot description.
 
     Args:
@@ -133,7 +173,7 @@ def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
         xacro_arguments (dict, optional): A dictionary of arguments to pass to the Xacro processor. Defaults to None.
 
     Returns:
-        str: The robot description in XML format.
+        dict: A dictionary containing the robot description in XML format.
     """
     if xacro_arguments is None:
         xacro_arguments = {}
@@ -169,7 +209,7 @@ def spin_executor(executor: Executor) -> None:
         raise e
 
 
-def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
+def assert_for_message(message_type: type, topic: str, timeout: int) -> None:
     """Assert that a message of a specific type is received on a given topic within a timeout period.
 
     Args:

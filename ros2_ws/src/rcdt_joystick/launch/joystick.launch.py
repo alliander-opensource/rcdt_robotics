@@ -12,15 +12,15 @@ robots_arg = LaunchArgument("robots", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    """Setup the launch context for the joystick nodes.
+    """Setup the launch description for the joystick nodes.
 
     Args:
         context (LaunchContext): The launch context.
 
     Returns:
-        list: A list of actions to be executed.
+        list: A list of actions to be executed in the launch description.
     """
-    robots = robots_arg.value(context).split(" ")
+    robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
         package="joy",

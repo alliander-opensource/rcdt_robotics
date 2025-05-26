@@ -20,17 +20,20 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
+def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the Panther core.
 
     Args:
         context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
     """
-    use_sim = use_sim_arg.value(context)
-    child = child_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = str(world_arg.value(context))
-    use_velodyne = use_velodyne_arg.value(context)
+    use_sim = use_sim_arg.bool_value(context)
+    child = child_arg.string_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = world_arg.string_value(context)
+    use_velodyne = use_velodyne_arg.bool_value(context)
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""

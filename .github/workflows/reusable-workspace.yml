@@ -26,6 +26,11 @@ jobs:
           source /home/rcdt/.bashrc
           cd ros2_ws
           colcon build --symlink-install
+      - name: run ty
+        shell: bash -ieo pipefail {0}
+        run: |
+          source /home/rcdt/.bashrc
+          ty check --error-on-warning
       - name: run tests
         shell: bash -ieo pipefail {0}
         run: |

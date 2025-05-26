@@ -50,11 +50,11 @@ class Convert32FC1to16UC1(Node):
         self.publisher.publish(ros_image)
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     """Main function to initialize the ROS2 node and spin it.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     node = Convert32FC1to16UC1()

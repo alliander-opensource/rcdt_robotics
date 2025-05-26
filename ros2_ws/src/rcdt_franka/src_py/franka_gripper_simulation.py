@@ -142,11 +142,11 @@ class FrankaGripperSimulation(Node):
         return result
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     """Main function to initialize the ROS 2 node and start the executor.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None, optional): Command line arguments. Defaults to None.
     """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()

@@ -71,11 +71,11 @@ class CombineCameraTopics(Node):
         self.rgbd.depth_camera_info = msg
 
 
-def main(args: str = None) -> None:
-    """Main function to initialize the ROS2 node and spin it.
+def main(args: list | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start spinning.
 
     Args:
-        args (str, optional): Command line arguments. Defaults to None.
+        args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
     node = CombineCameraTopics()

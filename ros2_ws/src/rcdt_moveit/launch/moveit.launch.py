@@ -15,16 +15,19 @@ servo_params_package_arg = LaunchArgument("servo_params_package", "rcdt_franka")
 namespace_arg = LaunchArgument("namespace", "")
 
 
-def launch_setup(context: LaunchContext) -> None:
-    """Setup the launch context for MoveIt with Servo.
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for MoveIt with Servo.
 
     Args:
         context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
     """
-    robot_name = robot_name_arg.value(context)
-    package_name = moveit_package_name_arg.value(context)
-    servo_params_package = servo_params_package_arg.value(context)
-    namespace = namespace_arg.value(context)
+    robot_name = robot_name_arg.string_value(context)
+    package_name = moveit_package_name_arg.string_value(context)
+    servo_params_package = servo_params_package_arg.string_value(context)
+    namespace = namespace_arg.string_value(context)
 
     moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
     moveit_config.trajectory_execution(

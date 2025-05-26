@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Union
+from typing import Any, Union
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import (
@@ -29,10 +29,10 @@ class RegisteredLaunchDescription(IncludeLaunchDescription):
         launch_arguments (dict): The launch arguments to pass to the included launch file.
     """
 
-    def __init__(self, launch_description_source: str, launch_arguments: dict = None):
-        """Initializes the RegisteredLaunchDescription with a unique group id.
-
-        This class extends the IncludeLaunchDescription to automatically register a unique group id for the included launch file.
+    def __init__(
+        self, launch_description_source: str, launch_arguments: dict | None = None
+    ):
+        """Initializes the RegisteredLaunchDescription with a unique group_id.
 
         Args:
             launch_description_source (str): The path to the launch file to include.
@@ -89,15 +89,14 @@ class Register:
         Register.started = 0
 
     @staticmethod
-    def next(*_: any) -> Node | ExecuteProcess:
-        """Returns the executable of the next registered item that should start.
+    def next(*_: Any) -> LaunchDescription:
+        """Returns the next action to start based on the order of registration.
 
-        This item is located at position 1 of the register list, since position 0 contains the initial register that starts the chain.
-        An item can also be a string representing a group. Therefore we pop until the item at position 1 is of type Register.
-        There are no registered items left to start when the length of the register list equals 1, so then we return en empty launch description.
+        Args:
+            *_ (Any): Variable length argument list, not used in this method.
 
         Returns:
-            Node | ExecuteProcess: The action to start next, which can be a Node or ExecuteProcess.
+            LaunchDescription: A launch description containing the next action to start, or an empty launch description if all actions have been started.
         """
         item = None
         Register.started += 1
@@ -109,7 +108,7 @@ class Register:
                 return LaunchDescription([])
             item = Register.register.pop(1)
         log_progress(item.action)
-        return item.action
+        return LaunchDescription([item.action])
 
     @staticmethod
     def group(
@@ -154,7 +153,7 @@ class Register:
         def launch_setup(
             context: LaunchContext,
             registered_launch_descriptions: list[RegisteredLaunchDescription],
-        ) -> LaunchDescription:
+        ) -> list:
             launch_items = []
             for description in registered_launch_descriptions:
                 if not isinstance(description, RegisteredLaunchDescription):
@@ -288,14 +287,15 @@ class Register:
             return LaunchDescription([event_handler])
 
 
-def log_progress(action: Union[Node, ExecuteProcess] = None) -> None:
+def log_progress(action: Node | ExecuteProcess | None = None) -> None:
     """Logs the progress of the registered actions.
 
-    This function logs the current status of the registered actions, including how many actions have been started and the total number of actions.
+    This function logs the current state of the registered actions, including how many actions have been started and the total number of actions.
     If no action is provided, it logs that all actions have been started.
+    It also formats the log message with colors for better visibility.
 
     Args:
-        action (Union[Node, ExecuteProcess], optional): The action that has just started. Defaults to None.
+        action (Node | ExecuteProcess | None): The action that has been started, or None if all actions have been started.
     """
     if Register.started == 0:
         msg = "[START] "
