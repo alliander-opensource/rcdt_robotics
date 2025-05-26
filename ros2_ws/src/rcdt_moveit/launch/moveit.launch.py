@@ -16,6 +16,11 @@ namespace_arg = LaunchArgument("namespace", "")
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch context for MoveIt with Servo.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     robot_name = robot_name_arg.value(context)
     package_name = moveit_package_name_arg.value(context)
     servo_params_package = servo_params_package_arg.value(context)
@@ -72,6 +77,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for MoveIt with Servo.
+
+    Returns:
+        LaunchDescription: The launch description containing the actions to be executed.
+    """
     return LaunchDescription(
         [
             robot_name_arg.declaration,
