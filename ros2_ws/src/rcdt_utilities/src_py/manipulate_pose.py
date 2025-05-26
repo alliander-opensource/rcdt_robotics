@@ -13,7 +13,7 @@ from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging, time
 from rclpy.node import Node
 from tf2_geometry_msgs import do_transform_pose_stamped
-from tf2_ros import TransformException
+from tf2_ros import TransformException  # ty: ignore[unresolved-import]
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
