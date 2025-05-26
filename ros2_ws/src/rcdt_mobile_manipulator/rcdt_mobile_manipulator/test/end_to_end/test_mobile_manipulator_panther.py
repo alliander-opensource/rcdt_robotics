@@ -14,6 +14,14 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 def mobile_manipulator(
     mobile_manipulator_launch: RegisteredLaunchDescription,
 ) -> LaunchDescription:
+    """Fixture to launch the mobile manipulator.
+
+    Args:
+        mobile_manipulator_launch (RegisteredLaunchDescription): The launch description for the mobile manipulator.
+
+    Returns:
+        LaunchDescription: The launch description for the mobile manipulator.
+    """
     return Register.connect_context(
         [
             mobile_manipulator_launch,
@@ -23,4 +31,4 @@ def mobile_manipulator(
 
 @pytest.mark.launch(fixture=mobile_manipulator)
 class TestPantherMMLaunch(PantherTestSuite()):
-    """Run all the PantherFullTests under mobile_manipulator.launch.py"""
+    """Run all the PantherFullTests under mobile_manipulator.launch.py."""

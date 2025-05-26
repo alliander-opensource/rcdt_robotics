@@ -16,6 +16,11 @@ FRANKA_HEIGHT = 0.34
 
 
 def launch_setup(context: LaunchContext) -> None:
+    """Setup the launch description for the mobile manipulator core.
+
+    Args:
+        context (LaunchContext): The launch context.
+    """
     use_sim = use_sim_arg.value(context)
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = str(world_arg.value(context))
@@ -72,6 +77,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the mobile manipulator core.
+
+    Returns:
+        LaunchDescription: The launch description for the mobile manipulator core.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,
