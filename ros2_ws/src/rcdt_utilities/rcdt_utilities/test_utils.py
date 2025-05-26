@@ -28,6 +28,17 @@ from rcdt_utilities.register import Register
 logger = get_logger("test_utils")
 
 
+def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
+    """
+    Add the defined tests to the given class.
+
+    Use of the pytest mark.launch decorator adapts the class functions, which makes it impossible to reuse tests with different fixtures.
+    However, by using this method in combination with a function that generates the test functions (tests), reuse is possible.
+    """
+    for name, method in tests.items():
+        setattr(cls, name, method)
+
+
 def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
     """
     Make sure there is at least one subscriber to the given publisher.

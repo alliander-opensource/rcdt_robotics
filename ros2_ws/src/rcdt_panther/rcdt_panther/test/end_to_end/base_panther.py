@@ -85,8 +85,3 @@ def get_tests() -> dict:
         if callable(obj) and name.startswith("test_")
     }
     return tests
-
-
-def PantherTestSuite() -> object:  # noqa: N802
-    """Dynamically create a test class with the test methods."""
-    return type("PantherFullTests", (), get_tests())
