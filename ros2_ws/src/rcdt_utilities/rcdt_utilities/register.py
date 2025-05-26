@@ -149,9 +149,6 @@ class Register:
 
         Returns:
             LaunchDescription: A LaunchDescription containing an OpaqueFunction that sets up the launch items.
-
-        Raises:
-            TypeError: If any of the items in the groups list is not an instance of RegisteredLaunchDescription.
         """
 
         def launch_setup(

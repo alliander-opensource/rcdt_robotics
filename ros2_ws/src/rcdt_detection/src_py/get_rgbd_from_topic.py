@@ -40,7 +40,7 @@ class GetRGBDFromTopic(Node):
         Returns:
             Srv.Response: The response containing the RGB image, depth image, and camera info.
         """
-        if request.topic == "":
+        if not request.topic:
             ros_logger.error("No topic was specified. Exit.")
             response.success = False
             return response

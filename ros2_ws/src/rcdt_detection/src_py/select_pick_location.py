@@ -38,7 +38,8 @@ class SelectPickLocation(Node):
         super().__init__("filter_masks")
         self.create_service(Srv, "/select_pick_location", self.callback)
 
-    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+    @staticmethod
+    def callback(request: Srv.Request, response: Srv.Response) -> Srv.Response:
         """Callback function to handle the service request.
 
         Args:

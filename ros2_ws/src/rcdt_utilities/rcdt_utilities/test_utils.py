@@ -199,6 +199,9 @@ def call_express_pose_in_other_frame(
         target_frame (str): The frame to express the pose in.
         timeout (float): Timeout for waiting on service and result.
 
+    Raises:
+        RuntimeError: If the service call fails or times out.
+
     Returns:
         ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
     """

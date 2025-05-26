@@ -59,7 +59,7 @@ def segmentation_mask_to_binary_mask(mask: torch.Tensor) -> ndarray:
         ndarray: The binary mask as a numpy array with shape [height, width, channels] and values in the range [0, 255].
     """
     binary_mask = mask.data.cpu().numpy().astype(uint8)
-    binary_mask = binary_mask * 255
+    binary_mask *= 255
     binary_mask = binary_mask.transpose(1, 2, 0)
     return binary_mask
 

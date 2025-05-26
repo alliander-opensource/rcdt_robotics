@@ -77,8 +77,9 @@ class ManipulatePose(Node):
         response.success = True
         return response
 
+    @staticmethod
     def transform_pose(
-        self, request: TransformPose.Request, response: TransformPose.Response
+        request: TransformPose.Request, response: TransformPose.Response
     ) -> TransformPose.Response:
         """Transform a pose using a given transformation.
 
@@ -93,8 +94,9 @@ class ManipulatePose(Node):
         response.success = True
         return response
 
+    @staticmethod
     def transform_pose_relative(
-        self, request: TransformPose.Request, response: TransformPose.Response
+        request: TransformPose.Request, response: TransformPose.Response
     ) -> TransformPose.Response:
         """Transform a pose relative to its current position using a given transformation.
 

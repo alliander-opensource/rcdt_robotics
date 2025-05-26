@@ -30,7 +30,7 @@ def add(
 
 # fmt: off
 group = "Detection"
-add("GetMaskProperties","/get_mask_properties", srv.GetMaskProperties, group)
+add("GetMaskProperties", "/get_mask_properties", srv.GetMaskProperties, group)
 add("GetRGBDFromTopic", "/get_rgbd_from_topic", srv.GetRGBDFromTopic, group)
 add("PoseFromPixel", "/pose_from_pixel", srv.PoseFromPixel, group)
 add("PublishImage", "/publish_image", srv.PublishImage, group)
@@ -38,7 +38,7 @@ add("PublishMasks", "/publish_masks", srv.PublishMasks, group)
 add("SegmentImage", "/segment_image", srv.SegmentImage, group)
 add("SelectImageFromList", "/select_image_from_list", srv.SelectImageFromList, group)
 add("SelectPickLocation", "/select_pick_location", srv.SelectPickLocation, group)
-add("SelectPlaceLocation","/select_place_location",srv.SelectPlaceLocation, group)
+add("SelectPlaceLocation", "/select_place_location", srv.SelectPlaceLocation, group)
 
 group = "Utilities"
 add("ExpressPoseInOtherFrame", "/express_pose_in_other_frame", srv.ExpressPoseInOtherFrame, group)

@@ -119,7 +119,7 @@ def get_yaml(file_path: str) -> yaml.YAMLObject:
         yaml.YAMLObject: The contents of the YAML file, or None if the file cannot be read.
     """
     try:
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             return yaml.safe_load(file)
     except EnvironmentError:
         return None
@@ -146,10 +146,6 @@ def spin_node(node: Node) -> None:
 
     Args:
         node (Node): The ROS 2 node to spin.
-
-    Raises:
-        KeyboardInterrupt: If the spinning is interrupted by the user.
-        Exception: If any other exception occurs during spinning.
     """
     try:
         rclpy.spin(node)
@@ -164,10 +160,6 @@ def spin_executor(executor: Executor) -> None:
 
     Args:
         executor (Executor): The ROS 2 executor to spin.
-
-    Raises:
-        KeyboardInterrupt: If the spinning is interrupted by the user.
-        Exception: If any other exception occurs during spinning.
     """
     try:
         executor.spin()

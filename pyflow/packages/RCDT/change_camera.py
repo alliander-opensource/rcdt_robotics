@@ -48,7 +48,7 @@ class ChangeCamera(PyflowExecutor):
         msg = f"pose: {{position: {{x: {pose.position.x}, y: {pose.position.y}, z: {pose.position.z}}} orientation: {{x: {pose.orientation.x}, y: {pose.orientation.y}, z: {pose.orientation.z}, w: {pose.orientation.w}}}}}"
         result = subprocess.run(self.command + [msg], check=False, capture_output=True)
         error = result.stderr.decode()
-        if error == "":
+        if not error:
             self.logger.info("Changed camera position successfully.")
             self.exec_out.call()
         else:

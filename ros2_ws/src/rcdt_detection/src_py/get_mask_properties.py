@@ -32,7 +32,8 @@ class GetMaskProperties(Node):
         super().__init__("get_mask_properties")
         self.create_service(Srv, "/get_mask_properties", self.callback)
 
-    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+    @staticmethod
+    def callback(request: Srv.Request, response: Srv.Response) -> Srv.Response:
         """Callback function to handle the service request.
 
         Args:

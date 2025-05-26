@@ -26,7 +26,7 @@ class JoyToTwist(Node):
         twist_stamped_msg (TwistStamped): The TwistStamped message to be published if stamped is True.
     """
 
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         """Initialize the JoyToTwist node."""
         super().__init__("joy_to_twist_node")
         self.declare_parameter("sub_topic", "/joy")
@@ -41,22 +41,22 @@ class JoyToTwist(Node):
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
         pub_frame = self.get_parameter("pub_frame").get_parameter_value().string_value
 
-        if sub_topic == "":
+        if not sub_topic:
             self.get_logger().warn("No subscriber topic was specified. Exiting.")
             return
 
-        if pub_topic == "":
+        if not pub_topic:
             self.get_logger().warn("No publisher topic was specified. Exiting.")
             return
 
-        if config_pkg == "":
+        if not config_pkg:
             self.get_logger().warn("No package for config file was specified. Exiting.")
             return
 
         config = get_file_path(config_pkg, ["config"], "gamepad_mapping.yaml")
         self.mapping = get_yaml(config)
 
-        if self.mapping == "":
+        if not self.mapping:
             self.get_logger().warn(f"No mapping was found in {config}. Exiting.")
             return
 

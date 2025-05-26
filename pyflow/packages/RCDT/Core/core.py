@@ -362,7 +362,7 @@ class Message(PyflowComputer):
         for pin_name in self.pin_manager.get_input_pin_names():
             data = self.pin_manager.get_data(pin_name)
             levels = pin_name.split("/")
-            if levels[0] == "":
+            if not levels[0]:
                 setattr(message, levels[-1], data)
             else:
                 attribute_str = ".".join(levels[:-1])
@@ -409,7 +409,8 @@ class Message(PyflowComputer):
             return
         self.pin_manager.add_input_pin(register_name, pin)
 
-    def get_subfields(self, message_field: MessageField) -> list[MessageField]:
+    @staticmethod
+    def get_subfields(message_field: MessageField) -> list[MessageField]:
         """Get subfields of a message field that are also messages.
 
         Args:

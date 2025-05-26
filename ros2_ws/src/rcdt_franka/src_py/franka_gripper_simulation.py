@@ -60,7 +60,8 @@ class GripperActionControllerClient(Node):
         result: GripperCommand.Impl.GetResultService.Response
         return result.result.reached_goal or result.result.stalled
 
-    def respect_limits(self, width: float) -> float:
+    @staticmethod
+    def respect_limits(width: float) -> float:
         """Ensure the gripper width is within the defined limits.
 
         Args:

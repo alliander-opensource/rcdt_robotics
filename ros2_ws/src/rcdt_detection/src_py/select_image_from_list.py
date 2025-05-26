@@ -29,7 +29,8 @@ class SelectImageFromList(Node):
         super().__init__("select_image_from_list")
         self.create_service(Srv, "/select_image_from_list", self.callback)
 
-    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+    @staticmethod
+    def callback(request: Srv.Request, response: Srv.Response) -> Srv.Response:
         """Callback function to handle the service request.
 
         Args:

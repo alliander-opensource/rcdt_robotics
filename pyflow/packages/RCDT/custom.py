@@ -36,7 +36,11 @@ class AnyPinCustom(AnyPin):
         super().__init__(name, owning_node, direction)
 
     def serialize(self) -> dict:
-        """Disable storable before serialization."""
+        """Disable storable before serialization.
+
+        Returns:
+            dict: The serialized data of the pin.
+        """
         self.disableOptions(PinOptions.Storable)
         return super().serialize()
 

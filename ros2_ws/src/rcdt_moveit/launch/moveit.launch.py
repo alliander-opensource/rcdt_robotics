@@ -38,7 +38,7 @@ def launch_setup(context: LaunchContext) -> None:
     file = get_file_path(servo_params_package, ["config"], "servo_params.yaml")
     servo_config = get_yaml(file)
     servo_params = {"moveit_servo": servo_config}
-    if namespace != "":
+    if namespace:
         for param in ["joint_topic", "command_out_topic"]:
             value = servo_params["moveit_servo"][param]
             servo_params["moveit_servo"][param] = "/" + namespace + value

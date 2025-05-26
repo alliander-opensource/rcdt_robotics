@@ -27,13 +27,13 @@ def launch_setup(context: LaunchContext) -> None:
     package_name = moveit_package_name_arg.value(context)
 
     arguments = []
-    if rviz_frame != "":
+    if rviz_frame:
         arguments.extend(["-f", rviz_frame])
     display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
     arguments.extend(["--display-config", display_config])
 
     parameters = []
-    if package_name != "":
+    if package_name:
         moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
         moveit_config = moveit_config.to_moveit_configs()
         parameters.append(moveit_config.robot_description)

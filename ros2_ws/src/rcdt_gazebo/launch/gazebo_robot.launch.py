@@ -75,7 +75,7 @@ def launch_setup(context: LaunchContext) -> List:
 
     spawn_robots: list[Node] = []
     for robot, position in zip(robots, positions):
-        namespace = "" if robot == "" else f"/{robot}"
+        namespace = "" if not robot else f"/{robot}"
         x, y, z = position.split("-")
         spawn_robot = Node(
             package="ros_gz_sim",
