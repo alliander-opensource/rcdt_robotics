@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+[tool.ruff]
+exclude = ["ros2_ws/src/rcdt_detection/**"]
+
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
 
