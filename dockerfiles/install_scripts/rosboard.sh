@@ -6,9 +6,6 @@
 
 set -e
 
-pip install \
-    tornado \
-    simplejpeg
 mkdir -p /home/$UNAME/rosboard_ws/src
 cd /home/$UNAME/rosboard_ws
 git clone https://github.com/dheera/rosboard.git src/rosboard
