@@ -8,7 +8,7 @@ from typing import Callable, Type
 
 import pytest
 import rclpy
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Pose, PoseStamped
 from launch_testing_ros.wait_for_topics import WaitForTopics
 from rcdt_messages.srv import ExpressPoseInOtherFrame
 from rclpy.action import ActionClient
@@ -224,7 +224,7 @@ def call_express_pose_in_other_frame(
 def assert_movements_with_joy(  # noqa: PLR0913
     node: Node,
     joy_axes: list[float],
-    compare_fn: Callable[[PoseStamped, PoseStamped], float],
+    compare_fn: Callable[[Pose, Pose], float],
     threshold: float,
     description: str,
     frame_base: str,
