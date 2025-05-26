@@ -22,6 +22,14 @@ use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> List:
+    """Setup the launch context for the Gazebo simulation with robots.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        List: A list of actions to be executed.
+    """
     load_gazebo_ui = load_gazebo_ui_arg.value(context)
     world = world_arg.value(context)
     robots = robots_arg.value(context).split(" ")
@@ -113,6 +121,11 @@ def launch_setup(context: LaunchContext) -> List:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Gazebo simulation with robots.
+
+    Returns:
+        LaunchDescription: The launch description containing the actions to be executed.
+    """
     return LaunchDescription(
         [
             load_gazebo_ui_arg.declaration,
