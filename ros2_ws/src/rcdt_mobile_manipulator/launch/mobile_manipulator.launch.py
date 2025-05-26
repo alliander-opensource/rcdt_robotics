@@ -14,11 +14,11 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_rviz = use_rviz_arg.value(context)
-    world = str(world_arg.value(context))
+def launch_setup(context: LaunchContext) -> list:
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    use_rviz = use_rviz_arg.bool_value(context)
+    world = world_arg.string_value(context)
 
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_mobile_manipulator", ["launch"], "core.launch.py"),

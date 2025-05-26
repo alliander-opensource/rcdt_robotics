@@ -16,7 +16,7 @@ ros_logger = logging.get_logger(__name__)
 
 
 class Convert32FC1to16UC1(Node):
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         super().__init__("convert_32FC1_to_16UC1_node")
 
         self.create_subscription(
@@ -35,7 +35,7 @@ class Convert32FC1to16UC1(Node):
         self.publisher.publish(ros_image)
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     node = Convert32FC1to16UC1()
     spin_node(node)

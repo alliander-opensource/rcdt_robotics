@@ -6,8 +6,9 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from rcdt_panther.test.end_to_end.base_panther import PantherTestSuite
+from rcdt_panther.test.end_to_end.base_panther import get_tests
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.test_utils import add_tests_to_class
 
 
 @launch_pytest.fixture(scope="class")
@@ -22,5 +23,8 @@ def mobile_manipulator(
 
 
 @pytest.mark.launch(fixture=mobile_manipulator)
-class TestPantherMMLaunch(PantherTestSuite()):
+class TestPantherMMLaunch:
     """Run all the PantherFullTests under mobile_manipulator.launch.py"""
+
+
+add_tests_to_class(TestPantherMMLaunch, get_tests())

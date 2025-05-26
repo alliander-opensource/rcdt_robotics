@@ -30,7 +30,7 @@ class SettingsSetter(Node):
         return future.result()
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
     rclpy.init(args=args)
     settings_setter = SettingsSetter()
     response = settings_setter.set_thresholds()

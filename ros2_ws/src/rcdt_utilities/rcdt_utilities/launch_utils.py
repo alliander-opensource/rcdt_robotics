@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import ast
 import os
 from typing import List
 
@@ -26,21 +25,38 @@ class LaunchArgument:
         self,
         name: str,
         default_value: str | bool | int | float,
-        choices: List = None,
+        choices: List | None = None,
     ) -> None:
         self.configuration = LaunchConfiguration(name)
         if choices is not None:
             choices = [str(choice) for choice in choices]
-        self.declaration = DeclareLaunchArgument(
-            name=name, default_value=str(default_value), choices=choices
-        )
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value), choices=choices
+            )
+        else:
+            self.declaration = DeclareLaunchArgument(
+                name=name, default_value=str(default_value)
+            )
 
-    def value(self, context: LaunchContext) -> str | bool | int | float:
-        string_value = self.configuration.perform(context)
-        try:
-            return ast.literal_eval(string_value)
-        except Exception:
-            return string_value
+    def string_value(self, context: LaunchContext) -> str:
+        return self.configuration.perform(context)
+
+    def bool_value(self, context: LaunchContext) -> bool:
+        string_value = self.string_value(context)
+        if string_value in ["True", "true"]:
+            return True
+        elif string_value in ["False", "false"]:
+            return False
+        else:
+            raise TypeError
+
+    def int_value(self, context: LaunchContext) -> int:
+        string_value = self.string_value(context)
+        return int(string_value)
+
+    def float_value(self, context: LaunchContext) -> float:
+        string_value = self.string_value(context)
+        return float(string_value)
 
 
 def get_package_path(package: str) -> str:
@@ -57,15 +73,15 @@ def get_file_path(package: str, folders: List[str], file: str) -> str:
     return os.path.join(package_path, *folders, file)
 
 
-def get_yaml(file_path: str) -> yaml.YAMLObject:
+def get_yaml(file_path: str) -> dict:
     try:
         with open(file_path, "r") as file:
             return yaml.safe_load(file)
     except EnvironmentError:
-        return None
+        return {}
 
 
-def get_robot_description(xacro_path: str, xacro_arguments: dict = None) -> str:
+def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) -> dict:
     if xacro_arguments is None:
         xacro_arguments = {}
     robot_description_config = xacro.process_file(xacro_path, mappings=xacro_arguments)
@@ -90,7 +106,7 @@ def spin_executor(executor: Executor) -> None:
         raise e
 
 
-def assert_for_message(message_type: type, topic: str, timeout: int) -> bool:
+def assert_for_message(message_type: type, topic: str, timeout: int) -> None:
     wait_for_topics = WaitForTopics([(topic, message_type)], timeout)
     received = wait_for_topics.wait()
     wait_for_topics.shutdown()

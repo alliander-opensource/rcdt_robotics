@@ -22,16 +22,20 @@ use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> List:
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = world_arg.value(context)
-    robots = robots_arg.value(context).split(" ")
-    positions = positions_arg.value(context).split(" ")
-    use_realsense = use_realsense_arg.value(context)
-    use_velodyne = use_velodyne_arg.value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = world_arg.string_value(context)
+    robots = robots_arg.string_value(context).split(" ")
+    positions = positions_arg.string_value(context).split(" ")
+    use_realsense = use_realsense_arg.bool_value(context)
+    use_velodyne = use_velodyne_arg.bool_value(context)
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
-    world_name = sdf.getroot().find("world").attrib.get("name")
+    world_attribute = sdf.getroot().find("world")
+    if world_attribute is None:
+        raise ValueError("sdf file should contain a world attribute with a name.")
+    else:
+        world_name = world_attribute.attrib.get("name")
     cmd = ["ign", "gazebo", sdf_file]
     if not load_gazebo_ui:
         cmd.append("-s")

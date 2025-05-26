@@ -17,12 +17,12 @@ world_arg = LaunchArgument(
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_rviz = use_rviz_arg.value(context)
-    world = str(world_arg.value(context))
-    use_realsense = use_realsense_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    use_rviz = use_rviz_arg.bool_value(context)
+    world = str(world_arg.string_value(context))
+    use_realsense = use_realsense_arg.bool_value(context)
 
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
