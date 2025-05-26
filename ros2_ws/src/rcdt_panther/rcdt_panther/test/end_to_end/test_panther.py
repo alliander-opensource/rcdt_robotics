@@ -12,11 +12,12 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 
 @launch_pytest.fixture(scope="module")
-def panther_launch() -> LaunchDescription:
+def panther_launch(request: pytest.FixtureRequest) -> LaunchDescription:
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
         },
     )
     utils_launch = RegisteredLaunchDescription(
