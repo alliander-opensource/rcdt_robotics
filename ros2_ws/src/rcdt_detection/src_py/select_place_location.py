@@ -23,10 +23,6 @@ class SelectPlaceLocation(Node):
     pattern. It starts from a base layer and moves upwards, adjusting the x and y
     coordinates based on the current layer and row index. The pose is returned in a
     ROS-compatible format.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

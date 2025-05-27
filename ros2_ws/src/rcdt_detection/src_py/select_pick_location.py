@@ -27,10 +27,6 @@ class SelectPickLocation(Node):
     This node provides a service that processes masks and depth images to determine
     the best pick location. It uses the MaskProperties class to analyze each mask
     and returns the most suitable pick location based on the refined mask properties.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

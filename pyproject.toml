@@ -7,7 +7,7 @@ split-on-trailing-comma = false
 
 [tool.ruff.lint]
 select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA", "D", "DOC"]
-ignore = ["E501", "ANN204", "ANN401", "D100", "D104", "PLR0917","PLR0914"]
+ignore = ["E501", "ANN204", "ANN401", "D100", "D104", "PLR0917","PLR0914", "DOC502"]
 preview = true
 
 [tool.ruff.lint.pydocstyle]
@@ -36,8 +36,12 @@ extra-paths = [
 [tool.flake8]
 style = "google"
 skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true
 select = "DOC"
 
 [tool.pydoclint]
 style = "google"
 skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true

@@ -21,10 +21,6 @@ class GetMaskProperties(Node):
 
     This node provides a service that takes a mask, depth image, and camera info,
     and returns properties such as contour, bounding box, centroid, and average hue.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:
