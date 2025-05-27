@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import time
 
 import launch_pytest
 import pytest
@@ -13,6 +12,7 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     get_joint_position,
+    publish_for_duration,
     wait_for_register,
     wait_for_subscriber,
 )
@@ -92,9 +92,8 @@ def test_driving(test_node: Node, timeout: int) -> None:
 
     msg = Twist()
     msg.linear.x = 1.0
-    pub.publish(msg)
 
-    time.sleep(1)  # give the panther some time to move
+    publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
     joint_value_after_driving = get_joint_position(
         "panther", "fl_wheel_joint", timeout=timeout
