@@ -24,8 +24,9 @@ dependencies = [
     "termcolor>=3.1.0",
     "tornado>=6.5.1",
     "transforms3d>=0.4.2",
+    "ty>=0.0.1a7",
 ]
-requires-python = ">=3.10"
+requires-python = "==3.10.*"
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false

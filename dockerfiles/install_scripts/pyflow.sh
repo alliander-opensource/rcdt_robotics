@@ -9,6 +9,3 @@ set -e
 apt update
 apt install -y libxcb-cursor-dev
 pip install git+https://github.com/alliander-opensource/PyFlow.git@master
-pip install \
-    inflection \
-    distinctipy
