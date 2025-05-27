@@ -12,6 +12,11 @@ sudo apt install -y \
     ros-humble-nav2-bringup \
     ros-humble-slam-toolbox 
 
-curl -LsSf https://astral.sh/uv/install.sh | sh
+pip install uv 
 
-echo "source /home/$UNAME/.local/bin/env" >> /home/$UNAME/.bashrc
+echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.10/site-packages:\$PYTHONPATH\"" \
+  >> /home/$UNAME/.bashrc
+
+echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
+  >> /home/$UNAME/.bashrc
+
