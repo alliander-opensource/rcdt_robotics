@@ -21,14 +21,28 @@ repos:
     rev: v0.9.10
     hooks:
       - id: ruff
+        name: ruff format  
         entry: ruff format  
         language: system
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.10
     hooks:
       - id: ruff
+        name: ruff check
         entry: ruff check  
         language: system  
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v20.1.5
+    hooks:
+    - id: clang-format
+      types_or: [c++, c, cuda]
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty check
+        entry: ty check --error-on-warning
+        language: system
+        pass_filenames: false
   - repo: https://github.com/fsfe/reuse-tool
     rev: v3.0.1
     hooks:
