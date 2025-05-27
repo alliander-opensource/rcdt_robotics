@@ -4,7 +4,7 @@
 
 
 import time
-from typing import Callable, Type
+from typing import Any, Callable, Type
 
 import pytest
 import rclpy
@@ -40,7 +40,7 @@ def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
 
 
 def publish_for_duration(
-    node: Node, publisher: Publisher, msg: Joy, publish_duration: float, rate_sec: float
+    node: Node, publisher: Publisher, msg: Any, publish_duration: float, rate_sec: float
 ) -> None:
     """
     Publishes a message at a specified rate for a given duration.
