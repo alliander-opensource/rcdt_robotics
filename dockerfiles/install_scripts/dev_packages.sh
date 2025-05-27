@@ -11,6 +11,8 @@ pip install pytest-timeout
 pip install ruff
 pip install ty
 pip install termcolor
+pip install pydoclint[flake8]
+pip install Flake8-pyproject
 
 # Specifying numpy range to work with ROS and Ultralytics:
 pip install "numpy>=1.23.0,<2.0"
