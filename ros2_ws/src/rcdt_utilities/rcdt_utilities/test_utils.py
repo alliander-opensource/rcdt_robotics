@@ -4,7 +4,7 @@
 
 
 import time
-from typing import Callable, Type
+from typing import Any, Callable, Type
 
 import pytest
 import rclpy
@@ -39,14 +39,38 @@ def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
         setattr(cls, name, method)
 
 
+def publish_for_duration(
+    node: Node,
+    publisher: Publisher,
+    msg: Any,
+    publish_duration: float = 1.0,
+    rate_sec: float = 0.1,
+) -> None:
+    """
+    Publishes a message at a specified rate for a given duration.
+
+    Args:
+        node (Node): The rclpy node to use for publishing.
+        publisher (Publisher): The publisher to send messages through.
+        msg (Joy): The message to publish.
+        publish_duration (float): Duration in seconds to publish the message.
+        rate_sec (float): Frequency in seconds at which to publish the message.
+    """
+    deadline = time.monotonic() + publish_duration
+
+    while time.monotonic() < deadline:
+        publisher.publish(msg)
+        rclpy.spin_once(node, timeout_sec=rate_sec)
+
+
 def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
     """
     Make sure there is at least one subscriber to the given publisher.
     This avoids problems in tests where a publisher is created and instantly sends a message,
     before the intended subscriber is ready.
     """
-    start_time = time.time()
-    while pub.get_subscription_count() == 0 and time.time() - start_time < timeout:
+    start_time = time.monotonic()
+    while pub.get_subscription_count() == 0 and time.monotonic() - start_time < timeout:
         time.sleep(0.1)
 
 
@@ -172,10 +196,15 @@ def assert_joy_topic_switch(
 
     msg = Joy()
     msg.buttons = button_config
-    pub.publish(msg)
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
 
-    start_time = time.time()
-    while result.get("state") != expected_topic and time.time() - start_time < timeout:
+    start_time = time.monotonic()
+    while (
+        result.get("state") != expected_topic
+        and time.monotonic() - start_time < timeout
+    ):
         rclpy.spin_once(node, timeout_sec=1)
         time.sleep(0.1)
 
@@ -253,8 +282,9 @@ def assert_movements_with_joy(  # noqa: PLR0913
 
     msg = Joy()
     msg.axes = joy_axes
-    pub.publish(msg)
-    time.sleep(1)  # let the robot move
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
 
     pose = PoseStamped()
     pose.header.frame_id = frame_base
@@ -286,8 +316,8 @@ def wait_until_reached_joint(
 
     Returns:
         Tuple[bool, float]: (True, joint_value) if target reached; otherwise (False"""
-    end_time = time.time() + timeout_sec
-    while time.time() < end_time:
+    end_time = time.monotonic() + timeout_sec
+    while time.monotonic() < end_time:
         try:
             joint_value = get_joint_position(
                 namespace=namespace, joint=joint, timeout=timeout_sec
@@ -313,8 +343,8 @@ def wait_for_register(timeout: int) -> None:
     Therefore, the while loop has it's own timeout which also uses the defined pytest-timeout variable.
     """
     logger = get_logger("wait_for_register")
-    start = time.time()
-    while not Register.all_started and time.time() - start < timeout:
+    start = time.monotonic()
+    while not Register.all_started and time.monotonic() - start < timeout:
         time.sleep(1)
     if Register.all_started:
         logger.info(colored("Register is ready, start testing!", "green"))
