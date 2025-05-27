@@ -67,7 +67,7 @@ class JoyTopicManager(Node):
         state_pub (Publisher): Publisher for the current state of the active topic.
     """
 
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         """Initialize the JoyTopicManager node."""
         super().__init__("joy_topic_manager")
         self.declare_parameter("joy_topic", value="/joy")

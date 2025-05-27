@@ -25,7 +25,7 @@ class Convert32FC1to16UC1(Node):
         publisher (Publisher): Publisher for the converted 16UC1 depth image.
     """
 
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         """Initialize the Convert32FC1to16UC1 node."""
         super().__init__("convert_32FC1_to_16UC1_node")
 

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, Union
+from typing import Union
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import (
@@ -89,11 +89,11 @@ class Register:
         Register.started = 0
 
     @staticmethod
-    def next(*_: Any) -> LaunchDescription:
+    def next(*_: RegisteredLaunchDescription) -> LaunchDescription:
         """Returns the next action to start based on the order of registration.
 
         Args:
-            *_ (Any): Variable length argument list, not used in this method.
+            *_ (RegisteredLaunchDescription): Ignored.  Comes from the OpaqueFunction.
 
         Returns:
             LaunchDescription: A launch description containing the next action to start, or an empty launch description if all actions have been started.

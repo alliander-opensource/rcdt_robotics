@@ -26,7 +26,7 @@ class CombineCameraTopics(Node):
         pub (Publisher): Publisher for the RGBD message.
     """
 
-    def __init__(self) -> bool:
+    def __init__(self) -> None:
         """Initialize the CombineCameraTopics node."""
         super().__init__("combine_camera_topics")
         self.declare_parameter("rgb", "/camera/camera/color/image_raw")
