@@ -9,6 +9,11 @@ messages: set[type] = set()
 
 
 def add(message: type) -> None:
+    """Add a message type to the set of messages.
+
+    Args:
+        message (type): The message type to add.
+    """
     messages.add(message)
 
 

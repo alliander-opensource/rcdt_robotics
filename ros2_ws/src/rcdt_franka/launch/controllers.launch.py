@@ -14,6 +14,14 @@ gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_nod
 
 
 def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Franka controllers.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
     simulation = simulation_arg.bool_value(context)
 
     namespace = "franka"
@@ -72,6 +80,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka controllers.
+
+    Returns:
+        LaunchDescription: The launch description containing the nodes and actions.
+    """
     return LaunchDescription(
         [
             simulation_arg.declaration,

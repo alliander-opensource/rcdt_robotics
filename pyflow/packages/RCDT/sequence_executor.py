@@ -20,7 +20,18 @@ SERVICE_RESPONSE_TIMEOUT = 20
 
 
 class SequenceExecutor(PyflowNonBlockingExecutor):
+    """Executor for executing sequences of actions in ROS 2.
+
+    This executor listens for a sequence of actions defined in the input pin and executes them in order.
+    It uses an action client to communicate with the action server and handles feedback and results.
+    """
+
     def __init__(self, name: str):
+        """Initialize the SequenceExecutor with the given name.
+
+        Args:
+            name (str): The name of the executor.
+        """
         super().__init__(name)
         self.server_name = "/action_executor"
 
@@ -33,6 +44,7 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
         )
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
+        """Execute the sequence defined in the input pin."""
         goal = Sequence.Goal()
         goal.sequence = self.input_pin.getData()
 
@@ -63,6 +75,14 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
             logger.error(result.message)
 
     def future_done(self, future: Future) -> bool:
+        """Wait for the future to complete or timeout.
+
+        Args:
+            future (Future): The future to wait for.
+
+        Returns:
+            bool: True if the future completed successfully, False if it timed out.
+        """
         self.last_response = time.time()
         while not future.done():
             if time.time() - self.last_response > SERVICE_RESPONSE_TIMEOUT:
@@ -72,6 +92,11 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
         return True
 
     def feedback_callback(self, feedback_msg: Sequence.Impl.FeedbackMessage) -> None:
+        """Callback for feedback messages from the action server.
+
+        Args:
+            feedback_msg (Sequence.Impl.FeedbackMessage): The feedback message received from the action server.
+        """
         feedback = feedback_msg.feedback
         if feedback.success:
             logger.info(feedback.message)
@@ -81,4 +106,9 @@ class SequenceExecutor(PyflowNonBlockingExecutor):
 
     @staticmethod
     def category() -> str:
+        """Get the category of the executor.
+
+        Returns:
+            str: The category of the executor.
+        """
         return "Custom"

@@ -52,6 +52,11 @@ joint_state_publisher = Node(
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka robot controllers.
+
+    Returns:
+        LaunchDescription: The launch description containing the Franka controllers.
+    """
     return LaunchDescription(
         [
             settings_setter,

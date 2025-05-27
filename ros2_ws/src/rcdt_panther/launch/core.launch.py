@@ -21,6 +21,14 @@ use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Panther core.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
     use_sim = use_sim_arg.bool_value(context)
     child = child_arg.string_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
@@ -62,6 +70,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Panther core.
+
+    Returns:
+        LaunchDescription: The launch description for the Panther core.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

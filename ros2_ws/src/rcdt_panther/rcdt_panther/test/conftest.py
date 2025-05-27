@@ -10,7 +10,11 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 
 @pytest.fixture(scope="module")
 def core_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for the panther core."""
+    """Fixture to create launch file for the panther core.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the panther core.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py")
     )
@@ -18,7 +22,11 @@ def core_launch() -> RegisteredLaunchDescription:
 
 @pytest.fixture(scope="module")
 def controllers_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for the panther controllers."""
+    """Fixture to create launch file for the panther controllers.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the panther controllers.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
     )
@@ -26,7 +34,11 @@ def controllers_launch() -> RegisteredLaunchDescription:
 
 @pytest.fixture(scope="module")
 def navigation_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for the panther navigation."""
+    """Fixture to create launch file for the panther navigation.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the panther navigation.
+    """
     return RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "navigation.launch.py")
     )

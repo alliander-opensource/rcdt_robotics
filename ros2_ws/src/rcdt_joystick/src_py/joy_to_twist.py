@@ -15,7 +15,19 @@ ros_logger = logging.get_logger(__name__)
 
 
 class JoyToTwist(Node):
+    """A ROS2 node that converts joystick input to Twist messages.
+
+    This node subscribes to joystick input and publishes Twist messages based on the joystick axes and buttons.
+
+    Attributes:
+        pub (Publisher): Publisher for the Twist or TwistStamped messages.
+        mapping (dict): Mapping of joystick axes to Twist message fields.
+        twist_msg (Twist): The Twist message to be published.
+        twist_stamped_msg (TwistStamped): The TwistStamped message to be published if stamped is True.
+    """
+
     def __init__(self) -> None:
+        """Initialize the JoyToTwist node."""
         super().__init__("joy_to_twist_node")
         self.declare_parameter("sub_topic", "/joy")
         self.declare_parameter("pub_topic", "")
@@ -29,22 +41,22 @@ class JoyToTwist(Node):
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
         pub_frame = self.get_parameter("pub_frame").get_parameter_value().string_value
 
-        if sub_topic == "":
+        if not sub_topic:
             self.get_logger().warn("No subscriber topic was specified. Exiting.")
             return
 
-        if pub_topic == "":
+        if not pub_topic:
             self.get_logger().warn("No publisher topic was specified. Exiting.")
             return
 
-        if config_pkg == "":
+        if not config_pkg:
             self.get_logger().warn("No package for config file was specified. Exiting.")
             return
 
         config = get_file_path(config_pkg, ["config"], "gamepad_mapping.yaml")
         self.mapping = get_yaml(config)
 
-        if self.mapping == "":
+        if not self.mapping:
             self.get_logger().warn(f"No mapping was found in {config}. Exiting.")
             return
 
@@ -59,6 +71,11 @@ class JoyToTwist(Node):
         self.profile = "A"
 
     def handle_input(self, sub_msg: Joy) -> None:
+        """Handle incoming joystick messages and convert them to Twist messages.
+
+        Args:
+            sub_msg (Joy): The incoming joystick message containing axes and buttons.
+        """
         for idx in range(len(sub_msg.axes)):
             joy_value = sub_msg.axes[idx]
             if idx not in self.mapping["axes"]:
@@ -89,6 +106,11 @@ class JoyToTwist(Node):
 
 
 def main(args: list | None = None) -> None:
+    """Main function to initialize the ROS2 node and spin it.
+
+    Args:
+        args (list | None): Command line arguments, defaults to None.
+    """
     rclpy.init(args=args)
     node = JoyToTwist()
     spin_node(node)

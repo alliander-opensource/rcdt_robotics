@@ -13,7 +13,20 @@ from RCDT.Core.core import PyflowExecutor
 
 
 class ChangeCamera(PyflowExecutor):
+    """Node to change the camera position in the RCDT system.
+
+    Attributes:
+        name (str): The name of the node.
+        input_pin (PinBase): Input pin for the camera position.
+        exec_out (PinBase): Output pin to signal execution completion.
+    """
+
     def __init__(self, name: str):
+        """Initialize the ChangeCamera node with the given name.
+
+        Args:
+            name (str): The name of the node.
+        """
         super().__init__(name)
         self.createInputPin("In", "ExecPin", callback=self.execute)
         self.input_pin: PinBase = self.createInputPin("position", "StringPin")
@@ -24,6 +37,7 @@ class ChangeCamera(PyflowExecutor):
         self.command = command_str.split(" ")
 
     def execute(self, *_args: any, **_kwargs: any) -> None:
+        """Execute the command to change the camera position based on the input pin data."""
         reload(camera_positions)
         position = self.input_pin.getData()
         pose = camera_positions.POSITIONS.get(position)
@@ -34,7 +48,7 @@ class ChangeCamera(PyflowExecutor):
         msg = f"pose: {{position: {{x: {pose.position.x}, y: {pose.position.y}, z: {pose.position.z}}} orientation: {{x: {pose.orientation.x}, y: {pose.orientation.y}, z: {pose.orientation.z}, w: {pose.orientation.w}}}}}"
         result = subprocess.run(self.command + [msg], check=False, capture_output=True)
         error = result.stderr.decode()
-        if error == "":
+        if not error:
             self.logger.info("Changed camera position successfully.")
             self.exec_out.call()
         else:
@@ -42,4 +56,5 @@ class ChangeCamera(PyflowExecutor):
 
     @staticmethod
     def category() -> str:
+        """Return the category of the node."""
         return "Camera"

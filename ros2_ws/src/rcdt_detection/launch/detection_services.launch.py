@@ -12,6 +12,11 @@ from rcdt_utilities.launch_utils import get_lib_path
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the RCDT detection services.
+
+    Returns:
+        LaunchDescription: The launch description for the RCDT detection services.
+    """
     nodes = []
     executables_directory = get_lib_path("rcdt_detection")
     executables = glob(executables_directory + "/*.py")

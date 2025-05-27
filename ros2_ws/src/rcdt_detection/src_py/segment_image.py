@@ -21,7 +21,18 @@ ros_logger = logging.get_logger(__name__)
 
 
 class SegmentImage(Node):
+    """Node to segment an image using a segmentation model.
+
+    This node provides a service that takes an input image, applies segmentation,
+    and returns the segmented image along with individual masks for each segment.
+
+    Attributes:
+        node_name (str): The name of the node.
+        service_name (str): The name of the service provided by this node.
+    """
+
     def __init__(self) -> None:
+        """Initialize the SegmentImage node."""
         super().__init__("segment_image")
         self.declare_parameter("model_name", "SAM2")
         model_name = self.get_parameter("model_name").get_parameter_value().string_value
@@ -29,6 +40,15 @@ class SegmentImage(Node):
         self.model = load_segmentation_model(model_name)
 
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+        """Callback function to handle the service request.
+
+        Args:
+            request (Srv.Request): The request containing the input image.
+            response (Srv.Response): The response to be filled with the segmented image and masks.
+
+        Returns:
+            Srv.Response: The response containing the segmented image and masks.
+        """
         input_image_ros = request.input_image
         input_image_cv2 = ros_image_to_cv2_image(input_image_ros)
 
@@ -51,6 +71,11 @@ class SegmentImage(Node):
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = SegmentImage()
     spin_node(node)

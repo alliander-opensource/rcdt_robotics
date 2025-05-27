@@ -13,17 +13,40 @@ cv_bridge = CvBridge()
 def ros_image_to_cv2_image(
     image_message: Image, desired_encoding: str = "passthrough"
 ) -> ndarray:
-    """Convert ROS image message to cv2 image."""
+    """Convert ROS image message to cv2 image.
+
+    Args:
+        image_message (Image): The ROS image message to convert.
+        desired_encoding (str): The desired encoding for the output image. Defaults to "passthrough".
+
+    Returns:
+        ndarray: The converted cv2 image.
+    """
     return cv_bridge.imgmsg_to_cv2(image_message, desired_encoding=desired_encoding)
 
 
 def cv2_image_to_ros_image(image: ndarray, encoding: str = "passthrough") -> Image:
-    """Convert cv2 image message to ROS image."""
+    """Convert cv2 image message to ROS image.
+
+    Args:
+        image (ndarray): The cv2 image to convert.
+        encoding (str): The desired encoding for the output image. Defaults to "passthrough".
+
+    Returns:
+        Image: The converted ROS image message.
+    """
     return cv_bridge.cv2_to_imgmsg(image, encoding=encoding)
 
 
 def camera_info_to_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
-    """Calculate camera intrinsics for translating image to world coordinates."""
+    """Calculate camera intrinsics for translating image to world coordinates.
+
+    Args:
+        camera_info (CameraInfo): The camera info message containing the camera parameters.
+
+    Returns:
+        rs2.intrinsics: The calculated camera intrinsics.
+    """
     intrinsics = rs2.intrinsics()
 
     intrinsics.width = camera_info.width

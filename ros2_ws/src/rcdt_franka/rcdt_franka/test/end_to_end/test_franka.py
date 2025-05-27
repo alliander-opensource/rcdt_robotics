@@ -14,6 +14,15 @@ from rcdt_utilities.test_utils import add_tests_to_class
 
 @launch_pytest.fixture(scope="class")
 def franka() -> LaunchDescription:
+    """Fixture to create a launch description for the Franka robot.
+
+    This fixture sets up the Franka robot with the necessary configurations and
+    launches the required nodes for testing.
+
+    Returns:
+        LaunchDescription: The launch description containing the Franka robot setup.
+
+    """
     franka_launch = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "franka.launch.py"),
         launch_arguments={
@@ -27,7 +36,7 @@ def franka() -> LaunchDescription:
 
 @pytest.mark.launch(fixture=franka)
 class TestCoreLaunch:
-    """Run all the FrankaLaunchTests under franka.launch.py"""
+    """Run all the FrankaLaunchTests under franka.launch.py."""
 
 
 add_tests_to_class(TestCoreLaunch, get_tests())
