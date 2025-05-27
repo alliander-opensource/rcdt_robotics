@@ -19,6 +19,14 @@ use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Panther robot.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
     use_sim = use_sim_arg.bool_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
@@ -98,6 +106,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Panther robot.
+
+    Returns:
+        LaunchDescription: The launch description for the Panther robot.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

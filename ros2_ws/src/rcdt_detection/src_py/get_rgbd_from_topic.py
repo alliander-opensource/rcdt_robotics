@@ -15,12 +15,32 @@ ros_logger = logging.get_logger(__name__)
 
 
 class GetRGBDFromTopic(Node):
+    """Node to get RGBD data from a specified topic.
+
+    This node provides a service that waits for an RGBD message on a specified topic
+    and returns the RGB image, depth image, and their respective camera info.
+
+    Attributes:
+        node_name (str): The name of the node.
+        service_name (str): The name of the service provided by this node.
+    """
+
     def __init__(self) -> None:
+        """Node to get RGBD data from a specified topic."""
         super().__init__("get_rgbd_from_topic")
         self.create_service(Srv, "/get_rgbd_from_topic", self.callback)
 
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
-        if request.topic == "":
+        """Callback function to handle the service request.
+
+        Args:
+            request (Srv.Request): The request containing the topic to listen to.
+            response (Srv.Response): The response to be filled with RGBD data.
+
+        Returns:
+            Srv.Response: The response containing the RGB image, depth image, and camera info.
+        """
+        if not request.topic:
             ros_logger.error("No topic was specified. Exit.")
             response.success = False
             return response
@@ -39,6 +59,11 @@ class GetRGBDFromTopic(Node):
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = GetRGBDFromTopic()
     spin_node(node)

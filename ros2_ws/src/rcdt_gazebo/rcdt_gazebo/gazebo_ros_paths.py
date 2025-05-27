@@ -17,8 +17,7 @@ from ros2pkg.api import get_package_names
 
 
 class GazeboRosPaths:
-    """
-    Based on: https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_sim/launch/gz_sim.launch.py.in.
+    """Based on: https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_sim/launch/gz_sim.launch.py.in.
 
     By using our own launch file we are able to launch Gazebo as process with shell=False.
     This avoids ghost processes of Gazebo continuing and might be implemented in the original launch file in the future:
@@ -27,6 +26,11 @@ class GazeboRosPaths:
 
     @staticmethod
     def get_paths() -> tuple[str, str]:
+        """Get the paths for Gazebo models and plugins.
+
+        Returns:
+            tuple[str, str]: A tuple containing the model paths and plugin paths.
+        """
         gazebo_model_path = []
         gazebo_plugin_path = []
         gazebo_media_path = []
@@ -66,6 +70,11 @@ class GazeboRosPaths:
 
     @staticmethod
     def get_env() -> dict[str, str]:
+        """Get the environment variables for Gazebo.
+
+        Returns:
+            dict[str, str]: A dictionary containing the environment variables.
+        """
         model_paths, plugin_paths = GazeboRosPaths.get_paths()
         env = {
             "GZ_SIM_SYSTEM_PLUGIN_PATH": os.pathsep.join(

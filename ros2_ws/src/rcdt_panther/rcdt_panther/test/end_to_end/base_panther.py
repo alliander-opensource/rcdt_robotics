@@ -15,15 +15,41 @@ from sensor_msgs.msg import JointState
 
 
 def get_tests() -> dict:
-    """Test class for the Panther."""
+    """Test class for the Panther.
+
+    This class contains all the tests that are run in the Panther test suite.
+    It dynamically creates test methods based on the defined functions.
+
+    Returns:
+        dict: A dictionary of test methods.
+    """
 
     def test_wait_for_register(_self: object, timeout: int) -> None:
+        """Wait for the Panther to register.
+
+        Args:
+            _self (object): The test class instance.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
         wait_for_register(timeout=timeout)
 
     def test_joint_states_published(_self: object, timeout: int) -> None:
+        """Test that the joint states are published.
+
+        Args:
+            _self (object): The test class instance.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
         assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
 
     def test_e_stop_request(_self: object, test_node: Node, timeout: int) -> None:
+        """Test that the E-Stop request service can be called.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
         assert (
             call_trigger_service(
                 node=test_node,
@@ -36,6 +62,13 @@ def get_tests() -> dict:
     def test_switch_joy_to_panther_topic(
         _self: object, test_node: Node, timeout: int
     ) -> None:
+        """Test that the joy topic switches to the Panther topic.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
         assert_joy_topic_switch(
             node=test_node,
             expected_topic="/panther/joy",
@@ -46,6 +79,14 @@ def get_tests() -> dict:
     def test_move_panther_with_joy(
         _self: object, test_node: Node, timeout: int
     ) -> None:
+        """Test that the Panther can be moved with the joy topic.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
+
         def compare_fn(p1: Pose, p2: Pose) -> float:
             return p2.position.x - p1.position.x
 
@@ -63,6 +104,14 @@ def get_tests() -> dict:
     def test_rotate_panther_with_joy(
         _self: object, test_node: Node, timeout: int
     ) -> None:
+        """Test that the Panther can be rotated with the joy topic.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
+
         def compare_fn(p1: Pose, p2: Pose) -> float:
             return p2.orientation.w - p1.orientation.w
 
