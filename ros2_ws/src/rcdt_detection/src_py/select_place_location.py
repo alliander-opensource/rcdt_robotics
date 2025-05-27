@@ -17,7 +17,20 @@ logger = logging.get_logger(__name__)
 
 
 class SelectPlaceLocation(Node):
+    """Node to select a place location based on a triangular grid.
+
+    This node provides a service that calculates place locations in a triangular grid
+    pattern. It starts from a base layer and moves upwards, adjusting the x and y
+    coordinates based on the current layer and row index. The pose is returned in a
+    ROS-compatible format.
+
+    Attributes:
+        node_name (str): The name of the node.
+        service_name (str): The name of the service provided by this node.
+    """
+
     def __init__(self) -> None:
+        """Initialize the SelectPlaceLocation node."""
         super().__init__("place_locations")
         self.create_service(Srv, "/select_place_location", self.callback)
         self.brick_height = 0.07
@@ -28,6 +41,15 @@ class SelectPlaceLocation(Node):
         self.row_idx = 0
 
     def callback(self, _request: Srv.Request, response: Srv.Response) -> Srv.Response:
+        """Callback function to handle the service request.
+
+        Args:
+            _request (Srv.Request): The request object (not used in this implementation).
+            response (Srv.Response): The response to be filled with the place location.
+
+        Returns:
+            Srv.Response: The response containing the place location and success status.
+        """
         if self.layer >= self.base_layer_size:
             response.success = False
             logger.error("out of triangle layers")
@@ -60,6 +82,11 @@ class SelectPlaceLocation(Node):
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = SelectPlaceLocation()
     spin_node(node)
