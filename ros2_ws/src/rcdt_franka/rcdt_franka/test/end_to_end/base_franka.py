@@ -67,9 +67,7 @@ def get_tests() -> dict:
         msg = Joy()
         msg.buttons = buttons
 
-        publish_for_duration(
-            node=test_node, publisher=pub, msg=msg
-        )
+        publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
         reached_goal, joint_value = wait_until_reached_joint(
             namespace="franka",

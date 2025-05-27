@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import time
 
 import launch_pytest
 import pytest
@@ -65,9 +64,7 @@ def test_driving(test_node: Node, timeout: int) -> None:
     msg = Twist()
     msg.linear.x = 1.0
 
-    publish_for_duration(
-        node=test_node, publisher=pub, msg=msg
-    )
+    publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
     joint_value_after_driving = get_joint_position(
         "panther", "fl_wheel_joint", timeout=timeout

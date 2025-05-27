@@ -40,7 +40,11 @@ def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
 
 
 def publish_for_duration(
-    node: Node, publisher: Publisher, msg: Any, publish_duration: float= 1.0, rate_sec: float = 0.1
+    node: Node,
+    publisher: Publisher,
+    msg: Any,
+    publish_duration: float = 1.0,
+    rate_sec: float = 0.1,
 ) -> None:
     """
     Publishes a message at a specified rate for a given duration.
@@ -197,7 +201,10 @@ def assert_joy_topic_switch(
     )
 
     start_time = time.monotonic()
-    while result.get("state") != expected_topic and time.monotonic() - start_time < timeout:
+    while (
+        result.get("state") != expected_topic
+        and time.monotonic() - start_time < timeout
+    ):
         rclpy.spin_once(node, timeout_sec=1)
         time.sleep(0.1)
 
