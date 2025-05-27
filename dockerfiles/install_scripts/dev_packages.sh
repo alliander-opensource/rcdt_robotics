@@ -13,3 +13,5 @@ sudo apt install -y \
     ros-humble-slam-toolbox 
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+echo 'source $HOME/.local/bin/env' >> /home/$UNAME/.bashrc
