@@ -66,10 +66,8 @@ def test_driving(test_node: Node, timeout: int) -> None:
     msg.linear.x = 1.0
 
     publish_for_duration(
-        node=test_node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+        node=test_node, publisher=pub, msg=msg
     )
-
-    time.sleep(1)  # give the panther some time to move
 
     joint_value_after_driving = get_joint_position(
         "panther", "fl_wheel_joint", timeout=timeout
