@@ -14,4 +14,4 @@ sudo apt install -y \
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-echo "source /home/$UNAME/.local/bin/env' >> /home/$UNAME/.bashrc
+echo "source /home/$UNAME/.local/bin/env" >> /home/$UNAME/.bashrc
