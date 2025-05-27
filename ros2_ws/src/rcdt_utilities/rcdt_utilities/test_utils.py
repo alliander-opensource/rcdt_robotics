@@ -3,19 +3,78 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from typing import Type
+import time
+from typing import Any, Callable, Type
 
+import pytest
 import rclpy
+from geometry_msgs.msg import Pose, PoseStamped
 from launch_testing_ros.wait_for_topics import WaitForTopics
+from rcdt_messages.srv import ExpressPoseInOtherFrame
 from rclpy.action import ActionClient
 from rclpy.client import Client
+from rclpy.logging import get_logger
 from rclpy.node import Node
-from rclpy.service import Service
-from sensor_msgs.msg import JointState
+from rclpy.publisher import Publisher
+from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
+from rclpy.task import Future
+from sensor_msgs.msg import JointState, Joy
+from std_msgs.msg import String
 from std_srvs.srv import Trigger
+from termcolor import colored
+
+from rcdt_utilities.register import Register
+
+logger = get_logger("test_utils")
 
 
-def get_joint_position(namespace: str, joint: str) -> float:
+def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
+    """
+    Add the defined tests to the given class.
+
+    Use of the pytest mark.launch decorator adapts the class functions, which makes it impossible to reuse tests with different fixtures.
+    However, by using this method in combination with a function that generates the test functions (tests), reuse is possible.
+    """
+    for name, method in tests.items():
+        setattr(cls, name, method)
+
+
+def publish_for_duration(
+    node: Node,
+    publisher: Publisher,
+    msg: Any,
+    publish_duration: float = 1.0,
+    rate_sec: float = 0.1,
+) -> None:
+    """
+    Publishes a message at a specified rate for a given duration.
+
+    Args:
+        node (Node): The rclpy node to use for publishing.
+        publisher (Publisher): The publisher to send messages through.
+        msg (Joy): The message to publish.
+        publish_duration (float): Duration in seconds to publish the message.
+        rate_sec (float): Frequency in seconds at which to publish the message.
+    """
+    deadline = time.monotonic() + publish_duration
+
+    while time.monotonic() < deadline:
+        publisher.publish(msg)
+        rclpy.spin_once(node, timeout_sec=rate_sec)
+
+
+def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
+    """
+    Make sure there is at least one subscriber to the given publisher.
+    This avoids problems in tests where a publisher is created and instantly sends a message,
+    before the intended subscriber is ready.
+    """
+    start_time = time.monotonic()
+    while pub.get_subscription_count() == 0 and time.monotonic() - start_time < timeout:
+        time.sleep(0.1)
+
+
+def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
     """Get the joint position of a joint by name. This is done by calling the
     /joint_states topic and parsing the output. This is a workaround for the fact
     that the joint states are not published in a format that can be easily parsed.
@@ -28,7 +87,7 @@ def get_joint_position(namespace: str, joint: str) -> float:
         float: The position of the joint.
     """
     topic_list = [(f"{namespace}/joint_states", JointState)]
-    wait_for_topics = WaitForTopics(topic_list, timeout=10.0)
+    wait_for_topics = WaitForTopics(topic_list, timeout=timeout)
     assert wait_for_topics.wait()
     msg: JointState = wait_for_topics.received_messages(f"{namespace}/joint_states")[0]
     idx = msg.name.index(joint)
@@ -38,7 +97,7 @@ def get_joint_position(namespace: str, joint: str) -> float:
 
 
 def create_ready_service_client(
-    node: Node, srv_type: Service, service_name: str, timeout_sec: float = 20.0
+    node: Node, srv_type: Type, service_name: str, timeout_sec: int
 ) -> Client:
     """
     Create and wait for a service client to become available.
@@ -61,17 +120,19 @@ def create_ready_service_client(
     return client
 
 
-def call_trigger_service(node: Node, service_name: str) -> bool:
+def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
     """Call a trigger service and return True if the service was called successfully."""
-    client = create_ready_service_client(node, Trigger, service_name)
+    client = create_ready_service_client(
+        node, Trigger, service_name, timeout_sec=timeout
+    )
 
     future = client.call_async(Trigger.Request())
-    rclpy.spin_until_future_complete(node, future=future)
+    rclpy.spin_until_future_complete(node, future=future, timeout_sec=timeout)
     return future.result() is not None
 
 
 def create_ready_action_client(
-    node: Node, action_type: Type, action_name: str, timeout_sec: float = 20.0
+    node: Node, action_type: Type, action_name: str, timeout: int
 ) -> ActionClient:
     """
     Create and wait for an ActionClient to become ready.
@@ -89,6 +150,202 @@ def create_ready_action_client(
         RuntimeError: If the action server is not available within the timeout.
     """
     client = ActionClient(node, action_type, action_name)
-    if not client.wait_for_server(timeout_sec=timeout_sec):
+    if not client.wait_for_server(timeout_sec=timeout):
         raise RuntimeError(f"Action server {action_name} not available")
     return client
+
+
+def assert_joy_topic_switch(
+    node: Node,
+    expected_topic: str,
+    button_config: list[int],
+    timeout: int,
+    state_topic: str = "/joy_topic_manager/state",
+) -> None:
+    """
+    Publishes a Joy message and asserts that the expected topic is published on state_topic.
+
+    Args:
+        node (Node): rclpy test node.
+        expected_topic (str): Expected topic that should be published by the JoyTopicManager.
+        button_config (list[int]): Joy message buttons to trigger the topic change.
+        timeout (float): Max time to wait for the result.
+        state_topic (str): Topic to listen for state updates from joy_topic_manager.
+    """
+    logger.info("Starting to assert joy topic switch")
+    qos = QoSProfile(
+        depth=1,
+        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+        history=QoSHistoryPolicy.KEEP_LAST,
+    )
+
+    result = {}
+
+    def callback_function(msg: String) -> None:
+        result["state"] = msg.data
+
+    node.create_subscription(
+        msg_type=String,
+        topic=state_topic,
+        callback=callback_function,
+        qos_profile=qos,
+    )
+
+    pub = node.create_publisher(Joy, "/joy", 10)
+    wait_for_subscriber(pub, timeout)
+
+    msg = Joy()
+    msg.buttons = button_config
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
+
+    start_time = time.monotonic()
+    while (
+        result.get("state") != expected_topic
+        and time.monotonic() - start_time < timeout
+    ):
+        rclpy.spin_once(node, timeout_sec=1)
+        time.sleep(0.1)
+
+    assert result.get("state") == expected_topic, (
+        f"Expected state '{expected_topic}', but got '{result.get('state')}'"
+    )
+
+
+def call_express_pose_in_other_frame(
+    node: Node, pose: PoseStamped, target_frame: str, timeout: int
+) -> ExpressPoseInOtherFrame.Response:
+    """
+    Calls the /express_pose_in_other_frame service.
+
+    Args:
+        node (Node): An active rclpy Node.
+        pose (PoseStamped): The pose to transform.
+        target_frame (str): The frame to express the pose in.
+        timeout_sec (float): Timeout for waiting on service and result.
+
+    Returns:
+        ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
+    """
+
+    client = create_ready_service_client(
+        node,
+        ExpressPoseInOtherFrame,
+        "/express_pose_in_other_frame",
+        timeout_sec=timeout,
+    )
+
+    request = ExpressPoseInOtherFrame.Request()
+    request.pose = pose
+    request.target_frame = target_frame
+
+    future: Future = client.call_async(request)
+    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
+
+    response = future.result()
+    if response is None:
+        raise RuntimeError("Service call failed or timed out")
+
+    return response
+
+
+def assert_movements_with_joy(  # noqa: PLR0913
+    node: Node,
+    joy_axes: list[float],
+    compare_fn: Callable[[Pose, Pose], float],
+    threshold: float,
+    description: str,
+    frame_base: str,
+    frame_target: str,
+    timeout: int,
+) -> None:
+    """Publishes a joystick message and asserts that movement occurs above a threshold.
+
+    Args:
+        test_node: The ROS node used for publishing/subscribing.
+        joy_axes: A list of axes for the Joy message.
+        compare_fn: A function taking (first_pose, moved_pose) and returning a float delta.
+        threshold: The minimum delta required to pass the test.
+        description: Description of what is being tested (used in assertion message).
+        frame_base: The frame in which the original pose is defined.
+        frame_target: The frame to which the pose should be transformed.
+    """
+    pose = PoseStamped()
+    pose.header.frame_id = frame_base
+    first_pose = call_express_pose_in_other_frame(
+        node=node, pose=pose, target_frame=frame_target, timeout=timeout
+    ).pose.pose
+
+    pub = node.create_publisher(Joy, "/joy", 10)
+    wait_for_subscriber(pub, timeout)
+
+    msg = Joy()
+    msg.axes = joy_axes
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
+
+    pose = PoseStamped()
+    pose.header.frame_id = frame_base
+    moved_pose = call_express_pose_in_other_frame(
+        node=node, pose=pose, target_frame=frame_target, timeout=timeout
+    ).pose.pose
+    delta = compare_fn(first_pose, moved_pose)
+
+    assert abs(delta) > threshold, (
+        f"{description} did not change after input. Δ = {delta:.4f}"
+    )
+
+
+def wait_until_reached_joint(
+    namespace: str,
+    joint: str,
+    expected_value: float,
+    timeout_sec: int,
+    tolerance: float = 0.025,
+) -> tuple[bool, float]:
+    """Wait until a joint reaches the expected value within a tolerance.
+
+    Args:
+        namespace (str): Namespace of the robot (e.g., 'franka').
+        joint (str): Name of the joint to check.
+        expected_value (float): Target joint value in radians.
+        tolerance (float): Acceptable deviation from the expected value.
+        timeout_sec (int): Timeout duration in seconds.
+
+    Returns:
+        Tuple[bool, float]: (True, joint_value) if target reached; otherwise (False"""
+    end_time = time.monotonic() + timeout_sec
+    while time.monotonic() < end_time:
+        try:
+            joint_value = get_joint_position(
+                namespace=namespace, joint=joint, timeout=timeout_sec
+            )
+            if joint_value == pytest.approx(expected_value, abs=tolerance):
+                time.sleep(0.25)
+                return (True, joint_value)
+        except ValueError:
+            pass
+
+        time.sleep(0.25)
+    return (False, joint_value)
+
+
+def wait_for_register(timeout: int) -> None:
+    """
+    Waits till all registerd actions are started.
+
+    This function should be called in every first test of a test file.
+    This ensures that all other tests are started after all actions are launched correctly.
+
+    If not all actions start correctly, pytest-timeout will cancel the test, but this does not stop the while loop.
+    Therefore, the while loop has it's own timeout which also uses the defined pytest-timeout variable.
+    """
+    logger = get_logger("wait_for_register")
+    start = time.monotonic()
+    while not Register.all_started and time.monotonic() - start < timeout:
+        time.sleep(1)
+    if Register.all_started:
+        logger.info(colored("Register is ready, start testing!", "green"))
+    assert Register.all_started

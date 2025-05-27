@@ -6,12 +6,13 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument
+from rcdt_utilities.register import Register
 
 robots_arg = LaunchArgument("robots", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    robots = robots_arg.value(context).split(" ")
+    robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
         package="joy",
@@ -60,11 +61,15 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        joy if robots != [""] else SKIP,
-        joy_topic_manager if robots != [""] else SKIP,
-        joy_to_gripper_franka if "franka" in robots else SKIP,
-        joy_to_twist_franka if "franka" in robots else SKIP,
-        joy_to_twist_panther if "panther" in robots else SKIP,
+        Register.on_start(joy, context) if robots != [""] else SKIP,
+        Register.on_start(joy_topic_manager, context) if robots != [""] else SKIP,
+        Register.on_start(joy_to_gripper_franka, context)
+        if "franka" in robots
+        else SKIP,
+        Register.on_start(joy_to_twist_franka, context) if "franka" in robots else SKIP,
+        Register.on_start(joy_to_twist_panther, context)
+        if "panther" in robots
+        else SKIP,
     ]
 
 

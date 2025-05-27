@@ -7,6 +7,7 @@ from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path, get_yaml
+from rcdt_utilities.register import Register
 
 robot_name_arg = LaunchArgument("robot_name", "")
 moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
@@ -14,11 +15,11 @@ servo_params_package_arg = LaunchArgument("servo_params_package", "rcdt_franka")
 namespace_arg = LaunchArgument("namespace", "")
 
 
-def launch_setup(context: LaunchContext) -> None:
-    robot_name = robot_name_arg.value(context)
-    package_name = moveit_package_name_arg.value(context)
-    servo_params_package = servo_params_package_arg.value(context)
-    namespace = namespace_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    robot_name = robot_name_arg.string_value(context)
+    package_name = moveit_package_name_arg.string_value(context)
+    servo_params_package = servo_params_package_arg.string_value(context)
+    namespace = namespace_arg.string_value(context)
 
     moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
     moveit_config.trajectory_execution(
@@ -60,9 +61,13 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     return [
-        move_group,
-        moveit_servo,
-        moveit_manager,
+        Register.on_log(
+            move_group, "MoveGroup context initialization complete", context
+        ),
+        Register.on_log(moveit_servo, "Servo initialized successfully", context),
+        Register.on_log(
+            moveit_manager, "Ready to take commands for planning group", context
+        ),
     ]
 
 

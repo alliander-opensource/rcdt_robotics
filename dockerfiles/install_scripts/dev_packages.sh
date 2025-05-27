@@ -6,15 +6,15 @@
 
 set -e
 
+# Packages without specific version:
 pip install pre-commit
-
-# Install pytest-timeout:
 pip install pytest-timeout
+pip install ruff
+pip install ty
+pip install termcolor
 
 # Specifying numpy range to work with ROS and Ultralytics:
 pip install "numpy>=1.23.0,<2.0"
-
-pip install ruff
 
 # Specifying currently newest version of transforms3d to avoid conflict with imported numpy.float in older version.
 pip install "transforms3d>=0.4.2"

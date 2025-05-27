@@ -3,14 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
-from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import (
-    SKIP,
-    LaunchArgument,
-    get_file_path,
-    start_actions_in_sequence,
-)
+from launch.actions import OpaqueFunction
+from launch_ros.actions import SetParameter
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -22,15 +18,15 @@ use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_rviz = use_rviz_arg.value(context)
-    world = str(world_arg.value(context))
-    use_collision_monitor = use_collision_monitor_arg.value(context)
-    use_velodyne = use_velodyne_arg.value(context)
-    use_slam = use_slam_arg.value(context)
-    use_nav2 = use_nav2_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    use_rviz = use_rviz_arg.bool_value(context)
+    world = world_arg.string_value(context)
+    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
+    use_velodyne = use_velodyne_arg.bool_value(context)
+    use_slam = use_slam_arg.bool_value(context)
+    use_nav2 = use_nav2_arg.bool_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -45,17 +41,17 @@ def launch_setup(context: LaunchContext) -> None:
         use_velodyne = True
         use_slam = True
 
-    core = IncludeLaunchDescription(
+    core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
         launch_arguments={
             "simulation": str(use_sim),
             "load_gazebo_ui": str(load_gazebo_ui),
             "velodyne": str(use_velodyne),
             "world": world,
-        }.items(),
+        },
     )
 
-    controllers = IncludeLaunchDescription(
+    controllers = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
     )
 
@@ -69,47 +65,35 @@ def launch_setup(context: LaunchContext) -> None:
         rviz_display_config = "panther_velodyne.rviz"
     else:
         rviz_display_config = "panther_general.rviz"
-    rviz = IncludeLaunchDescription(
+    rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
             "rviz_frame": "map" if use_slam else f"{ns}/odom",
             "rviz_display_config": rviz_display_config,
-        }.items(),
+        },
     )
 
-    joystick = IncludeLaunchDescription(
+    joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "panther"}.items(),
+        launch_arguments={"robots": "panther"},
     )
 
-    slam = IncludeLaunchDescription(
+    slam = RegisteredLaunchDescription(
         get_file_path("slam_toolbox", ["launch"], "online_async_launch.py"),
         launch_arguments={
             "slam_params_file": get_file_path(
                 "rcdt_panther", ["config"], "slam_params.yaml"
             ),
-        }.items(),
-    )
-
-    wait_for_panther = Node(
-        package="rcdt_utilities",
-        executable="wait_for_topic.py",
-        parameters=[{"topic": f"{ns}/joint_states"}, {"msg_type": "JointState"}],
-    )
-
-    launch_description = LaunchDescription(
-        [
-            controllers,
-            joystick,
-            rviz if use_rviz else SKIP,
-            slam if use_slam else SKIP,
-        ]
+        },
     )
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        core if use_sim else SKIP,
-        start_actions_in_sequence([wait_for_panther, launch_description]),
+        Register.group(core, context) if use_sim else SKIP,
+        Register.group(controllers, context) if use_sim else SKIP,
+        Register.group(joystick, context),
+        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(slam, context) if use_slam else SKIP,
     ]
 
 

@@ -3,14 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
-from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import (
-    SKIP,
-    LaunchArgument,
-    get_file_path,
-    start_actions_in_sequence,
-)
+from launch.actions import OpaqueFunction
+from launch_ros.actions import SetParameter
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -18,97 +14,73 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_rviz = use_rviz_arg.value(context)
-    world = str(world_arg.value(context))
+def launch_setup(context: LaunchContext) -> list:
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    use_rviz = use_rviz_arg.bool_value(context)
+    world = world_arg.string_value(context)
 
-    core = IncludeLaunchDescription(
+    core = RegisteredLaunchDescription(
         get_file_path("rcdt_mobile_manipulator", ["launch"], "core.launch.py"),
         launch_arguments={
             "simulation": str(use_sim),
             "load_gazebo_ui": str(load_gazebo_ui),
             "world": world,
-        }.items(),
+        },
     )
 
-    franka_controllers = IncludeLaunchDescription(
+    franka_controllers = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
     )
 
-    panther_controllers = IncludeLaunchDescription(
+    panther_controllers = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
     )
 
     display_config = "mobile_manipulator_general.rviz"
-    rviz = IncludeLaunchDescription(
+    rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
             "rviz_frame": "panther/odom",
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "rviz_display_config": display_config,
-        }.items(),
+        },
     )
 
-    moveit = IncludeLaunchDescription(
+    moveit = RegisteredLaunchDescription(
         get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
         launch_arguments={
             "robot_name": "fr3",
             "moveit_package_name": "rcdt_franka_moveit_config",
             "servo_params_package": "rcdt_franka",
             "namespace": "franka",
-        }.items(),
+        },
     )
 
-    joystick = IncludeLaunchDescription(
+    joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "franka panther"}.items(),
+        launch_arguments={"robots": "franka panther"},
     )
 
-    open_gripper = Node(
-        package="rcdt_franka",
-        executable="open_gripper.py",
-        namespace="franka",
+    gripper_services = RegisteredLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py")
     )
 
-    close_gripper = Node(
-        package="rcdt_franka",
-        executable="close_gripper.py",
-        namespace="franka",
-    )
-
-    wait_for_franka = Node(
-        package="rcdt_utilities",
-        executable="wait_for_topic.py",
-        parameters=[{"topic": "/franka/joint_states"}, {"msg_type": "JointState"}],
-    )
-
-    wait_for_panther = Node(
-        package="rcdt_utilities",
-        executable="wait_for_topic.py",
-        parameters=[{"topic": "/panther/joint_states"}, {"msg_type": "JointState"}],
-    )
-
-    launch_description = LaunchDescription(
-        [
-            franka_controllers,
-            panther_controllers,
-            open_gripper,
-            close_gripper,
-            joystick,
-            moveit,
-            rviz if use_rviz else SKIP,
-        ]
+    utilities = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
     )
 
     return [
         SetParameter(name="use_sim_time", value=True),
-        core,
-        start_actions_in_sequence(
-            [wait_for_franka, wait_for_panther, launch_description]
-        ),
+        Register.group(core, context),
+        Register.group(franka_controllers, context),
+        Register.group(panther_controllers, context),
+        Register.group(gripper_services, context),
+        Register.group(moveit, context),
+        Register.group(joystick, context),
+        Register.group(utilities, context),
+        Register.group(rviz, context) if use_rviz else SKIP,
     ]
 
 

@@ -6,16 +6,24 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.register import Register
 
 simulation_arg = LaunchArgument("simulation", True, [True, False])
 
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
 
 
-def launch_setup(context: LaunchContext) -> None:
-    simulation = simulation_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    simulation = simulation_arg.bool_value(context)
 
     namespace = "franka"
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+        namespace=namespace,
+    )
 
     fr3_arm_controller_spawner = Node(
         package="controller_manager",
@@ -54,9 +62,12 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     return [
-        fr3_arm_controller_spawner,
-        fr3_gripper,
-        gripper_action_controller_spawner if simulation else SKIP,
+        Register.on_exit(joint_state_broadcaster_spawner, context),
+        Register.on_exit(fr3_arm_controller_spawner, context),
+        Register.on_start(fr3_gripper, context),
+        Register.on_exit(gripper_action_controller_spawner, context)
+        if simulation
+        else SKIP,
     ]
 
 

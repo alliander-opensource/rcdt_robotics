@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter
 from rcdt_utilities.launch_utils import (
     SKIP,
@@ -11,6 +11,7 @@ from rcdt_utilities.launch_utils import (
     get_file_path,
     get_robot_description,
 )
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 parent_arg = LaunchArgument("parent", "world", ["world", "panther"])
@@ -19,12 +20,12 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    parent = parent_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = str(world_arg.value(context))
-    use_realsense = use_realsense_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    use_sim = use_sim_arg.bool_value(context)
+    parent = parent_arg.string_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = str(world_arg.string_value(context))
+    use_realsense = use_realsense_arg.bool_value(context)
 
     namespace = "franka"
     frame_prefix = namespace + "/" if namespace else ""
@@ -46,26 +47,19 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     if use_sim:
-        robot = IncludeLaunchDescription(
+        robot = RegisteredLaunchDescription(
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
             launch_arguments={
                 "world": world,
                 "robots": namespace,
                 "realsense": str(use_realsense),
                 "load_gazebo_ui": str(load_gazebo_ui),
-            }.items(),
+            },
         )
     else:
-        robot = IncludeLaunchDescription(
+        robot = RegisteredLaunchDescription(
             get_file_path("rcdt_franka", ["launch"], "robot.launch.py")
         )
-
-    joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
-        namespace=namespace,
-    )
 
     # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
     static_transform_publisher = Node(
@@ -82,10 +76,11 @@ def launch_setup(context: LaunchContext) -> None:
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
-        robot_state_publisher,
-        robot if not is_mobile_manipulator else SKIP,
-        joint_state_broadcaster,
-        static_transform_publisher if not is_mobile_manipulator else SKIP,
+        Register.on_start(robot_state_publisher, context),
+        Register.group(robot, context) if not is_mobile_manipulator else SKIP,
+        Register.on_log(static_transform_publisher, "publishing transform", context)
+        if not is_mobile_manipulator
+        else SKIP,
     ]
 
 

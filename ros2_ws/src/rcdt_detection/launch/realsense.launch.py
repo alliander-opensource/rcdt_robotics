@@ -6,6 +6,7 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
@@ -24,8 +25,8 @@ def launch_setup(context: LaunchContext) -> list:
         )
         realsense = LaunchDescription(
             [
-                convert_32FC1_to_16UC1_node,
-                combine_camera_topics_node,
+                Register.on_start(convert_32FC1_to_16UC1_node, context),
+                Register.on_start(combine_camera_topics_node, context),
             ]
         )
     else:

@@ -7,15 +7,9 @@ from math import atan2
 
 import cv2
 import numpy as np
-from geometry_msgs.msg import (
-    Point as ros_Point,
-)
-from geometry_msgs.msg import (
-    Pose as ros_Pose,
-)
-from geometry_msgs.msg import (
-    Quaternion as ros_Quaternion,
-)
+from geometry_msgs.msg import Point as ros_Point
+from geometry_msgs.msg import Pose as ros_Pose
+from geometry_msgs.msg import Quaternion as ros_Quaternion
 from tf_transformations import quaternion_from_euler
 
 
@@ -37,7 +31,7 @@ class Point2D:
     def as_array(self) -> np.ndarray:
         return np.array([self.x, self.y])
 
-    def surrounding_points(self, grid_size: np.ndarray = 5) -> "Point2DList":
+    def surrounding_points(self, grid_size: int = 5) -> "Point2DList":
         """Return a dense list of 2D points around self with distance of up to grid_size."""
         surrounding_points = []
         for x_pos in range(self.x - grid_size, self.x + grid_size):
@@ -70,13 +64,13 @@ class Quaternion:
 
     @staticmethod
     def from_eulerangles(x: float, y: float, z: float) -> "Quaternion":
-        return Quaternion(*quaternion_from_euler(x, y, z))
+        x, y, z, w = quaternion_from_euler(x, y, z)
+        return Quaternion(x, y, z, w)
 
     @staticmethod
     def from_eulerangles_deg(x: float, y: float, z: float) -> "Quaternion":
-        return Quaternion(
-            *quaternion_from_euler(np.deg2rad(x), np.deg2rad(y), np.deg2rad(z))
-        )
+        x, y, z, w = quaternion_from_euler(np.deg2rad(x), np.deg2rad(y), np.deg2rad(z))
+        return Quaternion(x, y, z, w)
 
     @property
     def as_ros_quaternion(self) -> ros_Quaternion:
@@ -102,7 +96,8 @@ class Point2DList:
 
     @property
     def mean(self) -> Point2D:
-        return Point2D(*np.mean([point.as_array for point in self.points], axis=0))
+        x, y = np.mean([point.as_array for point in self.points], axis=0)
+        return Point2D(x, y)
 
 
 @dataclass
@@ -112,7 +107,7 @@ class Line:
 
     @property
     def length(self) -> float:
-        return np.linalg.norm(self.p1.as_array - self.p2.as_array)
+        return float(np.linalg.norm(self.p1.as_array - self.p2.as_array))
 
     @property
     def flipped(self) -> "Line":
@@ -121,7 +116,7 @@ class Line:
     def points_along(self, n: int) -> list[Point2D]:
         points = np.linspace(self.p1.as_array, self.p2.as_array, n + 2, dtype=int)
         points = points[1:-1]  # remove edges
-        return [Point2D(*point) for point in points]
+        return [Point2D(point[0], point[1]) for point in points]
 
     def angle(self) -> float:
         dx = self.p2.x - self.p1.x
