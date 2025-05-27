@@ -39,6 +39,26 @@ def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
         setattr(cls, name, method)
 
 
+def publish_for_duration(
+    node: Node, publisher: Publisher, msg: Joy, publish_duration: float, rate_sec: float
+) -> None:
+    """
+    Publishes a message at a specified rate for a given duration.
+
+    Args:
+        node (Node): The rclpy node to use for publishing.
+        publisher (Publisher): The publisher to send messages through.
+        msg (Joy): The message to publish.
+        publish_duration (float): Duration in seconds to publish the message.
+        rate_sec (float): Frequency in seconds at which to publish the message.
+    """
+    deadline = time.monotonic() + publish_duration
+
+    while time.monotonic() < deadline:
+        publisher.publish(msg)
+        rclpy.spin_once(node, timeout_sec=rate_sec)
+
+
 def wait_for_subscriber(pub: Publisher, timeout: int) -> None:
     """
     Make sure there is at least one subscriber to the given publisher.
@@ -172,7 +192,9 @@ def assert_joy_topic_switch(
 
     msg = Joy()
     msg.buttons = button_config
-    pub.publish(msg)
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
 
     start_time = time.time()
     while result.get("state") != expected_topic and time.time() - start_time < timeout:
@@ -253,8 +275,9 @@ def assert_movements_with_joy(  # noqa: PLR0913
 
     msg = Joy()
     msg.axes = joy_axes
-    pub.publish(msg)
-    time.sleep(1)  # let the robot move
+    publish_for_duration(
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+    )
 
     pose = PoseStamped()
     pose.header.frame_id = frame_base

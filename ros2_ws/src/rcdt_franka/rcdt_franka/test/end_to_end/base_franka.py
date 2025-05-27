@@ -9,6 +9,7 @@ from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,
     assert_movements_with_joy,
+    publish_for_duration,
     wait_for_register,
     wait_for_subscriber,
     wait_until_reached_joint,
@@ -65,7 +66,10 @@ def get_tests() -> dict:
 
         msg = Joy()
         msg.buttons = buttons
-        pub.publish(msg)
+
+        publish_for_duration(
+            node=test_node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+        )
 
         reached_goal, joint_value = wait_until_reached_joint(
             namespace="franka",
