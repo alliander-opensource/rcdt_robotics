@@ -7,7 +7,7 @@ split-on-trailing-comma = false
 
 [tool.ruff.lint]
 select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA", "D", "DOC"]
-ignore = ["E501", "ANN204","D100", "D104", "PLR0917","PLR0914"]
+ignore = ["E501", "ANN204", "ANN401", "D100", "D104", "PLR0917","PLR0914"]
 preview = true
 
 [tool.ruff.lint.pydocstyle]
