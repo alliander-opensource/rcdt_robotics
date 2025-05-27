@@ -13,13 +13,17 @@ We make use of different Github workflows to automatically validate the code in 
 The Linting workflow contains three checks:
 
 - **ruff**:\
-Checks the format and style of the .py files in this repository, using the rules specified in *pyproject.toml*.
+Lint all Python files according to the rules in `pyproject.toml`. See the full list of [Ruff rules](https://docs.astral.sh/ruff/rules/#error-e) for details.
+
 
 - **clang-format**:\
 Checks the format of the .cpp, .h and .hpp files in this repository.
 
 - **reuse**:\
 Checks all files in this repository on usage of copyright terms.
+
+- **Ty**:\
+Runs static type checks on our Python code using [Ty](https://github.com/astral-sh/ty).  
 
 ## Documentation
 
