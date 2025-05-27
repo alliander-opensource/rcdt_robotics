@@ -28,7 +28,14 @@ ros_package/
 └───ros_package/
 |   |   __init__.py
 |   |   py_module.py
-|
+│   └── test/
+│       ├── conftest.py
+│       ├── unit/
+│       │   └── test_py_module.py
+│       ├── integration/
+│       │   └── test_service_client.py
+│       └── end_to_end/
+│           └── test_full_launch.py
 └───launch/
     |   launch_file.launch.py
 ```
@@ -39,6 +46,13 @@ ros_package/
 - A sub-directory `ros_package/` with the same name as the ROS package can be used to create a Python package. This directory contains an `__init__.py` file and the Python modules of the Python package.
 - Possible launch files are located in the `launch/` directory.
 - More directories are possible, like `urdf/` for urdf files or `config/` for config files.
+* The testing layout is placed alongside the Python package, with these subfolders:
+
+  * `unit/` for fast, logic-only tests
+  * `integration/` for multi-component or ROS client/server tests
+  * `end_to_end/` for full launch/simulation tests
+
+  Use a top-level `test/conftest.py` to define shared fixtures, and name your files/functions `test_*` so pytest auto-discovers them. The most general fixtures are defined in the `conftest.py` in the root of the repository. 
 
 ## CMakeLists.txt
 
