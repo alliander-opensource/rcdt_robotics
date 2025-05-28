@@ -6,8 +6,7 @@
 
 mkdir -p /home/$UNAME/franka_lock_unlock/src
 cd /home/$UNAME/franka_lock_unlock
-git clone https://github.com/jk-ethz/franka_lock_unlock.git
-
+git clone https://github.com/alliander-opensource/franka_lock_unlock.git
 
 rosdep update
 rosdep install --from-paths src --rosdistro humble -y -i
