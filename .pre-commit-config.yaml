@@ -18,19 +18,27 @@
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
+    rev: v0.11.11
     hooks:
       - id: ruff
         name: ruff format
         entry: ruff format
         language: system
+        pass_filenames: false
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
+    rev: v0.11.11
     hooks:
       - id: ruff
         name: ruff check
         entry: ruff check
         language: system
+        pass_filenames: false
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.6.7 
+    hooks:
+      - id: pydoclint
+        args: ["ros2_ws/src"]
+        pass_filenames: false
   - repo: local
     hooks:
       - id: ty
@@ -44,6 +52,6 @@ repos:
       - id: clang-format
         types_or: [c++, c, cuda]
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v3.0.1
+    rev: v5.0.2
     hooks:
       - id: reuse
