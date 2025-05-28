@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import contextlib
 import os
 
 import rclpy
@@ -183,16 +184,9 @@ def spin_node(node: Node) -> None:
 
     Args:
         node (Node): The ROS 2 node to spin.
-
-    Raises:
-        Exception: If an error occurs during spinning which is not a KeyboardInterrupt.
     """
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        raise e
 
 
 def spin_executor(executor: Executor) -> None:
@@ -200,16 +194,9 @@ def spin_executor(executor: Executor) -> None:
 
     Args:
         executor (Executor): The ROS 2 executor to spin.
-
-    Raises:
-        Exception: If an error occurs during spinning which is not a KeyboardInterrupt.
     """
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         executor.spin()
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        raise e
 
 
 def assert_for_message(message_type: type, topic: str, timeout: int) -> None:
