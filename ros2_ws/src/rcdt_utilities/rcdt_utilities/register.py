@@ -2,7 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, Union
+from __future__ import annotations
+
+from typing import Any
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import (
@@ -36,7 +38,7 @@ class RegisteredLaunchDescription(IncludeLaunchDescription):
 
         Args:
             launch_description_source (str): The path to the launch file to include.
-            launch_arguments (dict, optional): The launch arguments to pass to the included launch file. Defaults to None.
+            launch_arguments (dict | None): The launch arguments to pass to the included launch file. Defaults to None.
         """
         if launch_arguments is None:
             launch_arguments = {}
@@ -58,17 +60,17 @@ class Register:
 
     Attributes:
         group_id (int): A unique identifier for the group of registered actions.
-        register (list): A list of registered actions, which can be of type Node or ExecuteProcess, or a string representing a group.
+        register (list["Register" | str]): A list of registered actions, which can be of type Node or ExecuteProcess, or a string representing a group.
         actions (int): The total number of actions registered.
         started (int): The number of actions that have been started.
         all_started (bool): A flag indicating whether all registered actions have been started.
     """
 
-    group_id = 0
-    register: list[Union["Register", str]] = []
-    actions = 0
-    started = 0
-    all_started = False
+    group_id: int = 0
+    register: list["Register" | str] = []
+    actions: int = 0
+    started: int = 0
+    all_started: bool = False
 
     @staticmethod
     def get_unique_group_id() -> str:
@@ -166,21 +168,21 @@ class Register:
 
     def __init__(self):
         """Initializes the Register class with default values."""
-        self.action: Union[Node | ExecuteProcess]
+        self.action: Node | ExecuteProcess
 
         self.is_started = False
         self.log: str
 
     @classmethod
     def on_start(
-        cls, action: Union[Node, ExecuteProcess], context: LaunchContext
+        cls, action: Node | ExecuteProcess, context: LaunchContext
     ) -> LaunchDescription:
         """Registers the given action to be ready directly on start.
 
         This method is used to register an action that should be started immediately when the launch file is executed.
 
         Args:
-            action (Union[Node, ExecuteProcess]): The action to register, which can be a Node or ExecuteProcess.
+            action (Node | ExecuteProcess): The action to register, which can be a Node or ExecuteProcess.
             context (LaunchContext): The launch context to get the group id from.
 
         Returns:
@@ -194,14 +196,14 @@ class Register:
 
     @classmethod
     def on_exit(
-        cls, action: Union[Node, ExecuteProcess], context: LaunchContext
+        cls, action: Node | ExecuteProcess, context: LaunchContext
     ) -> LaunchDescription:
         """Registers the given action to be ready on exit.
 
         This method is used to register an action that should be started when the specified action exits.
 
         Args:
-            action (Union[Node, ExecuteProcess]): The action to register, which can be a Node or ExecuteProcess.
+            action (Node | ExecuteProcess): The action to register, which can be a Node or ExecuteProcess.
             context (LaunchContext): The launch context to get the group id from.
 
         Returns:
@@ -215,14 +217,14 @@ class Register:
 
     @classmethod
     def on_log(
-        cls, action: Union[Node, ExecuteProcess], log: str, context: LaunchContext
+        cls, action: Node | ExecuteProcess, log: str, context: LaunchContext
     ) -> LaunchDescription:
         """Registers the given action to be ready when logging the given log message.
 
          This method is used to register an action that should be started when a specific log message is captured.
 
         Args:
-            action (Union[Node, ExecuteProcess]): The action to register, which can be a Node or ExecuteProcess.
+            action (Node | ExecuteProcess): The action to register, which can be a Node or ExecuteProcess.
             log (str): The log message to capture before starting the action.
             context (LaunchContext): The launch context to get the group id from.
 
@@ -254,7 +256,7 @@ class Register:
 
     def insert_action(
         self,
-        action: Union[Node, ExecuteProcess],
+        action: Node | ExecuteProcess,
         event_handler: RegisterEventHandler,
         context: LaunchContext,
     ) -> LaunchDescription:
@@ -266,7 +268,7 @@ class Register:
         If the item is the first action to start, the launch_description also contains the action to trigger the chain reaction.
 
         Args:
-            action (Union[Node, ExecuteProcess]): The action to register, which can be a Node or ExecuteProcess.
+            action (Node | ExecuteProcess): The action to register, which can be a Node or ExecuteProcess.
             event_handler (RegisterEventHandler): The event handler to trigger the next action.
             context (LaunchContext): The launch context to get the group id from.
 
