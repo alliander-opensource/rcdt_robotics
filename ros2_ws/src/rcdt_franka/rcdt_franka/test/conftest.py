@@ -12,6 +12,9 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 def controllers_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers.
 
+    Args:
+        request (pytest.FixtureRequest): The pytest request object to access configuration options.
+
     Returns:
         RegisteredLaunchDescription: The launch description for the controllers.
     """
@@ -24,6 +27,9 @@ def controllers_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescri
 @pytest.fixture(scope="module")
 def core_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescription:
     """Fixture to create launch file for the franka core.
+
+    Args:
+        request (pytest.FixtureRequest): The pytest request object to access configuration options.
 
     Returns:
         RegisteredLaunchDescription: The launch description for the franka core.
@@ -57,6 +63,9 @@ def gripper_services_launch(
     request: pytest.FixtureRequest,
 ) -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers.
+
+    Args:
+        request (pytest.FixtureRequest): The pytest request object to access configuration options.
 
     Returns:
         RegisteredLaunchDescription: The launch description for the gripper services.

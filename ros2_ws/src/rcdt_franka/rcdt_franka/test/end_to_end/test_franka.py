@@ -19,6 +19,9 @@ def franka(request: pytest.FixtureRequest) -> LaunchDescription:
     This fixture sets up the Franka robot with the necessary configurations and
     launches the required nodes for testing.
 
+    Args:
+        request (pytest.FixtureRequest): The pytest request object to access configuration options.
+
     Returns:
         LaunchDescription: The launch description containing the Franka robot setup.
 
