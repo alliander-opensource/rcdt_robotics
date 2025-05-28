@@ -22,3 +22,5 @@ ignore/
 build/
 
 .env
+!.devcontainer/.env
+.cache

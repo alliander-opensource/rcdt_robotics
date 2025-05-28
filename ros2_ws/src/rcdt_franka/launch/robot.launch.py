@@ -2,24 +2,33 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription
-from launch.actions import Shutdown
+import os
+
+from launch import LaunchContext, LaunchDescription
+from launch.actions import OpaqueFunction, Shutdown
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import get_file_path
-import os 
-from launch import LaunchContext, LaunchDescription
-from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from launch.actions import OpaqueFunction
+from rcdt_utilities.register import Register
 
 
-def launch_setup(context: LaunchContext):
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Franka robot controllers.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Raises:
+        RuntimeError: If the required environment variables are not set.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
 
-
-    hostname = os.getenv('FRANKA_HOSTNAME', '')
-    username = os.getenv('FRANKA_USERNAME', 'admin')
-    password = os.getenv('FRANKA_PASSWORD', '')
+    hostname = os.getenv("FRANKA_HOSTNAME", "")
+    username = os.getenv("FRANKA_USERNAME", "admin")
+    password = os.getenv("FRANKA_PASSWORD", "")
 
     if not hostname or not username or not password:
         raise RuntimeError(
@@ -31,19 +40,12 @@ def launch_setup(context: LaunchContext):
         name="franka_lock_unlock",
         package="franka_lock_unlock",
         executable="franka_lock_unlock.py",
-        output='screen',
-        arguments=[
-            hostname,
-            username,
-            password,
-            '-u','-l', '-w','-r',  '-p','-c'            
-        ],
-        respawn=True
+        output="screen",
+        arguments=[hostname, username, password, "-u", "-l", "-w", "-r", "-p", "-c"],
+        respawn=True,
     )
 
-    franka_controllers = param_file = get_file_path(
-        "rcdt_franka", ["config"], "controllers.yaml"
-    )
+    franka_controllers = get_file_path("rcdt_franka", ["config"], "controllers.yaml")
 
     ros2_control_node = Node(
         package="controller_manager",
@@ -80,13 +82,16 @@ def launch_setup(context: LaunchContext):
         ],
         namespace=namespace,
     )
-    
-    return[
-        Register.on_log(franka_lock_unlock,"Keeping persistent connection...", context),
+
+    return [
+        Register.on_log(
+            franka_lock_unlock, "Keeping persistent connection...", context
+        ),
         Register.on_start(settings_setter, context),
         Register.on_start(ros2_control_node, context),
-        Register.on_start(joint_state_publisher, context) 
+        Register.on_start(joint_state_publisher, context),
     ]
+
 
 def generate_launch_description() -> LaunchDescription:
     """Generate the launch description for the Franka robot controllers.
@@ -97,6 +102,5 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             OpaqueFunction(function=launch_setup),
-
         ]
     )

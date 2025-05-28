@@ -68,7 +68,6 @@ def launch_setup(context: LaunchContext) -> list:
         robot = RegisteredLaunchDescription(
             get_file_path("rcdt_franka", ["launch"], "robot.launch.py")
         )
-        
 
     # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
     static_transform_publisher = Node(
