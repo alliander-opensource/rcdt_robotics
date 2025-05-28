@@ -53,7 +53,9 @@ def moveit_launch() -> RegisteredLaunchDescription:
 
 
 @pytest.fixture(scope="module")
-def gripper_services_launch(request: pytest.FixtureRequest) -> RegisteredLaunchDescription:
+def gripper_services_launch(
+    request: pytest.FixtureRequest,
+) -> RegisteredLaunchDescription:
     """Fixture to create launch file for controllers.
 
     Returns:
