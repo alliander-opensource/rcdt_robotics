@@ -17,7 +17,7 @@ def panther_launch() -> LaunchDescription:
     """Fixture to create launch file for panther robot.
 
     Returns:
-        RegisteredLaunchDescription: The launch description for the panther robot.
+        LaunchDescription: The launch description for the panther robot.
     """
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),

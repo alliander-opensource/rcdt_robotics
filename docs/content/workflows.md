@@ -10,10 +10,13 @@ We make use of different Github workflows to automatically validate the code in 
 
 ## Linting
 
-The Linting workflow contains three checks:
+The Linting workflow contains the following checks:
 
 - **ruff**:\
 Checks the format and style of the .py files in this repository, using the rules specified in *pyproject.toml*.
+
+-**pydoclint**\:
+Checks the docstring of the .py files in the rosw_ws/src directory, using the rules specified in *pyproject.toml*. These checks might be implemented in Ruff in the [future](https://github.com/astral-sh/ruff/issues/12434), but for now we use pydoclint for the additional checks not available in Ruff.
 
 - **clang-format**:\
 Checks the format of the .cpp, .h and .hpp files in this repository.

@@ -21,10 +21,6 @@ class PoseFromPixel(Node):
 
     This node provides a service that takes a pixel location and depth image,
     and returns the 3D pose of that pixel in the camera's coordinate frame.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

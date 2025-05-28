@@ -18,7 +18,6 @@ from rcdt_utilities.geometry import (
     Quaternion,
 )
 from rclpy import logging
-from typing_extensions import Self
 
 from rcdt_detection.image_manipulation import three_to_single_channel
 
@@ -237,7 +236,7 @@ class MaskProperties:
         masked_depth_values = self.depth_image[self.single_channel > 0]
         return np.bincount(masked_depth_values).argmax()
 
-    def refined_mask(self) -> Self:
+    def refined_mask(self) -> "MaskProperties":
         """Returns a refined mask based on the mode depth value.
 
         The refined mask is created by applying a condition that keeps only the pixels within a certain range around the mode depth value.
