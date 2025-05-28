@@ -103,25 +103,19 @@ The process for a code change and pull request you should follow:
 
 This project uses `pytest` together with `launch_pytest` for integration and end-to-end testing.
 
-Test packages can contain:
-
-* `unit/`: for pure logic tests
-* `integration/`: for ROS service or component interactions
-* `end_to_end/`: for full-stack functional tests
-
 Tests are configured to support two modes:
 
 * **Simulation (default)**: Tests run in a simulated environment using the same launch and control setup as the real robot. This is useful for fast feedback during development without needing access to hardware. 
-* **Real Hardware**: Tests run on the actual robot if it's available and properly set up. We expect most things to behave the same as in simulation, but it's still important to test on the real hardware to catch timing issues, integration problems, or hardware-specific problems. Make sure everything is running and safe before starting.
+* **Real Hardware**: Tests run on the actual robot if it's available and properly set up. We expect most things to behave the same as in simulation, but it's still important to test on the real hardware to catch timing issues, integration problems, or hardware-specific problems. Make sure everything is running and safe before starting. Tests for the Franka arm can be executed from any configuration, though it is recommended to start from the home position for reliable results.
 
-You can switch between these modes using the `--simulation` option:
+You can switch between these modes using the `--simulation` option: 
 
 ```bash
 # Run tests in simulation mode (default)
 pytest
 
 # Run tests on real hardware
-pytest --simulation=false
+pytest --simulation=False
 ```
 
 ## Attribution
