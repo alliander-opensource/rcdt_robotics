@@ -9,7 +9,11 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 
 @pytest.fixture(scope="module")
 def mobile_manipulator_launch() -> RegisteredLaunchDescription:
-    """Fixture to create launch file for controllers."""
+    """Fixture to create launch file for controllers.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for the mobile manipulator.
+    """
     return RegisteredLaunchDescription(
         get_file_path(
             "rcdt_mobile_manipulator", ["launch"], "mobile_manipulator.launch.py"

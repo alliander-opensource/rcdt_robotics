@@ -11,6 +11,14 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the navigation.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
     use_sim = use_sim_arg.bool_value(context)
 
     navigation = IncludeLaunchDescription(
@@ -29,6 +37,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the navigation.
+
+    Returns:
+        LaunchDescription: The launch description for the navigation.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

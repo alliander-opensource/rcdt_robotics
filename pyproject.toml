@@ -6,11 +6,16 @@
 split-on-trailing-comma = false
 
 [tool.ruff.lint]
-select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
-ignore = ["E501", "ANN204", "ANN401"]
+select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA", "D", "DOC"]
+ignore = ["E501", "ANN204", "ANN401", "D100", "D104", "PLR0917","PLR0914"]
+preview = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.pytest.ini_options]
 timeout = 90
+norecursedirs = ["install", "build", "log"]
 
 [tool.ty.environment]
 extra-paths = [
@@ -26,3 +31,17 @@ extra-paths = [
     "ros2_ws/src/rcdt_utilities/",
     "ros2_ws/src/rcdt_gazebo/",
 ]
+
+# Settings of pydoclint, also in flake8 to use in vscode:
+[tool.flake8]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true
+select = "DOC"
+
+[tool.pydoclint]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true
