@@ -7,6 +7,7 @@
 set -e
 
 # Packages without specific version:
+pip install pre-commit
 pip install pytest-timeout
 pip install ruff
 pip install ty
