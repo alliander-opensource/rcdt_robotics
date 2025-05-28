@@ -107,9 +107,9 @@ def get_tests() -> dict:
     @pytest.mark.parametrize(
         "axes, direction",
         [
-            ([1.0, 0.0, 0.0, 0.0, 0.0], "y"),
-            ([0.0, 1.0, 0.0, 0.0, 0.0], "x"),
-            ([0.0, 0.0, 0.0, 1.0, 0.0], "z"),
+            ([0.1, 0.0, 0.0, 0.0, 0.0], "y"),
+            ([0.0, 0.1, 0.0, 0.0, 0.0], "x"),
+            ([0.0, 0.0, 0.0, 0.1, 0.0], "z"),
         ],
     )
     def test_move_arm_with_joy(
@@ -118,7 +118,7 @@ def get_tests() -> dict:
         direction: str,
         test_node: Node,
         timeout: int,
-        movement_threshold: float = 0.01,
+        movement_threshold: float = 0.001,
     ) -> None:
         """Test moving the arm with the joystick.
 
