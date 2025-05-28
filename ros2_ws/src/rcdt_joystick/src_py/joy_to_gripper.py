@@ -21,14 +21,6 @@ class JoyToGripper(Node):
 
     This node subscribes to joystick input and calls the appropriate service
     to open or close the gripper based on button presses.
-
-    Attributes:
-        open_gripper (Client): Client for the open gripper service.
-        close_gripper (Client): Client for the close gripper service.
-        mapping (dict): Mapping of joystick buttons to gripper actions.
-        button_actions (dict): Dictionary mapping button indices to actions.
-        button_states (dict): Dictionary to track the state of each button.
-        busy (bool): Flag to indicate if the node is currently processing a request.
     """
 
     def __init__(self):

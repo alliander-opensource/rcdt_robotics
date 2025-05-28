@@ -33,6 +33,10 @@ def add_tests_to_class(cls: type, tests: dict[str, Callable]) -> None:
 
     Use of the pytest mark.launch decorator adapts the class functions, which makes it impossible to reuse tests with different fixtures.
     However, by using this method in combination with a function that generates the test functions (tests), reuse is possible.
+
+    Args:
+        cls (type): The class to which the tests should be added.
+        tests (dict[str, Callable]): The test functions to add to the class.
     """
     for name, method in tests.items():
         setattr(cls, name, method)
@@ -50,7 +54,7 @@ def publish_for_duration(
     Args:
         node (Node): The rclpy node to use for publishing.
         publisher (Publisher): The publisher to send messages through.
-        msg (Joy): The message to publish.
+        msg (Any): The message to publish.
         publish_duration (float): Duration in seconds to publish the message.
         rate_sec (float): Frequency in seconds at which to publish the message.
     """
@@ -102,9 +106,9 @@ def create_ready_service_client(
 
     Args:
         node (Node): The rclpy node to use for client creation.
-        srv_type: The service type (e.g., `ListControllers`).
+        srv_type (Type): The service type (e.g., `ListControllers`).
         service_name (str): Fully qualified name of the service.
-        timeout_sec (float): Timeout to wait for the service.
+        timeout_sec (int): Timeout to wait for the service.
 
     Returns:
         Client: Ready service client.
@@ -147,7 +151,7 @@ def create_ready_action_client(
         node (Node): The rclpy node used to create the action client.
         action_type (Type): The action type class
         action_name (str): The fully qualified action name.
-        timeout (float): Timeout in seconds to wait for the server.
+        timeout (int): Timeout in seconds to wait for the server.
 
     Returns:
         ActionClient: A ready ActionClient instance.
@@ -174,7 +178,7 @@ def assert_joy_topic_switch(
         node (Node): rclpy test node.
         expected_topic (str): Expected topic that should be published by the JoyTopicManager.
         button_config (list[int]): Joy message buttons to trigger the topic change.
-        timeout (float): Max time to wait for the result.
+        timeout (int): Max time to wait for the result.
         state_topic (str): Topic to listen for state updates from joy_topic_manager.
     """
     logger.info("Starting to assert joy topic switch")
@@ -232,7 +236,7 @@ def call_express_pose_in_other_frame(
         node (Node): An active rclpy Node.
         pose (PoseStamped): The pose to transform.
         target_frame (str): The frame to express the pose in.
-        timeout (float): Timeout for waiting on service and result.
+        timeout (int): Timeout for waiting on service and result.
 
     Raises:
         RuntimeError: If the service call fails or times out.
@@ -276,7 +280,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     Args:
         node (Node): rclpy test node.
         joy_axes (list[float]): Axes values to publish in the Joy message.
-        compare_fn (Callable[[PoseStamped, PoseStamped], float]): Function to compare poses.
+        compare_fn (Callable[[Pose, Pose], float]): Function to compare poses.
         threshold (float): Minimum change in pose to assert movement.
         description (str): Description of the pose change being tested.
         frame_base (str): Base frame of the robot.
@@ -327,7 +331,7 @@ def wait_until_reached_joint(
         tolerance (float): Acceptable deviation from the expected value.
 
     Returns:
-        Tuple[bool, float]: (True, joint_value) if target reached; otherwise (False , joint_value).
+        tuple[bool, float]: (True, joint_value) if target reached; otherwise (False , joint_value).
     """
     end_time = time.monotonic() + timeout_sec
     while time.monotonic() < end_time:

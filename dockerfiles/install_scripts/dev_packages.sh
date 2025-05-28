@@ -8,6 +8,7 @@ set -e
 
 sudo apt update
 sudo apt install -y \
+    flake8 \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
     ros-humble-slam-toolbox 

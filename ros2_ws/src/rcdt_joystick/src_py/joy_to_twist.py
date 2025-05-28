@@ -18,12 +18,6 @@ class JoyToTwist(Node):
     """A ROS2 node that converts joystick input to Twist messages.
 
     This node subscribes to joystick input and publishes Twist messages based on the joystick axes and buttons.
-
-    Attributes:
-        pub (Publisher): Publisher for the Twist or TwistStamped messages.
-        mapping (dict): Mapping of joystick axes to Twist message fields.
-        twist_msg (Twist): The Twist message to be published.
-        twist_stamped_msg (TwistStamped): The TwistStamped message to be published if stamped is True.
     """
 
     def __init__(self) -> None:

@@ -190,9 +190,9 @@ class Sequence:
     actions: list[Action]
     node: Node | None = None
     goal_handle: ServerGoalHandle | None = None
-    last_result = None
-    success = True
-    index = 0
+    last_result: object = None
+    success: bool = True
+    index: int = 0
 
     def reset(self) -> None:
         """Reset the sequence to its initial state."""
