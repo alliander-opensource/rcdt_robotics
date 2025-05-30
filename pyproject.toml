@@ -59,3 +59,17 @@ extra-paths = [
     "ros2_ws/src/rcdt_utilities/",
     "ros2_ws/src/rcdt_gazebo/",
 ]
+
+# Settings of pydoclint, also in flake8 to use in vscode:
+[tool.flake8]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true
+select = "DOC"
+
+[tool.pydoclint]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true

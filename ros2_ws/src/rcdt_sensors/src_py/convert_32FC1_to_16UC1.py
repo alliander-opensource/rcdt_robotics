@@ -20,9 +20,6 @@ class Convert32FC1to16UC1(Node):
 
     This node subscribes to a 32FC1 depth image topic, converts the image data to
     16UC1 format (millimeters), and publishes the converted image to a new topic.
-
-    Attributes:
-        publisher (Publisher): Publisher for the converted 16UC1 depth image.
     """
 
     def __init__(self) -> None:

@@ -19,10 +19,6 @@ class GetRGBDFromTopic(Node):
 
     This node provides a service that waits for an RGBD message on a specified topic
     and returns the RGB image, depth image, and their respective camera info.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

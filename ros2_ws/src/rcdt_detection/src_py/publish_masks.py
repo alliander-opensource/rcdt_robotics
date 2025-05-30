@@ -22,10 +22,6 @@ class PublishMasks(Node):
     This node provides a service that takes a list of masks and a topic name,
     combines the masks by taking the maximum value across all masks, and publishes
     the combined mask to the specified topic.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

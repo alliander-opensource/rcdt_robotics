@@ -19,10 +19,6 @@ class PublishImage(Node):
 
     This node provides a service that takes an image and a topic name,
     and publishes the image to that topic.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

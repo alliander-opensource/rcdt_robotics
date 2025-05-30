@@ -18,10 +18,6 @@ class SelectImageFromList(Node):
 
     This node provides a service that allows the selection of an image from a list
     based on an index provided in the request.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

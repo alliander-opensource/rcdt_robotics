@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import contextlib
 import os
-from typing import List
 
 import rclpy
 import xacro
@@ -17,7 +17,7 @@ from rclpy.executors import Executor
 from rclpy.node import Node
 
 SKIP = LaunchDescriptionEntity()
-WAIT = 3
+WAIT: int = 3
 
 
 class LaunchArgument:
@@ -25,25 +25,20 @@ class LaunchArgument:
 
     This class allows you to declare a launch argument with a default value and optional choices.
     It also provides a method to retrieve the value of the argument in a launch context.
-
-    Attributes:
-        name (str): The name of the launch argument.
-        default_value (str | bool | int | float): The default value of the launch argument.
-        choices (List, optional): A list of valid choices for the launch argument. Defaults to None.
     """
 
     def __init__(
         self,
         name: str,
         default_value: str | bool | int | float,
-        choices: List | None = None,
+        choices: list | None = None,
     ) -> None:
         """Initializes a LaunchArgument instance.
 
         Args:
             name (str): The name of the launch argument.
             default_value (str | bool | int | float): The default value of the launch argument.
-            choices (List, optional): A list of valid choices for the launch argument. Defaults to None.
+            choices (list | None): A list of valid choices for the launch argument. Defaults to None.
         """
         self.configuration = LaunchConfiguration(name)
         if choices is not None:
@@ -137,12 +132,12 @@ def get_lib_path(package: str) -> str:
     return os.path.join(package_prefix, "lib", package)
 
 
-def get_file_path(package: str, folders: List[str], file: str) -> str:
+def get_file_path(package: str, folders: list[str], file: str) -> str:
     """Construct a file path within a ROS 2 package.
 
     Args:
         package (str): The name of the ROS 2 package.
-        folders (List[str]): A list of folder names leading to the file.
+        folders (list[str]): A list of folder names leading to the file.
         file (str): The name of the file.
 
     Returns:
@@ -173,7 +168,7 @@ def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) 
 
     Args:
         xacro_path (str): The path to the Xacro file.
-        xacro_arguments (dict, optional): A dictionary of arguments to pass to the Xacro processor. Defaults to None.
+        xacro_arguments (dict | None): A dictionary of arguments to pass to the Xacro processor. Defaults to None.
 
     Returns:
         dict: A dictionary containing the robot description in XML format.
@@ -190,12 +185,8 @@ def spin_node(node: Node) -> None:
     Args:
         node (Node): The ROS 2 node to spin.
     """
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        raise e
 
 
 def spin_executor(executor: Executor) -> None:
@@ -204,12 +195,8 @@ def spin_executor(executor: Executor) -> None:
     Args:
         executor (Executor): The ROS 2 executor to spin.
     """
-    try:
+    with contextlib.suppress(KeyboardInterrupt):
         executor.spin()
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        raise e
 
 
 def assert_for_message(message_type: type, topic: str, timeout: int) -> None:

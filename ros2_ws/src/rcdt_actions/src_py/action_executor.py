@@ -72,8 +72,12 @@ class ActionExecutor(Node):
         return result
 
 
-def main(args: str = None) -> None:
-    """Main function to initialize the ROS 2 node and start the action executor."""
+def main(args: str | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start the action executor.
+
+    Args:
+        args (str | None): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
     node = ActionExecutor()

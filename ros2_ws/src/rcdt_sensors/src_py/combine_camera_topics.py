@@ -20,10 +20,6 @@ class CombineCameraTopics(Node):
     This node subscribes to the RGB and depth image topics, as well as their corresponding
     camera info topics. It publishes a combined RGBD message that contains both the RGB image
     and the depth image, along with their camera information.
-
-    Attributes:
-        rgbd (RGBD): The combined RGBD message containing RGB and depth images.
-        pub (Publisher): Publisher for the RGBD message.
     """
 
     def __init__(self) -> None:
@@ -55,19 +51,35 @@ class CombineCameraTopics(Node):
         self.pub.publish(self.rgbd)
 
     def update_rgb(self, msg: Image) -> None:
-        """Update the RGB image in the RGBD message."""
+        """Update the RGB image in the RGBD message.
+
+        Args:
+            msg (Image): The incoming RGB image message.
+        """
         self.rgbd.rgb = msg
 
     def update_depth(self, msg: Image) -> None:
-        """Update the depth image in the RGBD message."""
+        """Update the depth image in the RGBD message.
+
+        Args:
+            msg (Image): The incoming depth image message.
+        """
         self.rgbd.depth = msg
 
     def update_rgb_info(self, msg: CameraInfo) -> None:
-        """Update the RGB camera info in the RGBD message."""
+        """Update the RGB camera info in the RGBD message.
+
+        Args:
+            msg (CameraInfo): The incoming RGB camera info message.
+        """
         self.rgbd.rgb_camera_info = msg
 
     def update_depth_info(self, msg: CameraInfo) -> None:
-        """Update the depth camera info in the RGBD message."""
+        """Update the depth camera info in the RGBD message.
+
+        Args:
+            msg (CameraInfo): The incoming depth camera info message.
+        """
         self.rgbd.depth_camera_info = msg
 
 

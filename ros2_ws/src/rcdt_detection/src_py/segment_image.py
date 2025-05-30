@@ -25,10 +25,6 @@ class SegmentImage(Node):
 
     This node provides a service that takes an input image, applies segmentation,
     and returns the segmented image along with individual masks for each segment.
-
-    Attributes:
-        node_name (str): The name of the node.
-        service_name (str): The name of the service provided by this node.
     """
 
     def __init__(self) -> None:

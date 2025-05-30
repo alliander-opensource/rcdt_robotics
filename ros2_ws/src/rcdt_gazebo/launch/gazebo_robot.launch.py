@@ -4,7 +4,6 @@
 
 
 import xml.etree.ElementTree as ET
-from typing import List
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
@@ -21,7 +20,7 @@ use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> List:
+def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the Gazebo simulation with robots.
 
     Args:
@@ -31,7 +30,7 @@ def launch_setup(context: LaunchContext) -> List:
         ValueError: If the SDF file does not contain a world attribute with a name.
 
     Returns:
-        List: A list of actions to be executed in the launch description.
+        list: A list of actions to be executed in the launch description.
     """
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)

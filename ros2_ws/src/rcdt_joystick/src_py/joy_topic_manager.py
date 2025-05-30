@@ -59,12 +59,6 @@ class JoyTopicManager(Node):
     This node subscribes to a joystick input topic and publishes Joy messages to specific topics
     based on the configuration defined in a YAML file. It allows dynamic topic switching
     based on joystick button states.
-
-    Attributes:
-        outputs (list[Output]): List of Output configurations loaded from the YAML file.
-        pubs (dict[str, Publisher]): Dictionary mapping topic names to their corresponding publishers.
-        topic (str | None): The currently active topic to which Joy messages are being published.
-        state_pub (Publisher): Publisher for the current state of the active topic.
     """
 
     def __init__(self) -> None:
