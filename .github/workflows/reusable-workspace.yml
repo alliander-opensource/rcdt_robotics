@@ -28,10 +28,13 @@ jobs:
           colcon build --symlink-install
       - name: uv sync
         shell: bash -ieo pipefail {0}
-        run: uv sync
+        run: |
+          cd ~/rcdt_robotics/
+          uv sync
       - name: run ty
         shell: bash -ieo pipefail {0}
         run: |
+          cd ros2_ws
           source /home/rcdt/.bashrc
           ty check --error-on-warning
       - name: run tests
