@@ -26,6 +26,9 @@ jobs:
           source /home/rcdt/.bashrc
           cd ros2_ws
           colcon build --symlink-install
+      - name: uv sync
+        shell: bash -ieo pipefail {0}
+        run: uv sync
       - name: run ty
         shell: bash -ieo pipefail {0}
         run: |

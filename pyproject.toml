@@ -6,6 +6,7 @@
 name = "rcdt_robotics"
 version = "0.1.0"
 description = "RCDT_robotics"
+environment = ".venv"
 dependencies = [
     "catkin-pkg>=1.0.0",
     "distinctipy>=1.3.4",
@@ -14,6 +15,7 @@ dependencies = [
     "mashumaro>=3.16",
     "myst-parser>=4.0.1",
     "numpy>=2.2.6",
+    "pre-commit>=4.2.0",
     "pyrealsense2>=2.55.1.6486",
     "pytest-timeout>=2.4.0",
     "ruff>=0.11.11",
