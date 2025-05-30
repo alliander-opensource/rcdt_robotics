@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: ruff
         name: ruff format
-        entry: ruff format
+        entry: uv run ruff format
         language: system
         pass_filenames: false
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -30,7 +30,7 @@ repos:
     hooks:
       - id: ruff
         name: ruff check
-        entry: ruff check
+        entry: uv run ruff check
         language: system
         pass_filenames: false
   - repo: https://github.com/jsh9/pydoclint
