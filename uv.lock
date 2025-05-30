@@ -529,6 +529,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "click" },
     { name = "pydoclint" },
     { name = "ruff" },
     { name = "ty" },
@@ -560,6 +561,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "click", specifier = ">=8.2.1" },
     { name = "pydoclint", specifier = ">=0.6.6" },
     { name = "ruff", specifier = ">=0.11.12" },
     { name = "ty", specifier = ">=0.0.1a7" },
