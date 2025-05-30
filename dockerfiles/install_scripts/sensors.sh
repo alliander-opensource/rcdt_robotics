@@ -11,7 +11,6 @@ apt update
 apt install -y \
     ros-humble-realsense2-camera \
     ros-humble-realsense2-description
-pip install pyrealsense2
 
 # Velodyne:
 apt install -y ros-humble-velodyne-description
