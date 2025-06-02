@@ -24,7 +24,7 @@ mkdir -p /home/$UNAME/control_ws/src
 cd /home/$UNAME/control_ws/src
 git clone https://github.com/ros-controls/gz_ros2_control.git -b humble
 cd gz_ros2_control
-git checkout 0.7.9
+git checkout 0.7.15
 cd /home/$UNAME/control_ws
 source /home/$UNAME/.bashrc
 colcon build
