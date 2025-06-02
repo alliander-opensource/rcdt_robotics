@@ -1,3 +1,7 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
 #include "convert_32FC1_to_16UC1.hpp"
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/core/mat.hpp>
