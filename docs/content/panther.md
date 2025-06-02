@@ -12,7 +12,7 @@ This page gives information about usage of the Husarion Panther.
 
 ### Quick start
 
-The physical robot can  be started with the following steps:
+The physical robot can be started with the following steps:
 
 - Enable the battery (switch at the front of the robot).
 - Start the robot (press red power button).
