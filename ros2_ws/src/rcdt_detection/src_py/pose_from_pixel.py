@@ -17,13 +17,27 @@ ros_logger = logging.get_logger(__name__)
 
 
 class PoseFromPixel(Node):
-    """Converts a pixel to the corresponding pose in meters."""
+    """Converts a pixel to the corresponding pose in meters.
+
+    This node provides a service that takes a pixel location and depth image,
+    and returns the 3D pose of that pixel in the camera's coordinate frame.
+    """
 
     def __init__(self) -> None:
+        """Initialize the PoseFromPixel node."""
         super().__init__("pose_from_pixel")
         self.create_service(Srv, "/pose_from_pixel", self.callback)
 
     def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+        """Callback function to handle the service request.
+
+        Args:
+            request (Srv.Request): The request containing the pixel location and depth image.
+            response (Srv.Response): The response to be filled with the pose.
+
+        Returns:
+            Srv.Response: The response containing the pose of the pixel in the camera's coordinate frame.
+        """
         cv2_image = ros_image_to_cv2_image(request.depth_image)
         height, width = cv2_image.shape
         intr = calculate_intrinsics(request.camera_info)
@@ -52,6 +66,16 @@ class PoseFromPixel(Node):
 
 
 def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
+    """Check if the pixel coordinates are valid within the image dimensions.
+
+    Args:
+        width (int): The width of the image.
+        height (int): The height of the image.
+        pixel (list[int, int]): The pixel coordinates to validate.
+
+    Returns:
+        bool: True if the pixel is valid, False otherwise.
+    """
     valid = True
     if not 0 <= pixel[0] < width:
         ros_logger.warn(f"Pixel x={pixel[0]} while image width={width}.")
@@ -63,7 +87,14 @@ def is_pixel_valid(width: int, height: int, pixel: list[int, int]) -> bool:
 
 
 def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
-    """Calculate camera intrinsics for translating image to world coordinates."""
+    """Calculate camera intrinsics for translating image to world coordinates.
+
+    Args:
+        camera_info (CameraInfo): The camera information containing intrinsic parameters.
+
+    Returns:
+        rs2.intrinsics: The calculated intrinsics for the camera.
+    """
     intrinsics = rs2.intrinsics()
 
     intrinsics.width = camera_info.width
@@ -84,6 +115,11 @@ def calculate_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = PoseFromPixel()
     spin_node(node)

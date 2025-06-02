@@ -2,6 +2,46 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
 [tool.ruff.lint]
-select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA"]
-ignore = ["E501", "ANN204"]
+select = ["I", "F", "E", "W", "B", "N", "A", "C4", "PL", "Q000", "SIM", "ANN", "ARG", "ERA", "D", "DOC"]
+ignore = ["E501", "ANN204", "ANN401", "D100", "D104", "PLR0917","PLR0914"]
+preview = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+timeout = 90
+norecursedirs = ["install", "build", "log"]
+
+[tool.ty.environment]
+extra-paths = [
+    "/opt/ros/humble/local/lib/python3.10/dist-packages/",
+    "/opt/ros/humble/lib/python3.10/site-packages/",
+    "/usr/local/lib/python3.10/dist-packages/",
+    "/usr/lib/python3/dist-packages/",
+    "/home/rcdt/moveit_ws/install/moveit_configs_utils/lib/python3.10/site-packages/",
+    "/home/rcdt/franka_ws/install/franka_msgs/local/lib/python3.10/dist-packages/",
+    "ros2_ws/install/rcdt_messages/local/lib/python3.10/dist-packages/",
+    "ros2_ws/src/rcdt_franka/",
+    "ros2_ws/src/rcdt_panther/",
+    "ros2_ws/src/rcdt_utilities/",
+    "ros2_ws/src/rcdt_gazebo/",
+]
+
+# Settings of pydoclint, also in flake8 to use in vscode:
+[tool.flake8]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true
+select = "DOC"
+
+[tool.pydoclint]
+style = "google"
+skip-checking-short-docstrings = false
+allow-init-docstring = true
+check-style-mismatch = true

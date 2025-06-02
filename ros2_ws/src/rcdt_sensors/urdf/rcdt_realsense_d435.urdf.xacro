@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
     <xacro:sensor_d435
       parent="${parent}"
       use_nominal_extrinsics="true">
-      <origin xyz="0 0.015 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
     </xacro:sensor_d435>
 
     <!-- Add gazebo plugin: -->
@@ -42,8 +42,8 @@ SPDX-License-Identifier: Apache-2.0
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov>
             <image>
-              <width>640</width>
-              <height>480</height>
+              <width>320</width>
+              <height>240</height>
             </image>
             <clip>
               <near>0.02</near>
@@ -64,8 +64,8 @@ SPDX-License-Identifier: Apache-2.0
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov> <!-- Using color FOV, to avoid align. -->
             <image>
-              <width>640</width>
-              <height>480</height>
+              <width>320</width>
+              <height>240</height>
             </image>
             <clip>
               <near>0.01</near>

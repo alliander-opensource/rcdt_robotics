@@ -7,17 +7,20 @@ SPDX-License-Identifier: Apache-2.0
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="panther">
 
   <!-- Set use_sim argument to let panther xacro load gazebo plugin: -->
-  <xacro:arg name="use_sim" default="true" />
+  <xacro:arg name="simulation" default="true" />
+  <xacro:arg name="connected_to" default="" />
 
   <!-- Load panther: -->
   <xacro:include filename="$(find husarion_ugv_description)/urdf/panther/panther_macro.urdf.xacro"
     ns="husarion" />
   <xacro:husarion.panther_robot
-    use_sim="$(arg use_sim)"
+    panther_version="1.0"
+    use_sim="$(arg simulation)"
     wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
-    controller_config_file="$(find rcdt_panther)/config/ros_controller.yaml"
+    controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
     battery_config_file=""
-    namespace="panther" />
+    namespace="panther"
+    connected_to="$(arg connected_to)" />
 
   <!-- Load Velodyne: -->
   <xacro:arg name="load_velodyne" default="false" />

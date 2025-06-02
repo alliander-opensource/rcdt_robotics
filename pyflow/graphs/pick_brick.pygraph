@@ -47,7 +47,7 @@
                                 "destinationUUID": "6520d4b3-c0e3-4b30-a6b6-a1a942c24865",
                                 "sourceName": "GetRGBDFromTopic_Out",
                                 "destinationName": "SegmentImage_In",
-                                "uuid": "bfc7c49f-8687-45a5-9231-e66e9a0ab307",
+                                "uuid": "949a9227-fc9b-431d-b0ce-e147c092cc79",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -93,7 +93,7 @@
                                 "destinationUUID": "de86833c-294a-46b1-a2eb-fa4040d51996",
                                 "sourceName": "GetRGBDFromTopic_rgb_image",
                                 "destinationName": "SegmentImage_input_image",
-                                "uuid": "94dd2788-2959-4154-b166-8ba22d0f989f",
+                                "uuid": "b48f301b-252b-4a58-8527-bf7d8fc2ca29",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -109,6 +109,52 @@
             ],
             "outputs": [
                 {
+                    "name": "segmented_image",
+                    "package": "RCDT",
+                    "fullName": "SegmentImage_segmented_image",
+                    "dataType": "sensor_msgs/Image",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "SegmentImage",
+                            "outPinId": 2,
+                            "rhsNodeName": "Segmetents",
+                            "inPinId": 3,
+                            "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
+                            "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
+                        }
+                    ],
+                    "pinIndex": 2,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "segmented_image",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
+                                "destinationUUID": "43ca99ea-364c-4c86-a91c-46f84cba6673",
+                                "sourceName": "SegmentImage_segmented_image",
+                                "destinationName": "Segmetents_image",
+                                "uuid": "73e1e0d9-7086-433e-af86-05718075132e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
                     "name": "Out",
                     "package": "PyFlowBase",
                     "fullName": "SegmentImage_Out",
@@ -120,7 +166,7 @@
                         {
                             "lhsNodeName": "SegmentImage",
                             "outPinId": 1,
-                            "rhsNodeName": "PublishImage",
+                            "rhsNodeName": "Segmetents",
                             "inPinId": 1,
                             "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
                             "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
@@ -142,8 +188,8 @@
                                 "sourceUUID": "4963de26-4ff7-48ac-8783-d16259afc45a",
                                 "destinationUUID": "d7050103-e7f6-429a-826e-4650c95cf0cf",
                                 "sourceName": "SegmentImage_Out",
-                                "destinationName": "PublishImage_In",
-                                "uuid": "091488ec-4aae-468d-b076-83864ae8b01d",
+                                "destinationName": "Segmetents_In",
+                                "uuid": "a32c7e06-4c17-4b49-ab55-ea0a433a89e6",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -189,53 +235,7 @@
                                 "destinationUUID": "8de96e9d-ad03-4d75-b9fd-001bb4d16666",
                                 "sourceName": "SegmentImage_masks",
                                 "destinationName": "SelectPickLocation_masks",
-                                "uuid": "249e9b5e-b0f9-46f9-83c9-aea2097822a8",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "segmented_image",
-                    "package": "RCDT",
-                    "fullName": "SegmentImage_segmented_image",
-                    "dataType": "sensor_msgs/Image",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "SegmentImage",
-                            "outPinId": 2,
-                            "rhsNodeName": "PublishImage",
-                            "inPinId": 3,
-                            "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
-                            "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
-                        }
-                    ],
-                    "pinIndex": 2,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "segmented_image",
-                        "wires": {
-                            "3": {
-                                "sourceUUID": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
-                                "destinationUUID": "43ca99ea-364c-4c86-a91c-46f84cba6673",
-                                "sourceName": "SegmentImage_segmented_image",
-                                "destinationName": "PublishImage_image",
-                                "uuid": "52deb9c2-c141-46e2-a2d0-c8b805a00eac",
+                                "uuid": "394a2e85-8c09-4806-a72c-1dcd4df544ab",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -297,55 +297,6 @@
             "uuid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
             "inputs": [
                 {
-                    "name": "In",
-                    "package": "PyFlowBase",
-                    "fullName": "SelectPickLocation_In",
-                    "dataType": "ExecPin",
-                    "direction": 0,
-                    "value": "null",
-                    "uuid": "2e7873c3-8458-47b4-b12b-e53759217ea0",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "PublishImage",
-                            "outPinId": 1,
-                            "rhsNodeName": "SelectPickLocation",
-                            "inPinId": 1,
-                            "lhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05",
-                            "rhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a"
-                        }
-                    ],
-                    "pinIndex": 1,
-                    "options": [
-                        8,
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "In",
-                        "wires": {
-                            "1": {
-                                "sourceUUID": "69ccb07f-ca89-493a-9984-fe66b735a757",
-                                "destinationUUID": "2e7873c3-8458-47b4-b12b-e53759217ea0",
-                                "sourceName": "PublishImage_Out",
-                                "destinationName": "SelectPickLocation_In",
-                                "uuid": "8c2127ab-e5d4-48e8-9f42-5ed9bb5afc03",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
-                    }
-                },
-                {
                     "name": "masks",
                     "package": "RCDT",
                     "fullName": "SelectPickLocation_masks",
@@ -378,7 +329,7 @@
                                 "destinationUUID": "8de96e9d-ad03-4d75-b9fd-001bb4d16666",
                                 "sourceName": "SegmentImage_masks",
                                 "destinationName": "SelectPickLocation_masks",
-                                "uuid": "249e9b5e-b0f9-46f9-83c9-aea2097822a8",
+                                "uuid": "394a2e85-8c09-4806-a72c-1dcd4df544ab",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -424,7 +375,56 @@
                                 "destinationUUID": "9acdf4a2-9ac7-48d5-9c49-2e5dc830120c",
                                 "sourceName": "GetRGBDFromTopic_rgb_info",
                                 "destinationName": "SelectPickLocation_camera_info",
-                                "uuid": "3b5cac8a-c169-449a-b073-0782b4a6ff13",
+                                "uuid": "2f55e809-b036-4f7e-8eba-2db7fa277403",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "SelectPickLocation_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "2e7873c3-8458-47b4-b12b-e53759217ea0",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "Segmetents",
+                            "outPinId": 1,
+                            "rhsNodeName": "SelectPickLocation",
+                            "inPinId": 1,
+                            "lhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05",
+                            "rhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "69ccb07f-ca89-493a-9984-fe66b735a757",
+                                "destinationUUID": "2e7873c3-8458-47b4-b12b-e53759217ea0",
+                                "sourceName": "Segmetents_Out",
+                                "destinationName": "SelectPickLocation_In",
+                                "uuid": "0cb93736-5b03-475d-a963-61935595eda1",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -470,7 +470,7 @@
                                 "destinationUUID": "94368743-e014-444c-b0b9-26b66b54969d",
                                 "sourceName": "GetRGBDFromTopic_depth_image",
                                 "destinationName": "SelectPickLocation_depth_image",
-                                "uuid": "bec469b6-5eba-41cb-9e54-8394e0e7f351",
+                                "uuid": "9a9e625e-8eab-41a3-9818-0d9a9653701e",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -486,41 +486,39 @@
             ],
             "outputs": [
                 {
-                    "name": "Out",
-                    "package": "PyFlowBase",
-                    "fullName": "SelectPickLocation_Out",
-                    "dataType": "ExecPin",
+                    "name": "visualization",
+                    "package": "RCDT",
+                    "fullName": "SelectPickLocation_visualization",
+                    "dataType": "sensor_msgs/Image",
                     "direction": 1,
-                    "value": "null",
-                    "uuid": "c1210af9-3a22-4d1c-8198-9d469faa4bd7",
+                    "value": null,
+                    "uuid": "f54e6d2f-61a9-423e-8ff8-86c59393e5fe",
                     "linkedTo": [
                         {
                             "lhsNodeName": "SelectPickLocation",
-                            "outPinId": 1,
-                            "rhsNodeName": "PublishImage1",
-                            "inPinId": 1,
+                            "outPinId": 2,
+                            "rhsNodeName": "Pick5",
+                            "inPinId": 3,
                             "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
                             "rhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b"
                         }
                     ],
-                    "pinIndex": 1,
-                    "options": [
-                        256
-                    ],
+                    "pinIndex": 2,
+                    "options": [],
                     "structure": 0,
                     "alwaysList": false,
                     "alwaysSingle": false,
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "Out",
+                        "displayName": "visualization",
                         "wires": {
-                            "1": {
-                                "sourceUUID": "c1210af9-3a22-4d1c-8198-9d469faa4bd7",
-                                "destinationUUID": "2d1385fe-ccbf-4586-84ee-445b82b74d1f",
-                                "sourceName": "SelectPickLocation_Out",
-                                "destinationName": "PublishImage1_In",
-                                "uuid": "f42a804e-794a-43be-bb39-29e75ee9ffe4",
+                            "3": {
+                                "sourceUUID": "f54e6d2f-61a9-423e-8ff8-86c59393e5fe",
+                                "destinationUUID": "63915166-14d9-4e05-bd70-9ab957b499e4",
+                                "sourceName": "SelectPickLocation_visualization",
+                                "destinationName": "Pick5_image",
+                                "uuid": "f3c0f601-0e23-4cd6-a770-67837a35fe71",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -545,7 +543,7 @@
                         {
                             "lhsNodeName": "SelectPickLocation",
                             "outPinId": 3,
-                            "rhsNodeName": "DefineGoalPose",
+                            "rhsNodeName": "DefinePickPose",
                             "inPinId": 2,
                             "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
                             "rhsNodeUid": "879fccc8-6d34-462c-8ae7-0b9e6c0d1a29"
@@ -565,8 +563,56 @@
                                 "sourceUUID": "378ce232-fc31-41db-b746-0064dfca730a",
                                 "destinationUUID": "60bda1cd-7b2a-4363-a11c-3decf9608c4b",
                                 "sourceName": "SelectPickLocation_pick_location",
-                                "destinationName": "DefineGoalPose_pose",
-                                "uuid": "6fcd6a9c-397d-4bcb-b134-c66d67f25669",
+                                "destinationName": "DefinePickPose_pose",
+                                "uuid": "01651afa-2eef-4533-aca3-7d1a259f821b",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "SelectPickLocation_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "c1210af9-3a22-4d1c-8198-9d469faa4bd7",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "SelectPickLocation",
+                            "outPinId": 1,
+                            "rhsNodeName": "Pick5",
+                            "inPinId": 1,
+                            "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
+                            "rhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "c1210af9-3a22-4d1c-8198-9d469faa4bd7",
+                                "destinationUUID": "2d1385fe-ccbf-4586-84ee-445b82b74d1f",
+                                "sourceName": "SelectPickLocation_Out",
+                                "destinationName": "Pick5_In",
+                                "uuid": "bec375c6-5d9b-49f4-aceb-aa09db2af12e",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -600,52 +646,6 @@
                         "bLabelHidden": false,
                         "displayName": "success",
                         "wires": {}
-                    }
-                },
-                {
-                    "name": "visualization",
-                    "package": "RCDT",
-                    "fullName": "SelectPickLocation_visualization",
-                    "dataType": "sensor_msgs/Image",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "f54e6d2f-61a9-423e-8ff8-86c59393e5fe",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "SelectPickLocation",
-                            "outPinId": 2,
-                            "rhsNodeName": "PublishImage1",
-                            "inPinId": 3,
-                            "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
-                            "rhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b"
-                        }
-                    ],
-                    "pinIndex": 2,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "visualization",
-                        "wires": {
-                            "3": {
-                                "sourceUUID": "f54e6d2f-61a9-423e-8ff8-86c59393e5fe",
-                                "destinationUUID": "63915166-14d9-4e05-bd70-9ab957b499e4",
-                                "sourceName": "SelectPickLocation_visualization",
-                                "destinationName": "PublishImage1_image",
-                                "uuid": "8cee80ca-c871-4e39-a30f-b60f87d3f5f8",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
                     }
                 }
             ],
@@ -723,27 +723,6 @@
             ],
             "outputs": [
                 {
-                    "name": "depth_info",
-                    "package": "RCDT",
-                    "fullName": "GetRGBDFromTopic_depth_info",
-                    "dataType": "sensor_msgs/CameraInfo",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "fdc57b72-bf8e-4063-81c8-0964f81c123f",
-                    "linkedTo": [],
-                    "pinIndex": 5,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "depth_info",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "depth_image",
                     "package": "RCDT",
                     "fullName": "GetRGBDFromTopic_depth_image",
@@ -776,7 +755,7 @@
                                 "destinationUUID": "94368743-e014-444c-b0b9-26b66b54969d",
                                 "sourceName": "GetRGBDFromTopic_depth_image",
                                 "destinationName": "SelectPickLocation_depth_image",
-                                "uuid": "bec469b6-5eba-41cb-9e54-8394e0e7f351",
+                                "uuid": "9a9e625e-8eab-41a3-9818-0d9a9653701e",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -787,6 +766,27 @@
                                 "snapVToSecond": 0
                             }
                         }
+                    }
+                },
+                {
+                    "name": "depth_info",
+                    "package": "RCDT",
+                    "fullName": "GetRGBDFromTopic_depth_info",
+                    "dataType": "sensor_msgs/CameraInfo",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "fdc57b72-bf8e-4063-81c8-0964f81c123f",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "depth_info",
+                        "wires": {}
                     }
                 },
                 {
@@ -824,7 +824,7 @@
                                 "destinationUUID": "6520d4b3-c0e3-4b30-a6b6-a1a942c24865",
                                 "sourceName": "GetRGBDFromTopic_Out",
                                 "destinationName": "SegmentImage_In",
-                                "uuid": "bfc7c49f-8687-45a5-9231-e66e9a0ab307",
+                                "uuid": "949a9227-fc9b-431d-b0ce-e147c092cc79",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -870,7 +870,7 @@
                                 "destinationUUID": "9acdf4a2-9ac7-48d5-9c49-2e5dc830120c",
                                 "sourceName": "GetRGBDFromTopic_rgb_info",
                                 "destinationName": "SelectPickLocation_camera_info",
-                                "uuid": "3b5cac8a-c169-449a-b073-0782b4a6ff13",
+                                "uuid": "2f55e809-b036-4f7e-8eba-2db7fa277403",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -881,29 +881,6 @@
                                 "snapVToSecond": 0
                             }
                         }
-                    }
-                },
-                {
-                    "name": "success",
-                    "package": "PyFlowBase",
-                    "fullName": "GetRGBDFromTopic_success",
-                    "dataType": "BoolPin",
-                    "direction": 1,
-                    "value": "true",
-                    "uuid": "b98e2d20-93b5-4acb-8155-5b818d54f4a2",
-                    "linkedTo": [],
-                    "pinIndex": 6,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "success",
-                        "wires": {}
                     }
                 },
                 {
@@ -939,7 +916,7 @@
                                 "destinationUUID": "de86833c-294a-46b1-a2eb-fa4040d51996",
                                 "sourceName": "GetRGBDFromTopic_rgb_image",
                                 "destinationName": "SegmentImage_input_image",
-                                "uuid": "94dd2788-2959-4154-b166-8ba22d0f989f",
+                                "uuid": "b48f301b-252b-4a58-8527-bf7d8fc2ca29",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -950,6 +927,29 @@
                                 "snapVToSecond": 0
                             }
                         }
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "GetRGBDFromTopic_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "b98e2d20-93b5-4acb-8155-5b818d54f4a2",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
                     }
                 }
             ],
@@ -1010,7 +1010,7 @@
                     "uuid": "74cc243e-2b8e-454a-95ec-ac0d9db90312",
                     "linkedTo": [
                         {
-                            "lhsNodeName": "DefineGoalPose",
+                            "lhsNodeName": "DefinePickPose",
                             "outPinId": 1,
                             "rhsNodeName": "Pick",
                             "inPinId": 1,
@@ -1034,9 +1034,9 @@
                             "1": {
                                 "sourceUUID": "919a4b8f-c260-4a1f-82f4-3f6bddfa906d",
                                 "destinationUUID": "74cc243e-2b8e-454a-95ec-ac0d9db90312",
-                                "sourceName": "DefineGoalPose_Out",
+                                "sourceName": "DefinePickPose_Out",
                                 "destinationName": "Pick_In",
-                                "uuid": "16346a6d-edf1-4c74-9ffa-1f30919fbe98",
+                                "uuid": "72aa4f3f-8f55-4c95-99e9-bbbb19f022df",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1088,35 +1088,26 @@
                     "output": {}
                 }
             },
-            "x": 444.1468560712014,
-            "y": -29.922950286242177
+            "x": 475.14685607120146,
+            "y": -27.922950286242177
         },
         {
             "package": "RCDT",
             "lib": null,
             "type": "DefineGoalPose",
             "owningGraphName": "root",
-            "name": "DefineGoalPose",
+            "name": "DefinePickPose",
             "uuid": "879fccc8-6d34-462c-8ae7-0b9e6c0d1a29",
             "inputs": [
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose_In",
+                    "fullName": "DefinePickPose_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
                     "uuid": "b55629f8-533a-4664-bd15-961a40f37a12",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "PublishImage1",
-                            "outPinId": 1,
-                            "rhsNodeName": "DefineGoalPose",
-                            "inPinId": 1,
-                            "lhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b",
-                            "rhsNodeUid": "879fccc8-6d34-462c-8ae7-0b9e6c0d1a29"
-                        }
-                    ],
+                    "linkedTo": [],
                     "pinIndex": 1,
                     "options": [
                         8,
@@ -1129,29 +1120,13 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "In",
-                        "wires": {
-                            "1": {
-                                "sourceUUID": "cbc6725c-727b-4444-af17-4731eb0cb7af",
-                                "destinationUUID": "b55629f8-533a-4664-bd15-961a40f37a12",
-                                "sourceName": "PublishImage1_Out",
-                                "destinationName": "DefineGoalPose_In",
-                                "uuid": "fe6cd9ef-a117-4556-af80-b8ccd92b31e2",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
+                        "wires": {}
                     }
                 },
                 {
                     "name": "pose",
                     "package": "RCDT",
-                    "fullName": "DefineGoalPose_pose",
+                    "fullName": "DefinePickPose_pose",
                     "dataType": "geometry_msgs/PoseStamped",
                     "direction": 0,
                     "value": null,
@@ -1160,7 +1135,7 @@
                         {
                             "lhsNodeName": "SelectPickLocation",
                             "outPinId": 3,
-                            "rhsNodeName": "DefineGoalPose",
+                            "rhsNodeName": "DefinePickPose",
                             "inPinId": 2,
                             "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
                             "rhsNodeUid": "879fccc8-6d34-462c-8ae7-0b9e6c0d1a29"
@@ -1180,8 +1155,8 @@
                                 "sourceUUID": "378ce232-fc31-41db-b746-0064dfca730a",
                                 "destinationUUID": "60bda1cd-7b2a-4363-a11c-3decf9608c4b",
                                 "sourceName": "SelectPickLocation_pick_location",
-                                "destinationName": "DefineGoalPose_pose",
-                                "uuid": "6fcd6a9c-397d-4bcb-b134-c66d67f25669",
+                                "destinationName": "DefinePickPose_pose",
+                                "uuid": "01651afa-2eef-4533-aca3-7d1a259f821b",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1197,16 +1172,39 @@
             ],
             "outputs": [
                 {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefinePickPose_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "1c39cea9-5f06-4f65-a608-d37491935b4e",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose_Out",
+                    "fullName": "DefinePickPose_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
                     "uuid": "919a4b8f-c260-4a1f-82f4-3f6bddfa906d",
                     "linkedTo": [
                         {
-                            "lhsNodeName": "DefineGoalPose",
+                            "lhsNodeName": "DefinePickPose",
                             "outPinId": 1,
                             "rhsNodeName": "Pick",
                             "inPinId": 1,
@@ -1229,9 +1227,9 @@
                             "1": {
                                 "sourceUUID": "919a4b8f-c260-4a1f-82f4-3f6bddfa906d",
                                 "destinationUUID": "74cc243e-2b8e-454a-95ec-ac0d9db90312",
-                                "sourceName": "DefineGoalPose_Out",
+                                "sourceName": "DefinePickPose_Out",
                                 "destinationName": "Pick_In",
-                                "uuid": "16346a6d-edf1-4c74-9ffa-1f30919fbe98",
+                                "uuid": "72aa4f3f-8f55-4c95-99e9-bbbb19f022df",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1243,105 +1241,36 @@
                             }
                         }
                     }
-                },
-                {
-                    "name": "success",
-                    "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose_success",
-                    "dataType": "BoolPin",
-                    "direction": 1,
-                    "value": "true",
-                    "uuid": "1c39cea9-5f06-4f65-a608-d37491935b4e",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "success",
-                        "wires": {}
-                    }
                 }
             ],
             "meta": {
                 "var": {},
-                "label": "DefineGoalPose"
+                "label": "DefinePickPose"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefinePickPose</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
                     "output": {}
                 }
             },
-            "x": 319.4588872616796,
-            "y": -32.88617612823406
+            "x": 352.4588872616796,
+            "y": -28.886176128234062
         },
         {
             "package": "RCDT",
             "lib": null,
             "type": "PublishImage",
             "owningGraphName": "root",
-            "name": "PublishImage",
+            "name": "Segmetents",
             "uuid": "39531d57-1a65-473a-bb68-61365f0dad05",
             "inputs": [
                 {
-                    "name": "image",
-                    "package": "RCDT",
-                    "fullName": "PublishImage_image",
-                    "dataType": "sensor_msgs/Image",
-                    "direction": 0,
-                    "value": null,
-                    "uuid": "43ca99ea-364c-4c86-a91c-46f84cba6673",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "SegmentImage",
-                            "outPinId": 2,
-                            "rhsNodeName": "PublishImage",
-                            "inPinId": 3,
-                            "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
-                            "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
-                        }
-                    ],
-                    "pinIndex": 3,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "image",
-                        "wires": {
-                            "3": {
-                                "sourceUUID": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
-                                "destinationUUID": "43ca99ea-364c-4c86-a91c-46f84cba6673",
-                                "sourceName": "SegmentImage_segmented_image",
-                                "destinationName": "PublishImage_image",
-                                "uuid": "52deb9c2-c141-46e2-a2d0-c8b805a00eac",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
-                    }
-                },
-                {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage_In",
+                    "fullName": "Segmetents_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
@@ -1350,7 +1279,7 @@
                         {
                             "lhsNodeName": "SegmentImage",
                             "outPinId": 1,
-                            "rhsNodeName": "PublishImage",
+                            "rhsNodeName": "Segmetents",
                             "inPinId": 1,
                             "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
                             "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
@@ -1373,8 +1302,54 @@
                                 "sourceUUID": "4963de26-4ff7-48ac-8783-d16259afc45a",
                                 "destinationUUID": "d7050103-e7f6-429a-826e-4650c95cf0cf",
                                 "sourceName": "SegmentImage_Out",
-                                "destinationName": "PublishImage_In",
-                                "uuid": "091488ec-4aae-468d-b076-83864ae8b01d",
+                                "destinationName": "Segmetents_In",
+                                "uuid": "a32c7e06-4c17-4b49-ab55-ea0a433a89e6",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "image",
+                    "package": "RCDT",
+                    "fullName": "Segmetents_image",
+                    "dataType": "sensor_msgs/Image",
+                    "direction": 0,
+                    "value": null,
+                    "uuid": "43ca99ea-364c-4c86-a91c-46f84cba6673",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "SegmentImage",
+                            "outPinId": 2,
+                            "rhsNodeName": "Segmetents",
+                            "inPinId": 3,
+                            "lhsNodeUid": "580ecb74-ca99-4ce6-a6d9-1104656a6a0b",
+                            "rhsNodeUid": "39531d57-1a65-473a-bb68-61365f0dad05"
+                        }
+                    ],
+                    "pinIndex": 3,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "image",
+                        "wires": {
+                            "3": {
+                                "sourceUUID": "fdd1631c-86d0-4a20-a432-6d4ba6c21ad3",
+                                "destinationUUID": "43ca99ea-364c-4c86-a91c-46f84cba6673",
+                                "sourceName": "SegmentImage_segmented_image",
+                                "destinationName": "Segmetents_image",
+                                "uuid": "73e1e0d9-7086-433e-af86-05718075132e",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1390,7 +1365,7 @@
                 {
                     "name": "topic",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage_topic",
+                    "fullName": "Segmetents_topic",
                     "dataType": "StringPin",
                     "direction": 0,
                     "value": "\"/debug/segments\"",
@@ -1415,14 +1390,14 @@
                 {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage_Out",
+                    "fullName": "Segmetents_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
                     "uuid": "69ccb07f-ca89-493a-9984-fe66b735a757",
                     "linkedTo": [
                         {
-                            "lhsNodeName": "PublishImage",
+                            "lhsNodeName": "Segmetents",
                             "outPinId": 1,
                             "rhsNodeName": "SelectPickLocation",
                             "inPinId": 1,
@@ -1445,9 +1420,9 @@
                             "1": {
                                 "sourceUUID": "69ccb07f-ca89-493a-9984-fe66b735a757",
                                 "destinationUUID": "2e7873c3-8458-47b4-b12b-e53759217ea0",
-                                "sourceName": "PublishImage_Out",
+                                "sourceName": "Segmetents_Out",
                                 "destinationName": "SelectPickLocation_In",
-                                "uuid": "8c2127ab-e5d4-48e8-9f42-5ed9bb5afc03",
+                                "uuid": "0cb93736-5b03-475d-a963-61935595eda1",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1463,7 +1438,7 @@
                 {
                     "name": "success",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage_success",
+                    "fullName": "Segmetents_success",
                     "dataType": "BoolPin",
                     "direction": 1,
                     "value": "true",
@@ -1486,11 +1461,11 @@
             ],
             "meta": {
                 "var": {},
-                "label": "PublishImage"
+                "label": "Segmetents"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PublishImage</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Segmetents</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
@@ -1505,36 +1480,13 @@
             "lib": null,
             "type": "PublishImage",
             "owningGraphName": "root",
-            "name": "PublishImage1",
+            "name": "Pick5",
             "uuid": "0b8a15e3-b457-4089-88dc-2242e286108b",
             "inputs": [
                 {
-                    "name": "topic",
-                    "package": "PyFlowBase",
-                    "fullName": "PublishImage1_topic",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"/debug/pick\"",
-                    "uuid": "24e57357-6db7-430a-8eb6-89a5a515826f",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "topic",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "image",
                     "package": "RCDT",
-                    "fullName": "PublishImage1_image",
+                    "fullName": "Pick5_image",
                     "dataType": "sensor_msgs/Image",
                     "direction": 0,
                     "value": null,
@@ -1543,7 +1495,7 @@
                         {
                             "lhsNodeName": "SelectPickLocation",
                             "outPinId": 2,
-                            "rhsNodeName": "PublishImage1",
+                            "rhsNodeName": "Pick5",
                             "inPinId": 3,
                             "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
                             "rhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b"
@@ -1563,8 +1515,8 @@
                                 "sourceUUID": "f54e6d2f-61a9-423e-8ff8-86c59393e5fe",
                                 "destinationUUID": "63915166-14d9-4e05-bd70-9ab957b499e4",
                                 "sourceName": "SelectPickLocation_visualization",
-                                "destinationName": "PublishImage1_image",
-                                "uuid": "8cee80ca-c871-4e39-a30f-b60f87d3f5f8",
+                                "destinationName": "Pick5_image",
+                                "uuid": "f3c0f601-0e23-4cd6-a770-67837a35fe71",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1580,7 +1532,7 @@
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage1_In",
+                    "fullName": "Pick5_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
@@ -1589,7 +1541,7 @@
                         {
                             "lhsNodeName": "SelectPickLocation",
                             "outPinId": 1,
-                            "rhsNodeName": "PublishImage1",
+                            "rhsNodeName": "Pick5",
                             "inPinId": 1,
                             "lhsNodeUid": "4ebd44e3-b892-4af6-9d86-44f76aa9e57a",
                             "rhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b"
@@ -1612,8 +1564,8 @@
                                 "sourceUUID": "c1210af9-3a22-4d1c-8198-9d469faa4bd7",
                                 "destinationUUID": "2d1385fe-ccbf-4586-84ee-445b82b74d1f",
                                 "sourceName": "SelectPickLocation_Out",
-                                "destinationName": "PublishImage1_In",
-                                "uuid": "f42a804e-794a-43be-bb39-29e75ee9ffe4",
+                                "destinationName": "Pick5_In",
+                                "uuid": "bec375c6-5d9b-49f4-aceb-aa09db2af12e",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1625,13 +1577,36 @@
                             }
                         }
                     }
+                },
+                {
+                    "name": "topic",
+                    "package": "PyFlowBase",
+                    "fullName": "Pick5_topic",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"/debug/pick\"",
+                    "uuid": "24e57357-6db7-430a-8eb6-89a5a515826f",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "topic",
+                        "wires": {}
+                    }
                 }
             ],
             "outputs": [
                 {
                     "name": "success",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage1_success",
+                    "fullName": "Pick5_success",
                     "dataType": "BoolPin",
                     "direction": 1,
                     "value": "true",
@@ -1654,21 +1629,12 @@
                 {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "PublishImage1_Out",
+                    "fullName": "Pick5_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
                     "uuid": "cbc6725c-727b-4444-af17-4731eb0cb7af",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "PublishImage1",
-                            "outPinId": 1,
-                            "rhsNodeName": "DefineGoalPose",
-                            "inPinId": 1,
-                            "lhsNodeUid": "0b8a15e3-b457-4089-88dc-2242e286108b",
-                            "rhsNodeUid": "879fccc8-6d34-462c-8ae7-0b9e6c0d1a29"
-                        }
-                    ],
+                    "linkedTo": [],
                     "pinIndex": 1,
                     "options": [
                         256
@@ -1680,54 +1646,38 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "Out",
-                        "wires": {
-                            "1": {
-                                "sourceUUID": "cbc6725c-727b-4444-af17-4731eb0cb7af",
-                                "destinationUUID": "b55629f8-533a-4664-bd15-961a40f37a12",
-                                "sourceName": "PublishImage1_Out",
-                                "destinationName": "DefineGoalPose_In",
-                                "uuid": "fe6cd9ef-a117-4556-af80-b8ccd92b31e2",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
+                        "wires": {}
                     }
                 }
             ],
             "meta": {
                 "var": {},
-                "label": "PublishImage1"
+                "label": "Pick5"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">PublishImage1</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Pick5</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
                     "output": {}
                 }
             },
-            "x": 204.50104477863698,
-            "y": -194.01605884972662
+            "x": 216.50104477863698,
+            "y": -176.01605884972662
         },
         {
             "package": "RCDT",
             "lib": null,
             "type": "SequenceExecutor",
             "owningGraphName": "root",
-            "name": "SequenceExecutor",
+            "name": "Place",
             "uuid": "7fb17094-6bd9-4eb3-a3b8-c3aaef20d399",
             "inputs": [
                 {
                     "name": "sequence",
                     "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor_sequence",
+                    "fullName": "Place_sequence",
                     "dataType": "StringPin",
                     "direction": 0,
                     "value": "\"place\"",
@@ -1750,16 +1700,16 @@
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor_In",
+                    "fullName": "Place_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
                     "uuid": "956ffa55-dd17-4f36-8c18-df4d76b45f51",
                     "linkedTo": [
                         {
-                            "lhsNodeName": "DefineGoalPose2",
+                            "lhsNodeName": "DefinePlacePose",
                             "outPinId": 1,
-                            "rhsNodeName": "SequenceExecutor",
+                            "rhsNodeName": "Place",
                             "inPinId": 1,
                             "lhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1",
                             "rhsNodeUid": "7fb17094-6bd9-4eb3-a3b8-c3aaef20d399"
@@ -1781,9 +1731,9 @@
                             "1": {
                                 "sourceUUID": "646f69b7-5ae2-4954-a89b-a4e8ddf2c0af",
                                 "destinationUUID": "956ffa55-dd17-4f36-8c18-df4d76b45f51",
-                                "sourceName": "DefineGoalPose2_Out",
-                                "destinationName": "SequenceExecutor_In",
-                                "uuid": "a6c5bb18-b6cc-4844-a68e-4c9c35abc359",
+                                "sourceName": "DefinePlacePose_Out",
+                                "destinationName": "Place_In",
+                                "uuid": "fab8799e-634c-48d6-b4b9-ea3880c08b78",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1801,7 +1751,7 @@
                 {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor_Out",
+                    "fullName": "Place_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
@@ -1824,11 +1774,11 @@
             ],
             "meta": {
                 "var": {},
-                "label": "SequenceExecutor"
+                "label": "Place"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">SequenceExecutor</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Place</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
@@ -1843,13 +1793,13 @@
             "lib": null,
             "type": "DefineGoalPose",
             "owningGraphName": "root",
-            "name": "DefineGoalPose2",
+            "name": "DefinePlacePose",
             "uuid": "460e722a-513d-4295-91e4-4e471a6b0cd1",
             "inputs": [
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose2_In",
+                    "fullName": "DefinePlacePose_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
@@ -1858,7 +1808,7 @@
                         {
                             "lhsNodeName": "SelectPlaceLocation",
                             "outPinId": 1,
-                            "rhsNodeName": "DefineGoalPose2",
+                            "rhsNodeName": "DefinePlacePose",
                             "inPinId": 1,
                             "lhsNodeUid": "0b00333a-de38-4460-a11e-83b9435560db",
                             "rhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1"
@@ -1881,8 +1831,8 @@
                                 "sourceUUID": "6f3b3b46-0d49-4218-9267-13e5458f5831",
                                 "destinationUUID": "0187f5a0-a3cb-43ac-8c06-9cb5bd542f18",
                                 "sourceName": "SelectPlaceLocation_Out",
-                                "destinationName": "DefineGoalPose2_In",
-                                "uuid": "05f47927-c7e7-4f1f-aaeb-34487bb195a0",
+                                "destinationName": "DefinePlacePose_In",
+                                "uuid": "9ba3bc7f-a3bf-4063-8e45-642273119ce5",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1898,7 +1848,7 @@
                 {
                     "name": "pose",
                     "package": "RCDT",
-                    "fullName": "DefineGoalPose2_pose",
+                    "fullName": "DefinePlacePose_pose",
                     "dataType": "geometry_msgs/PoseStamped",
                     "direction": 0,
                     "value": null,
@@ -1907,7 +1857,7 @@
                         {
                             "lhsNodeName": "SelectPlaceLocation",
                             "outPinId": 2,
-                            "rhsNodeName": "DefineGoalPose2",
+                            "rhsNodeName": "DefinePlacePose",
                             "inPinId": 2,
                             "lhsNodeUid": "0b00333a-de38-4460-a11e-83b9435560db",
                             "rhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1"
@@ -1927,8 +1877,8 @@
                                 "sourceUUID": "ea0ccf7c-f6f4-416f-973c-a49803ffecc2",
                                 "destinationUUID": "6af278e6-791b-4d30-aaa1-e4d88d7b1be0",
                                 "sourceName": "SelectPlaceLocation_place_location",
-                                "destinationName": "DefineGoalPose2_pose",
-                                "uuid": "883f6d06-74bd-4748-8576-ecb155a04633",
+                                "destinationName": "DefinePlacePose_pose",
+                                "uuid": "2a0a01e8-eae3-40ca-9a54-85e984e1668d",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1944,18 +1894,41 @@
             ],
             "outputs": [
                 {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "DefinePlacePose_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "8b62a22a-3ddd-4ca7-b42a-cce0c05d8d80",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose2_Out",
+                    "fullName": "DefinePlacePose_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
                     "uuid": "646f69b7-5ae2-4954-a89b-a4e8ddf2c0af",
                     "linkedTo": [
                         {
-                            "lhsNodeName": "DefineGoalPose2",
+                            "lhsNodeName": "DefinePlacePose",
                             "outPinId": 1,
-                            "rhsNodeName": "SequenceExecutor",
+                            "rhsNodeName": "Place",
                             "inPinId": 1,
                             "lhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1",
                             "rhsNodeUid": "7fb17094-6bd9-4eb3-a3b8-c3aaef20d399"
@@ -1976,9 +1949,9 @@
                             "1": {
                                 "sourceUUID": "646f69b7-5ae2-4954-a89b-a4e8ddf2c0af",
                                 "destinationUUID": "956ffa55-dd17-4f36-8c18-df4d76b45f51",
-                                "sourceName": "DefineGoalPose2_Out",
-                                "destinationName": "SequenceExecutor_In",
-                                "uuid": "a6c5bb18-b6cc-4844-a68e-4c9c35abc359",
+                                "sourceName": "DefinePlacePose_Out",
+                                "destinationName": "Place_In",
+                                "uuid": "fab8799e-634c-48d6-b4b9-ea3880c08b78",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1990,38 +1963,15 @@
                             }
                         }
                     }
-                },
-                {
-                    "name": "success",
-                    "package": "PyFlowBase",
-                    "fullName": "DefineGoalPose2_success",
-                    "dataType": "BoolPin",
-                    "direction": 1,
-                    "value": "true",
-                    "uuid": "8b62a22a-3ddd-4ca7-b42a-cce0c05d8d80",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "success",
-                        "wires": {}
-                    }
                 }
             ],
             "meta": {
                 "var": {},
-                "label": "DefineGoalPose2"
+                "label": "DefinePlacePose"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefineGoalPose2</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">DefinePlacePose</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
@@ -2029,7 +1979,7 @@
                 }
             },
             "x": 137.898991967769,
-            "y": 178.84424896434064
+            "y": 179.84424896434064
         },
         {
             "package": "RCDT",
@@ -2077,7 +2027,7 @@
                         {
                             "lhsNodeName": "SelectPlaceLocation",
                             "outPinId": 1,
-                            "rhsNodeName": "DefineGoalPose2",
+                            "rhsNodeName": "DefinePlacePose",
                             "inPinId": 1,
                             "lhsNodeUid": "0b00333a-de38-4460-a11e-83b9435560db",
                             "rhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1"
@@ -2099,8 +2049,8 @@
                                 "sourceUUID": "6f3b3b46-0d49-4218-9267-13e5458f5831",
                                 "destinationUUID": "0187f5a0-a3cb-43ac-8c06-9cb5bd542f18",
                                 "sourceName": "SelectPlaceLocation_Out",
-                                "destinationName": "DefineGoalPose2_In",
-                                "uuid": "05f47927-c7e7-4f1f-aaeb-34487bb195a0",
+                                "destinationName": "DefinePlacePose_In",
+                                "uuid": "9ba3bc7f-a3bf-4063-8e45-642273119ce5",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -2125,7 +2075,7 @@
                         {
                             "lhsNodeName": "SelectPlaceLocation",
                             "outPinId": 2,
-                            "rhsNodeName": "DefineGoalPose2",
+                            "rhsNodeName": "DefinePlacePose",
                             "inPinId": 2,
                             "lhsNodeUid": "0b00333a-de38-4460-a11e-83b9435560db",
                             "rhsNodeUid": "460e722a-513d-4295-91e4-4e471a6b0cd1"
@@ -2145,8 +2095,8 @@
                                 "sourceUUID": "ea0ccf7c-f6f4-416f-973c-a49803ffecc2",
                                 "destinationUUID": "6af278e6-791b-4d30-aaa1-e4d88d7b1be0",
                                 "sourceName": "SelectPlaceLocation_place_location",
-                                "destinationName": "DefineGoalPose2_pose",
-                                "uuid": "883f6d06-74bd-4748-8576-ecb155a04633",
+                                "destinationName": "DefinePlacePose_pose",
+                                "uuid": "2a0a01e8-eae3-40ca-9a54-85e984e1668d",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -2204,13 +2154,13 @@
             "lib": null,
             "type": "MoveToConfiguration",
             "owningGraphName": "root",
-            "name": "MoveToConfiguration",
+            "name": "Home_conf",
             "uuid": "65dad4f8-98f7-4231-9bd0-52c7e3712fab",
             "inputs": [
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration_In",
+                    "fullName": "Home_conf_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
@@ -2234,7 +2184,7 @@
                 {
                     "name": "configuration",
                     "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration_configuration",
+                    "fullName": "Home_conf_configuration",
                     "dataType": "StringPin",
                     "direction": 0,
                     "value": "\"home\"",
@@ -2257,32 +2207,9 @@
             ],
             "outputs": [
                 {
-                    "name": "Out",
-                    "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration_Out",
-                    "dataType": "ExecPin",
-                    "direction": 1,
-                    "value": "null",
-                    "uuid": "eec2a53b-1942-43a9-be63-2fbbd58efa07",
-                    "linkedTo": [],
-                    "pinIndex": 1,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "Out",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "success",
                     "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration_success",
+                    "fullName": "Home_conf_success",
                     "dataType": "BoolPin",
                     "direction": 1,
                     "value": "true",
@@ -2301,89 +2228,15 @@
                         "displayName": "success",
                         "wires": {}
                     }
-                }
-            ],
-            "meta": {
-                "var": {},
-                "label": "MoveToConfiguration"
-            },
-            "wrapper": {
-                "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveToConfiguration</p></body></html>",
-                "exposeInputsToCompound": false,
-                "groups": {
-                    "input": {},
-                    "output": {}
-                }
-            },
-            "x": -453.78651467831105,
-            "y": -298.2581136767956
-        },
-        {
-            "package": "RCDT",
-            "lib": null,
-            "type": "MoveToConfiguration",
-            "owningGraphName": "root",
-            "name": "MoveToConfiguration3",
-            "uuid": "6da3a75a-0a00-437e-a1c0-84984965c129",
-            "inputs": [
-                {
-                    "name": "In",
-                    "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration3_In",
-                    "dataType": "ExecPin",
-                    "direction": 0,
-                    "value": "null",
-                    "uuid": "f2987c3e-6ee8-45ea-be53-bf4f86395e6b",
-                    "linkedTo": [],
-                    "pinIndex": 1,
-                    "options": [
-                        8,
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "In",
-                        "wires": {}
-                    }
                 },
-                {
-                    "name": "configuration",
-                    "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration3_configuration",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"drop\"",
-                    "uuid": "e1e1940b-80fe-434e-9a40-7d394715366c",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "configuration",
-                        "wires": {}
-                    }
-                }
-            ],
-            "outputs": [
                 {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration3_Out",
+                    "fullName": "Home_conf_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
-                    "uuid": "62ae4bba-c6a8-4eb7-aaee-4c9431dc80bb",
+                    "uuid": "eec2a53b-1942-43a9-be63-2fbbd58efa07",
                     "linkedTo": [],
                     "pinIndex": 1,
                     "options": [
@@ -2398,15 +2251,40 @@
                         "displayName": "Out",
                         "wires": {}
                     }
-                },
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "Home_conf"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Home_conf</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -455.78651467831105,
+            "y": -299.2581136767956
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "SequenceExecutor",
+            "owningGraphName": "root",
+            "name": "Drop",
+            "uuid": "953fda40-fdcc-4ffb-b78d-0e2abb118f1d",
+            "inputs": [
                 {
-                    "name": "success",
+                    "name": "sequence",
                     "package": "PyFlowBase",
-                    "fullName": "MoveToConfiguration3_success",
-                    "dataType": "BoolPin",
-                    "direction": 1,
-                    "value": "true",
-                    "uuid": "e11307b4-ce19-4f0e-b85c-576b68aecc64",
+                    "fullName": "Drop_sequence",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"drop\"",
+                    "uuid": "653ac0b3-e364-40c4-8c33-6589e74202d8",
                     "linkedTo": [],
                     "pinIndex": 2,
                     "options": [
@@ -2418,39 +2296,14 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "success",
+                        "displayName": "sequence",
                         "wires": {}
                     }
-                }
-            ],
-            "meta": {
-                "var": {},
-                "label": "MoveToConfiguration3"
-            },
-            "wrapper": {
-                "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">MoveToConfiguration3</p></body></html>",
-                "exposeInputsToCompound": false,
-                "groups": {
-                    "input": {},
-                    "output": {}
-                }
-            },
-            "x": -288.10273982927106,
-            "y": -302.9554688913231
-        },
-        {
-            "package": "RCDT",
-            "lib": null,
-            "type": "SequenceExecutor",
-            "owningGraphName": "root",
-            "name": "SequenceExecutor4",
-            "uuid": "953fda40-fdcc-4ffb-b78d-0e2abb118f1d",
-            "inputs": [
+                },
                 {
                     "name": "In",
                     "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor4_In",
+                    "fullName": "Drop_In",
                     "dataType": "ExecPin",
                     "direction": 0,
                     "value": "null",
@@ -2470,36 +2323,13 @@
                         "displayName": "In",
                         "wires": {}
                     }
-                },
-                {
-                    "name": "sequence",
-                    "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor4_sequence",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"drop\"",
-                    "uuid": "653ac0b3-e364-40c4-8c33-6589e74202d8",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "sequence",
-                        "wires": {}
-                    }
                 }
             ],
             "outputs": [
                 {
                     "name": "Out",
                     "package": "PyFlowBase",
-                    "fullName": "SequenceExecutor4_Out",
+                    "fullName": "Drop_Out",
                     "dataType": "ExecPin",
                     "direction": 1,
                     "value": "null",
@@ -2522,19 +2352,139 @@
             ],
             "meta": {
                 "var": {},
-                "label": "SequenceExecutor4"
+                "label": "Drop"
             },
             "wrapper": {
                 "collapsed": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">SequenceExecutor4</p></body></html>",
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Drop</p></body></html>",
                 "exposeInputsToCompound": false,
                 "groups": {
                     "input": {},
                     "output": {}
                 }
             },
-            "x": -19.0,
-            "y": 105.0
+            "x": -24.0,
+            "y": 96.0
+        },
+        {
+            "package": "RCDT",
+            "lib": null,
+            "type": "MoveToConfiguration",
+            "owningGraphName": "root",
+            "name": "Drop_conf",
+            "uuid": "98159932-bda5-41e1-8acb-f43e7c0f06a9",
+            "inputs": [
+                {
+                    "name": "configuration",
+                    "package": "PyFlowBase",
+                    "fullName": "Drop_conf_configuration",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"drop\"",
+                    "uuid": "93acaece-0a75-47ea-b246-c4eec77cc346",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "configuration",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "In",
+                    "package": "PyFlowBase",
+                    "fullName": "Drop_conf_In",
+                    "dataType": "ExecPin",
+                    "direction": 0,
+                    "value": "null",
+                    "uuid": "89fc9445-a636-454e-9984-58131ea7c09c",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        8,
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "In",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "package": "PyFlowBase",
+                    "fullName": "Drop_conf_Out",
+                    "dataType": "ExecPin",
+                    "direction": 1,
+                    "value": "null",
+                    "uuid": "f7d6e3d7-f606-4d0e-b6ed-f3f63717f6ed",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "Out",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "success",
+                    "package": "PyFlowBase",
+                    "fullName": "Drop_conf_success",
+                    "dataType": "BoolPin",
+                    "direction": 1,
+                    "value": "true",
+                    "uuid": "04a27f26-2f51-49a7-baec-5f6123aae9a3",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "success",
+                        "wires": {}
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "Drop_conf"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\nhr { height: 1px; border-width: 0; }\nli.unchecked::marker { content: \"\\2610\"; }\nli.checked::marker { content: \"\\2612\"; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Drop_conf</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -273.0,
+            "y": -301.0
         }
     ],
     "depth": 1,

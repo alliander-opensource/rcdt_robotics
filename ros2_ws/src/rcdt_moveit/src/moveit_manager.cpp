@@ -13,7 +13,13 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
-    : node(node_), move_group(node, planning_group),
+    : node(node_),
+      move_group(
+          node,
+          moveit::planning_interface::MoveGroupInterface::Options(
+              "fr3_arm",
+              moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
+              "/franka")),
       moveit_visual_tools(node, "world", "/rviz_markers") {
 
   move_group.setEndEffectorLink("fr3_hand");
@@ -28,7 +34,7 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
 void MoveitManager::initialize_clients() {
   client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
   switch_servo_type_client = client_node->create_client<ServoCommandType>(
-      "/servo_node/switch_command_type");
+      "/franka/servo_node/switch_command_type");
   express_pose_in_other_frame_client =
       client_node->create_client<ExpressPoseInOtherFrame>(
           "/express_pose_in_other_frame");
@@ -144,13 +150,23 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
     move_group.setPlanningPipelineId("ompl");
   }
   moveit::planning_interface::MoveGroupInterface::Plan plan;
-  move_group.plan(plan);
+  auto error_code = move_group.plan(plan);
+  if (error_code != moveit::core::MoveItErrorCode::SUCCESS) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to generate plan.");
+    return false;
+  }
+
   moveit_visual_tools.deleteAllMarkers("Path");
   moveit_visual_tools.deleteAllMarkers("Sphere");
   moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
   moveit_visual_tools.trigger();
-  auto error_code = move_group.execute(plan);
-  return (error_code == moveit::core::MoveItErrorCode::SUCCESS);
+
+  error_code = move_group.execute(plan);
+  if (error_code != moveit::core::MoveItErrorCode::SUCCESS) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to execute plan.");
+    return false;
+  }
+  return true;
 };
 
 void MoveitManager::switch_servo_command_type(std::string command_type) {

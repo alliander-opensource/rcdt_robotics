@@ -21,6 +21,23 @@ jobs:
       - run: ruff format --check
       - run: ruff check
 
+  pydoclint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install pydoclint
+      - run: pydoclint ros2_ws/src
+
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt install -y clang-format
+      - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run --Werror
+
   reuse:
     runs-on: ubuntu-latest
     steps:

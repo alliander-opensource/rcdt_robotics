@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -24,7 +26,7 @@ git clone https://github.com/ros-controls/gz_ros2_control.git -b humble
 cd gz_ros2_control
 git checkout 0.7.9
 cd /home/$UNAME/control_ws
-. /opt/ros/humble/setup.sh
+source /home/$UNAME/.bashrc
 colcon build
 echo "source /home/$UNAME/control_ws/install/setup.bash" >>/home/$UNAME/.bashrc
 
