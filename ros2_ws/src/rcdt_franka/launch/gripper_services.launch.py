@@ -21,7 +21,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     open_gripper = Node(
         package="rcdt_franka",
-        executable="open_gripper.py",
+        executable="open_gripper",
         namespace=namespace,
     )
     close_gripper = Node(
