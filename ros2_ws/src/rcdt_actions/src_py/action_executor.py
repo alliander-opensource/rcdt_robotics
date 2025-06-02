@@ -18,7 +18,10 @@ from rclpy.node import Node
 
 
 class ActionExecutor(Node):
+    """ActionExecutor node to handle action requests for sequences."""
+
     def __init__(self) -> bool:
+        """Initialize the ActionExecutor node."""
         super().__init__("action_executor")
 
         self.action_server = ActionServer(
@@ -30,6 +33,17 @@ class ActionExecutor(Node):
         )
 
     def callback(self, goal_handle: ServerGoalHandle) -> Sequence.Result:
+        """Callback for the action server.
+
+        This method is called when a goal is received by the action server.
+        It checks if the requested sequence exists, executes it, and returns the result.
+
+        Args:
+            goal_handle (ServerGoalHandle): The handle for the goal.
+
+        Returns:
+            Sequence.Result: The result of the sequence execution.
+        """
         reload(actions)
 
         goal: Sequence.Goal = goal_handle.request
@@ -58,7 +72,12 @@ class ActionExecutor(Node):
         return result
 
 
-def main(args: str = None) -> None:
+def main(args: str | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start the action executor.
+
+    Args:
+        args (str | None): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     executor = MultiThreadedExecutor()
     node = ActionExecutor()

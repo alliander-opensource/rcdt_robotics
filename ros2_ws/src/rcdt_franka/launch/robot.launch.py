@@ -7,8 +7,11 @@ from launch.actions import Shutdown
 from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import get_file_path
 
+namespace = "franka"
+ns = f"/{namespace}" if namespace else ""
+
 franka_controllers = param_file = get_file_path(
-    "franka_bringup", ["config"], "controllers.yaml"
+    "rcdt_franka", ["config"], "controllers.yaml"
 )
 
 ros2_control_node = Node(
@@ -19,9 +22,10 @@ ros2_control_node = Node(
         {"arm_id": "fr3"},
     ],
     remappings=[
-        ("/controller_manager/robot_description", "/robot_description"),
-        ("joint_states", "franka/joint_states"),
+        (f"{ns}/controller_manager/robot_description", f"{ns}/robot_description"),
+        (f"{ns}/joint_states", f"{ns}/fr3_arm/joint_states"),
     ],
+    namespace=namespace,
     on_exit=Shutdown(),
 )
 
@@ -36,14 +40,23 @@ joint_state_publisher = Node(
     name="joint_state_publisher",
     parameters=[
         {
-            "source_list": ["/franka/joint_states", "fr3_gripper/joint_states"],
+            "source_list": [
+                f"{ns}/fr3_arm/joint_states",
+                f"{ns}/fr3_gripper/joint_states",
+            ],
             "rate": 30,
         }
     ],
+    namespace=namespace,
 )
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka robot controllers.
+
+    Returns:
+        LaunchDescription: The launch description containing the Franka controllers.
+    """
     return LaunchDescription(
         [
             settings_setter,
