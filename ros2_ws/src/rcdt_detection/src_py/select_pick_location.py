@@ -22,11 +22,29 @@ logger = logging.get_logger(__name__)
 
 
 class SelectPickLocation(Node):
+    """Node to select a pick location based on depth image and masks.
+
+    This node provides a service that processes masks and depth images to determine
+    the best pick location. It uses the MaskProperties class to analyze each mask
+    and returns the most suitable pick location based on the refined mask properties.
+    """
+
     def __init__(self) -> None:
+        """Initialize the SelectPickLocation node."""
         super().__init__("filter_masks")
         self.create_service(Srv, "/select_pick_location", self.callback)
 
-    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+    @staticmethod
+    def callback(request: Srv.Request, response: Srv.Response) -> Srv.Response:
+        """Callback function to handle the service request.
+
+        Args:
+            request (Srv.Request): The request containing the depth image and masks.
+            response (Srv.Response): The response to be filled with the pick location and visualization.
+
+        Returns:
+            Srv.Response: The response containing the pick location and visualization.
+        """
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
         pickup_poses: list[Pose] = []
@@ -61,6 +79,11 @@ class SelectPickLocation(Node):
 
 
 def main(args: str = None) -> None:
+    """Main function to initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = SelectPickLocation()
     spin_node(node)

@@ -10,11 +10,13 @@ We make use of different Github workflows to automatically validate the code in 
 
 ## Linting
 
-The Linting workflow contains three checks:
+The Linting workflow contains the following checks:
 
 - **ruff**:\
 Lint all Python files according to the rules in `pyproject.toml`. See the full list of [Ruff rules](https://docs.astral.sh/ruff/rules/#error-e) for details.
 
+-**pydoclint**\:
+Checks the docstring of the .py files in the rosw_ws/src directory, using the rules specified in *pyproject.toml*. These checks might be implemented in Ruff in the [future](https://github.com/astral-sh/ruff/issues/12434), but for now we use pydoclint for the additional checks not available in Ruff.
 
 - **clang-format**:\
 Checks the format of the .cpp, .h and .hpp files in this repository.
@@ -24,6 +26,24 @@ Checks all files in this repository on usage of copyright terms.
 
 - **Ty**:\
 Runs static type checks on our Python code using [Ty](https://github.com/astral-sh/ty).  
+
+### Local Development
+
+You can run these checks locally before committing by using the [`pre-commit`](https://pre-commit.com/) framework:
+
+1. Set it up in your working folder:
+
+   ```bash
+   pre-commit install
+   ```
+
+2. (Optional) Run all hooks manually on all files:
+
+   ```bash
+   pre-commit run --all-files
+   ```
+
+This will help you catch issues early and avoid failing commits in CI.
 
 ## Documentation
 
