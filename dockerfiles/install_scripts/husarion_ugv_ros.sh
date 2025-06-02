@@ -11,7 +11,7 @@ apt update
 cd /home/$UNAME
 mkdir husarion_ws
 cd /home/$UNAME/husarion_ws
-git clone -b 2.1.2 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros
+git clone -b 2.2.1 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros
 export HUSARION_ROS_BUILD_TYPE=simulation
 vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_deps.repos
 
