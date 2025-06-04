@@ -69,7 +69,7 @@ cd ros2_ws
 To build the ROS packages, we use colcon. We recommend to build with the `--symlink-install` flag. This will make symlinks between the build files and source files. Changes to Python, YAML or Launch files are now automatically applied without the need of rebuilding. Run the command to build the ROS packages:
 
 ```bash
-colcon build --symlink-install
+uv run colcon build --symlink-install
 ```
 
 After building, you need to source the files you build:
@@ -86,7 +86,7 @@ With the `--symlink-install` flag, only changes to files that did exist while bu
 To simplify the process of building, you can add an alias to your personal bashrc file in the root of the repository (`.personal.bashrc`). You could for example add:
 
 ```bash
-alias cb="cd /home/rcdt/rcdt_robotics/ros2_ws; colcon build --symlink-install; source install/setup.bash"
+alias cb="cd /home/rcdt/rcdt_robotics/ros2_ws; uv run colcon build --symlink-install; source install/setup.bash"
 ```
 
 From now on, when you open a new terminal, this alias is available and you can simply build and source using the `cb` command.
