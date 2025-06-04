@@ -35,7 +35,6 @@ jobs:
         shell: bash -ieo pipefail {0}
         run: |
           source /home/rcdt/.bashrc
-          source .env
           cd ros2_ws
           source install/setup.bash
           echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
