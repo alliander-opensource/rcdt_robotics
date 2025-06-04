@@ -20,7 +20,3 @@ apt install -y \
     htop \
     python3-pip \
     git-lfs
-
-pip install \
-    mashumaro \
-    ultralytics

@@ -26,11 +26,16 @@ jobs:
           source /home/rcdt/.bashrc
           cd ros2_ws
           colcon build --symlink-install
+      - name: uv sync
+        shell: bash -ieo pipefail {0}
+        run: |
+          uv sync
       - name: run ty
         shell: bash -ieo pipefail {0}
         run: |
+          cd ros2_ws
           source /home/rcdt/.bashrc
-          ty check --error-on-warning
+          uv run ty check --error-on-warning
       - name: run tests
         shell: bash -ieo pipefail {0}
         run: |
@@ -39,4 +44,4 @@ jobs:
           cd ros2_ws
           source install/setup.bash
           echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          pytest-3 src/
+          uv run pytest src/

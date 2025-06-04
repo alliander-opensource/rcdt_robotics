@@ -80,7 +80,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     spawn_robots: list[Node] = []
-    for robot, position in zip(robots, positions):
+    for robot, position in zip(robots, positions, strict=False):
         namespace = "" if not robot else f"/{robot}"
         x, y, z = position.split("-")
         spawn_robot = Node(
