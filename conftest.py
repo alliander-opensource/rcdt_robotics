@@ -8,6 +8,7 @@ from typing import Iterator
 
 import pytest
 import rclpy
+from _pytest.config import Config
 from rclpy.node import Node
 
 
@@ -28,7 +29,7 @@ def test_node() -> Iterator[Node]:
 
 
 @pytest.fixture(scope="module")
-def timeout(pytestconfig: pytest.Config) -> int:
+def timeout(pytestconfig: Config) -> int:
     """Fixture to get the timeout value from pytest config.
 
     Args:
