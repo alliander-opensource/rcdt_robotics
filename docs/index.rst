@@ -17,16 +17,17 @@
    Home <self>
 
    content/getting_started.md
-   content/conventions/ros_package.md
-   content/conventions/ros_package_msgs.md
 
    content/franka.md
    content/panther.md
+   content/mobile_manipulator.md
    content/moveit.md
    content/realsense.md
    content/pyflow.md
    content/docker.md
    content/workflows.md
+
+   content/conventions/conventions.md
    content/writing_documentation.md
 
    CODE_OF_CONDUCT.md

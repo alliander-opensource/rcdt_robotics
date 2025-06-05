@@ -13,16 +13,29 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
 
-# Service definitions:
+file(GLOB MSGS CONFIGURE_DEPENDS msg/*.msg*)
 file(GLOB SRVS CONFIGURE_DEPENDS srv/*.srv*)
+file(GLOB ACTIONS CONFIGURE_DEPENDS action/*.action*)
+
+foreach(file IN LISTS MSGS)
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" file_relative ${file})
+  list(APPEND MSGS_STRIPPED ${file_relative})
+endforeach()
 
 foreach(file IN LISTS SRVS)
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" file_relative ${file})
   list(APPEND SRVS_STRIPPED ${file_relative})
 endforeach()
 
+foreach(file IN LISTS ACTIONS)
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" file_relative ${file})
+  list(APPEND ACTIONS_STRIPPED ${file_relative})
+endforeach()
+
 rosidl_generate_interfaces(${PROJECT_NAME}
+  ${MSGS_STRIPPED}
   ${SRVS_STRIPPED}
+  ${ACTIONS_STRIPPED}
   DEPENDENCIES geometry_msgs vision_msgs
 )
 
