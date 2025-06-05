@@ -59,7 +59,6 @@ norecursedirs = ["install", "build", "log",".venv",".cache"]
 [tool.ty.environment]
 extra-paths = [
     "/opt/ros/jazzy/lib/python3.12/site-packages/",
-    "/usr/lib/python3/dist-packages/",
     "/home/rcdt/franka_ws/install/franka_msgs/lib/python3.12/site-packages/",
     "ros2_ws/install/rcdt_messages/lib/python3.12/site-packages/",
     "ros2_ws/src/rcdt_franka/",
