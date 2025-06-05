@@ -20,6 +20,7 @@ franka:
 
   fr3_arm_controller:
     ros__parameters:
+      allow_nonzero_velocity_at_trajectory_end: true
       command_interfaces:
         - position
       state_interfaces:

@@ -17,7 +17,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
 
     <!-- Sim Battery -->
     <gazebo>
-      <plugin filename="ignition-gazebo-linearbatteryplugin-system"
+      <plugin filename="gz-sim-linearbatteryplugin-system"
         name="gz::sim::systems::LinearBatteryPlugin">
         <battery_name>${ns}battery</battery_name>
         <voltage>41.4</voltage>
@@ -40,7 +40,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <!-- Controller -->
   <xacro:macro name="controller" params="config_file namespace:=''">
     <gazebo>
-      <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>${config_file}</parameters>
         <ros>
           <namespace>${namespace}</namespace>
@@ -89,7 +89,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
         <topic>${ns}imu/data_raw</topic>
         <visualize>false</visualize>
         <enable_metrics>false</enable_metrics>
-        <ignition_frame_id>imu_link</ignition_frame_id>
+        <gz_frame_id>imu_link</gz_frame_id>
         <imu>
           <orientation_reference_frame>
             <localization>ENU</localization>
@@ -126,7 +126,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <!-- Lights -->
   <xacro:macro name="light" params="reference_frame name topic namespace:=''">
     <gazebo>
-      <plugin filename="LEDStrip" name="panther_gazebo::LEDStrip">
+      <plugin filename="LEDStrip" name="husarion_ugv_gazebo::LEDStrip">
         <light_name>${name}</light_name>
         <topic>${topic}</topic>
         <namespace>${namespace}</namespace>
