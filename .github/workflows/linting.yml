@@ -17,9 +17,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install ruff
-      - run: ruff format --check
-      - run: ruff check
+      - run: pip install uv
+      - run: uv sync
+      - run: uv run ruff format --check
+      - run: uv run ruff check
 
   pydoclint:
     runs-on: ubuntu-latest
@@ -28,8 +29,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - run: pip install pydoclint
-      - run: pydoclint ros2_ws/src
+      - run: pip install uv
+      - run: uv sync
+      - run: uv run pydoclint ros2_ws/src
 
   clang-format:
     runs-on: ubuntu-latest

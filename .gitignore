@@ -21,3 +21,4 @@ ignore/
 
 build/
 .cache
+.venv
