@@ -15,7 +15,7 @@ world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
-use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+use_nav2_arg = LaunchArgument("nav2", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -95,13 +95,22 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    if use_nav2:
+        nav2 = RegisteredLaunchDescription(
+            get_file_path("rcdt_panther", ["launch"], "navigation.launch.py"),
+            launch_arguments={
+                "simulation": str(use_sim),
+            },
+        )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
-        Register.group(joystick, context),
-        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
+        Register.group(nav2, context) if use_nav2 else SKIP,
+        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(joystick, context),
     ]
 
 

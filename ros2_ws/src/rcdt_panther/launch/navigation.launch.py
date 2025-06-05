@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import GroupAction, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import OpaqueFunction
 from launch_ros.actions import SetRemap
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
@@ -21,19 +22,20 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
 
-    navigation = IncludeLaunchDescription(
+    navigation = RegisteredLaunchDescription(
         get_file_path("nav2_bringup", ["launch"], "navigation_launch.py"),
         launch_arguments={
             "use_sim_time": str(use_sim),
             "params_file": get_file_path(
                 "rcdt_panther", ["config"], "nav2_params.yaml"
             ),
-        }.items(),
+        },
     )
 
-    group = GroupAction([SetRemap(src="/cmd_vel", dst="/panther/cmd_vel"), navigation])
-
-    return [group]
+    return [
+        SetRemap(src="/cmd_vel", dst="/panther/cmd_vel"),
+        Register.group(navigation, context),
+    ]
 
 
 def generate_launch_description() -> LaunchDescription:
