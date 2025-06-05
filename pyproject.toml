@@ -7,7 +7,7 @@ name = "rcdt_robotics"
 version = "0.1.0"
 description = "RCDT_robotics"
 environment = ".venv"
-requires-python = "==3.10.*"
+requires-python = "==3.12.*"
 dependencies = [
     "catkin-pkg>=1.0.0",
     "click>=8.2.1",
@@ -19,7 +19,7 @@ dependencies = [
     "myst-parser>=4.0.1",
     "numpy>=2.2.6",
     "pre-commit>=4.2.0",
-    "pyrealsense2>=2.55.1.6486",
+    # "pyrealsense2>=2.55.1.6486",
     "pytest-timeout>=2.4.0",
     "simplejpeg>=1.8.2",
     "sphinx>=8.1.3",
