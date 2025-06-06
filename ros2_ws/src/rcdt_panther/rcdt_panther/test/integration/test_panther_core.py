@@ -5,7 +5,7 @@
 
 import launch_pytest
 import pytest
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
@@ -87,11 +87,11 @@ def test_driving(test_node: Node, timeout: int) -> None:
         "panther", "fl_wheel_joint", timeout=timeout
     )
 
-    pub = test_node.create_publisher(Twist, "/panther/cmd_vel", 10)
+    pub = test_node.create_publisher(TwistStamped, "/panther/cmd_vel", 10)
     wait_for_subscriber(pub, timeout)
 
-    msg = Twist()
-    msg.linear.x = 1.0
+    msg = TwistStamped()
+    msg.twist.linear.x = 1.0
 
     publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
