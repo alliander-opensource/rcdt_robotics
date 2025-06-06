@@ -38,6 +38,8 @@ SPDX-License-Identifier: Apache-2.0
       <child link="realsense_link" />
     </joint>
     <xacro:rcdt_realsense_d435
+      robot_namespace="$(arg namespace)"
+      device_namespace="realsense"
       parent="realsense_link"
       gazebo="$(arg simulation)"
     />

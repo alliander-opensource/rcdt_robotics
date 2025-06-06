@@ -4,6 +4,7 @@
 
 
 import pytest
+from _pytest.fixtures import SubRequest
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
 
@@ -21,14 +22,32 @@ def controllers_launch() -> RegisteredLaunchDescription:
 
 
 @pytest.fixture(scope="module")
-def core_launch() -> RegisteredLaunchDescription:
+def core_launch(request: SubRequest) -> RegisteredLaunchDescription:
     """Fixture to create launch file for the franka core.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access the module name.
 
     Returns:
         RegisteredLaunchDescription: The launch description for the franka core.
     """
+    use_realsense = request.module.__name__ == "test_franka_realsense"
+
     return RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "core.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
+        launch_arguments={"realsense": str(use_realsense)},
+    )
+
+
+@pytest.fixture(scope="module")
+def realsense_launch() -> RegisteredLaunchDescription:
+    """Fixture to launch realsense.
+
+    Returns:
+        RegisteredLaunchDescription: The launch description for realsense.
+    """
+    return RegisteredLaunchDescription(
+        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py")
     )
 
 

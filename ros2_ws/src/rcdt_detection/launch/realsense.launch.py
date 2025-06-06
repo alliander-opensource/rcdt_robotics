@@ -20,7 +20,7 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed.
     """
-    use_sim = use_sim_arg.value(context)
+    use_sim = use_sim_arg.bool_value(context)
 
     if use_sim:
         convert_32FC1_to_16UC1_node = Node(  # noqa: N806
