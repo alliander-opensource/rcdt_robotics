@@ -110,8 +110,8 @@ def launch_setup(context: LaunchContext) -> list:
     get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
     launch_arguments={
         "use_sim_time": str(use_sim),
-        "params_file": get_file_path("rcdt_panther", ["config"], "test.yaml"),
-    },
+        "params_file": get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml"),
+    }
 )
     return [
         SetParameter(name="use_sim_time", value=use_sim),
@@ -119,7 +119,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(controllers, context) if use_sim else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
         Register.group(nav2, context) if use_nav2 else SKIP,
-        # Register.group(collision_monitor, context) if use_collision_monitor else SKIP,
+        Register.group(collision_monitor, context) if use_collision_monitor else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(joystick, context),
     ]

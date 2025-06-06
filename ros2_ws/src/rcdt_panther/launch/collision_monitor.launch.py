@@ -13,7 +13,6 @@ from rcdt_utilities.register import Register
 namespace_arg = LaunchArgument("namespace", "", None)
 use_sim_time_arg = LaunchArgument("use_sim_time", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
-print(get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml"))
 params_file_arg = LaunchArgument(
     "params_file", get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml")
 )
