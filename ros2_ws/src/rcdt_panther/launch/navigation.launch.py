@@ -23,7 +23,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.bool_value(context)
 
     navigation = RegisteredLaunchDescription(
-        get_file_path("nav2_bringup", ["launch"], "navigation_launch.py"),
+        get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
         launch_arguments={
             "use_sim_time": str(use_sim),
             "params_file": get_file_path(
