@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetRemap
 from launch_ros.descriptions import ParameterFile
 from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
@@ -161,6 +161,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
+        SetRemap(src="/cmd_vel", dst="/panther/cmd_vel"),
         Register.on_start(controller_node, context),
         Register.on_start(smoother_node, context),
         Register.on_start(planner_node, context),

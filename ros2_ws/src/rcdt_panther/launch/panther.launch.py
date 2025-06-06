@@ -97,9 +97,12 @@ def launch_setup(context: LaunchContext) -> list:
 
     if use_nav2:
         nav2 = RegisteredLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "navigation.launch.py"),
+            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
             launch_arguments={
-                "simulation": str(use_sim),
+                "use_sim_time": str(use_sim),
+                "params_file": get_file_path(
+                    "rcdt_panther", ["config"], "nav2_params.yaml"
+                ),
             },
         )
 
