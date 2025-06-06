@@ -99,6 +99,24 @@ The process for a code change and pull request you should follow:
 1. Pull requests will be reviewed by one of the maintainers who may discuss, offer constructive feedback, request changes, or approve the work. For more information see the Code review guideline.
 1. Upon receiving the sign-off of one of the maintainers you may merge your changes, or if you do not have permission to do that, you may request a maintainer to merge it for you.
 
+## Testing Guidelines
+
+This project uses `pytest` together with `launch_pytest` for integration and end-to-end testing.
+
+Tests are configured to support two modes:
+
+* **Simulation (default)**: Tests run in a simulated environment using the same launch and control setup as the real robot. This is useful for fast feedback during development without needing access to hardware. 
+* **Real Hardware**: Tests run on the actual robot if it's available and properly set up. We expect most things to behave the same as in simulation, but it's still important to test on the real hardware to catch timing issues, integration problems, or hardware-specific problems. Make sure everything is running and safe before starting. Tests for the Franka arm can be executed from any configuration, though it is recommended to start from the home position for reliable results.
+
+You can switch between these modes using the `--simulation` option: 
+
+```bash
+# Run tests in simulation mode (default)
+pytest
+
+# Run tests on real hardware
+pytest --simulation=False
+```
 
 ## Attribution
 
