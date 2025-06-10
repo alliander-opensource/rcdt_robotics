@@ -84,7 +84,10 @@ def launch_setup(context: LaunchContext) -> list:
 
     joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "panther"},
+        launch_arguments={
+            "robots": "panther",
+            "collision_monitor": str(use_collision_monitor),
+        },
     )
 
     slam = RegisteredLaunchDescription(
@@ -105,14 +108,17 @@ def launch_setup(context: LaunchContext) -> list:
             ),
         },
     )
-    
+
     collision_monitor = RegisteredLaunchDescription(
-    get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
-    launch_arguments={
-        "use_sim_time": str(use_sim),
-        "params_file": get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml"),
-    }
-)
+        get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
+        launch_arguments={
+            "use_sim_time": str(use_sim),
+            "params_file": get_file_path(
+                "rcdt_panther", ["config"], "collision_monitor.yaml"
+            ),
+        },
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,

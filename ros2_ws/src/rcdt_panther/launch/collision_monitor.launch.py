@@ -19,6 +19,7 @@ params_file_arg = LaunchArgument(
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 log_level_arg = LaunchArgument("log_level", "info")
 
+
 def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the Collision Monitor.
 
@@ -36,9 +37,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     lifecycle_nodes = ["collision_monitor"]
 
-    param_substitutions = {
-        "use_sim_time": str(use_sim_time)
-    }
+    param_substitutions = {"use_sim_time": str(use_sim_time)}
 
     configured_params = ParameterFile(
         RewrittenYaml(
@@ -78,18 +77,21 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_log(lifecycle_manager_node, "Creating bond timer", context),
     ]
 
+
 def generate_launch_description() -> LaunchDescription:
     """Generate the launch description for the Collision Monitor.
 
     Returns:
         LaunchDescription: The launch description containing the actions to be executed.
     """
-    return LaunchDescription([
-        namespace_arg.declaration,
-        use_sim_time_arg.declaration,
-        params_file_arg.declaration,
-        autostart_arg.declaration,
-        use_respawn_arg.declaration,
-        log_level_arg.declaration,
-        OpaqueFunction(function=launch_setup),
-    ])
+    return LaunchDescription(
+        [
+            namespace_arg.declaration,
+            use_sim_time_arg.declaration,
+            params_file_arg.declaration,
+            autostart_arg.declaration,
+            use_respawn_arg.declaration,
+            log_level_arg.declaration,
+            OpaqueFunction(function=launch_setup),
+        ]
+    )
