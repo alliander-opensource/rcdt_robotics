@@ -9,6 +9,7 @@ from rcdt_utilities.launch_utils import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
 
 robots_arg = LaunchArgument("robots", "")
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -21,6 +22,7 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     robots = robots_arg.string_value(context).split(" ")
+    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
 
     joy = Node(
         package="joy",
@@ -56,12 +58,16 @@ def launch_setup(context: LaunchContext) -> list:
         namespace="franka",
     )
 
+    pub_topic = (
+        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+    )
+
     joy_to_twist_panther = Node(
         package="rcdt_joystick",
         executable="joy_to_twist.py",
         parameters=[
             {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/panther/cmd_vel"},
+            {"pub_topic": pub_topic},
             {"config_pkg": "rcdt_panther"},
             {"stamped": False},
         ],
@@ -90,6 +96,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             robots_arg.declaration,
+            use_collision_monitor_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

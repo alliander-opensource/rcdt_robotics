@@ -7,7 +7,7 @@ collision_monitor:
     use_sim_time: True
     base_frame_id: "panther/base_link"
     odom_frame_id: "panther/odom"
-    cmd_vel_in_topic: "cmd_vel"
+    cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
     transform_tolerance: 0.5
     source_timeout: 5.0
