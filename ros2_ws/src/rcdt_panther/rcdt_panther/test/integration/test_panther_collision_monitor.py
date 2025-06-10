@@ -3,15 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import time
+
 import launch_pytest
 import pytest
+import rclpy
 from geometry_msgs.msg import Twist
 from launch import LaunchDescription
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
     call_trigger_service,
-    publish_for_duration,
     wait_for_register,
     wait_for_subscriber,
 )
@@ -86,7 +88,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
     input_velocity = 0.0001
     expected_output = input_velocity * 0.3
 
-    pub = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
+    publisher = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
     result = {}
 
     def callback_function_cmd_vel(msg: Twist) -> None:
@@ -104,13 +106,21 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
         qos_profile=10,
     )
 
-    wait_for_subscriber(pub, timeout)
+    wait_for_subscriber(publisher, timeout)
 
     msg = Twist()
     msg.linear.x = input_velocity
 
-    publish_for_duration(node=test_node, publisher=pub, msg=msg)
+    publish_duration = 1  # seconds
+    publish_rate_sec = 0.1  # seconds
+    deadline = time.monotonic() + publish_duration
 
-    assert result.get("output_velocity") == pytest.approx(expected_output), (
+    while (
+        time.monotonic() < deadline and result.get("output_velocity") != expected_output
+    ):
+        publisher.publish(msg)
+        rclpy.spin_once(test_node, timeout_sec=publish_rate_sec)
+
+    assert result.get("output_velocity") == expected_output, (
         f"Expected output velocity to be ~{expected_output}, got {result.get('output_velocity')}"
     )
