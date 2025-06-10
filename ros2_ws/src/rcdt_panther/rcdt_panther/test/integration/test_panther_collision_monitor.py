@@ -83,7 +83,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
         test_node (Node): The ROS 2 node to use for the test.
         timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
-    input_velocity = 0.005
+    input_velocity = 0.0001
     expected_output = input_velocity * 0.3
 
     pub = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
