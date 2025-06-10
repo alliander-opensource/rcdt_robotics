@@ -23,7 +23,7 @@ install(
 
 # Shared folders:
 install(
-  DIRECTORY urdf
+  DIRECTORY launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
