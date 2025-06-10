@@ -77,12 +77,15 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
 
 @pytest.mark.launch(fixture=panther_launch)
 def test_collision_monitoring(test_node: Node, timeout: int) -> None:
-    """Test that the controllers work and the wheels have turned.
+    """Test that cmd_vel is reduced to 30% by the collision monitor.
 
     Args:
         test_node (Node): The ROS 2 node to use for the test.
         timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
+    input_velocity = 0.01
+    expected_output = input_velocity * 0.3
+
     pub = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
     result = {}
 
@@ -92,7 +95,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
         Args:
             msg (Twist): The message received from the state topic.
         """
-        result["cmd_vel_linear_x"] = msg.linear.x
+        result["output_velocity"] = msg.linear.x
 
     test_node.create_subscription(
         msg_type=Twist,
@@ -104,11 +107,10 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
     wait_for_subscriber(pub, timeout)
 
     msg = Twist()
-    msg.linear.x = 0.01
+    msg.linear.x = input_velocity
 
     publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
-    # in the collision monitor, the cmd_vel output is 30% of the input
-    assert result.get("cmd_vel_linear_x") == 0.01 * 0.3, (
-        "The cmd_vel output is not 30% of the input"
+    assert result.get("output_velocity") == pytest.approx(expected_output), (
+        f"Expected output velocity to be ~{expected_output}, got {result.get('output_velocity')}"
     )
