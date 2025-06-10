@@ -16,6 +16,7 @@ use_collision_monitor_arg = LaunchArgument("collision_monitor", True, [True, Fal
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+positions_arg = LaunchArgument("positions", "0-0-0")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -35,6 +36,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_velodyne = use_velodyne_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
     use_nav2 = use_nav2_arg.bool_value(context)
+    positions = positions_arg.string_value(context).split(" ")
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -56,6 +58,7 @@ def launch_setup(context: LaunchContext) -> list:
             "load_gazebo_ui": str(load_gazebo_ui),
             "velodyne": str(use_velodyne),
             "world": world,
+            "positions": positions,
         },
     )
 
@@ -147,6 +150,7 @@ def generate_launch_description() -> LaunchDescription:
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
             use_nav2_arg.declaration,
+            positions_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

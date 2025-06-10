@@ -3,25 +3,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import time
-
 import launch_pytest
 import pytest
-import rclpy
-from action_msgs.msg import GoalStatus
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Twist
 from launch import LaunchDescription
-from nav2_msgs.action import NavigateToPose
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
     call_trigger_service,
-    create_ready_action_client,
+    publish_for_duration,
     wait_for_register,
+    wait_for_subscriber,
 )
-from rclpy.action.client import ClientGoalHandle
 from rclpy.node import Node
-from rclpy.task import Future
 from sensor_msgs.msg import JointState
 
 
@@ -36,7 +30,8 @@ def panther_launch() -> LaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
-            "nav2": "True",
+            "collision_monitor": "True",
+            "positions": "4-0-0",
         },
     )
     return Register.connect_context([panther])
@@ -50,7 +45,6 @@ def test_wait_for_register(timeout: int) -> None:
         timeout (int): The timeout in seconds to wait for the panther core to register.
     """
     wait_for_register(timeout=timeout)
-    time.sleep(5)
 
 
 @pytest.mark.launch(fixture=panther_launch)
@@ -82,50 +76,39 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
 
 
 @pytest.mark.launch(fixture=panther_launch)
-def test_nav2_goal(test_node: Node, timeout: int) -> None:
-    """Test that the Panther can receive and process a navigation goal.
+def test_collision_monitoring(test_node: Node, timeout: int) -> None:
+    """Test that the controllers work and the wheels have turned.
 
     Args:
         test_node (Node): The ROS 2 node to use for the test.
-        timeout (int): The timeout in seconds to wait for the goal to be processed.
+        timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
-    action_client = create_ready_action_client(
-        node=test_node,
-        action_type=NavigateToPose,
-        action_name="/navigate_to_pose",
-        timeout=timeout,
+    pub = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
+    result = {}
+
+    def callback_function_cmd_vel(msg: Twist) -> None:
+        """Callback function to handle messages from the state topic.
+
+        Args:
+            msg (Twist): The message received from the state topic.
+        """
+        result["cmd_vel_linear_x"] = msg.linear.x
+
+    test_node.create_subscription(
+        msg_type=Twist,
+        topic="/panther/cmd_vel",
+        callback=callback_function_cmd_vel,
+        qos_profile=10,
     )
 
-    goal_msg = NavigateToPose.Goal()
+    wait_for_subscriber(pub, timeout)
 
-    pose_stamped = PoseStamped()
+    msg = Twist()
+    msg.linear.x = 0.01
 
-    pose_stamped.header.stamp = test_node.get_clock().now().to_msg()
-    pose_stamped.header.frame_id = "map"
+    publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
-    # 2) Position:
-    pose_stamped.pose.position.x = 0.3921791315078735
-    pose_stamped.pose.position.y = 0.068382263183594
-    pose_stamped.pose.position.z = 0.002532958984375
-
-    # 3) Orientation (quaternion):
-    pose_stamped.pose.orientation.x = 0.0
-    pose_stamped.pose.orientation.y = 0.0
-    pose_stamped.pose.orientation.z = 1.0
-    pose_stamped.pose.orientation.w = 0.0
-
-    goal_msg.pose = pose_stamped
-
-    future = action_client.send_goal_async(goal_msg)
-    rclpy.spin_until_future_complete(test_node, future, timeout_sec=timeout)
-    goal_handle: ClientGoalHandle = future.result()
-
-    assert goal_handle.accepted
-
-    result_future: Future = goal_handle.get_result_async()
-    rclpy.spin_until_future_complete(test_node, result_future, timeout_sec=timeout)
-
-    result: NavigateToPose.Impl.GetResultService.Response = result_future.result()
-    assert result.status == GoalStatus.STATUS_SUCCEEDED, (
-        f"Navigation failed with status: {result.status}"
+    # in the collision monitor, the cmd_vel output is 30% of the input
+    assert result.get("cmd_vel_linear_x") == 0.01 * 0.3, (
+        "The cmd_vel output is not 30% of the input"
     )
