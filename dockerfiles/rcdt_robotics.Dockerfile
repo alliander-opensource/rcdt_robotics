@@ -39,4 +39,7 @@ RUN ./sphinx.sh
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 
+COPY ./install_scripts/cuda.sh .
+RUN ./cuda.sh
+
 INCLUDE ./general/post_install.dockerfile
