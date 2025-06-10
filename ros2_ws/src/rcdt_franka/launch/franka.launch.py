@@ -71,7 +71,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     realsense = RegisteredLaunchDescription(
-        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py"),
+        get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py"),
         launch_arguments={"simulation": str(use_sim)},
     )
 

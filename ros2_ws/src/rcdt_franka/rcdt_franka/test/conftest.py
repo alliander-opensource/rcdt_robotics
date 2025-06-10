@@ -47,7 +47,7 @@ def realsense_launch() -> RegisteredLaunchDescription:
         RegisteredLaunchDescription: The launch description for realsense.
     """
     return RegisteredLaunchDescription(
-        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py")
+        get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py")
     )
 
 
