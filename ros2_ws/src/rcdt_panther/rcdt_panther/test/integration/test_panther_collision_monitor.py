@@ -31,7 +31,7 @@ def panther_launch() -> LaunchDescription:
         launch_arguments={
             "rviz": "False",
             "collision_monitor": "True",
-            "positions": "4-0-0",
+            "positions": "3.8-0-0",
         },
     )
     return Register.connect_context([panther])
@@ -83,7 +83,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
         test_node (Node): The ROS 2 node to use for the test.
         timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
-    input_velocity = 0.01
+    input_velocity = 0.005
     expected_output = input_velocity * 0.3
 
     pub = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
