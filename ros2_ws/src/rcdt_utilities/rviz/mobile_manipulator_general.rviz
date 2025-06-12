@@ -46,7 +46,7 @@ Visualization Manager:
       Offset:
         X: 0
         Y: 0
-        Z: 0
+        Z: -0.18000000715255737
       Plane: XY
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
@@ -132,10 +132,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        link_to_panther:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -162,6 +158,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -175,11 +175,19 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        fl_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fl_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        fr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -201,7 +209,15 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rear_bumper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rl_wheel_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -210,6 +226,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -227,8 +247,7 @@ Visualization Manager:
       Enabled: true
       Name: MarkerArray
       Namespaces:
-        Path: true
-        Sphere: true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
