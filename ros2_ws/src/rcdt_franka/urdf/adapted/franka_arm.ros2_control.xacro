@@ -39,6 +39,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
             <plugin>franka_hardware/FrankaHardwareInterface</plugin>
             <param name="robot_ip">${robot_ip}</param>
             <param name="arm_prefix">${arm_prefix}</param>
+            <param name="version">0.0.0</param>
           </xacro:if>
           <xacro:if value="${use_fake_hardware == 0 and gazebo == 0 and multi_arm == 1}">
             <plugin>franka_hardware/MultiFrankaHardwareInterface</plugin>
