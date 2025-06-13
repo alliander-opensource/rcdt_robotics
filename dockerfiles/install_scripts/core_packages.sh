@@ -25,5 +25,5 @@ apt install -y \
     ros-jazzy-realsense2-camera \
     ros-jazzy-realsense2-description \
     ros-jazzy-velodyne-description \
-    ros-jazzy-launch-pytest
+    ros-jazzy-launch-pytest \
     ros-jazzy-rmw-cyclonedds-cpp
