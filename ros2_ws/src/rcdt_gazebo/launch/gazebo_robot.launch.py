@@ -122,7 +122,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(gazebo, context),
         Register.on_log(
             bridge,
-            "Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
+            "Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
             context,
         ),
         *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
