@@ -24,6 +24,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "pydoclint>=0.6.6",
     # "pyrealsense2>=2.55.1.6486",
+    "pytest<8.4.0",
     "pytest-timeout>=2.4.0",
     "simplejpeg>=1.8.2",
     "sphinx>=8.1.3",
