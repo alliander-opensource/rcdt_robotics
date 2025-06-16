@@ -6,14 +6,15 @@
 
 set -e
 
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 apt update
 apt install -y \
     nano \
     htop \
-    python3-pip
+    python3-pip \
+    git-lfs
 
 pip install uv --break-system-packages
-curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 
 apt install -y \
     ros-jazzy-moveit \
