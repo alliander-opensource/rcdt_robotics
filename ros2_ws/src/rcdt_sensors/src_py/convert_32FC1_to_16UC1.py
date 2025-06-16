@@ -27,10 +27,10 @@ class Convert32FC1to16UC1(Node):
         super().__init__("convert_32FC1_to_16UC1_node")
 
         self.create_subscription(
-            Image, "/camera/camera/depth/image_rect_raw_float", self.callback, 10
+            Image, "/franka/realsense/depth/image_rect_raw_float", self.callback, 10
         )
         self.publisher = self.create_publisher(
-            Image, "/camera/camera/depth/image_rect_raw", 10
+            Image, "/franka/realsense/depth/image_rect_raw", 10
         )
 
     def callback(self, msg: Image) -> None:
