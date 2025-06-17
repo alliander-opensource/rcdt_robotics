@@ -15,11 +15,13 @@ sudo apt install -y \
     ros-humble-nav2-bringup \
     ros-humble-slam-toolbox 
 
-pip install uv 
+echo "done with dev_packages."
 
-echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.10/site-packages:\$PYTHONPATH\"" \
-  >> /home/$UNAME/.bashrc
+# pip install uv 
 
-echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
-  >> /home/$UNAME/.bashrc
+# echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.10/site-packages:\$PYTHONPATH\"" \
+#   >> /home/$UNAME/.bashrc
+
+# echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
+#   >> /home/$UNAME/.bashrc
 
