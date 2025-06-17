@@ -10,6 +10,9 @@ on:
       container-image:
         type: string
         required: true
+      cache-tag:
+        type: string
+        required: true
 
 jobs:
   deploy-image:
