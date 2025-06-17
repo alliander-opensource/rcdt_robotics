@@ -23,6 +23,7 @@ def panther_launch() -> LaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
+            "world": "empty_camera.sdf",
         },
     )
     utils_launch = RegisteredLaunchDescription(
