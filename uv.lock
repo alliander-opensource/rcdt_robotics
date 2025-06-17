@@ -531,8 +531,8 @@ sdist = { url = "https://files.pythonhosted.org/packages/03/cf/c6d6de5a8341f71cd
 
 [[package]]
 name = "graspnetapi"
-version = "1.2.10"
-source = { registry = "https://pypi.org/simple" }
+version = "1.2.11"
+source = { git = "https://github.com/graspnet/graspnetAPI#bd6783c3effdebd895abfba8b96dc22a42ec3b5a" }
 dependencies = [
     { name = "autolab-core" },
     { name = "autolab-perception" },
@@ -553,7 +553,19 @@ dependencies = [
     { name = "transforms3d" },
     { name = "trimesh" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/db/2928b355441d03081f4eaa558e93def6f1bd96afac1dcc44b9f6fb759017/graspnetAPI-1.2.10.tar.gz", hash = "sha256:bf8ab34e4f6a4ba7189491a15dd7c09407d970bdd843708ea428742b30d41269", size = 82438, upload-time = "2021-05-17T02:56:34.906Z" }
+
+[[package]]
+name = "graspnetpy"
+version = "0.1"
+source = { git = "https://github.com/alliander-opensource/graspnet-baseline#a6fba4a003812acb951d0c8aa447d8557c4ed038" }
+dependencies = [
+    { name = "graspnetapi" },
+    { name = "ipython" },
+    { name = "knn-pytorch" },
+    { name = "open3d" },
+    { name = "pointnet2" },
+    { name = "torch" },
+]
 
 [[package]]
 name = "h11"
@@ -787,7 +799,7 @@ wheels = [
 [[package]]
 name = "knn-pytorch"
 version = "0.1"
-source = { directory = "../graspnet-baseline/knn" }
+source = { git = "https://github.com/alliander-opensource/graspnet-baseline?subdirectory=knn#a6fba4a003812acb951d0c8aa447d8557c4ed038" }
 
 [[package]]
 name = "lark"
@@ -967,11 +979,11 @@ wheels = [
 
 [[package]]
 name = "narwhals"
-version = "1.42.1"
+version = "1.43.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/df/d6/168a787b7800d6c89846b791e4f5ee6b94998a80c8c2838a019d3d71984d/narwhals-1.42.1.tar.gz", hash = "sha256:50a5635b11aeda98cf9c37e839fd34b0a24159f59a4dfae930290ad698320494", size = 492865, upload-time = "2025-06-12T15:15:13.222Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/d9/ec1bd9f85d30de741b281ef24dabbf029122b638ea19456ffa1b1d862205/narwhals-1.43.0.tar.gz", hash = "sha256:5a28119401fccb4d344704f806438a983bb0a5b3f4a638760d25b1d521a18a79", size = 496455, upload-time = "2025-06-16T15:34:08.467Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/3f/8d450588206b437dd239a6d44230c63095e71135bd95d5a74347d07adbd5/narwhals-1.42.1-py3-none-any.whl", hash = "sha256:7a270d44b94ccdb277a799ae890c42e8504c537c1849f195eb14717c6184977a", size = 359888, upload-time = "2025-06-12T15:15:11.643Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/8d/07b892f237491e03328de4c69c17ed8b99a5b6faf84575ca06b15cbf2674/narwhals-1.43.0-py3-none-any.whl", hash = "sha256:7accb0eae172f5697ada3635f46221dfcc98e9419f694df628c0745526d5c514", size = 362730, upload-time = "2025-06-16T15:34:06.455Z" },
 ]
 
 [[package]]
@@ -1317,7 +1329,7 @@ wheels = [
 [[package]]
 name = "pointnet2"
 version = "0.0.0"
-source = { directory = "../graspnet-baseline/pointnet2" }
+source = { git = "https://github.com/alliander-opensource/graspnet-baseline?subdirectory=pointnet2#a6fba4a003812acb951d0c8aa447d8557c4ed038" }
 
 [[package]]
 name = "pre-commit"
@@ -1559,16 +1571,13 @@ dependencies = [
     { name = "flake8" },
     { name = "flake8-pyproject" },
     { name = "gdown" },
-    { name = "graspnetapi" },
+    { name = "graspnetpy" },
     { name = "inflection" },
-    { name = "ipython" },
-    { name = "knn-pytorch" },
     { name = "lark" },
     { name = "mashumaro" },
     { name = "myst-parser" },
     { name = "numpy" },
     { name = "opencv-python" },
-    { name = "pointnet2" },
     { name = "pre-commit" },
     { name = "pydoclint" },
     { name = "pyrealsense2" },
@@ -1580,9 +1589,7 @@ dependencies = [
     { name = "sphinx-rtd-theme" },
     { name = "sphinxcontrib-video" },
     { name = "termcolor" },
-    { name = "torch" },
     { name = "tornado" },
-    { name = "transforms3d" },
 ]
 
 [package.dev-dependencies]
@@ -1602,16 +1609,13 @@ requires-dist = [
     { name = "flake8", specifier = ">=7.2.0" },
     { name = "flake8-pyproject", specifier = ">=1.2.3" },
     { name = "gdown", specifier = ">=5.2.0" },
-    { name = "graspnetapi", specifier = ">=1.2.10" },
+    { name = "graspnetpy", git = "https://github.com/alliander-opensource/graspnet-baseline" },
     { name = "inflection", specifier = ">=0.5.1" },
-    { name = "ipython", specifier = ">=8.37.0" },
-    { name = "knn-pytorch", directory = "../graspnet-baseline/knn" },
     { name = "lark", specifier = ">=1.2.2" },
     { name = "mashumaro", specifier = ">=3.16" },
     { name = "myst-parser", specifier = ">=4.0.1" },
-    { name = "numpy", specifier = "==1.23.4" },
+    { name = "numpy", specifier = "<2.0" },
     { name = "opencv-python", specifier = ">=4.11.0.86" },
-    { name = "pointnet2", directory = "../graspnet-baseline/pointnet2" },
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "pydoclint", specifier = ">=0.6.6" },
     { name = "pyrealsense2", specifier = ">=2.55.1.6486" },
@@ -1623,9 +1627,7 @@ requires-dist = [
     { name = "sphinx-rtd-theme", specifier = ">=3.0.2" },
     { name = "sphinxcontrib-video", specifier = ">=0.4.1" },
     { name = "termcolor", specifier = ">=3.1.0" },
-    { name = "torch", specifier = ">=2.7.1" },
     { name = "tornado", specifier = ">=6.5.1" },
-    { name = "transforms3d", specifier = ">=0.3.1" },
 ]
 
 [package.metadata.requires-dev]
