@@ -10,6 +10,9 @@ on:
       container-image:
         type: string
         required: true
+      cache-tag:
+        type: string
+        required: true
 
 jobs:
   deploy-image:
@@ -30,5 +33,7 @@ jobs:
           context: ./dockerfiles
           file: ./dockerfiles/rcdt_robotics.Dockerfile
           tags: ${{ inputs.container-image}}
-          cache-from: type=registry,ref=rcdt/robotics:build-cache
-          cache-to: type=registry,ref=rcdt/robotics:build-cache,mode=max
+          cache-from: |
+            type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }}
+            type=registry,ref=rcdt/robotics:build-cache-main
+          cache-to: type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }},mode=max
