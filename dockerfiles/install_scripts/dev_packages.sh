@@ -6,6 +6,8 @@
 
 set -e
 
+echo "Installing dev_packages."
+
 sudo apt update
 sudo apt install -y \
     flake8 \
