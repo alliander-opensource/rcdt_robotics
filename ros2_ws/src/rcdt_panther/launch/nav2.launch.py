@@ -18,6 +18,7 @@ params_file_arg = LaunchArgument(
 )
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 log_level_arg = LaunchArgument("log_level", "info")
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -35,6 +36,7 @@ def launch_setup(context: LaunchContext) -> list:
     params_file = params_file_arg.string_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     log_level = log_level_arg.string_value(context)
+    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
 
     lifecycle_nodes = [
         "controller_server",
@@ -160,8 +162,12 @@ def launch_setup(context: LaunchContext) -> list:
         ],
     )
 
+    pub_topic = (
+        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+    )
+
     return [
-        SetRemap(src="/cmd_vel", dst="/panther/cmd_vel"),
+        SetRemap(src="/cmd_vel", dst=pub_topic),
         Register.on_start(controller_node, context),
         Register.on_start(smoother_node, context),
         Register.on_start(planner_node, context),
@@ -184,6 +190,7 @@ def generate_launch_description() -> LaunchDescription:
             namespace_arg.declaration,
             use_sim_time_arg.declaration,
             params_file_arg.declaration,
+            use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,
             log_level_arg.declaration,

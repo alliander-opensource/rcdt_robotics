@@ -103,6 +103,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "params_file": get_file_path(
                     "rcdt_panther", ["config"], "nav2_params.yaml"
                 ),
+                "use_collision_monitor": str(use_collision_monitor),
             },
         )
 
