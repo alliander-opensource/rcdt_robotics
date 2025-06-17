@@ -30,5 +30,7 @@ jobs:
           context: ./dockerfiles
           file: ./dockerfiles/rcdt_robotics.Dockerfile
           tags: ${{ inputs.container-image}}
-          cache-from: type=registry,ref=rcdt/robotics:build-cache
-          cache-to: type=registry,ref=rcdt/robotics:build-cache,mode=max
+          cache-from: |
+            type=registry,ref=rcdt/robotics:build-cache-main
+            type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }}
+          cache-to: type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }},mode=max
