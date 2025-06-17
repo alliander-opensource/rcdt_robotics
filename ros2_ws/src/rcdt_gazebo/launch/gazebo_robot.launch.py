@@ -59,10 +59,10 @@ def launch_setup(context: LaunchContext) -> list:
     if use_realsense:
         bridge_topics.extend(
             [
-                "/camera/camera/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/camera/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/franka/realsense/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/franka/realsense/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/franka/realsense/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/franka/realsense/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
     if use_velodyne:
