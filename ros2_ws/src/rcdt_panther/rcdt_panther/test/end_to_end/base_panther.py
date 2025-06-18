@@ -92,9 +92,9 @@ def get_tests() -> dict:
 
         assert_movements_with_joy(
             node=test_node,
-            joy_axes=[0.0, 1.0, 0.0, 0.0, 0.0],
+            joy_axes=[0.0, 0.1, 0.0, 0.0, 0.0],
             compare_fn=compare_fn,
-            threshold=0.1,
+            threshold=0.01,
             description="x position",
             frame_base="panther/base_link",
             frame_target="panther/odom",
@@ -117,9 +117,9 @@ def get_tests() -> dict:
 
         assert_movements_with_joy(
             node=test_node,
-            joy_axes=[0.0, 0.0, 1.0, 0.0, 0.0],
+            joy_axes=[0.0, 0.0, 0.1, 0.0, 0.0],
             compare_fn=compare_fn,
-            threshold=0.01,
+            threshold=0.001,
             description="orientation.w",
             frame_base="panther/base_link",
             frame_target="panther/odom",

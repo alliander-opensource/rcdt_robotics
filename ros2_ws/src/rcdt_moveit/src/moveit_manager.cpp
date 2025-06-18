@@ -27,8 +27,6 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
 
   initialize_clients();
   initialize_services();
-
-  switch_servo_command_type("TWIST");
 };
 
 void MoveitManager::initialize_clients() {

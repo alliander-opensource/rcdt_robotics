@@ -340,7 +340,7 @@ def wait_until_reached_joint(
                 namespace=namespace, joint=joint, timeout=timeout_sec
             )
             if joint_value == pytest.approx(expected_value, abs=tolerance):
-                time.sleep(0.25)
+                time.sleep(2)
                 return (True, joint_value)
         except ValueError:
             pass

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import OpaqueFunction
+from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path, get_yaml
@@ -68,14 +68,39 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=namespace,
     )
 
+    switch_servo_type_to_twist = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "service",
+            "call",
+            "/franka/servo_node/switch_command_type",
+            "moveit_msgs/srv/ServoCommandType",
+            "{command_type: 1}",
+        ]
+    )
+
+    move_to_home = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "service",
+            "call",
+            "/franka/moveit_manager/move_to_configuration",
+            "rcdt_messages/srv/MoveToConfiguration",
+            "{configuration: home}",
+        ],
+        output="screen",
+    )
+
     return [
         Register.on_log(
             move_group, "MoveGroup context initialization complete", context
         ),
         Register.on_log(moveit_servo, "Servo initialized successfully", context),
+        Register.on_exit(switch_servo_type_to_twist, context),
         Register.on_log(
             moveit_manager, "Ready to take commands for planning group", context
         ),
+        Register.on_exit(move_to_home, context),
     ]
 
 
