@@ -121,7 +121,7 @@ You can switch between these modes using the `--simulation` option:
 pytest
 
 # Run tests on real hardware
-pytest --simulation=false
+pytest --simulation=False
 ```
 
 ## Attribution
