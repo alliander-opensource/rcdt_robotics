@@ -46,7 +46,7 @@ def launch_setup(context: LaunchContext) -> list:
         raise ValueError("sdf file should contain a world attribute with a name.")
     else:
         world_name = world_attribute.attrib.get("name")
-    cmd = ["ign", "gazebo", sdf_file]
+    cmd = ["gz", "sim", sdf_file]
     if not load_gazebo_ui:
         cmd.append("-s")
     gazebo = ExecuteProcess(
@@ -55,7 +55,7 @@ def launch_setup(context: LaunchContext) -> list:
         additional_env=GazeboRosPaths.get_env(),
     )
 
-    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"]
+    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"]
     if use_realsense:
         bridge_topics.extend(
             [
@@ -102,14 +102,14 @@ def launch_setup(context: LaunchContext) -> list:
 
     unpause_sim = ExecuteProcess(
         cmd=[
-            "ign",
+            "gz",
             "service",
             "-s",
             f"/world/{world_name}/control",
             "--reqtype",
-            "ignition.msgs.WorldControl",
+            "gz.msgs.WorldControl",
             "--reptype",
-            "ignition.msgs.Boolean",
+            "gz.msgs.Boolean",
             "--timeout",
             "3000",
             "--req",
@@ -122,7 +122,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(gazebo, context),
         Register.on_log(
             bridge,
-            "Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
+            "Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
             context,
         ),
         *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
