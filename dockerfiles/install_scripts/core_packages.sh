@@ -17,7 +17,7 @@ apt install -y \
     ros-humble-control-toolbox \
     ros-humble-xacro \
     ros-humble-rqt-tf-tree \
+    ros-humble-rmw-cyclonedds-cpp \
     htop \
     python3-pip \
-    git-lfs \
-    ros-humble-rmw-cyclonedds-cpp
+    git-lfs 
