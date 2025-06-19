@@ -4,7 +4,6 @@
 
 
 import xml.etree.ElementTree as ET
-from typing import List
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
@@ -21,17 +20,32 @@ use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> List:
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = world_arg.value(context)
-    robots = robots_arg.value(context).split(" ")
-    positions = positions_arg.value(context).split(" ")
-    use_realsense = use_realsense_arg.value(context)
-    use_velodyne = use_velodyne_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Gazebo simulation with robots.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Raises:
+        ValueError: If the SDF file does not contain a world attribute with a name.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = world_arg.string_value(context)
+    robots = robots_arg.string_value(context).split(" ")
+    positions = positions_arg.string_value(context).split(" ")
+    use_realsense = use_realsense_arg.bool_value(context)
+    use_velodyne = use_velodyne_arg.bool_value(context)
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
-    world_name = sdf.getroot().find("world").attrib.get("name")
+    world_attribute = sdf.getroot().find("world")
+    if world_attribute is None:
+        raise ValueError("sdf file should contain a world attribute with a name.")
+    else:
+        world_name = world_attribute.attrib.get("name")
     cmd = ["ign", "gazebo", sdf_file]
     if not load_gazebo_ui:
         cmd.append("-s")
@@ -45,10 +59,10 @@ def launch_setup(context: LaunchContext) -> List:
     if use_realsense:
         bridge_topics.extend(
             [
-                "/camera/camera/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/camera/camera/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/camera/camera/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/franka/realsense/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/franka/realsense/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/franka/realsense/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/franka/realsense/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
     if use_velodyne:
@@ -66,8 +80,8 @@ def launch_setup(context: LaunchContext) -> List:
     )
 
     spawn_robots: list[Node] = []
-    for robot, position in zip(robots, positions):
-        namespace = "" if robot == "" else f"/{robot}"
+    for robot, position in zip(robots, positions, strict=False):
+        namespace = "" if not robot else f"/{robot}"
         x, y, z = position.split("-")
         spawn_robot = Node(
             package="ros_gz_sim",
@@ -106,13 +120,22 @@ def launch_setup(context: LaunchContext) -> List:
 
     return [
         Register.on_start(gazebo, context),
-        Register.on_log(bridge, "Creating GZ->ROS Bridge", context),
+        Register.on_log(
+            bridge,
+            "Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
+            context,
+        ),
         *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
         Register.on_start(unpause_sim, context),
     ]
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Gazebo simulation with robots.
+
+    Returns:
+        LaunchDescription: The launch description containing the actions to be executed.
+    """
     return LaunchDescription(
         [
             load_gazebo_ui_arg.declaration,

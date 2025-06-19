@@ -17,12 +17,20 @@ world_arg = LaunchArgument(
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    use_rviz = use_rviz_arg.value(context)
-    world = str(world_arg.value(context))
-    use_realsense = use_realsense_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Franka robot.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
+    use_sim = use_sim_arg.bool_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    use_rviz = use_rviz_arg.bool_value(context)
+    world = str(world_arg.string_value(context))
+    use_realsense = use_realsense_arg.bool_value(context)
 
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
@@ -42,7 +50,7 @@ def launch_setup(context: LaunchContext) -> None:
         launch_arguments={"simulation": str(use_sim)},
     )
 
-    display_config = "franka_general.rviz"
+    display_config = "franka_realsense.rviz" if use_realsense else "franka_general.rviz"
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
@@ -64,7 +72,7 @@ def launch_setup(context: LaunchContext) -> None:
     )
 
     realsense = RegisteredLaunchDescription(
-        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py"),
+        get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py"),
         launch_arguments={"simulation": str(use_sim)},
     )
 
@@ -95,6 +103,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka robot.
+
+    Returns:
+        LaunchDescription: The launch description for the Franka robot.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

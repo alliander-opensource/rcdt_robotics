@@ -12,7 +12,15 @@ robots_arg = LaunchArgument("robots", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    robots = robots_arg.value(context).split(" ")
+    """Setup the launch description for the joystick nodes.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
+    robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
         package="joy",
@@ -74,6 +82,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the joystick nodes.
+
+    Returns:
+        LaunchDescription: The launch description containing the joystick nodes.
+    """
     return LaunchDescription(
         [
             robots_arg.declaration,

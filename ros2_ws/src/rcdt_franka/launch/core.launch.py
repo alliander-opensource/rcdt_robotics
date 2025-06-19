@@ -20,12 +20,20 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
-def launch_setup(context: LaunchContext) -> None:
-    use_sim = use_sim_arg.value(context)
-    parent = parent_arg.value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.value(context)
-    world = str(world_arg.value(context))
-    use_realsense = use_realsense_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for the Franka core.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
+    use_sim = use_sim_arg.bool_value(context)
+    parent = parent_arg.string_value(context)
+    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
+    world = str(world_arg.string_value(context))
+    use_realsense = use_realsense_arg.bool_value(context)
 
     namespace = "franka"
     frame_prefix = namespace + "/" if namespace else ""
@@ -85,6 +93,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the Franka core.
+
+    Returns:
+        LaunchDescription: The launch description for the Franka core.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

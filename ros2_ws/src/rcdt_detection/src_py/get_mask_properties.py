@@ -17,11 +17,28 @@ ros_logger = logging.get_logger(__name__)
 
 
 class GetMaskProperties(Node):
+    """Node to get properties of a mask from a depth image and camera info.
+
+    This node provides a service that takes a mask, depth image, and camera info,
+    and returns properties such as contour, bounding box, centroid, and average hue.
+    """
+
     def __init__(self) -> None:
+        """Initialize the GetMaskProperties node."""
         super().__init__("get_mask_properties")
         self.create_service(Srv, "/get_mask_properties", self.callback)
 
-    def callback(self, request: Srv.Request, response: Srv.Response) -> Srv.Response:
+    @staticmethod
+    def callback(request: Srv.Request, response: Srv.Response) -> Srv.Response:
+        """Callback function to handle the service request.
+
+        Args:
+            request (Srv.Request): The request containing the mask, depth image, and camera info.
+            response (Srv.Response): The response to be filled with mask properties.
+
+        Returns:
+            Srv.Response: The response containing the properties of the mask.
+        """
         mask = ros_image_to_cv2_image(request.mask)
         depth_image = ros_image_to_cv2_image(request.depth_image)
         intrinsics = camera_info_to_intrinsics(request.camera_info)
@@ -43,6 +60,11 @@ class GetMaskProperties(Node):
 
 
 def main(args: str = None) -> None:
+    """Initialize the ROS 2 node and spin it.
+
+    Args:
+        args (str, optional): Command line arguments. Defaults to None.
+    """
     rclpy.init(args=args)
     node = GetMaskProperties()
     spin_node(node)

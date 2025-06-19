@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# To use:
+#
+#     pre-commit run -a
+#
+# Or:
+#
+#     pre-commit install  # (runs every time you commit in git)
+#
+# To update this file:
+#
+#     pre-commit autoupdate
+#
+# See https://github.com/pre-commit/pre-commit
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.12
+    hooks:
+      - id: ruff
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        pass_filenames: false
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.12
+    hooks:
+      - id: ruff
+        name: ruff check
+        entry: uv run ruff check
+        language: system
+        pass_filenames: false
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.6.7 
+    hooks:
+      - id: pydoclint
+        args: ["ros2_ws/src"]
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty check
+        entry: uv run ty check --error-on-warning
+        language: system
+        pass_filenames: false
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v20.1.5
+    hooks:
+      - id: clang-format
+        types_or: [c++, c, cuda]
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    hooks:
+      - id: reuse

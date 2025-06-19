@@ -48,6 +48,16 @@ cd rcdt_robotics
 The image that is pulled is automatically determined based on your current local branch. If the main branch is selected, it will use `rcdt/robotics:latest`. If you are on a branch that contains changes in the Docker files and a pull request is made, a corresponding Docker Image is automatically build by Github and pushed to Docker Hub. The run script will now use this new image when available.
 :::
 
+## Install Python dependencies with uv
+
+This project uses [uv](https://docs.astral.sh/uv/) to manage Python packages. To install everything needed for the ROS packages, run the following command from the `rcdt_robotics` repository root:
+
+```bash
+uv sync
+```
+
+This will install all the Python dependencies in the `.venv` directory in the root of the repository. The `.venv` directory is automatically created if it does not exist yet. You can now use these dependencies in your ROS packages. To learn more about all the available features of uv, please refer to the [uv feature documentation](https://docs.astral.sh/uv/getting-started/features/).
+
 ## Build ROS packages
 
 The ROS packages are located in the `ros2_ws/src` directory inside the repository. It is recommend to build the ROS package inside the `ros2_ws` directory. First go to this directory:
@@ -59,7 +69,7 @@ cd ros2_ws
 To build the ROS packages, we use colcon. We recommend to build with the `--symlink-install` flag. This will make symlinks between the build files and source files. Changes to Python, YAML or Launch files are now automatically applied without the need of rebuilding. Run the command to build the ROS packages:
 
 ```bash
-colcon build --symlink-install
+uv run colcon build --symlink-install
 ```
 
 After building, you need to source the files you build:
@@ -76,7 +86,7 @@ With the `--symlink-install` flag, only changes to files that did exist while bu
 To simplify the process of building, you can add an alias to your personal bashrc file in the root of the repository (`.personal.bashrc`). You could for example add:
 
 ```bash
-alias cb="cd /home/rcdt/rcdt_robotics/ros2_ws; colcon build --symlink-install; source install/setup.bash"
+alias cb="cd /home/rcdt/rcdt_robotics/ros2_ws; uv run colcon build --symlink-install; source install/setup.bash"
 ```
 
 From now on, when you open a new terminal, this alias is available and you can simply build and source using the `cb` command.

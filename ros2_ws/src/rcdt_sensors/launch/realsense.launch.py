@@ -12,7 +12,15 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
-    use_sim = use_sim_arg.value(context)
+    """Setup the launch description for the realsense camera.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed.
+    """
+    use_sim = use_sim_arg.bool_value(context)
 
     if use_sim:
         convert_32FC1_to_16UC1_node = Node(  # noqa: N806
@@ -45,6 +53,11 @@ def launch_setup(context: LaunchContext) -> list:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the realsense camera.
+
+    Returns:
+        LaunchDescription: The launch description for the realsense camera.
+    """
     return LaunchDescription(
         [
             use_sim_arg.declaration,

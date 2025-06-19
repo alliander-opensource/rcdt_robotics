@@ -4,11 +4,12 @@
 
 
 import pytest
-from rcdt_utilities.geometry import Pose
+from geometry_msgs.msg import Pose
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
     assert_joy_topic_switch,
     assert_movements_with_joy,
+    publish_for_duration,
     wait_for_register,
     wait_for_subscriber,
     wait_until_reached_joint,
@@ -18,20 +19,40 @@ from sensor_msgs.msg import JointState, Joy
 
 
 def get_tests() -> dict:
-    """Test class for the Franka robot."""
+    """Test class for the Franka robot.
+
+    Returns:
+        dict: A dictionary containing the test methods.
+    """
 
     def test_wait_for_register(_self: object, timeout: int) -> None:
+        """Test that the robot is registered in the system to start the tests.
+
+        Args:
+            _self (object): The test class instance.
+            timeout (int): The timeout in seconds to wait for the robot to register.
+        """
         wait_for_register(timeout=timeout)
 
     def test_joint_states_published(_self: object, timeout: int) -> None:
-        """Test that joint states are published. This is a basic test to check that the
-        launch file is working and that the robot is publishing joint states."""
+        """Test that joint states are published.
+
+        Args:
+            _self (object): The test class instance.
+            timeout (int): The timeout in seconds to wait for the joint states to be published.
+        """
         assert_for_message(JointState, "franka/joint_states", timeout=timeout)
 
     def test_switch_joy_to_franka_topic(
         _self: object, test_node: Node, timeout: int
     ) -> None:
-        """Test to see if the switch to Franka mode is correct."""
+        """Test to see if the switch to Franka mode is correct.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The test node to use for the test.
+            timeout (int): The timeout in seconds to wait for the joy topic to switch.
+        """
         assert_joy_topic_switch(
             node=test_node,
             expected_topic="/franka/joy",
@@ -54,18 +75,23 @@ def get_tests() -> dict:
         finger_joint_fault_tolerance: float,
         timeout: int,
     ) -> None:
-        """Test that the joy node is running and the gripper is moving.
-        The first call is an initialization call.
-        The second call is a call to open the gripper.
-        The third call is a call to close the gripper.
-        """
+        """Test the gripper node with the joystick.
 
+        Args:
+            _self (object): The test class instance.
+            buttons (list[int]): The button configuration to use for the test.
+            expected_value (float): The expected value of the finger joint after the test.
+            test_node (Node): The test node to use for the test.
+            finger_joint_fault_tolerance (float): The tolerance for the finger joint fault.
+            timeout (int): The timeout in seconds to wait for the gripper node to respond.
+        """
         pub = test_node.create_publisher(Joy, "/joy", 10)
         wait_for_subscriber(pub, timeout)
 
         msg = Joy()
         msg.buttons = buttons
-        pub.publish(msg)
+
+        publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
         reached_goal, joint_value = wait_until_reached_joint(
             namespace="franka",
@@ -81,9 +107,9 @@ def get_tests() -> dict:
     @pytest.mark.parametrize(
         "axes, direction",
         [
-            ([1.0, 0.0, 0.0, 0.0, 0.0], "y"),
-            ([0.0, 1.0, 0.0, 0.0, 0.0], "x"),
-            ([0.0, 0.0, 0.0, 1.0, 0.0], "z"),
+            ([0.1, 0.0, 0.0, 0.0, 0.0], "y"),
+            ([0.0, 0.1, 0.0, 0.0, 0.0], "x"),
+            ([0.0, 0.0, 0.0, 0.1, 0.0], "z"),
         ],
     )
     def test_move_arm_with_joy(
@@ -92,12 +118,29 @@ def get_tests() -> dict:
         direction: str,
         test_node: Node,
         timeout: int,
-        movement_threshold: float = 0.01,
+        movement_threshold: float = 0.001,
     ) -> None:
-        """Tests the linear movements of the hand while controlling with the joystick.
-        Assert if it moves above a certain movement_threshold."""
+        """Test moving the arm with the joystick.
+
+        Args:
+            _self (object): The test class instance.
+            axes (list[float]): The joystick axes to use for the test.
+            direction (str): The direction to move the arm in ("x", "y", or "z").
+            test_node (Node): The test node to use for the test.
+            timeout (int): The timeout in seconds to wait for the arm to move.
+            movement_threshold (float): The threshold for movement detection.
+        """
 
         def compare_fn(p1: Pose, p2: Pose) -> float:
+            """Compare the positions of two poses based on the specified direction.
+
+            Args:
+                p1 (Pose): The first pose to compare.
+                p2 (Pose): The second pose to compare.
+
+            Returns:
+                float: The difference in the specified direction between the two poses.
+            """
             return getattr(p2.position, direction) - getattr(p1.position, direction)
 
         assert_movements_with_joy(
@@ -118,8 +161,3 @@ def get_tests() -> dict:
         if callable(obj) and name.startswith("test_")
     }
     return tests
-
-
-def FrankaTestSuite() -> object:  # noqa: N802
-    """Dynamically create a test class with the test methods."""
-    return type("FrankaFullTests", (), get_tests())

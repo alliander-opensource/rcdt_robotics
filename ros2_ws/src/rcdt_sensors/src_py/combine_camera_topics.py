@@ -15,13 +15,21 @@ ros_logger = logging.get_logger(__name__)
 
 
 class CombineCameraTopics(Node):
-    def __init__(self) -> bool:
+    """A ROS2 node that combines RGB and depth camera topics into a single RGBD message.
+
+    This node subscribes to the RGB and depth image topics, as well as their corresponding
+    camera info topics. It publishes a combined RGBD message that contains both the RGB image
+    and the depth image, along with their camera information.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the CombineCameraTopics node."""
         super().__init__("combine_camera_topics")
-        self.declare_parameter("rgb", "/camera/camera/color/image_raw")
-        self.declare_parameter("depth", "/camera/camera/depth/image_rect_raw")
-        self.declare_parameter("rgb_info", "/camera/camera/color/camera_info")
-        self.declare_parameter("depth_info", "/camera/camera/depth/camera_info")
-        self.declare_parameter("rgbd", "/camera/camera/rgbd")
+        self.declare_parameter("rgb", "/franka/realsense/color/image_raw")
+        self.declare_parameter("depth", "/franka/realsense/depth/image_rect_raw")
+        self.declare_parameter("rgb_info", "/franka/realsense/color/camera_info")
+        self.declare_parameter("depth_info", "/franka/realsense/depth/camera_info")
+        self.declare_parameter("rgbd", "/franka/realsense/rgbd")
 
         rgb = self.get_parameter("rgb").get_parameter_value().string_value
         depth = self.get_parameter("depth").get_parameter_value().string_value
@@ -39,22 +47,48 @@ class CombineCameraTopics(Node):
         self.create_timer(1 / 30, self.publish_rgbd)
 
     def publish_rgbd(self) -> None:
+        """Publish the combined RGBD message."""
         self.pub.publish(self.rgbd)
 
     def update_rgb(self, msg: Image) -> None:
+        """Update the RGB image in the RGBD message.
+
+        Args:
+            msg (Image): The incoming RGB image message.
+        """
         self.rgbd.rgb = msg
 
     def update_depth(self, msg: Image) -> None:
+        """Update the depth image in the RGBD message.
+
+        Args:
+            msg (Image): The incoming depth image message.
+        """
         self.rgbd.depth = msg
 
     def update_rgb_info(self, msg: CameraInfo) -> None:
+        """Update the RGB camera info in the RGBD message.
+
+        Args:
+            msg (CameraInfo): The incoming RGB camera info message.
+        """
         self.rgbd.rgb_camera_info = msg
 
     def update_depth_info(self, msg: CameraInfo) -> None:
+        """Update the depth camera info in the RGBD message.
+
+        Args:
+            msg (CameraInfo): The incoming depth camera info message.
+        """
         self.rgbd.depth_camera_info = msg
 
 
-def main(args: str = None) -> None:
+def main(args: list | None = None) -> None:
+    """Main function to initialize the ROS 2 node and start spinning.
+
+    Args:
+        args (list | None): Command line arguments, defaults to None.
+    """
     rclpy.init(args=args)
     node = CombineCameraTopics()
     spin_node(node)

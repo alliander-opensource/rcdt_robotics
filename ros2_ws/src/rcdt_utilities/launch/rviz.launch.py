@@ -15,20 +15,28 @@ robot_name_arg = LaunchArgument("robot_name", "")
 moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
 
 
-def launch_setup(context: LaunchContext) -> None:
-    rviz_frame = rviz_frame_arg.value(context)
-    rviz_display_config = rviz_display_config_arg.value(context)
-    robot_name = robot_name_arg.value(context)
-    package_name = moveit_package_name_arg.value(context)
+def launch_setup(context: LaunchContext) -> list:
+    """Setup the launch description for RViz.
+
+    Args:
+        context (LaunchContext): The launch context.
+
+    Returns:
+        list: A list of actions to be executed in the launch description.
+    """
+    rviz_frame = rviz_frame_arg.string_value(context)
+    rviz_display_config = rviz_display_config_arg.string_value(context)
+    robot_name = robot_name_arg.string_value(context)
+    package_name = moveit_package_name_arg.string_value(context)
 
     arguments = []
-    if rviz_frame != "":
+    if rviz_frame:
         arguments.extend(["-f", rviz_frame])
     display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
     arguments.extend(["--display-config", display_config])
 
     parameters = []
-    if package_name != "":
+    if package_name:
         moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
         moveit_config = moveit_config.to_moveit_configs()
         parameters.append(moveit_config.robot_description)
@@ -49,6 +57,11 @@ def launch_setup(context: LaunchContext) -> None:
 
 
 def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for RViz.
+
+    Returns:
+        LaunchDescription: The launch description for RViz.
+    """
     return LaunchDescription(
         [
             rviz_frame_arg.declaration,
