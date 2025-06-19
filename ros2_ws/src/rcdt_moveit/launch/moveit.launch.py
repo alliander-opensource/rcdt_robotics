@@ -79,6 +79,8 @@ def launch_setup(context: LaunchContext) -> list:
         ]
     )
 
+    # Workaround for joystick command initialization issue (see issue #210):
+    # Moving to the 'home' configuration ensures servo_node properly activates.
     move_to_home = ExecuteProcess(
         cmd=[
             "ros2",
