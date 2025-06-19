@@ -310,7 +310,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     delta = compare_fn(first_pose, moved_pose)
 
     assert abs(delta) > threshold, (
-        f"{description} did not change after input. Δ = {delta:.4f}"
+        f"{description} did not change after input. Δ = {delta}"
     )
 
 
