@@ -19,4 +19,5 @@ apt install -y \
     ros-humble-rqt-tf-tree \
     htop \
     python3-pip \
-    git-lfs
+    git-lfs \
+    ros-humble-rmw-cyclonedds-cpp
