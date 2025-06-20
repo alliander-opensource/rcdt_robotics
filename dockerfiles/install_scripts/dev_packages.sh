@@ -11,7 +11,10 @@ sudo apt install -y \
     flake8 \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
-    ros-humble-slam-toolbox 
+    ros-humble-slam-toolbox \
+    ros-humble-joy-linux
+
+sudo apt install 
 
 pip install uv 
 
