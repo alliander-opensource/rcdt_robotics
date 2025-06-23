@@ -15,6 +15,8 @@ dependencies = [
     "empy==3.3.4",
     "flake8>=7.2.0",
     "flake8-pyproject>=1.2.3",
+    "gdown>=5.2.0",
+    "graspnetpy",
     "inflection>=0.5.1",
     "lark>=1.2.2",
     "mashumaro>=3.16",
@@ -33,7 +35,6 @@ dependencies = [
     "sphinxcontrib-video>=0.4.1",
     "termcolor>=3.1.0",
     "tornado>=6.5.1",
-    "transforms3d>=0.4.2",
 ]
 
 [dependency-groups]
@@ -88,3 +89,6 @@ style = "google"
 skip-checking-short-docstrings = false
 allow-init-docstring = true
 check-style-mismatch = true
+
+[tool.uv.sources]
+graspnetpy = { git = "https://github.com/alliander-opensource/graspnet-baseline" }
