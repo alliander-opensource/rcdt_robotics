@@ -20,8 +20,9 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               "fr3_arm",
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               "/franka")),
-      moveit_visual_tools(node, "world", "/rviz_markers") {
+      moveit_visual_tools(node, "base", "/rviz_markers") {
 
+  moveit_visual_tools.loadMarkerPub(false);
   move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
 
