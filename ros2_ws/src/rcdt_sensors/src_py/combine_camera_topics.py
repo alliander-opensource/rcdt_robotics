@@ -25,11 +25,11 @@ class CombineCameraTopics(Node):
     def __init__(self) -> None:
         """Initialize the CombineCameraTopics node."""
         super().__init__("combine_camera_topics")
-        self.declare_parameter("rgb", "/camera/camera/color/image_raw")
-        self.declare_parameter("depth", "/camera/camera/depth/image_rect_raw")
-        self.declare_parameter("rgb_info", "/camera/camera/color/camera_info")
-        self.declare_parameter("depth_info", "/camera/camera/depth/camera_info")
-        self.declare_parameter("rgbd", "/camera/camera/rgbd")
+        self.declare_parameter("rgb", "/franka/realsense/color/image_raw")
+        self.declare_parameter("depth", "/franka/realsense/depth/image_rect_raw")
+        self.declare_parameter("rgb_info", "/franka/realsense/color/camera_info")
+        self.declare_parameter("depth_info", "/franka/realsense/depth/camera_info")
+        self.declare_parameter("rgbd", "/franka/realsense/rgbd")
 
         rgb = self.get_parameter("rgb").get_parameter_value().string_value
         depth = self.get_parameter("depth").get_parameter_value().string_value

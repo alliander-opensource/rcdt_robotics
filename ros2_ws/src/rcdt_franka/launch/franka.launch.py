@@ -46,10 +46,11 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     controllers = RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py")
+        get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
-    display_config = "franka_general.rviz"
+    display_config = "franka_realsense.rviz" if use_realsense else "franka_general.rviz"
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
@@ -71,7 +72,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     realsense = RegisteredLaunchDescription(
-        get_file_path("rcdt_detection", ["launch"], "realsense.launch.py"),
+        get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py"),
         launch_arguments={"simulation": str(use_sim)},
     )
 

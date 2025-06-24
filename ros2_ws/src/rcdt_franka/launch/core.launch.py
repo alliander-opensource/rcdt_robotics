@@ -85,7 +85,9 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.on_start(robot_state_publisher, context),
-        Register.group(robot, context) if not is_mobile_manipulator else SKIP,
+        Register.group(robot, context)
+        if not is_mobile_manipulator or not use_sim
+        else SKIP,
         Register.on_log(static_transform_publisher, "publishing transform", context)
         if not is_mobile_manipulator
         else SKIP,
