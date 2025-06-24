@@ -23,8 +23,8 @@ def launch_setup(context: LaunchContext) -> list:
     robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
-        package="joy_linux",
-        executable="joy_linux_node",
+        package="joy",
+        executable="game_controller_node",
         parameters=[
             {"sticky_buttons": True},
         ],
