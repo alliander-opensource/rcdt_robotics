@@ -36,6 +36,9 @@ RUN ./sensors.sh
 COPY ./install_scripts/sphinx.sh .
 RUN ./sphinx.sh
 
+COPY ./install_scripts/franka_lock_unlock.sh .
+RUN ./franka_lock_unlock.sh
+
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 
