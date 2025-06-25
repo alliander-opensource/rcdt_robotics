@@ -18,6 +18,7 @@ parent_arg = LaunchArgument("parent", "world", ["world", "panther"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
+enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -34,6 +35,7 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = str(world_arg.string_value(context))
     use_realsense = use_realsense_arg.bool_value(context)
+    enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
 
     namespace = "franka"
     frame_prefix = namespace + "/" if namespace else ""
@@ -66,7 +68,10 @@ def launch_setup(context: LaunchContext) -> list:
         )
     else:
         robot = RegisteredLaunchDescription(
-            get_file_path("rcdt_franka", ["launch"], "robot.launch.py")
+            get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
+            launch_arguments={
+                "franka_lock_unlock": str(enable_lock_unlock),
+            },
         )
 
     # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
@@ -84,8 +89,10 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.on_start(robot_state_publisher, context),
-        Register.group(robot, context) if not is_mobile_manipulator else SKIP,
         Register.on_log(static_transform_publisher, "publishing transform", context),
+        Register.group(robot, context)
+        if not is_mobile_manipulator or not use_sim
+        else SKIP,
     ]
 
 
@@ -97,6 +104,7 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            enable_lock_unlock_arg.declaration,
             use_sim_arg.declaration,
             parent_arg.declaration,
             load_gazebo_ui_arg.declaration,
