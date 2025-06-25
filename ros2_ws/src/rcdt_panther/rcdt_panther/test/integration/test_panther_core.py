@@ -104,3 +104,21 @@ def test_driving(test_node: Node, timeout: int) -> None:
     assert delta != pytest.approx(0, abs=0.5), (
         f"The current joint value is {joint_value_after_driving}, but it should be different from {joint_value_before_driving}."
     )
+
+
+@pytest.mark.launch(fixture=panther_core_launch)
+def test_e_stop_request_trigger(test_node: Node, timeout: int) -> None:
+    """Test that the E-Stop request service can be called to lock the panther.
+
+    Args:
+        test_node (Node): The ROS 2 node to use for the test.
+        timeout (int): The timeout in seconds to wait before failing the test.
+    """
+    assert (
+        call_trigger_service(
+            node=test_node,
+            service_name="/panther/hardware/e_stop_trigger",
+            timeout=timeout,
+        )
+        is True
+    )

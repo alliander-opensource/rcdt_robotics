@@ -5,6 +5,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_panther.test.end_to_end.base_panther import get_tests
 from rcdt_utilities.launch_utils import get_file_path
@@ -13,8 +14,11 @@ from rcdt_utilities.test_utils import add_tests_to_class
 
 
 @launch_pytest.fixture(scope="module")
-def panther_launch() -> LaunchDescription:
+def panther_launch(request: SubRequest) -> LaunchDescription:
     """Fixture to create launch file for panther robot.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description for the panther robot.
@@ -23,6 +27,7 @@ def panther_launch() -> LaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
         },
     )
     utils_launch = RegisteredLaunchDescription(

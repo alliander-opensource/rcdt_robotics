@@ -8,7 +8,18 @@ from typing import Iterator
 
 import pytest
 import rclpy
+from _pytest.config import Config
+from _pytest.config.argparsing import Parser
 from rclpy.node import Node
+
+
+def pytest_addoption(parser: Parser) -> None:
+    """Add custom command line options for pytest.
+
+    Args:
+        parser (Parser): The pytest parser to add options to.
+    """
+    parser.addoption("--simulation", action="store", default="True")
 
 
 @pytest.fixture(scope="module")
@@ -28,7 +39,7 @@ def test_node() -> Iterator[Node]:
 
 
 @pytest.fixture(scope="module")
-def timeout(pytestconfig: pytest.Config) -> int:
+def timeout(pytestconfig: Config) -> int:
     """Fixture to get the timeout value from pytest config.
 
     Args:

@@ -39,6 +39,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     franka_controllers = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
     panther_controllers = RegisteredLaunchDescription(
@@ -80,10 +81,10 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        SetParameter(name="use_sim_time", value=True),
+        SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context),
         Register.group(franka_controllers, context),
-        Register.group(panther_controllers, context),
+        Register.group(panther_controllers, context) if use_sim else SKIP,
         Register.group(gripper_services, context),
         Register.group(moveit, context),
         Register.group(joystick, context),

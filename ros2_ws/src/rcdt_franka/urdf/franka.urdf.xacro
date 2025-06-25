@@ -18,7 +18,7 @@ SPDX-License-Identifier: Apache-2.0
     arm_id="fr3"
     ee_id="franka_hand"
     ros2_control="true"
-    robot_ip="172.16.0.2"
+    robot_ip="10.15.20.4"
     joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
     inertials="${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')}"
     kinematics="${xacro.load_yaml('$(find franka_description)/robots/fr3/kinematics.yaml')}"
@@ -38,6 +38,8 @@ SPDX-License-Identifier: Apache-2.0
       <child link="realsense_link" />
     </joint>
     <xacro:rcdt_realsense_d435
+      robot_namespace="$(arg namespace)"
+      device_namespace="realsense"
       parent="realsense_link"
       gazebo="$(arg simulation)"
     />
