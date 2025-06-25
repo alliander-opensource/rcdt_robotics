@@ -15,6 +15,7 @@ world_arg = LaunchArgument(
     "world", "table_with_1_brick.sdf", ["table_with_1_brick.sdf", "empty_camera.sdf"]
 )
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
+enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -31,6 +32,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_rviz = use_rviz_arg.bool_value(context)
     world = str(world_arg.string_value(context))
     use_realsense = use_realsense_arg.bool_value(context)
+    enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
 
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
@@ -42,6 +44,7 @@ def launch_setup(context: LaunchContext) -> list:
             "load_gazebo_ui": str(load_gazebo_ui),
             "realsense": str(use_realsense),
             "world": world,
+            "franka_lock_unlock": str(enable_lock_unlock),
         },
     )
 
@@ -110,6 +113,7 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            enable_lock_unlock_arg.declaration,
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
