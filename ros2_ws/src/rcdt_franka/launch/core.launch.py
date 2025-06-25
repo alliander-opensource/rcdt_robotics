@@ -78,7 +78,6 @@ def launch_setup(context: LaunchContext) -> list:
     static_transform_publisher = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        name="static_tf_world",
         arguments=[
             "--frame-id",
             frame_prefix + "fr3_link0",
@@ -90,11 +89,9 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.on_start(robot_state_publisher, context),
+        Register.on_log(static_transform_publisher, "publishing transform", context),
         Register.group(robot, context)
         if not is_mobile_manipulator or not use_sim
-        else SKIP,
-        Register.on_log(static_transform_publisher, "publishing transform", context)
-        if not is_mobile_manipulator
         else SKIP,
     ]
 
