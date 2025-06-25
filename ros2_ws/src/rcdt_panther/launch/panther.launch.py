@@ -83,7 +83,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "panther"},
+        launch_arguments={"simulation": str(use_sim), "robots": "franka"},
     )
 
     slam = RegisteredLaunchDescription(
