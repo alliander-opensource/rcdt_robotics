@@ -27,7 +27,7 @@ def launch_setup(context: LaunchContext) -> list:
     ns = f"/{namespace}" if namespace else ""
 
     hostname = os.getenv("FRANKA_HOSTNAME", "")
-    username = os.getenv("FRANKA_USERNAME", "admin")
+    username = os.getenv("FRANKA_USERNAME", "")
     password = os.getenv("FRANKA_PASSWORD", "")
 
     if not hostname or not username or not password:
