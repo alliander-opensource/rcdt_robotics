@@ -7,8 +7,10 @@ import os
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction, Shutdown
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
+
+enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -23,6 +25,8 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
+
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
 
@@ -32,7 +36,9 @@ def launch_setup(context: LaunchContext) -> list:
 
     if not hostname or not username or not password:
         raise RuntimeError(
-            "You must set FRANKA_HOSTNAME and FRANKA_PASSWORD in your environment."
+            """You must set FRANKA_HOSTNAME, FRANKA_USERNAME and FRANKA_PASSWORD
+            in your environment if you want to enable the Franka Lock/Unlock
+            node programmatically, otherwise set franka_lock_unlock:=False ."""
         )
 
     # only include the node if we actually have a hostname and password
@@ -84,9 +90,9 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        Register.on_log(
-            franka_lock_unlock, "Keeping persistent connection...", context
-        ),
+        Register.on_log(franka_lock_unlock, "Keeping persistent connection...", context)
+        if enable_lock_unlock
+        else SKIP,
         Register.on_start(settings_setter, context),
         Register.on_start(ros2_control_node, context),
         Register.on_start(joint_state_publisher, context),
@@ -101,6 +107,7 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            enable_lock_unlock_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

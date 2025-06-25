@@ -53,19 +53,36 @@ ros2 run rosboard rosboard_node
 
 Running the brick pickup demo can be done in the same way.
 
-## Setup & FCI activation of pysical robot
 
-First plug an ehternet cable into your laptop, and connect it to the control box's LAN port (this is not the LAN port on the arm itself).  
-Additionally, change your ethernet ipv4 settings to Manual and set the following:  
-Address: `172.16.0.1`\
-Netmask: `255.255.255.0`
+## Setup & FCI activation of physical robot
 
-![pyflow](../img/franka/network.png)
+### Programmatic unlock via `.env`
+
+You can unlock the robot automatically without using the browser by setting environment variables in a `.env` file at the root of your workspace:
+
+```dotenv
+# .env
+FRANKA_HOSTNAME=your-hostname
+FRANKA_USERNAME=your-username
+FRANKA_PASSWORD=your-password
+```
+
+The robot will automatically unlock and activate the FCI when you run the launch command.
+
+### Manual unlock via web interface
+
+You can also manually lock the robot via the web interface, plug an Ethernet cable from your laptop into the control box’s LAN port (this is not the LAN port on the arm itself).  Additionally, change your Ethernet IPv4 settings to **Manual** and set the following:
+
+```text
+Address: 172.16.0.1
+Netmask: 255.255.255.0
+```
+
+![Network Setup](../img/franka/network.png)
 
 You may also want to consider making this a separate profile for future convenience when moving to different networks.
 
-If the robot's power switch is turned on, you should now be able to go to [https://172.16.0.2](https://172.16.0.2).  
-Fill in the username and password, and click unlock.  
-After that, click `My Franka Robot> Activate FCI`. The robot is now ready to be controlled by the user, and the commands in quickstart can be run.
+If the robot's power switch is turned on, you should now be able to go to [https://172.16.0.2](https://172.16.0.2).
+Fill in the username and password, and click **Unlock**. After that, click **My Franka Robot → Activate FCI**. The robot is now ready to be controlled by the user, and the commands in Quickstart can be run.
 
 ---TODO: screenshot here----
