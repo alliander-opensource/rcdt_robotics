@@ -67,7 +67,9 @@ FRANKA_USERNAME=your-username
 FRANKA_PASSWORD=your-password
 ```
 
-The robot will automatically unlock and activate the FCI when you run the launch command.
+When you run the launch command, the robot will automatically unlock and activate the FCI.
+
+This feature is based on the [jk-ethz/franka\_lock\_unlock](https://github.com/jk-ethz/franka_lock_unlock) repository. We maintain a fork with specific enhancements for our robot at [alliander-opensource/franka\_lock\_unlock](https://github.com/alliander-opensource/franka_lock_unlock.git).
 
 ### Manual unlock via web interface
 
