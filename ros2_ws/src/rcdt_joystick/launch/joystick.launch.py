@@ -8,6 +8,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
 
+use_sim_arg = LaunchArgument("simulation", True, [True, False])
 robots_arg = LaunchArgument("robots", "")
 
 
@@ -20,6 +21,7 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    use_sim = use_sim_arg.bool_value(context)
     robots = robots_arg.string_value(context).split(" ")
 
     joy = Node(
@@ -64,6 +66,7 @@ def launch_setup(context: LaunchContext) -> list:
             {"pub_topic": "/panther/cmd_vel"},
             {"config_pkg": "rcdt_panther"},
             {"stamped": False},
+            {"scale": 1.0 if use_sim else 0.4},
         ],
         namespace="panther",
     )
