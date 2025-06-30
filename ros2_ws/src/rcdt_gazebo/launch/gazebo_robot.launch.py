@@ -73,6 +73,15 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
 
+    bridge_topics.extend(
+        [
+            "/world/empty/model/overhead_camera/link/camera_link/sensor/camera_sensor/image"
+            "@sensor_msgs/msg/Image@ignition.msgs.Image",
+            "/world/empty/model/overhead_camera/link/camera_link/sensor/camera_sensor/camera_info"
+            "@sensor_msgs/msg/CameraInfo@ignition.msgs.CameraInfo",
+        ]
+    )
+
     bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",

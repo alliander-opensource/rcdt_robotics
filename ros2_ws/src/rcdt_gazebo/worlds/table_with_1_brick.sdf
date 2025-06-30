@@ -59,20 +59,15 @@ SPDX-License-Identifier: Apache-2.0
     </model>
 
 
-    <model name="basket">
-      <static>1</static>
+    <include>
+    <uri>file:///home/rcdt/rcdt_robotics/ros2_ws/install/rcdt_gazebo/share/rcdt_gazebo/models/basket/model.sdf</uri>
       <pose>0 -0.4 0 0 0 0</pose>
-      <include>
-        <uri>model://rcdt_gazebo/models/basket</uri>
-      </include>
-    </model>
+    </include>
 
-    <model name='brick0'>
+    <include>
+  <uri>file:///home/rcdt/rcdt_robotics/ros2_ws/install/rcdt_gazebo/share/rcdt_gazebo/models/brick/model.sdf</uri>
       <pose>0.5 0 0 0 0 0</pose>
-      <include>
-        <uri>model://rcdt_gazebo/models/brick</uri>
-      </include>
-    </model>
+    </include>
 
     <!-- regular static world elements-->
 
@@ -117,6 +112,53 @@ SPDX-License-Identifier: Apache-2.0
         </visual>
       </link>
     </model>
+
+      <!-- overhead camera looking at table and Franka -->
+  <model name="overhead_camera">
+  <static>true</static>
+  <!-- Move & tilt the whole model -->
+  <pose>0.5 2 0.75  0 0.2 -1.5</pose>
+  <link name="camera_link">
+    <!-- 1) Add a little colored box to show the camera body -->
+    <visual name="camera_box">
+      <!-- center the box at the link origin -->
+      <pose>0 0 0 0 0 0</pose>
+      <geometry>
+        <!-- adjust size to taste -->
+        <box>
+          <size>0.1 0.05 0.05</size>
+        </box>
+      </geometry>
+      <material>
+        <!-- semi-transparent green -->
+        <ambient>0 1 0 0.5</ambient>
+        <diffuse>0 1 0 0.5</diffuse>
+      </material>
+    </visual>
+
+    <!-- 2) Your camera sensor definition -->
+    <sensor name="camera_sensor" type="camera">
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <!-- if you want the lens to sit at the front of the box, you can offset it: -->
+      <pose>0.05 0 0 0 0 0</pose>
+      <visualize>1</visualize>
+
+      <camera name="cam">
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>1280</width>
+          <height>720</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>10.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </link>
+</model>
 
   </world>
 </sdf>
