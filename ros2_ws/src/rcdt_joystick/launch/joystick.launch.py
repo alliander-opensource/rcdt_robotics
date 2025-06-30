@@ -10,6 +10,9 @@ from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 robots_arg = LaunchArgument("robots", "")
+scale_speed_arg = LaunchArgument(
+    "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -23,6 +26,7 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
     robots = robots_arg.string_value(context).split(" ")
+    scale_speed = scale_speed_arg.float_value(context)
 
     joy = Node(
         package="joy",
@@ -66,7 +70,7 @@ def launch_setup(context: LaunchContext) -> list:
             {"pub_topic": "/panther/cmd_vel"},
             {"config_pkg": "rcdt_panther"},
             {"stamped": False},
-            {"scale": 1.0 if use_sim else 0.4},
+            {"scale": 1.0 if use_sim else scale_speed},
         ],
         namespace="panther",
     )
@@ -92,7 +96,9 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            use_sim_arg.declaration,
             robots_arg.declaration,
+            scale_speed_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
