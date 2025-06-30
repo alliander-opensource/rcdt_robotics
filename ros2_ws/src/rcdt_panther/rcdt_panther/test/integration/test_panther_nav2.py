@@ -6,6 +6,7 @@
 import time
 
 import launch_pytest
+import numpy as np
 import pytest
 import rclpy
 from action_msgs.msg import GoalStatus
@@ -23,6 +24,7 @@ from rclpy.action.client import ClientGoalHandle
 from rclpy.node import Node
 from rclpy.task import Future
 from sensor_msgs.msg import JointState
+from tf_transformations import quaternion_from_euler
 
 
 @launch_pytest.fixture(scope="module")
@@ -35,7 +37,7 @@ def panther_launch() -> LaunchDescription:
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
-            "rviz": "False",
+            "rviz": "True",
         },
     )
     return Register.connect_context([panther])
@@ -103,15 +105,17 @@ def test_nav2_goal(test_node: Node, timeout: int) -> None:
     pose_stamped.header.frame_id = "map"
 
     # 2) Position:
-    pose_stamped.pose.position.x = 0.3921791315078735
-    pose_stamped.pose.position.y = 0.068382263183594
-    pose_stamped.pose.position.z = 0.002532958984375
+    pose_stamped.pose.position.x = 0.3
+    pose_stamped.pose.position.y = 0.0
+    pose_stamped.pose.position.z = 0.0
 
-    # 3) Orientation (quaternion):
-    pose_stamped.pose.orientation.x = 0.0
-    pose_stamped.pose.orientation.y = 0.0
-    pose_stamped.pose.orientation.z = 1.0
-    pose_stamped.pose.orientation.w = 0.0
+    # 3) Orientation with 30 degrees (quaternion):
+    yaw = 30.0 * (np.pi / 180.0)
+    qx, qy, qz, qw = quaternion_from_euler(0.0, 0.0, yaw)
+    pose_stamped.pose.orientation.x = qx
+    pose_stamped.pose.orientation.y = qy
+    pose_stamped.pose.orientation.z = qz
+    pose_stamped.pose.orientation.w = qw
 
     goal_msg.pose = pose_stamped
 
