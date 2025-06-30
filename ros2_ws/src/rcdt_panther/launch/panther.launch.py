@@ -12,10 +12,11 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 world_arg = LaunchArgument("world", "walls.sdf")
-use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
+use_collision_monitor_arg = LaunchArgument("collision_monitor", True, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+positions_arg = LaunchArgument("positions", "0-0-0")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -35,6 +36,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_velodyne = use_velodyne_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
     use_nav2 = use_nav2_arg.bool_value(context)
+    positions = positions_arg.string_value(context).split(" ")
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -56,6 +58,7 @@ def launch_setup(context: LaunchContext) -> list:
             "load_gazebo_ui": str(load_gazebo_ui),
             "velodyne": str(use_velodyne),
             "world": world,
+            "positions": positions,
         },
     )
 
@@ -73,6 +76,7 @@ def launch_setup(context: LaunchContext) -> list:
         rviz_display_config = "panther_velodyne.rviz"
     else:
         rviz_display_config = "panther_general.rviz"
+
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
@@ -83,7 +87,10 @@ def launch_setup(context: LaunchContext) -> list:
 
     joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "panther"},
+        launch_arguments={
+            "robots": "panther",
+            "collision_monitor": str(use_collision_monitor),
+        },
     )
 
     slam = RegisteredLaunchDescription(
@@ -95,13 +102,35 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    nav2 = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
+        launch_arguments={
+            "use_sim_time": str(use_sim),
+            "params_file": get_file_path(
+                "rcdt_panther", ["config"], "nav2_params.yaml"
+            ),
+        },
+    )
+
+    collision_monitor = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
+        launch_arguments={
+            "use_sim_time": str(use_sim),
+            "params_file": get_file_path(
+                "rcdt_panther", ["config"], "collision_monitor.yaml"
+            ),
+        },
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
-        Register.group(joystick, context),
-        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
+        Register.group(nav2, context) if use_nav2 else SKIP,
+        Register.group(collision_monitor, context) if use_collision_monitor else SKIP,
+        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(joystick, context),
     ]
 
 
@@ -121,6 +150,7 @@ def generate_launch_description() -> LaunchDescription:
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
             use_nav2_arg.declaration,
+            positions_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

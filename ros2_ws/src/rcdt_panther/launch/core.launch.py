@@ -18,6 +18,7 @@ child_arg = LaunchArgument("child", "", ["", "franka"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
+positions_arg = LaunchArgument("positions", "0-0-0")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -34,6 +35,7 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
     use_velodyne = use_velodyne_arg.bool_value(context)
+    positions = positions_arg.string_value(context).split(" ")
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""
@@ -51,7 +53,6 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=namespace,
         parameters=[robot_description, {"frame_prefix": frame_prefix}],
     )
-
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
@@ -59,6 +60,7 @@ def launch_setup(context: LaunchContext) -> list:
             "robots": namespace,
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
+            "positions": positions,
         },
     )
 
@@ -82,6 +84,7 @@ def generate_launch_description() -> LaunchDescription:
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
             use_velodyne_arg.declaration,
+            positions_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
