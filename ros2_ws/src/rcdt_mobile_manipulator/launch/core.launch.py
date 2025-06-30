@@ -5,7 +5,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -30,12 +30,15 @@ def launch_setup(context: LaunchContext) -> list:
 
     franka_core = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
-        launch_arguments={"parent": "panther"},
+        launch_arguments={"parent": "panther", "simulation": str(use_sim)},
     )
 
     panther_core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
-        launch_arguments={"child": "franka"},
+        launch_arguments={
+            "child": "franka",
+            "simulation": str(use_sim),
+        },
     )
 
     robots = [
@@ -74,7 +77,7 @@ def launch_setup(context: LaunchContext) -> list:
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(franka_core, context),
         Register.group(panther_core, context),
-        Register.group(robot, context),
+        Register.group(robot, context) if use_sim else SKIP,
         Register.on_log(static_transform_publisher, "publishing transform", context),
     ]
 

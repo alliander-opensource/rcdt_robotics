@@ -6,66 +6,69 @@ SPDX-License-Identifier: Apache-2.0
 
 # Franka
 
-This page gives some background of the usage of our Franka-related packages.  
-All software is based on the [Franka Emika Research](https://franka.de/products), based on the [Franka Control Interface](https://frankaemika.github.io/docs/overview.html)
+This page gives information about usage of the Franka Research 3.
 
-## Quickstart robot in simulation
+## Physical robot
 
-To start the simulation, run in 2 separate terminals:  
+The physical robot can be started programmatically or manually. 
 
-```bash
-ros2 launch rcdt_franka franka.launch.py realsense:=True load_gazebo_ui:=True
-```
+### Quick start (manual)
 
-```bash
-ros2 run rosboard rosboard_node
-```
+The following steps describe how to start the robot manually:
 
-This launches the robot in a gazebo world with a brick place on it.  
-It also allows the inspection of sensor output on [localhost:8888](http://localhost:8888)
-The robot can be controled using a gamepad, or using moveit MotionPlanning in rviz under:  
-`add>moveit_ros_visualization>MotionPanning`
+- Start the robot (flip the button at the control box)
+- Connect your laptop with the control box's LAN port using an ethernet cable.
+- Make sure to use these ethernet settings:
 
-In order to run the brick pickup demo, open up 2 more terminals and run:
-
-```bash
-ros2 launch rcdt_detection detection_services.launch.py
-```
-
-```bash
-pyflow
-```
-
-The relevant pygraph is available under:  
-`/home/rcdt/rcdt_robotics/pyflow/graphs/pick_brick.pygraph`
-
-## Quickstart physical robot
-
-When you have a properly configured physical robot and a realsense at your disposal. In 2 separate terminals, run:
-
-```bash
-ros2 launch rcdt_franka franka.launch.py simulation:=False realsense:=True
-```
-
-```bash
-ros2 run rosboard rosboard_node
-```
-
-Running the brick pickup demo can be done in the same way.
-
-## Setup & FCI activation of pysical robot
-
-First plug an ehternet cable into your laptop, and connect it to the control box's LAN port (this is not the LAN port on the arm itself).  
-Additionally, change your ethernet ipv4 settings to Manual and set the following:  
 Address: `172.16.0.1`\
 Netmask: `255.255.255.0`
 
-![pyflow](../img/franka/network.png)
+![network](../img/franka/network.png)
 
-You may also want to consider making this a separate profile for future convenience when moving to different networks.
+You may also want to consider making this a separate profile for future convenience.
 
-If the robot's power switch is turned on, you should now be able to go to [https://172.16.0.2](https://172.16.0.2).  
-Fill in the username and password, and click unlock.  
-After that, click `My Franka Robot> Activate FCI`. The robot is now ready to be controlled by the user, and the commands in quickstart can be run.
+- Go to [https://172.16.0.2](https://172.16.0.2), Franka Desk should now be reachable.
+- Login and click *unlock* to unlock the joints.
+- Click *My Franka Robot > Activate FCI* to activate FCI, the led's should become green.
+- Launch the franka launch file with *simulation=False*:
 
----TODO: screenshot here----
+```bash
+ros2 launch rcdt_franka franka.launch.py simulation:=False
+```
+
+This should launch Rviz and show the state of the robot. 
+
+You can control the robot using a connected gamepad or using the *MotionPlanning* plugin in Rviz.
+
+### Quick start (programmatic)
+
+You can also unlock and activate the FCI entirely from the command line by dropping a `.env` file in your workspace root:
+
+```dotenv
+# .env
+FRANKA_HOSTNAME=your-hostname
+FRANKA_USERNAME=your-username
+FRANKA_PASSWORD=your-password
+````
+
+This functionallity is based on [jk-ethz/franka\_lock\_unlock](https://github.com/jk-ethz/franka_lock_unlock).
+With our fork with robot-specific enhancements: [https://github.com/alliander-opensource/franka\_lock\_unlock.git](https://github.com/alliander-opensource/franka_lock_unlock.git)
+
+Now when you run:
+
+```bash
+ros2 launch rcdt_franka franka.launch.py simulation:=False
+```
+
+the robot will automatically unlock and activate the FCI.
+
+## Simulation
+
+You can also start a simulation, without requiring a real Franka arm. Use the same launch file, but this time without the *simulation* flag:
+
+```bash
+ros2 launch rcdt_franka franka.launch.py
+```
+
+![franka](../img/franka/franka.png)
+

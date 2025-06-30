@@ -54,6 +54,7 @@ jobs:
     uses: ./.github/workflows/reusable-docker.yml
     with:
       container-image: rcdt/robotics:${{ needs.get-image-tag.outputs.tag }}
+      cache-tag: build-cache-${{ needs.get-image-tag.outputs.tag }}
     secrets: inherit
   workspace:
     needs: [get-image-tag, docker]

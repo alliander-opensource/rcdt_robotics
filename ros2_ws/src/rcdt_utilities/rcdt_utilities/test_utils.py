@@ -310,7 +310,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     delta = compare_fn(first_pose, moved_pose)
 
     assert abs(delta) > threshold, (
-        f"{description} did not change after input. Δ = {delta:.4f}"
+        f"{description} did not change after input. Δ = {delta}"
     )
 
 
@@ -340,7 +340,7 @@ def wait_until_reached_joint(
                 namespace=namespace, joint=joint, timeout=timeout_sec
             )
             if joint_value == pytest.approx(expected_value, abs=tolerance):
-                time.sleep(0.25)
+                time.sleep(2)
                 return (True, joint_value)
         except ValueError:
             pass

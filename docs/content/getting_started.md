@@ -110,3 +110,32 @@ ros2 launch rcdt_franka franka.launch.py -s
 ```
 
 :::
+
+## Firewall
+
+It is recommended to enable your firewall in Ubuntu:
+
+```bash
+sudo ufw enable
+```
+
+However, some connections need to be allowed for proper working. First of all, multicast protocol is used in ROS middleware. To allow this, the ip ranges of multicast (224.0.0.0/4) should be allowed:
+
+```bash
+sudo ufw allow to 224.0.0.0/4
+sudo ufw allow from 224.0.0.0/4
+```
+
+When connected with the Franka arm, communication with its ip-address (default 172.16.0.2) should be allowed:
+
+```bash
+sudo ufw allow to 172.16.0.2
+sudo ufw allow from 172.16.0.2
+```
+
+When connected with the Panther, communication with its ip-addresses in the 10.15.20.0/24 range should be allowed:
+
+```bash
+sudo ufw allow to 10.15.20.0/24
+sudo ufw allow from 10.15.20.0/24
+```
