@@ -8,11 +8,13 @@ from dataclasses import dataclass
 
 import mashumaro.codecs.yaml as yaml_codec
 import rclpy
+import rclpy.client
 from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy.node import Node, Publisher
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from sensor_msgs.msg import Joy
 from std_msgs.msg import String
+from std_srvs.srv import Trigger
 
 # Define the latched QoS profile
 latched_qos = QoSProfile(
@@ -29,13 +31,13 @@ class Output:
     Attributes:
         button (int): The index of the joystick button to monitor.
         topic (str | None): The topic to publish the Joy message to when the button state changes.
-        moveit (bool): Whether this output is intended for MoveIt! integration.
+        service (str | None): The service to call when the button state changes.
         state (int): The current state of the button (pressed or not).
     """
 
     button: int
     topic: str | None = None
-    moveit: bool = False
+    service: str | None = None
     state: int = 0
 
     def state_changed(self, state: bool) -> bool:
@@ -72,11 +74,14 @@ class JoyTopicManager(Node):
 
         self.outputs = [yaml_codec.decode(str(yaml[output]), Output) for output in yaml]
         self.pubs: dict[str, Publisher] = {}
+        self.srvs: dict[str, rclpy.client.Client] = {}
         for output in self.outputs:
-            if output.topic is not None:
+            if output.topic not in {None, ""}:
                 self.pubs[output.topic] = self.create_publisher(Joy, output.topic, 10)
+            if output.service is not None:
+                self.srvs[output.service] = self.create_client(Trigger, output.service)
 
-        self.topic = None
+        self.topic = ""
         self.create_subscription(Joy, joy_input, self.handle_joy_message, 10)
         self.state_pub = self.create_publisher(
             String, "~/state", qos_profile=latched_qos
@@ -105,30 +110,41 @@ class JoyTopicManager(Node):
                 continue
             state = msg.buttons[output.button]
             if output.state_changed(state):
-                self.topic_changed(output.topic)
+                if output.topic is not None:
+                    self.change_topic(output.topic)
+                elif output.service is not None:
+                    self.call_service(output.service)
 
-    def topic_changed(self, topic: str) -> bool:
+    def call_service(self, service: str) -> None:
+        """Call a ROS2 service..
+
+        Args:
+            service (str): The service to call.
+        """
+        if self.srvs[service].wait_for_service(timeout_sec=1.0):
+            self.get_logger().info(f"Calling {service}.")
+            self.srvs[service].call_async(Trigger.Request())
+        else:
+            self.get_logger().error(f"Service {service} not available, cannot call.")
+
+    def change_topic(self, topic: str) -> None:
         """Change the currently active topic and publish the new state.
 
         Args:
             topic (str): The new topic to which Joy messages should be published.
-
-        Returns:
-            bool: True if the topic was changed, False if it remains the same.
         """
         if self.topic == topic:
-            return False
+            return
         self.topic = topic
 
         msg = String()
-        msg.data = self.topic if self.topic is not None else ""
+        msg.data = self.topic
         self.state_pub.publish(msg)
 
-        if self.topic is None:
+        if not self.topic:
             self.get_logger().info("Joy topic passing stopped.")
         else:
             self.get_logger().info(f"Joy topic is now passed to {self.topic}.")
-        return True
 
     def pass_joy_message(self, msg: Joy) -> None:
         """Pass the Joy message to the currently active topic.
@@ -136,7 +152,7 @@ class JoyTopicManager(Node):
         Args:
             msg (Joy): The Joy message to be published.
         """
-        if self.topic is None:
+        if not self.topic:
             return
         pub = self.pubs[self.topic]
         pub.publish(msg)
