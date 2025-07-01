@@ -12,11 +12,14 @@ import gdown
 import numpy as np
 import open3d as o3d
 import rclpy
+import ros2_numpy as rnp
 import torch
-from graspnetAPI import GraspGroup
+from geometry_msgs.msg import Pose
+from graspnetAPI import Grasp, GraspGroup
 from graspnetpy_models.graspnet import GraspNet, pred_decode
 from graspnetpy_utils import data_utils
 from open3d.visualization.draw import draw
+from rcdt_messages.srv import AddMarker
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
@@ -75,6 +78,9 @@ class GenerateGrasp(Node):
         super().__init__("grasp")
         self.init_net()
         self.create_service(Trigger, "/grasp/generate", self.callback)
+        self.marker_client = self.create_client(
+            AddMarker, "/franka/moveit_manager/add_marker"
+        )
 
         self.color = Message(topic="/franka/realsense/color/image_raw", msg_type=Image)
         self.depth = Message(
@@ -215,15 +221,44 @@ class GenerateGrasp(Node):
         Returns:
             Trigger.Response: The response indicating success or failure of the grasp generation.
         """
+        # Get ROS messages:
         if not self.get_messages():
             response.success = False
             response.message = "Failed to retrieve messages."
             return response
 
+        # Define cloud and grasps:
         end_points, cloud = self.process_data()
         grasps = self.get_grasps(end_points)
+        grasps.nms()
+        grasps.sort_by_score()
+        grasp: Grasp = grasps[0]
+
+        # Define rotation matrix and rotate to match ROS orienation:
+        rotation_matrix = np.array(grasp.rotation_matrix).reshape(3, 3)
+        adapted_rotation_matrix = rotation_matrix @ np.array(
+            [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
+        )
+
+        # Create transformation matrix:
+        transformation_matrix = np.identity(4)
+        transformation_matrix[:3, :3] = adapted_rotation_matrix
+        transformation_matrix[:3, 3] = grasp.translation
+        transformation_matrix[3, :] = [0, 0, 0, 1]
+
+        # Add marker to the Rviz:
+        add_marker = AddMarker.Request()
+        add_marker.marker_pose.header.frame_id = (
+            "franka/realsense/camera_color_optical_frame"
+        )
+        add_marker.marker_pose.pose = rnp.msgify(Pose, transformation_matrix)
+        self.get_logger().info(f"Pose: {add_marker.marker_pose.pose}")
+        self.marker_client.call_async(add_marker)
+
+        # Visualize grasps in Open3D:
         self.visualize_grasps(grasps, cloud)
 
+        # Return response:
         response.success = True
         response.message = "Grasps generated and visualized successfully."
         return response
