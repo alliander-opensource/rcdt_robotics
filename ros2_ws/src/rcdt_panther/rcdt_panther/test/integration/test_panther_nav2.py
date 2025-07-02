@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import time
-
 import launch_pytest
 import numpy as np
 import pytest
@@ -37,12 +35,13 @@ def panther_launch() -> LaunchDescription:
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
-            "rviz": "True",
+            "rviz": "False",
         },
     )
     return Register.connect_context([panther])
 
 
+@pytest.mark.timeout(150)
 @pytest.mark.launch(fixture=panther_launch)
 def test_wait_for_register(timeout: int) -> None:
     """Test that the panther core is registered in the RCDT.
@@ -51,7 +50,6 @@ def test_wait_for_register(timeout: int) -> None:
         timeout (int): The timeout in seconds to wait for the panther core to register.
     """
     wait_for_register(timeout=timeout)
-    time.sleep(5)
 
 
 @pytest.mark.launch(fixture=panther_launch)
