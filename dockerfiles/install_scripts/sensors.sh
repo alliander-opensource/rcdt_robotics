@@ -13,4 +13,6 @@ apt install -y \
     ros-humble-realsense2-description
 
 # Velodyne:
-apt install -y ros-humble-velodyne-description
+apt install -y ros-humble-velodyne \
+    ros-humble-velodyne-description
+

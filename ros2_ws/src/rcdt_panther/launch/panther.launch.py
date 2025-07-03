@@ -86,6 +86,10 @@ def launch_setup(context: LaunchContext) -> list:
         launch_arguments={"robots": "panther"},
     )
 
+    velodyne = RegisteredLaunchDescription(
+        get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py")
+    )
+
     slam = RegisteredLaunchDescription(
         get_file_path("slam_toolbox", ["launch"], "online_async_launch.py"),
         launch_arguments={
@@ -111,6 +115,7 @@ def launch_setup(context: LaunchContext) -> list:
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
+        Register.group(velodyne, context) if use_velodyne and not use_sim else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
         Register.group(nav2, context) if use_nav2 else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,
