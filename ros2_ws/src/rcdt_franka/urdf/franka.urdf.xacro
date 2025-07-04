@@ -11,6 +11,7 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="simulation" default="false" />
   <xacro:arg name="parent" default="world" />
   <xacro:arg name="load_realsense" default="false" />
+  <xacro:arg name="load_zed2i"      default="true"/>   <!-- new -->
 
   <!-- robot: -->
   <xacro:include filename="$(find rcdt_franka)/urdf/adapted/franka_robot.xacro" />
@@ -44,5 +45,29 @@ SPDX-License-Identifier: Apache-2.0
       gazebo="$(arg simulation)"
     />
   </xacro:if>
+
+<xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_zed2i.urdf.xacro" />
+
+<link  name="zed2i_link"/>
+<joint name="zed2i_link_joint" type="fixed">
+  <origin xyz="0.1 -0.02 0.01" rpy="0 0 0"/>
+  <parent link="fr3_hand"/>
+  <child  link="zed2i_link"/>
+</joint>
+
+<!-- Instantiate the camera subtree -->
+<xacro:rcdt_zed2i
+      robot_namespace="$(arg namespace)"
+      device_namespace="zed2i"
+      parent="zed2i_link"/>
+
+<joint name="zed2i_mount_joint" type="fixed">
+  <!-- pose of the camera w.r.t. the adapter; adjust if needed -->
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+  <parent link="zed2i_link"/>
+  <child  link="zed2i_camera_link"/>   <!-- root link inside the macro -->
+</joint>
+  
+
 
 </robot>

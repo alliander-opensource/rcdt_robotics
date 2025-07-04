@@ -72,7 +72,14 @@ def launch_setup(context: LaunchContext) -> list:
                 "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
-
+    bridge_topics.extend(
+        [
+            "/franka/zed2i/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+            "/franka/zed2i/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+            "/franka/zed2i/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+            "/franka/zed2i/depth/image_rect_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+        ]
+    )
     bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
