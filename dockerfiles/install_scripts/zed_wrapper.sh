@@ -24,3 +24,5 @@ source /home/$UNAME/.bashrc
 
 colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
 echo "source /home/$UNAME/zed_ws/install/setup.bash" >>/home/$UNAME/.bashrc
+
+ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so
