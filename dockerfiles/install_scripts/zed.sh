@@ -14,6 +14,13 @@ ARG ZED_SDK_MINOR=0
 ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
 
-# Setup the ZED SDK
-RUN apt-get update -y || true ; apt-get install --no-install-recommends wget zstd udev libgomp1 -y ; \
-    wget -O ZED_SDK_Linux_Ubuntu${UBUNTU_RELEASE_YEAR}.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR} 
+# 1. refresh APT metadata
+RUN apt-get update -y || true
+
+# 2. install runtime dependencies
+RUN apt-get install --no-install-recommends -y \
+        wget zstd udev libgomp1
+
+# 3. download the ZED SDK installer
+RUN wget --content-disposition \
+        https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}
