@@ -14,10 +14,9 @@ from rcdt_utilities.launch_utils import (
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-child_arg = LaunchArgument("child", "", ["", "franka"])
+child_arg = LaunchArgument("child", "", ["", "franka", "velodyne"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
-use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -33,16 +32,14 @@ def launch_setup(context: LaunchContext) -> list:
     child = child_arg.string_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
-    use_velodyne = use_velodyne_arg.bool_value(context)
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""
-    is_mobile_manipulator = bool(child)
+    is_mobile_manipulator = child == "franka"
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
     xacro_arguments = {"simulation": "true"}
     xacro_arguments["connected_to"] = child
-    xacro_arguments["load_velodyne"] = "true" if use_velodyne else "false"
     robot_description = get_robot_description(xacro_path, xacro_arguments)
 
     robot_state_publisher = Node(
@@ -52,12 +49,17 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[robot_description, {"frame_prefix": frame_prefix}],
     )
 
+    robots = ["panther"]
+    positions = ["0-0-0"]
+    if child == "velodyne":
+        robots.append("velodyne")
+        positions.append("0-0-0.35")
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "world": world,
-            "robots": namespace,
-            "velodyne": str(use_velodyne),
+            "robots": " ".join(robots),
+            "positions": " ".join(positions),
             "load_gazebo_ui": str(load_gazebo_ui),
         },
     )
@@ -81,7 +83,6 @@ def generate_launch_description() -> LaunchDescription:
             child_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
-            use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

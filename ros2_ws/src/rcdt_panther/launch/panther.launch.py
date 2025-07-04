@@ -49,14 +49,16 @@ def launch_setup(context: LaunchContext) -> list:
         use_velodyne = True
         use_slam = True
 
+    launch_arguments = {
+        "simulation": str(use_sim),
+        "load_gazebo_ui": str(load_gazebo_ui),
+        "world": world,
+    }
+    if use_velodyne:
+        launch_arguments["child"] = "velodyne"
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
-        launch_arguments={
-            "simulation": str(use_sim),
-            "load_gazebo_ui": str(load_gazebo_ui),
-            "velodyne": str(use_velodyne),
-            "world": world,
-        },
+        launch_arguments=launch_arguments,
     )
 
     controllers = RegisteredLaunchDescription(
@@ -87,7 +89,8 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     velodyne = RegisteredLaunchDescription(
-        get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py")
+        get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
     slam = RegisteredLaunchDescription(
@@ -113,9 +116,9 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
+        Register.group(velodyne, context) if use_velodyne else SKIP,
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
-        Register.group(velodyne, context) if use_velodyne and not use_sim else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
         Register.group(nav2, context) if use_nav2 else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,

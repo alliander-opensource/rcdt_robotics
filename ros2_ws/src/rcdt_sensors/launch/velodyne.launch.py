@@ -6,8 +6,12 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from numpy import deg2rad
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import (
+    SKIP,
+    LaunchArgument,
+    get_file_path,
+    get_robot_description,
+)
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -27,6 +31,15 @@ def launch_setup(context: LaunchContext) -> list:
     namespace = "panther"
     device = "velodyne"
     frame_prefix = namespace + "/" if namespace else ""
+
+    xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro")
+    velodyne_description = get_robot_description(xacro_path)
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        namespace="velodyne",
+        parameters=[velodyne_description, {"frame_prefix": "velodyne/"}],
+    )
 
     velodyne_driver_node = Node(
         package="velodyne_driver",
@@ -76,21 +89,20 @@ def launch_setup(context: LaunchContext) -> list:
         executable="static_transform_publisher",
         arguments=[
             "--frame-id",
-            frame_prefix + "cover_link",
+            "panther/base_link",
             "--child-frame-id",
-            frame_prefix + "velodyne",
-            "--x",
-            "0.2",
-            "--yaw",
-            str(deg2rad(90)),
+            "velodyne/base_link",
+            "--z",
+            "0.35",
         ],
     )
 
     return [
-        Register.on_start(velodyne_driver_node, context),
-        Register.on_start(velodyne_transform_node, context),
-        Register.on_start(velodyne_laserscan_node, context),
+        Register.on_start(robot_state_publisher, context),
         Register.on_start(static_transform_publisher, context),
+        Register.on_start(velodyne_driver_node, context) if not use_sim else SKIP,
+        Register.on_start(velodyne_transform_node, context) if not use_sim else SKIP,
+        Register.on_start(velodyne_laserscan_node, context) if not use_sim else SKIP,
     ]
 
 

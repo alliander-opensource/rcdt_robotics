@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: Alliander N. V.
-#
-# SPDX-License-Identifier: Apache-2.0
-
 Panels:
   - Class: rviz_common/Displays
     Help Height: 78
@@ -122,16 +118,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_lidar:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -170,7 +156,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /panther/velodyne/scan/points
+        Value: /velodyne/scan/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -277,5 +263,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 360
+  X: 328
   Y: 0
