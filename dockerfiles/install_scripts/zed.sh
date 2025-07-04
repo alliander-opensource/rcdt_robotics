@@ -6,19 +6,13 @@
 
 # This script installs the ZED SDK 5.0.3 on a Docker image based on Ubuntu 22.04 with CUDA 12.8.
 
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
+UBUNTU_RELEASE_YEAR=22    
+CUDA_MAJOR=12             
+ZED_SDK_MAJOR=5
+ZED_SDK_MINOR=0
 
-# 1. refresh APT metadata
-RUN apt-get update -y || true
+sudo apt-get update -y
+sudo apt-get install --no-install-recommends -y wget zstd udev libgomp1
 
-# 2. install runtime dependencies
-RUN apt-get install --no-install-recommends -y \
-        wget zstd udev libgomp1
-
-# 3. download the ZED SDK installer
-RUN wget --content-disposition \
-        https://download.stereolabs.com/zedsdk/12.0/cu12/ubuntu22
-
-RUN chmod +x ZED_SDK_Ubuntu22_cuda12.8_tensorrt10.9_v5.0.3.zstd.run && \
-    ZED_SDK_Ubuntu22_cuda12.8_tensorrt10.9_v5.0.3.zstd.run silent skip_tools skip_cuda
+wget --continue --content-disposition --trust-server-names \
+     "https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
