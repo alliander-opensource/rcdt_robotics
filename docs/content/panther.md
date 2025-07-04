@@ -168,12 +168,6 @@ Rviz should visualize "slow-down" regions around the Panther and the Panther sho
 ros2 launch rcdt_panther panther.launch.py nav2:=True
 ```
 
-Next, start navigation in a second terminal:
-
-```bash
-ros2 launch rcdt_panther navigation.launch.py
-```
-
 Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. The robot should plan, visualize and drive a route to this goal pose.
 
 :::{note}

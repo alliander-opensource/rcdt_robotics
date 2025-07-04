@@ -39,19 +39,3 @@ def controllers_launch(request: SubRequest) -> RegisteredLaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
         launch_arguments={"simulation": request.config.getoption("simulation")},
     )
-
-
-@pytest.fixture(scope="module")
-def navigation_launch(request: SubRequest) -> RegisteredLaunchDescription:
-    """Fixture to create launch file for the panther navigation.
-
-    Args:
-        request (SubRequest): The pytest request object.
-
-    Returns:
-        RegisteredLaunchDescription: The launch description for the panther navigation.
-    """
-    return RegisteredLaunchDescription(
-        get_file_path("rcdt_panther", ["launch"], "navigation.launch.py"),
-        launch_arguments={"simulation": request.config.getoption("simulation")},
-    )

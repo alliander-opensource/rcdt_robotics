@@ -15,7 +15,7 @@ world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
-use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+use_nav2_arg = LaunchArgument("nav2", True, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
@@ -53,14 +53,16 @@ def launch_setup(context: LaunchContext) -> list:
         use_velodyne = True
         use_slam = True
 
+    launch_arguments = {
+        "simulation": str(use_sim),
+        "load_gazebo_ui": str(load_gazebo_ui),
+        "world": world,
+    }
+    if use_velodyne:
+        launch_arguments["child"] = "velodyne"
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
-        launch_arguments={
-            "simulation": str(use_sim),
-            "load_gazebo_ui": str(load_gazebo_ui),
-            "velodyne": str(use_velodyne),
-            "world": world,
-        },
+        launch_arguments=launch_arguments,
     )
 
     controllers = RegisteredLaunchDescription(
@@ -94,6 +96,11 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    velodyne = RegisteredLaunchDescription(
+        get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
+    )
+
     slam = RegisteredLaunchDescription(
         get_file_path("slam_toolbox", ["launch"], "online_async_launch.py"),
         launch_arguments={
@@ -103,13 +110,27 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    if use_nav2:
+        nav2 = RegisteredLaunchDescription(
+            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
+            launch_arguments={
+                "use_sim_time": str(use_sim),
+                "params_file": get_file_path(
+                    "rcdt_panther", ["config"], "nav2_params.yaml"
+                ),
+                "use_collision_monitor": str(use_collision_monitor),
+            },
+        )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
+        Register.group(velodyne, context) if use_velodyne else SKIP,
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
-        Register.group(joystick, context),
-        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(slam, context) if use_slam else SKIP,
+        Register.group(nav2, context) if use_nav2 else SKIP,
+        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(joystick, context),
     ]
 
 
