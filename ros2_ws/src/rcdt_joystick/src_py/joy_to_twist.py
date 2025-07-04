@@ -28,12 +28,14 @@ class JoyToTwist(Node):
         self.declare_parameter("stamped", True)
         self.declare_parameter("config_pkg", "")
         self.declare_parameter("pub_frame", "")
+        self.declare_parameter("scale", 1.0)
 
         sub_topic = self.get_parameter("sub_topic").get_parameter_value().string_value
         pub_topic = self.get_parameter("pub_topic").get_parameter_value().string_value
         self.stamped = self.get_parameter("stamped").get_parameter_value().bool_value
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
         pub_frame = self.get_parameter("pub_frame").get_parameter_value().string_value
+        self.scale = self.get_parameter("scale").get_parameter_value().double_value
 
         if not sub_topic:
             self.get_logger().warn("No subscriber topic was specified. Exiting.")
@@ -89,6 +91,7 @@ class JoyToTwist(Node):
                     twist_value = 0.0
                 else:
                     twist_value = -joy_value if config.get("flip", False) else joy_value
+                    twist_value *= self.scale if 0 <= self.scale <= 1 else 1
                 direction = config["direction"]
                 vector = getattr(self.twist_msg, movement)
                 setattr(vector, direction, twist_value)
