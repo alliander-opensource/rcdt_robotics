@@ -14,5 +14,9 @@ ZED_SDK_MINOR=0
 sudo apt-get update -y
 sudo apt-get install --no-install-recommends -y wget zstd udev libgomp1
 
-wget --continue --content-disposition --trust-server-names \
+wget -q --content-disposition --trust-server-names \
      "https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
+
+sudo ./ZED_SDK_Ubuntu22_cuda12.8_tensorrt10.9_v5.0.3.zstd.run -- silent skip_tools skip_cuda
+
+sudo rm -f ./ZED_SDK_Ubuntu22_cuda12.8_tensorrt10.9_v5.0.3.zstd.run
