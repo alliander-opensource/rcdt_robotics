@@ -48,4 +48,7 @@ RUN ./dev_packages.sh
 COPY ./install_scripts/zed.sh .
 RUN ./zed.sh
 
+COPY ./install_scripts/zed_wrapper.sh .
+RUN ./zed_wrapper.sh
+
 INCLUDE ./general/post_install.dockerfile
