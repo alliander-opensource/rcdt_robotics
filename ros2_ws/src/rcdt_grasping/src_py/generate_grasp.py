@@ -14,16 +14,17 @@ import open3d as o3d
 import rclpy
 import ros2_numpy as rnp
 import torch
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Point, PoseStamped, Quaternion
 from graspnetAPI import Grasp, GraspGroup
 from graspnetpy_models.graspnet import GraspNet, pred_decode
 from graspnetpy_utils import data_utils
 from open3d.visualization.draw import draw
-from rcdt_messages.srv import AddMarker
+from rcdt_messages.srv import AddMarker, DefineGoalPose
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
+from scipy.spatial.transform import Rotation
 from sensor_msgs.msg import CameraInfo, Image
 from std_srvs.srv import Trigger
 
@@ -80,6 +81,9 @@ class GenerateGrasp(Node):
         self.create_service(Trigger, "/grasp/generate", self.callback)
         self.marker_client = self.create_client(
             AddMarker, "/franka/moveit_manager/add_marker"
+        )
+        self.define_goal_pose_client = self.create_client(
+            DefineGoalPose, "/franka/moveit_manager/define_goal_pose"
         )
 
         self.color = Message(topic="/franka/realsense/color/image_raw", msg_type=Image)
@@ -234,29 +238,30 @@ class GenerateGrasp(Node):
         grasps.sort_by_score()
         grasp: Grasp = grasps[0]
 
-        # Define rotation matrix and rotate to match ROS orienation:
-        rotation_matrix = np.array(grasp.rotation_matrix).reshape(3, 3)
-        adapted_rotation_matrix = rotation_matrix @ np.array(
-            [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
-        )
-
-        # Create transformation matrix:
-        transformation_matrix = np.identity(4)
-        transformation_matrix[:3, :3] = adapted_rotation_matrix
-        transformation_matrix[:3, 3] = grasp.translation
-        transformation_matrix[3, :] = [0, 0, 0, 1]
+        # Define pose:
+        pose = PoseStamped()
+        pose.header.frame_id = "franka/realsense/camera_color_optical_frame"
+        pose.pose.position = rnp.msgify(Point, grasp.translation.astype(float))
+        rotation = np.array(grasp.rotation_matrix).reshape(3, 3)
+        rotation = rotation @ Rotation.from_euler("y", 90, degrees=True).as_matrix()  # noqa: PLR6104
+        euler = Rotation.from_matrix(rotation).as_euler("xyz", degrees=True)
+        if euler[-1] > 0:
+            rotation = (  # noqa: PLR6104
+                rotation @ Rotation.from_euler("z", 180, degrees=True).as_matrix()
+            )
+        quaternion = Rotation.from_matrix(rotation).as_quat()
+        quaternion = rnp.msgify(Quaternion, quaternion)
+        pose.pose.orientation = quaternion
 
         # Add marker to the Rviz:
         add_marker = AddMarker.Request()
-        add_marker.marker_pose.header.frame_id = (
-            "franka/realsense/camera_color_optical_frame"
-        )
-        add_marker.marker_pose.pose = rnp.msgify(Pose, transformation_matrix)
-        self.get_logger().info(f"Pose: {add_marker.marker_pose.pose}")
+        add_marker.marker_pose = pose
         self.marker_client.call_async(add_marker)
 
-        # Visualize grasps in Open3D:
-        self.visualize_grasps(grasps, cloud)
+        # Define goal pose:
+        define_goal_pose = DefineGoalPose.Request()
+        define_goal_pose.pose = pose
+        self.define_goal_pose_client.call_async(define_goal_pose)
 
         # Return response:
         response.success = True
