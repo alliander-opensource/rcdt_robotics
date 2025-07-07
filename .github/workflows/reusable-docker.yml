@@ -16,7 +16,7 @@ on:
 
 jobs:
   deploy-image:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     steps:
       - run: echo "Starting deploy to ${{ inputs.container-image}}"
       - uses: actions/checkout@v4

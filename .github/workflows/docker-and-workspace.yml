@@ -13,7 +13,7 @@ on:
 
 jobs:
   check-run-destination:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     outputs:
       destination: ${{ steps.check-run-destination.outputs.destination }}
     steps:
@@ -25,7 +25,7 @@ jobs:
           echo "destination=Github" >> "$GITHUB_OUTPUT"
   get-current-branch:
     needs: check-run-destination
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     outputs:
       branch: ${{ steps.get-current-branch.outputs.branch }}
     steps:
@@ -39,7 +39,7 @@ jobs:
           fi
   get-image-tag:
     needs: get-current-branch
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     outputs:
       tag: ${{ steps.get-image-tag.outputs.tag }}
     steps:
