@@ -14,7 +14,7 @@ on:
 jobs:
   # Based on: https://www.sphinx-doc.org/en/master/tutorial/deploying.html#
   build:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     permissions:
       contents: write
     steps:
@@ -32,7 +32,7 @@ jobs:
   # Based on: https://github.com/marketplace/actions/deploy-github-pages-site
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, X64, Linux, minimal ]
     permissions:
       pages: write
       id-token: write
