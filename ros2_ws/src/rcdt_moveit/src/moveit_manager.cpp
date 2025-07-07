@@ -23,7 +23,7 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
       moveit_visual_tools(node, "base", "/rviz_markers") {
 
   moveit_visual_tools.loadMarkerPub(false);
-  move_group.setEndEffectorLink("fr3_hand");
+  move_group.setEndEffectorLink("fr3_hand_tcp");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
 
   initialize_clients();
