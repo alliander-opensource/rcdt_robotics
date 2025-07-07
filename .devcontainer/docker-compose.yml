@@ -11,6 +11,10 @@ services:
     privileged: true
     mem_limit: 6gb
     tty: true
+    env_file:
+      - .env
+    group_add:
+      - "106"
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
       - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"

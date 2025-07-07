@@ -54,7 +54,7 @@ def launch_setup(context: LaunchContext) -> list:
             name="fr3_gripper",
             parameters=[
                 {
-                    "robot_ip": "172.16.0.2",
+                    "robot_ip": "10.15.20.4",
                     "joint_names": ["fr3_finger_joint1", "fr3_finger_joint2"],
                 },
                 gripper_config,

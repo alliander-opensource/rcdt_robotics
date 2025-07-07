@@ -5,6 +5,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_franka.test.end_to_end.base_franka import get_tests
 from rcdt_utilities.launch_utils import get_file_path
@@ -13,11 +14,14 @@ from rcdt_utilities.test_utils import add_tests_to_class
 
 
 @launch_pytest.fixture(scope="class")
-def franka() -> LaunchDescription:
+def franka(request: SubRequest) -> LaunchDescription:
     """Fixture to create a launch description for the Franka robot.
 
     This fixture sets up the Franka robot with the necessary configurations and
     launches the required nodes for testing.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description containing the Franka robot setup.
@@ -29,6 +33,7 @@ def franka() -> LaunchDescription:
             "rviz": "False",
             "world": "empty_camera.sdf",
             "realsense": "False",
+            "simulation": request.config.getoption("simulation"),
         },
     )
     return Register.connect_context([franka_launch])

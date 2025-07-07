@@ -52,11 +52,8 @@ private:
   std::map<std::string, int> shapes = {
       {"BOX", 1}, {"SPHERE", 2}, {"CYLINDER", 3}, {"CONE", 4}};
   std::set<std::string> pilz_types = {"PTP", "LIN", "CIRC"};
-  std::map<std::string, int> servo_command_types = {
-      {"JOINT_JOG", 0}, {"TWIST", 1}, {"POSE", 2}};
 
   //   Clients:
-  rclcpp::Client<ServoCommandType>::SharedPtr switch_servo_type_client;
   rclcpp::Client<ExpressPoseInOtherFrame>::SharedPtr
       express_pose_in_other_frame_client;
 
@@ -97,7 +94,6 @@ private:
   //   Methods:
   void initialize_clients();
   void initialize_services();
-  void switch_servo_command_type(std::string command_type);
   PoseStamped change_frame_to_world(PoseStamped pose);
   bool plan_and_execute(std::string planning_type = "");
 };

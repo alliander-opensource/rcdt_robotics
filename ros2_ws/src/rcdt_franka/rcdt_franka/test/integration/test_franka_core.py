@@ -62,22 +62,18 @@ def test_follow_joint_trajectory_goal(
         joint_movement_tolerance (float): The tolerance for joint movement.
         timeout (int): The timeout in seconds to wait for the joint trajectory goal to be followed.
     """
+    positions = [0.15, -0.39, 0.1, -2.06, 0.0, 1.68, 1.01]
+
     follow_joint_trajectory_goal(
         test_node,
-        positions=[0.0, -0.5, 0.5, 0.0, 0.0, 0.0, 0.0],
+        positions=positions,
         controller="franka/fr3_arm_controller",
         timeout=timeout,
     )
-    pos_joint2 = get_joint_position(
-        namespace="franka", joint="fr3_joint2", timeout=timeout
-    )
-    pos_joint3 = get_joint_position(
-        namespace="franka", joint="fr3_joint3", timeout=timeout
-    )
-
-    assert pos_joint2 == pytest.approx(-0.5, abs=joint_movement_tolerance), (
-        f"Got joint position {pos_joint2}"
-    )
-    assert pos_joint3 == pytest.approx(0.5, abs=joint_movement_tolerance), (
-        f"Got joint position {pos_joint3}"
-    )
+    for i in range(7):
+        joint_value = get_joint_position(
+            namespace="franka", joint=f"fr3_joint{i + 1}", timeout=timeout
+        )
+        assert joint_value == pytest.approx(
+            positions[i], abs=joint_movement_tolerance
+        ), f"The joint value is {joint_value}"

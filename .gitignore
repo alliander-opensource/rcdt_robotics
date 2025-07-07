@@ -20,3 +20,8 @@ ignore/
 .vscode-server
 
 build/
+
+.env
+!.devcontainer/.env
+.cache
+.venv

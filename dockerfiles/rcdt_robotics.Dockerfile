@@ -17,9 +17,6 @@ RUN ./moveit.sh
 COPY ./install_scripts/moveit_tools.sh .
 RUN ./moveit_tools.sh
 
-COPY ./install_scripts/libfranka.sh .
-RUN ./libfranka.sh
-
 COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
 ENV GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/home/$UNAME/franka_ws/src"
@@ -38,6 +35,9 @@ RUN ./sensors.sh
 
 COPY ./install_scripts/sphinx.sh .
 RUN ./sphinx.sh
+
+COPY ./install_scripts/franka_lock_unlock.sh .
+RUN ./franka_lock_unlock.sh
 
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh

@@ -16,6 +16,9 @@ use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, Fa
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+scale_speed_arg = LaunchArgument(
+    "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -35,6 +38,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_velodyne = use_velodyne_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
     use_nav2 = use_nav2_arg.bool_value(context)
+    scale_speed = scale_speed_arg.float_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -83,7 +87,11 @@ def launch_setup(context: LaunchContext) -> list:
 
     joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "panther"},
+        launch_arguments={
+            "simulation": str(use_sim),
+            "robots": "panther",
+            "scale_speed": str(scale_speed),
+        },
     )
 
     slam = RegisteredLaunchDescription(
@@ -113,6 +121,7 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            scale_speed_arg.declaration,
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,

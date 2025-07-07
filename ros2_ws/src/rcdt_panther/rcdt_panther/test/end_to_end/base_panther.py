@@ -42,8 +42,8 @@ def get_tests() -> dict:
         """
         assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
 
-    def test_e_stop_request(_self: object, test_node: Node, timeout: int) -> None:
-        """Test that the E-Stop request service can be called.
+    def test_e_stop_request_reset(_self: object, test_node: Node, timeout: int) -> None:
+        """Test that the E-Stop request service can be called to unlock the Panther.
 
         Args:
             _self (object): The test class instance.
@@ -92,9 +92,9 @@ def get_tests() -> dict:
 
         assert_movements_with_joy(
             node=test_node,
-            joy_axes=[0.0, 1.0, 0.0, 0.0, 0.0],
+            joy_axes=[0.0, 0.1, 0.0, 0.0, 0.0],
             compare_fn=compare_fn,
-            threshold=0.1,
+            threshold=0.001,
             description="x position",
             frame_base="panther/base_link",
             frame_target="panther/odom",
@@ -117,15 +117,33 @@ def get_tests() -> dict:
 
         assert_movements_with_joy(
             node=test_node,
-            joy_axes=[0.0, 0.0, 1.0, 0.0, 0.0],
+            joy_axes=[0.0, 0.0, 0.1, 0.0, 0.0],
             compare_fn=compare_fn,
-            threshold=0.01,
+            threshold=0.0001,
             description="orientation.w",
             frame_base="panther/base_link",
             frame_target="panther/odom",
             timeout=timeout,
         )
 
+    def test_e_stop_request_trigger(
+        _self: object, test_node: Node, timeout: int
+    ) -> None:
+        """Test that the E-Stop request service can be called to lock the panther.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            timeout (int): The timeout in seconds to wait before failing the test.
+        """
+        assert (
+            call_trigger_service(
+                node=test_node,
+                service_name="/panther/hardware/e_stop_trigger",
+                timeout=timeout,
+            )
+            is True
+        )
         # Collect all test methods defined above
 
     tests = {
