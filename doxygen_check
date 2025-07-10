@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+
+ALL_WARNINGS=$(doxygen doxygen.config /dev/null 2>&1)
+WARNINGS=$(echo "$ALL_WARNINGS" | sed 1d)
+N_WARNINGS=$(echo "$WARNINGS" | wc -l)
+if [ "$N_WARNINGS" -eq 1 ]; then
+    echo "No warnings found."
+    exit 0
+else
+    echo "$WARNINGS"
+    exit 1
+fi
