@@ -41,6 +41,13 @@ repos:
         pass_filenames: false
   - repo: local
     hooks:
+      - id: doxygen
+        name: doxygen check
+        entry: ./doxygen_check
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
       - id: ty
         name: ty check
         entry: uv run ty check --error-on-warning
