@@ -11,12 +11,14 @@ using std::placeholders::_1;
 
 CombineCameraTopics::CombineCameraTopics() : Node("combine_camera_topics") {
 
-  this->declare_parameter("rgb_topic", "/camera/camera/color/image_raw");
-  this->declare_parameter("depth_topic", "/camera/camera/depth/image_rect_raw");
-  this->declare_parameter("rgb_info_topic", "/camera/camera/color/camera_info");
+  this->declare_parameter("rgb_topic", "/franka/realsense/color/image_raw");
+  this->declare_parameter("depth_topic",
+                          "/franka/realsense/depth/image_rect_raw");
+  this->declare_parameter("rgb_info_topic",
+                          "/franka/realsense/color/camera_info");
   this->declare_parameter("depth_info_topic",
-                          "/camera/camera/depth/camera_info");
-  this->declare_parameter("rgbd_topic", "/camera/camera/rgbd");
+                          "/franka/realsense/depth/camera_info");
+  this->declare_parameter("rgbd_topic", "/franka/realsense/rgbd");
   this->declare_parameter("rate", 30);
 
   initialize_subscriptions();

@@ -31,12 +31,10 @@ def launch_setup(context: LaunchContext) -> list:
             package="rcdt_sensors",
             executable="combine_camera_topics",
         )
-        realsense = LaunchDescription(
-            [
-                Register.on_start(convert_32FC1_to_16UC1_node, context),
-                Register.on_start(combine_camera_topics_node, context),
-            ]
-        )
+        return [
+            Register.on_start(convert_32FC1_to_16UC1_node, context),
+            Register.on_start(combine_camera_topics_node, context),
+        ]
     else:
         realsense = IncludeLaunchDescription(
             get_file_path("realsense2_camera", ["launch"], "rs_launch.py"),
@@ -49,7 +47,7 @@ def launch_setup(context: LaunchContext) -> list:
             }.items(),
         )
 
-    return [realsense]
+        return [realsense]
 
 
 def generate_launch_description() -> LaunchDescription:

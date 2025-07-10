@@ -34,7 +34,7 @@ ament_target_dependencies(convert_32FC1_to_16UC1
 )
 
 install(
-  TARGETS convert_32FC1_to_16UC1
+  TARGETS combine_camera_topics convert_32FC1_to_16UC1
   DESTINATION lib/${PROJECT_NAME}
 )
 
