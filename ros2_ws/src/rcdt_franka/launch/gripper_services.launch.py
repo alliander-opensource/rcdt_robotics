@@ -18,21 +18,10 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     namespace = "franka"
-
-    open_gripper = Node(
-        package="rcdt_franka",
-        executable="open_gripper",
-        namespace=namespace,
-    )
-    close_gripper = Node(
-        package="rcdt_franka",
-        executable="close_gripper.py",
-        namespace=namespace,
-    )
+    gripper = Node(package="rcdt_franka", executable="gripper", namespace=namespace)
 
     return [
-        Register.on_start(open_gripper, context),
-        Register.on_start(close_gripper, context),
+        Register.on_start(gripper, context),
     ]
 
 
