@@ -100,8 +100,8 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(moveit, context),
         Register.group(joystick, context),
         Register.group(utilities, context),
-        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(realsense, context) if use_realsense else SKIP,
+        Register.group(rviz, context) if use_rviz else SKIP,
     ]
 
 

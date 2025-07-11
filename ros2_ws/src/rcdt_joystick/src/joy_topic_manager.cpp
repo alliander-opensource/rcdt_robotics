@@ -1,0 +1,88 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
+#include "joy_topic_manager.hpp"
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <fstream>
+#include <rclcpp/executors.hpp>
+
+using std::placeholders::_1;
+using std::placeholders::_2;
+
+JoyTopicManager::JoyTopicManager() : Node("joy_topic_manager") {
+  this->declare_parameter("joy_topic", "/joy");
+  auto joy_topic = this->get_parameter("joy_topic").as_string();
+
+  read_json();
+};
+
+void JoyTopicManager::read_json() {
+  auto file = ament_index_cpp::get_package_share_directory(package) + file_name;
+  std::ifstream f(file);
+  json data = json::parse(f);
+
+  if (!data.is_array()) {
+    RCLCPP_WARN(this->get_logger(), "Invalid JSON format, expected an array.");
+    return;
+  };
+
+  for (const auto &item : data) {
+    add_button(item);
+  }
+  for (const auto &[k, v] : buttons)
+    std::cout << "m[" << k << "] = (" << v.topic << ", " << v.service << ") "
+              << std::endl;
+}
+
+void JoyTopicManager::add_button(json json) {
+  Button button{};
+
+  if (json.contains("button")) {
+    if (json.contains("button")) {
+      if (json["button"].is_number_integer()) {
+        button.key = json["button"].get<int>();
+      } else {
+        RCLCPP_WARN(this->get_logger(),
+                    "Invalid value for key 'button', expected integer.");
+        return;
+      }
+    } else {
+      RCLCPP_WARN(this->get_logger(), "The key 'button' was expected in JSON.");
+      return;
+    }
+  }
+
+  if (json.contains("topic")) {
+    if (json["topic"].is_string()) {
+      button.topic = json["topic"].get<std::string>();
+      buttons.insert({button.key, button});
+      return;
+    } else {
+      RCLCPP_WARN(this->get_logger(),
+                  "Invalid value for key 'topic', expected string.");
+      return;
+    }
+  }
+
+  if (json.contains("service")) {
+    if (json["service"].is_string()) {
+      button.service = json["service"].get<std::string>();
+      buttons.insert({button.key, button});
+      return;
+    } else {
+      RCLCPP_WARN(this->get_logger(),
+                  "Invalid value for key 'service', expected string.");
+      return;
+    }
+  }
+
+  RCLCPP_WARN(this->get_logger(),
+              "A key 'topic' or 'service' was expected in JSON.");
+}
+
+int main(int argc, char **argv) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<JoyTopicManager>());
+  rclcpp::shutdown();
+}
