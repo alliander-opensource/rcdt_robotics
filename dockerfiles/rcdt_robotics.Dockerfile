@@ -8,9 +8,6 @@ INCLUDE ./general/pre_install.dockerfile
 COPY ./install_scripts/core_packages.sh .
 RUN ./core_packages.sh
 
-COPY ./install_scripts/cuda.sh .
-RUN ./cuda.sh
-
 COPY ./install_scripts/gazebo.sh .
 RUN ./gazebo.sh
 
@@ -44,11 +41,5 @@ RUN ./franka_lock_unlock.sh
 
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
-
-COPY ./install_scripts/zed.sh .
-RUN ./zed.sh
-
-COPY ./install_scripts/zed_wrapper.sh .
-RUN ./zed_wrapper.sh
 
 INCLUDE ./general/post_install.dockerfile
