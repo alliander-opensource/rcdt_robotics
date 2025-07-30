@@ -21,8 +21,8 @@ COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
 ENV GZ_SIM_RESOURCE_PATH="$GZ_SIM_RESOURCE_PATH:/home/$UNAME/franka_ws/src"
 
-# COPY ./install_scripts/husarion_ugv_ros.sh .
-# RUN ./husarion_ugv_ros.sh
+COPY ./install_scripts/husarion_ugv_ros.sh .
+RUN ./husarion_ugv_ros.sh
 
 # COPY ./install_scripts/rosboard.sh .
 # RUN ./rosboard.sh
