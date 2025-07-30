@@ -7,6 +7,9 @@
 set -e
 apt update
 
+export GIT_TERMINAL_PROMPT=0
+git config --global advice.detachedHead false
+
 #Install husarion_ugv_ros: https://github.com/husarion/husarion_ugv_ros
 cd /home/$UNAME
 mkdir husarion_ws
