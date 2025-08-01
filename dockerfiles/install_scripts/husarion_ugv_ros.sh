@@ -16,6 +16,16 @@ mkdir husarion_ws
 cd /home/$UNAME/husarion_ws
 git clone -b 2.1.2 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros
 export HUSARION_ROS_BUILD_TYPE=simulation
+
+sed -i \
+  's|https://github.com/husarion/ros_components_description\.git|https://github.com/husarion/husarion_components_description.git|g' \
+  src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
+
+sed -i '/https:\/\/github\.com\/husarion\/husarion_components_description\.git/{ 
+  n
+  s/^\([[:space:]]*version:\).*/\1 a46871980289a845c0b6defaba5161e3b505daa8/
+}' src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
+
 vcs import src < src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
 
 cp -r src/ros2_controllers/diff_drive_controller src
