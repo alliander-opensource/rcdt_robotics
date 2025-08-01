@@ -19,6 +19,7 @@ use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
+use_zed2i_arg = LaunchArgument("zed2i", True, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -39,6 +40,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_slam = use_slam_arg.bool_value(context)
     use_nav2 = use_nav2_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
+    use_zed2i = use_zed2i_arg.bool_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -60,6 +62,7 @@ def launch_setup(context: LaunchContext) -> list:
             "load_gazebo_ui": str(load_gazebo_ui),
             "velodyne": str(use_velodyne),
             "world": world,
+            "zed2i": str(use_zed2i),
         },
     )
 
@@ -130,6 +133,7 @@ def generate_launch_description() -> LaunchDescription:
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
             use_nav2_arg.declaration,
+            use_zed2i_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
