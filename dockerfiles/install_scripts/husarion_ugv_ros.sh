@@ -7,34 +7,21 @@
 set -e
 apt update
 
-export GIT_TERMINAL_PROMPT=0
-git config --global advice.detachedHead false
-
 #Install husarion_ugv_ros: https://github.com/husarion/husarion_ugv_ros
 cd /home/$UNAME
 mkdir husarion_ws
 cd /home/$UNAME/husarion_ws
-git clone -b 2.1.2 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros
+git clone -b 2.3.1 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros
+
 export HUSARION_ROS_BUILD_TYPE=simulation
 
-sed -i \
-  's|https://github.com/husarion/ros_components_description\.git|https://github.com/husarion/husarion_components_description.git|g' \
-  src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
+vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_deps.repos
 
-sed -i '/https:\/\/github\.com\/husarion\/husarion_components_description\.git/{ 
-  n
-  s/^\([[:space:]]*version:\).*/\1 a46871980289a845c0b6defaba5161e3b505daa8/
-}' src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
-
-vcs import src < src/husarion_ugv_ros/panther/panther_$HUSARION_ROS_BUILD_TYPE.repos
-
-cp -r src/ros2_controllers/diff_drive_controller src
-cp -r src/ros2_controllers/imu_sensor_broadcaster src
-rm -rf src/ros2_controllers
-
+sudo rosdep init
 rosdep update --rosdistro $ROS_DISTRO
 rosdep install --from-paths src -y -i
 
 source /home/$UNAME/.bashrc
-colcon build --packages-up-to panther --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --symlink-install --packages-up-to husarion_ugv --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
+
 echo "source /home/$UNAME/husarion_ws/install/setup.bash" >>/home/$UNAME/.bashrc
