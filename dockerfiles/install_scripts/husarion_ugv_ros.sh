@@ -17,7 +17,6 @@ export HUSARION_ROS_BUILD_TYPE=simulation
 
 vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_deps.repos
 
-sudo rosdep init
 rosdep update --rosdistro $ROS_DISTRO
 rosdep install --from-paths src -y -i
 
