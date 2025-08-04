@@ -10,13 +10,15 @@ find_package(nlohmann_json REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 # C++ executables:
 include_directories(include)
 add_executable(joy_topic_manager src/joy_topic_manager.cpp)
 ament_target_dependencies(joy_topic_manager
-  rclcpp
   nlohmann_json
+  rclcpp
+  sensor_msgs
 )
 
 install(

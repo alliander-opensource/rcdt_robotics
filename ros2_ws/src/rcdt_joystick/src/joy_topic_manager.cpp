@@ -14,8 +14,24 @@ JoyTopicManager::JoyTopicManager() : Node("joy_topic_manager") {
   this->declare_parameter("joy_topic", "/joy");
   auto joy_topic = this->get_parameter("joy_topic").as_string();
 
+  subscription_joy = this->create_subscription<Joy>(
+      "/joy", 10, std::bind(&JoyTopicManager::callback_joy, this, _1));
+
   read_json();
 };
+
+void JoyTopicManager::callback_joy(Joy msg) {
+  for (auto &[index, button] : buttons) {
+    auto state = msg.buttons[index];
+    if (button.state == -1) {
+      button.state = state;
+    }
+    if (state == button.state) {
+      continue;
+    }
+    button.state = state;
+  }
+}
 
 void JoyTopicManager::read_json() {
   auto file = ament_index_cpp::get_package_share_directory(package) + file_name;

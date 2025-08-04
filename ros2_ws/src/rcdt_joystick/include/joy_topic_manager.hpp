@@ -4,13 +4,16 @@
 
 #include <nlohmann/json.hpp>
 #include <rclcpp/node.hpp>
+#include <sensor_msgs/msg/joy.hpp>
 
 using json = nlohmann::json;
+using Joy = sensor_msgs::msg::Joy;
 
 struct Button {
   int key;
   std::string topic;
   std::string service;
+  int state = -1;
 };
 
 class JoyTopicManager : public rclcpp::Node {
@@ -21,6 +24,10 @@ public:
 
 private:
   std::map<int, Button> buttons;
+
+  rclcpp::Subscription<Joy>::SharedPtr subscription_joy;
+  void callback_joy(Joy msg);
+
   void read_json();
   void add_button(json json);
 };
