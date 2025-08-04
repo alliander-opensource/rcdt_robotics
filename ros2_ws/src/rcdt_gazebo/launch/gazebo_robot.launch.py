@@ -78,12 +78,13 @@ def launch_setup(context: LaunchContext) -> list:
     if use_zed2i:
         bridge_topics.extend(
             [
-                "/panther/zed2i/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/panther/zed2i/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/panther/zed2i/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/panther/zed2i/depth/image_rect_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/zed/zed_node/rgb/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/zed/zed_node/rgb/image_rect_color@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/zed/zed_node/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/zed/zed_node/depth/depth_registered@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
+
     bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
