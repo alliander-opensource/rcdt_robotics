@@ -29,6 +29,8 @@ services:
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - __NV_PRIME_RENDER_OFFLOAD=1
+      - __GLX_VENDOR_LIBRARY_NAME=nvidia
   rcdt_ros2:
     image: rcdt/ros2:${IMAGE_TAG}
     container_name: rcdt_ros2
