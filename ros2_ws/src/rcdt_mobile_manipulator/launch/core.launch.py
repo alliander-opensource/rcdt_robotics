@@ -65,7 +65,7 @@ def launch_setup(context: LaunchContext) -> list:
         name="static_tf_world",
         arguments=[
             "--frame-id",
-            "/panther/base_link",
+            "/panther/base_footprint",
             "--child-frame-id",
             "/franka/fr3_link0",
             "--z",
