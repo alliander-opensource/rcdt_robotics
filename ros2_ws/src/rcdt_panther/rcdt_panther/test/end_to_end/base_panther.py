@@ -124,7 +124,7 @@ def get_tests() -> dict:
             frame_base="panther/base_link",
             frame_target="panther/odom",
             timeout=timeout,
-            publish_duration=3.0,
+            publish_duration=5.0,
         )
 
     def test_e_stop_request_trigger(
