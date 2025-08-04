@@ -274,7 +274,6 @@ def assert_movements_with_joy(  # noqa: PLR0913
     frame_base: str,
     frame_target: str,
     timeout: int,
-    publish_duration: float = 2.0,
 ) -> None:
     """Publishes a joystick message and asserts that movement occurs above a threshold.
 
@@ -287,7 +286,6 @@ def assert_movements_with_joy(  # noqa: PLR0913
         frame_base (str): Base frame of the robot.
         frame_target (str): Target frame to express the pose in.
         timeout (int): Max time to wait for the result.
-        publish_duration (float): Duration to publish the Joy message.
     """
     pose = PoseStamped()
     pose.header.frame_id = frame_base
@@ -301,11 +299,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     msg = Joy()
     msg.axes = joy_axes
     publish_for_duration(
-        node=node,
-        publisher=pub,
-        msg=msg,
-        publish_duration=publish_duration,
-        rate_sec=0.1,
+        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
     )
 
     pose = PoseStamped()
