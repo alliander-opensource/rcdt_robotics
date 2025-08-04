@@ -17,7 +17,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
 
     <!-- Sim Battery -->
     <gazebo>
-      <plugin filename="ignition-gazebo-linearbatteryplugin-system"
+      <plugin filename="gz-sim-linearbatteryplugin-system"
         name="gz::sim::systems::LinearBatteryPlugin">
         <battery_name>${ns}battery</battery_name>
         <voltage>41.4</voltage>
