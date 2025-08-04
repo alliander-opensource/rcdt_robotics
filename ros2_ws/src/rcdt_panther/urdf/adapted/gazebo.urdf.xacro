@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 Based on:
-https://github.com/husarion/husarion_ugv_ros/blob/2.1.2/panther_description/urdf/gazebo.urdf.xacro
+https://github.com/husarion/husarion_ugv_ros/blob/2.2.2/husarion_ugv_description/urdf/common/gazebo.urdf.xacro
 A copy of the original file is located in the /original directory.
 To compare the two files in VSCode, see:
 https://code.visualstudio.com/docs/editing/codebasics#_compare-files
@@ -40,7 +40,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <!-- Controller -->
   <xacro:macro name="controller" params="config_file namespace:=''">
     <gazebo>
-      <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>${config_file}</parameters>
         <ros>
           <namespace>${namespace}</namespace>
@@ -126,7 +126,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <!-- Lights -->
   <xacro:macro name="light" params="reference_frame name topic namespace:=''">
     <gazebo>
-      <plugin filename="LEDStrip" name="panther_gazebo::LEDStrip">
+      <plugin filename="LEDStrip" name="husarion_ugv_gazebo::LEDStrip">
         <light_name>${name}</light_name>
         <topic>${topic}</topic>
         <namespace>${namespace}</namespace>
