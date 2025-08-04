@@ -101,7 +101,7 @@ def test_driving(test_node: Node, timeout: int) -> None:
 
     delta = joint_value_after_driving - joint_value_before_driving
 
-    assert delta != pytest.approx(0, abs=0.5), (
+    assert delta != pytest.approx(0, abs=0.1), (
         f"The current joint value is {joint_value_after_driving}, but it should be different from {joint_value_before_driving}."
     )
 

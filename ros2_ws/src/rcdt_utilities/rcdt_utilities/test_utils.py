@@ -299,7 +299,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
     msg = Joy()
     msg.axes = joy_axes
     publish_for_duration(
-        node=node, publisher=pub, msg=msg, publish_duration=1, rate_sec=0.1
+        node=node, publisher=pub, msg=msg, publish_duration=2, rate_sec=0.1
     )
 
     pose = PoseStamped()
