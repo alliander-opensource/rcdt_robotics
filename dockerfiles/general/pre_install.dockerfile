@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Pull the base image:
-FROM osrf/ros:humble-desktop
+FROM althack/ros2:humble-cuda-full
 ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV UID=1000
