@@ -9,7 +9,7 @@ apt update
 
 UBUNTU_RELEASE_YEAR=22    
 CUDA_MAJOR=11             
-ZED_SDK_MAJOR=8
+ZED_SDK_MAJOR=5
 ZED_SDK_MINOR=0
 
 sudo apt-get update -y
