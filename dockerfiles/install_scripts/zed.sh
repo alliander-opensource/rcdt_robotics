@@ -12,8 +12,8 @@ CUDA_MAJOR=11
 ZED_SDK_MAJOR=5
 ZED_SDK_MINOR=0
 
-sudo apt-get update -y
-sudo apt-get install --no-install-recommends -y wget zstd udev libgomp1
+apt-get update -y
+apt-get install --no-install-recommends -y wget zstd udev libgomp1
 
 wget -q --content-disposition --trust-server-names \
      "https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
@@ -21,9 +21,9 @@ wget -q --content-disposition --trust-server-names \
 
 installer=$(ls ZED_SDK*run)
 
-sudo chmod +x "$installer"
+chmod +x "$installer"
 
-sudo "./$installer" silent skip_tools skip_cuda
+"./$installer" silent skip_tools skip_cuda
 
 rm "$installer"
 
