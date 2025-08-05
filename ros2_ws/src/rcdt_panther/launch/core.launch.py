@@ -57,6 +57,7 @@ def launch_setup(context: LaunchContext) -> list:
         launch_arguments={
             "world": world,
             "robots": namespace,
+            "positions": "0-0-0.2",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
         },
