@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0
 
         <always_on>true</always_on>
         <update_rate>30.0</update_rate>
-        <topic>${robot_namespace}/${device_namespace}/color/image_raw</topic>
+        <topic>/zed/zed_node/rgb/image_rect_color</topic>
         <visualize>false</visualize>
         <camera>
           <horizontal_fov>1.204277</horizontal_fov>
@@ -44,7 +44,7 @@ SPDX-License-Identifier: Apache-2.0
       <pose>0.01 0 0  0 0 0</pose>
       <always_on>true</always_on>
       <update_rate>30.0</update_rate>
-      <topic>${robot_namespace}/${device_namespace}/depth/image_rect_raw</topic>
+      <topic>/zed/zed_node/depth/depth_registered</topic>
       <visualize>false</visualize>
       <camera>
         <horizontal_fov>1.204277</horizontal_fov>
