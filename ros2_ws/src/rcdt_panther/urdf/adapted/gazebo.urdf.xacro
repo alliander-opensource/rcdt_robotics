@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 Based on:
-https://github.com/husarion/husarion_ugv_ros/blob/2.2.2/husarion_ugv_description/urdf/common/gazebo.urdf.xacro
+https://github.com/husarion/husarion_ugv_ros/blob/2.3.1/husarion_ugv_description/urdf/common/gazebo.urdf.xacro
 A copy of the original file is located in the /original directory.
 To compare the two files in VSCode, see:
 https://code.visualstudio.com/docs/editing/codebasics#_compare-files
