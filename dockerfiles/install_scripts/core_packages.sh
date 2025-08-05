@@ -14,8 +14,6 @@ apt install -y \
     python3-pip \
     git-lfs
 
-pip install uv --break-system-packages
-
 apt install -y \
     ros-jazzy-moveit \
     ros-jazzy-moveit-servo \
@@ -28,3 +26,8 @@ apt install -y \
     ros-jazzy-velodyne-description \
     ros-jazzy-launch-pytest \
     ros-jazzy-rmw-cyclonedds-cpp
+
+pip install uv --break-system-packages
+
+echo "export PYTHONPATH="/home/$UNAME/rcdt_robotics/.venv/lib/python3.12/site-packages:$PYTHONPATH"" >> /home/$UNAME/.bashrc
+echo "export PATH="/home/$UNAME/rcdt_robotics/.venv/bin:$PATH"" >> /home/$UNAME/.bashrc
