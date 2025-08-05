@@ -15,9 +15,9 @@ sudo apt install -y \
 
 pip install uv 
 
-echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.10/site-packages:\$PYTHONPATH\"" \
+echo "export PYTHONPATH=\"/home/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages:$PYTHONPATH"" \
   >> /home/$UNAME/.bashrc
 
-echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
+echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:$PATH"" \
   >> /home/$UNAME/.bashrc
 

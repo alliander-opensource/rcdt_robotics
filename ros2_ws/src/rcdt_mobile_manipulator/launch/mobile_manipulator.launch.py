@@ -12,6 +12,9 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+scale_speed_arg = LaunchArgument(
+    "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -27,6 +30,7 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
     world = world_arg.string_value(context)
+    scale_speed = scale_speed_arg.float_value(context)
 
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_mobile_manipulator", ["launch"], "core.launch.py"),
@@ -39,6 +43,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     franka_controllers = RegisteredLaunchDescription(
         get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
     panther_controllers = RegisteredLaunchDescription(
@@ -68,7 +73,11 @@ def launch_setup(context: LaunchContext) -> list:
 
     joystick = RegisteredLaunchDescription(
         get_file_path("rcdt_joystick", ["launch"], "joystick.launch.py"),
-        launch_arguments={"robots": "franka panther"},
+        launch_arguments={
+            "simulation": str(use_sim),
+            "robots": "franka panther",
+            "scale_speed": str(scale_speed),
+        },
     )
 
     gripper_services = RegisteredLaunchDescription(
@@ -80,10 +89,10 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        SetParameter(name="use_sim_time", value=True),
+        SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context),
         Register.group(franka_controllers, context),
-        Register.group(panther_controllers, context),
+        Register.group(panther_controllers, context) if use_sim else SKIP,
         Register.group(gripper_services, context),
         Register.group(moveit, context),
         Register.group(joystick, context),
@@ -100,6 +109,7 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            scale_speed_arg.declaration,
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,

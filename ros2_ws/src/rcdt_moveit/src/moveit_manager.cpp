@@ -20,21 +20,18 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               "fr3_arm",
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               "/franka")),
-      moveit_visual_tools(node, "world", "/rviz_markers") {
+      moveit_visual_tools(node, "base", "/rviz_markers") {
 
+  moveit_visual_tools.loadMarkerPub(false);
   move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
 
   initialize_clients();
   initialize_services();
-
-  switch_servo_command_type("TWIST");
 };
 
 void MoveitManager::initialize_clients() {
   client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
-  switch_servo_type_client = client_node->create_client<ServoCommandType>(
-      "/franka/servo_node/switch_command_type");
   express_pose_in_other_frame_client =
       client_node->create_client<ExpressPoseInOtherFrame>(
           "/express_pose_in_other_frame");
@@ -168,26 +165,6 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
   }
   return true;
 };
-
-void MoveitManager::switch_servo_command_type(std::string command_type) {
-  auto request = std::make_shared<ServoCommandType::Request>();
-
-  try {
-    request->command_type = servo_command_types.at(command_type);
-  } catch (std::out_of_range) {
-    RCLCPP_ERROR(node->get_logger(),
-                 "Command type %s is not a valid option.}. Exit.",
-                 command_type.c_str());
-    return;
-  }
-  while (!switch_servo_type_client->wait_for_service(std::chrono::seconds(1))) {
-    RCLCPP_WARN(node->get_logger(),
-                "Servo node service not available. Waiting...");
-  }
-  auto future = switch_servo_type_client->async_send_request(request);
-  rclcpp::spin_until_future_complete(client_node, future);
-  auto response = future.get();
-}
 
 PoseStamped MoveitManager::change_frame_to_world(PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
