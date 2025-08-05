@@ -10,8 +10,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
 
   <xacro:macro
     name="panther_robot"
-    params="panther_version
-            wheel_config_file
+    params="wheel_config_file
             controller_config_file
             battery_config_file
             use_sim:=false
@@ -19,10 +18,6 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
             imu_rpy:='0.0 0.0 -1.57'
             namespace:=''
             connected_to:=''">
-    
-    <!-- Map params to args: -->
-    <xacro:arg name="use_sim" default="${use_sim}" />
-
     <xacro:if value="${use_sim}">
       <xacro:property name="imu_xyz" value="-0.195 0.010 0.085" />
       <xacro:property name="imu_rpy" value="0.000 -0.000 3.142" />
@@ -31,12 +26,13 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
     <xacro:property name="ns" value='${namespace + "/" if namespace else ""}' />
 
     <xacro:property name="wheel_config" value="${xacro.load_yaml(wheel_config_file)}" />
-    <xacro:property name="wheel_separation_x" value="0.44" />
+    <xacro:property name="wheelbase" value="0.44" />
+    <xacro:property name="wheel_mount_point_y" value="0.2575" />
 
     <!-- INCLUDE ROBOT PARTS DEFINITIONS -->
-    <xacro:include filename="$(find panther_description)/urdf/body.urdf.xacro" ns="body" />
+    <xacro:include filename="$(find husarion_ugv_description)/urdf/panther/base.urdf.xacro" ns="body" />
     <xacro:include filename="$(find rcdt_panther)/urdf/adapted/gazebo.urdf.xacro" ns="gazebo" />
-    <xacro:include filename="$(find panther_description)/urdf/wheel.urdf.xacro" ns="wheel" />
+    <xacro:include filename="$(find husarion_ugv_description)/urdf/common/wheel.urdf.xacro" ns="wheel" />
 
     <!-- BODY DECLARATION -->
     <xacro:body.body
@@ -46,36 +42,38 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
 
     <!-- WHEEL DECLARATION -->
     <xacro:wheel.wheel
-      wheel_config="${wheel_config}"
-      wheel_separation_x="${wheel_separation_x}"
+      config="${wheel_config}"
+      mount_point_x="${wheelbase/2.0}"
+      mount_point_y="${wheel_mount_point_y}"
       prefix="fl" />
 
     <xacro:wheel.wheel
-      wheel_config="${wheel_config}"
-      wheel_separation_x="${wheel_separation_x}"
+      config="${wheel_config}"
+      mount_point_x="${wheelbase/2.0}"
+      mount_point_y="${wheel_mount_point_y}"
       prefix="fr" />
 
     <xacro:wheel.wheel
-      wheel_config="${wheel_config}"
-      wheel_separation_x="${wheel_separation_x}"
+      config="${wheel_config}"
+      mount_point_x="${wheelbase/2.0}"
+      mount_point_y="${wheel_mount_point_y}"
       prefix="rl" />
 
     <xacro:wheel.wheel
-      wheel_config="${wheel_config}"
-      wheel_separation_x="${wheel_separation_x}"
+      config="${wheel_config}"
+      mount_point_x="${wheelbase/2.0}"
+      mount_point_y="${wheel_mount_point_y}"
       prefix="rr" />
 
     <ros2_control name="${ns}panther_system" type="system">
       <hardware>
         <xacro:if value="${use_sim}">
-          <plugin>panther_gazebo/GzPantherSystem</plugin>
+          <plugin>husarion_ugv_gazebo/EStopSystem</plugin>
           <param name="e_stop_initial_state">true</param>
         </xacro:if>
 
-        <xacro:unless value="$(arg use_sim)">
-          <plugin>panther_hardware_interfaces/PantherSystem</plugin>
-
-          <param name="panther_version">${panther_version}</param>
+        <xacro:unless value="${use_sim}">
+          <plugin>husarion_ugv_hardware_interfaces/PantherSystem</plugin>
 
           <param name="encoder_resolution">1600</param>
 
@@ -88,7 +86,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
           <!-- Max RPM speed set in the Roboteq driver (MXRPM parameter) -->
           <param name="max_rpm_motor_speed">3600.0</param>
 
-          <param name="can_interface_name">panther_can</param>
+          <param name="can_interface_name">robot_can</param>
           <param name="master_can_id">3</param>
           <param name="front_driver_can_id">1</param>
           <param name="rear_driver_can_id">2</param>
@@ -154,10 +152,10 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
       </xacro:if>
     </ros2_control>
 
-    <xacro:unless value="$(arg use_sim)">
+    <xacro:unless value="${use_sim}">
       <ros2_control name="${ns}imu" type="sensor">
         <hardware>
-          <plugin>panther_hardware_interfaces/PantherImuSensor</plugin>
+          <plugin>husarion_ugv_hardware_interfaces/PhidgetImuSensor</plugin>
           <param name="serial">-1</param>
           <param name="hub_port">0</param>
           <param name="data_interval_ms">8</param>
