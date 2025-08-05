@@ -5,27 +5,37 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
-export ROS_DISTRO=humble
+apt update
 
-sudo apt update
-sudo apt install ros-humble-zed-msgs
+UBUNTU_RELEASE_YEAR=22    
+CUDA_MAJOR=11             
+ZED_SDK_MAJOR=8
+ZED_SDK_MINOR=0
 
-cd /home/rcdt
+sudo apt-get update -y
+sudo apt-get install --no-install-recommends -y wget zstd udev libgomp1
 
-# Create your ROS 2 Workspace if you do not have one
-mkdir -p zed_ws/src/
-# Move to the `src` folder of the ROS 2 Workspace
-cd zed_ws/src/ 
-git clone https://github.com/stereolabs/zed-ros2-wrapper.git
-cd ..
-sudo apt update
-# Install the required dependencies
-rosdep install --from-paths src --ignore-src -r -y
-# Build the wrapper
-colcon build --symlink-install \
-  --packages-skip zed_components
-  
-# Setup the environment variables
-source /home/rcdt/.bashrc
-echo source $(pwd)/install/local_setup.bash >> ~/.bashrc
-echo "source /home/$UNAME/husarion_ws/install/setup.bash" >>/home/$UNAME/.bashrc
+wget -q --content-disposition --trust-server-names \
+     "https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
+
+
+installer=$(ls ZED_SDK*run)
+
+sudo chmod +x "$installer"
+
+sudo "./$installer" silent skip_tools skip_cuda
+
+rm "$installer"
+
+cd /home/$UNAME
+mkdir zed_ws
+cd /home/$UNAME/zed_ws
+git clone https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper
+
+rosdep install --from-paths src --ignore-src -r -y # install dependencies
+source /home/$UNAME/.bashrc
+
+colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
+echo "source /home/$UNAME/zed_ws/install/setup.bash" >>/home/$UNAME/.bashrc
+
+ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so
