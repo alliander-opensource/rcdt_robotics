@@ -18,7 +18,6 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
             imu_rpy:='0.0 0.0 -1.57'
             namespace:=''
             connected_to:=''">
-    
     <xacro:if value="${use_sim}">
       <xacro:property name="imu_xyz" value="-0.195 0.010 0.085" />
       <xacro:property name="imu_rpy" value="0.000 -0.000 3.142" />
