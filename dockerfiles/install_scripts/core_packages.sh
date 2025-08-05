@@ -31,5 +31,8 @@ apt install -y \
 
 pip install uv --break-system-packages
 
-echo "export PYTHONPATH="/home/$UNAME/rcdt_robotics/.venv/lib/python3.12/site-packages:$PYTHONPATH"" >> /home/$UNAME/.bashrc
-echo "export PATH="/home/$UNAME/rcdt_robotics/.venv/bin:$PATH"" >> /home/$UNAME/.bashrc
+echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.12/site-packages:\$PYTHONPATH\"" \
+  >> /home/$UNAME/.bashrc
+
+echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
+  >> /home/$UNAME/.bashrc
