@@ -42,6 +42,4 @@ RUN ./franka_lock_unlock.sh
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 
-# COPY ./install_scripts/zed.sh .
-# RUN ./zed.sh
 INCLUDE ./general/post_install.dockerfile
