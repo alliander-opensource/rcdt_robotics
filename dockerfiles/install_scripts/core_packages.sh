@@ -12,7 +12,8 @@ apt install -y \
     nano \
     htop \
     python3-pip \
-    git-lfs
+    git-lfs \
+    ros-dev-tools
 
 apt install -y \
     ros-jazzy-ros-gz \
