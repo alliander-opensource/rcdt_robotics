@@ -15,6 +15,7 @@ apt install -y \
     git-lfs
 
 apt install -y \
+    ros-jazzy-ros-gz \
     ros-jazzy-moveit \
     ros-jazzy-moveit-servo \
     ros-jazzy-moveit-visual-tools \
