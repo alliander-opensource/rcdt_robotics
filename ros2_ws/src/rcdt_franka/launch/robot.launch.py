@@ -34,7 +34,7 @@ def launch_setup(context: LaunchContext) -> list:
     username = os.getenv("FRANKA_USERNAME", "")
     password = os.getenv("FRANKA_PASSWORD", "")
 
-    if not hostname or not username or not password:
+    if (not hostname or not username or not password) and enable_lock_unlock:
         raise RuntimeError(
             """You must set FRANKA_HOSTNAME, FRANKA_USERNAME and FRANKA_PASSWORD
             in your environment if you want to enable the Franka Lock/Unlock
