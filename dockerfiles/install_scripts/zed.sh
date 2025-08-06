@@ -30,7 +30,7 @@ chmod +x "${installer}"
 
 echo "Installing ZED SDK from $installer"
 
-sudo "./$installer" silent skip_tools skip_cuda
+sudo "./$installer" silent skip_cuda
 
 rm "$installer"
 
@@ -46,3 +46,5 @@ colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
 echo "source /home/$UNAME/zed_ws/install/setup.bash" >>/home/$UNAME/.bashrc
 
 ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0 /usr/lib/x86_64-linux-gnu/libusb-1.0.so
+chmod o+rx /usr/local/zed /usr/local/zed/lib
+chmod a+r /usr/local/zed/lib/libsl_zed.so
