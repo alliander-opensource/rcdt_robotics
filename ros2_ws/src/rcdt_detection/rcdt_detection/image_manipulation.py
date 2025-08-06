@@ -5,39 +5,10 @@
 from math import ceil, floor
 
 import cv2
-import pyrealsense2 as rs2
 import torch
 from numpy import ndarray, uint8
 from rcdt_utilities import cv_utils
-from sensor_msgs.msg import CameraInfo, Image
-
-
-def camera_info_to_intrinsics(camera_info: CameraInfo) -> rs2.intrinsics:
-    """Calculate camera intrinsics for translating image to world coordinates.
-
-    Args:
-        camera_info (CameraInfo): The camera info message containing the camera parameters.
-
-    Returns:
-        rs2.intrinsics: The calculated camera intrinsics.
-    """
-    intrinsics = rs2.intrinsics()
-
-    intrinsics.width = camera_info.width
-    intrinsics.height = camera_info.height
-    intrinsics.ppx = camera_info.k[2]
-    intrinsics.ppy = camera_info.k[5]
-    intrinsics.fx = camera_info.k[0]
-    intrinsics.fy = camera_info.k[4]
-
-    if camera_info.distortion_model == "plumb_bob":
-        intrinsics.model = rs2.distortion.brown_conrady
-    elif camera_info.distortion_model == "equidistant":
-        intrinsics.model = rs2.distortion.kannala_brandt4
-
-    intrinsics.coeffs = list(camera_info.d)
-
-    return intrinsics
+from sensor_msgs.msg import Image
 
 
 def slice_image_to_stride(image: ndarray, stride: int = 32) -> ndarray:
