@@ -8,20 +8,27 @@ set -e
 apt update
 
 UBUNTU_RELEASE_YEAR=22    
-CUDA_MAJOR=11             
+CUDA_MAJOR=11
+CUDA_MINOR=8            
 ZED_SDK_MAJOR=5
 ZED_SDK_MINOR=0
+ZED_SDK_VERSION=5.0.3 
 
 sudo apt-get update -y
-sudo apt-get install --no-install-recommends -y wget zstd udev libgomp1
+sudo apt-get install --no-install-recommends -y zstd
 
-wget -q --content-disposition --trust-server-names \
-     "https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
+echo "Downloading ZED SDK for Ubuntu ${UBUNTU_RELEASE_YEAR} with CUDA ${CUDA_MAJOR}..."
 
+installer="ZED_SDK_Ubuntu${UBUNTU_RELEASE_YEAR}_cuda${CUDA_MAJOR}.${CUDA_MINOR}_v${ZED_SDK_VERSION}.zstd.run"
+url="https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/cu${CUDA_MAJOR}/ubuntu${UBUNTU_RELEASE_YEAR}"
 
-installer=$(ls ZED_SDK*run)
+echo "Downloading ${url}"
 
-sudo chmod +x "$installer"
+wget -qO "${installer}" "${url}"
+
+chmod +x "${installer}"
+
+echo "Installing ZED SDK from $installer"
 
 sudo "./$installer" silent skip_tools skip_cuda
 
@@ -32,7 +39,7 @@ mkdir zed_ws
 cd /home/$UNAME/zed_ws
 git clone https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper
 
-rosdep install --from-paths src --ignore-src -r -y # install dependencies
+rosdep install --from-paths src --rosdistro $ROS_DISTRO -y -r
 source /home/$UNAME/.bashrc
 
 colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
