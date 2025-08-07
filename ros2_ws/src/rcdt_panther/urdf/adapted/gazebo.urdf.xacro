@@ -55,8 +55,8 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <xacro:macro name="detachable_joint" params="connected_to:=''">
     <xacro:if value="${connected_to == 'franka'}">
       <gazebo>
-        <plugin filename="libignition-gazebo-detachable-joint-system.so"
-          name="ignition::gazebo::systems::DetachableJoint">
+        <plugin filename="gz-sim-detachable-joint-system"
+          name="gz::sim::systems::DetachableJoint">
           <parent_link>base_link</parent_link>
           <child_model>franka</child_model>
           <child_link>fr3_link0</child_link>
