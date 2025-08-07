@@ -23,7 +23,7 @@ install(
 
 # Shared folders:
 install(
-  DIRECTORY launch urdf meshes
+  DIRECTORY launch urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -33,6 +33,12 @@ RUN ./pyflow.sh
 COPY ./install_scripts/sensors.sh .
 RUN ./sensors.sh
 
+COPY ./install_scripts/zed_sdk.sh .
+RUN ./zed_sdk.sh
+
+COPY ./install_scripts/zed_wrapper.sh .
+RUN ./zed_wrapper.sh
+
 COPY ./install_scripts/sphinx.sh .
 RUN ./sphinx.sh
 
@@ -41,11 +47,5 @@ RUN ./franka_lock_unlock.sh
 
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
-
-COPY ./install_scripts/zed_sdk.sh .
-RUN ./zed_sdk.sh
-
-COPY ./install_scripts/zed_wrapper.sh .
-RUN ./zed_wrapper.sh
 
 INCLUDE ./general/post_install.dockerfile

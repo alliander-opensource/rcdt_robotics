@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
                        enable_gnss:=false
                        xyz:='0 0 0' rpy:='0 0 0' ">
 
-    <xacro:include filename="$(find rcdt_sensors)/urdf/zed_macro.urdf.xacro"/>
+    <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro"/>
 
     <xacro:zed_camera name="${device_namespace}"
                       model="${model}"
