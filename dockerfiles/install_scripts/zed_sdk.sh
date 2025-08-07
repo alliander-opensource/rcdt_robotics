@@ -1,34 +1,22 @@
-#!/usr/bin/env bash
+#!/bin/bash -i
 
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# install_zed.sh – non-interactive install of the ZED SDK on Ubuntu 22.04
-# Mirrors the logic that was previously baked into the Dockerfile layer.
+# Based on dockerfile of ZED-ros2-wrapper at: 
+# https://github.com/stereolabs/zed-ros2-wrapper/blob/e9f54907fbf41ee9ce5d54f3bb694af93dad8bb3/docker/Dockerfile.desktop-humble
 
-set -euo pipefail
+set -e
 
 ###  Customisable parameters 
-: "${UBUNTU_RELEASE_YEAR:=22}"      # 20 → 20.04, 22 → 22.04, …
-: "${CUDA_MAJOR:=11}"               # CUDA major version (11 or 12)
-: "${CUDA_MINOR:=8}"                # CUDA minor version (e.g. 8 → 11.8)
-: "${ZED_SDK_MAJOR:=5}"
-: "${ZED_SDK_MINOR:=0}"             # Full SDK version is "${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}"
-: "${TIMEZONE:=Europe/Paris}"       # Used only for the /etc/localtime line
-
-###  Sanity checks
-if   [[ $EUID -ne 0 ]]; then
-  echo "Please run as root (e.g. sudo ./install_zed.sh)" >&2
-  exit 1
-fi
-
-if ! command -v wget >/dev/null 2>&1; then
-  apt-get update -y && apt-get install -y wget
-fi
+UBUNTU_RELEASE_YEAR:=22      # 20 → 20.04, 22 → 22.04, …
+CUDA_MAJOR:=11               # CUDA major version (11 or 12)
+CUDA_MINOR:=8                # CUDA minor version (e.g. 8 → 11.8)
+ZED_SDK_MAJOR:=5
+ZED_SDK_MINOR:=0             # Full SDK version is "${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}"
 
 ###  CUDA “version.txt” marker 
-echo "$TIMEZONE" > /etc/localtime
 echo "CUDA Version ${CUDA_MAJOR}.${CUDA_MINOR}.0" > /usr/local/cuda/version.txt || true
 
 ###  System prerequisites
@@ -46,9 +34,9 @@ wget -q -O "${installer}" "${sdk_url}"
 chmod +x "${installer}"
 
 echo "Running installer …"
-./"${installer}" -- silent skip_cuda
+./"${installer}" -- silent 
 
-###  Post-install tidy-up
+###  Post-install
 
 ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0  /usr/lib/x86_64-linux-gnu/libusb-1.0.so
 
@@ -56,12 +44,8 @@ ln -sf /lib/x86_64-linux-gnu/libusb-1.0.so.0  /usr/lib/x86_64-linux-gnu/libusb-1
 chmod 755 /usr/local/zed/lib
 find /usr/local/zed/lib -type f -name 'libsl_*.so*' -exec chmod 644 {} +
 chmod -R u+rwX /usr/local/zed/resources /usr/local/zed/settings
+chmod o+rx /usr/local/zed /usr/local/zed/lib
+chmod a+r /usr/local/zed/lib/libsl_zed.so
 
 rm -f "${installer}"
-apt-get clean
 rm -rf /var/lib/apt/lists/*
-
-echo "✅  ZED SDK ${ZED_SDK_MAJOR}.${ZED_SDK_MINOR} installed successfully."
-echo "   • Libraries      : /usr/local/zed/lib"
-echo "   • Udev rules     : run   sudo /usr/local/zed/tools/install_udev_rules.sh"
-echo "   • Settings dir   : /usr/local/zed/settings  (must be writable)"
