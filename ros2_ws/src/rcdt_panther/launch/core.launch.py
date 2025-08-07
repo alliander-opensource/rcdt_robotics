@@ -18,6 +18,7 @@ child_arg = LaunchArgument("child", "", ["", "franka"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
+use_zed2i_arg = LaunchArgument("zed2i", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -34,6 +35,7 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
     use_velodyne = use_velodyne_arg.bool_value(context)
+    use_zed2i = use_zed2i_arg.bool_value(context)
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""
@@ -60,6 +62,7 @@ def launch_setup(context: LaunchContext) -> list:
             "positions": "0-0-0.2",
             "velodyne": str(use_velodyne),
             "load_gazebo_ui": str(load_gazebo_ui),
+            "use_zed2i": str(use_zed2i),
         },
     )
 
@@ -83,6 +86,7 @@ def generate_launch_description() -> LaunchDescription:
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
             use_velodyne_arg.declaration,
+            use_zed2i_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
