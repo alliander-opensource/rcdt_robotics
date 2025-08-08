@@ -60,6 +60,7 @@ convention = "google"
 [tool.pytest.ini_options]
 timeout = 90
 norecursedirs = ["install", "build", "log",".venv",".cache"]
+addopts = ["--ignore=/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py"] # Ignore realsense test due to gpu limitation in pipeline.
 
 [tool.ty.environment]
 extra-paths = [
