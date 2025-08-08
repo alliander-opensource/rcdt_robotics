@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 Based on:
-https://github.com/husarion/husarion_ugv_ros/blob/2.2.2/husarion_ugv_description/urdf/common/gazebo.urdf.xacro
+https://github.com/husarion/husarion_ugv_ros/blob/2.3.1/husarion_ugv_description/urdf/common/gazebo.urdf.xacro
 A copy of the original file is located in the /original directory.
 To compare the two files in VSCode, see:
 https://code.visualstudio.com/docs/editing/codebasics#_compare-files
@@ -44,8 +44,6 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
         <parameters>${config_file}</parameters>
         <ros>
           <namespace>${namespace}</namespace>
-          <xacro:include filename="$(find rcdt_gazebo)/urdf/remappings.urdf.xacro" />
-          <xacro:remappings />
         </ros>
       </plugin>
     </gazebo>
@@ -55,8 +53,8 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
   <xacro:macro name="detachable_joint" params="connected_to:=''">
     <xacro:if value="${connected_to == 'franka'}">
       <gazebo>
-        <plugin filename="libignition-gazebo-detachable-joint-system.so"
-          name="ignition::gazebo::systems::DetachableJoint">
+        <plugin filename="gz-sim-detachable-joint-system"
+          name="gz::sim::systems::DetachableJoint">
           <parent_link>base_link</parent_link>
           <child_model>franka</child_model>
           <child_link>fr3_link0</child_link>
@@ -77,7 +75,8 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
     </noise>
   </xacro:macro>
 
-  <!-- IMU specification: https://www.phidgets.com/?tier=3&catid=10&pcid=8&prodid=1025#Tab_Specifications -->
+  <!-- IMU specification:
+  https://www.phidgets.com/?tier=3&catid=10&pcid=8&prodid=1025#Tab_Specifications -->
   <xacro:macro name="imu" params="reference_frame namespace:=''">
 
     <xacro:property name="ns" value='${namespace + "/" if namespace else ""}' />
@@ -89,7 +88,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
         <topic>${ns}imu/data_raw</topic>
         <visualize>false</visualize>
         <enable_metrics>false</enable_metrics>
-        <ignition_frame_id>imu_link</ignition_frame_id>
+        <!-- <gz_frame_id>imu_link</gz_frame_id> -->
         <imu>
           <orientation_reference_frame>
             <localization>ENU</localization>

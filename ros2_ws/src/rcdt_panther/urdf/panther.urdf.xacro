@@ -11,7 +11,8 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="connected_to" default="" />
 
   <!-- Load panther: -->
-  <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro" ns="husarion" />
+  <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro"
+    ns="husarion" />
   <xacro:husarion.panther_robot
     use_sim="$(arg simulation)"
     wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
