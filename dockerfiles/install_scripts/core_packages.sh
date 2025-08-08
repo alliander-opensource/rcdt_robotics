@@ -17,6 +17,7 @@ apt install -y \
 
 apt install -y \
     ros-jazzy-ros-gz \
+    ros-jazzy-ros2-controllers \
     ros-jazzy-moveit \
     ros-jazzy-moveit-servo \
     ros-jazzy-moveit-visual-tools \
