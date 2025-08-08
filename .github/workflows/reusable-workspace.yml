@@ -43,4 +43,4 @@ jobs:
           cd ros2_ws
           source install/setup.bash
           echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          uv run pytest --ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py -s src/
+          uv run pytest -s src/
