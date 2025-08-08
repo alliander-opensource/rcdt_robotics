@@ -120,8 +120,6 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
           <parameters>$(find rcdt_gazebo)/config/controllers.yaml</parameters>
           <ros>
             <namespace>$(arg namespace)</namespace>
-            <xacro:include filename="$(find rcdt_gazebo)/urdf/remappings.urdf.xacro" />
-            <xacro:remappings />
           </ros>
         </plugin>
       </gazebo>
