@@ -172,6 +172,7 @@ class Register:
 
         self.is_started = False
         self.log: str
+        self.debug: bool = False
 
     @classmethod
     def on_start(
@@ -217,7 +218,11 @@ class Register:
 
     @classmethod
     def on_log(
-        cls, action: Node | ExecuteProcess, log: str, context: LaunchContext
+        cls,
+        action: Node | ExecuteProcess,
+        log: str,
+        context: LaunchContext,
+        debug: bool = False,
     ) -> LaunchDescription:
         """Registers the given action to be ready when logging the given log message.
 
@@ -233,6 +238,7 @@ class Register:
         """
         register = cls()
         register.log = log
+        register.debug = debug
         event_handler = RegisterEventHandler(
             OnProcessIO(target_action=action, on_stderr=register.process_io)
         )
@@ -250,7 +256,11 @@ class Register:
         """
         if self.is_started:
             return
+        if self.debug:
+            LOGGER.warning(f"\n\n{event.text.decode()}\n")
         if self.log in event.text.decode():
+            if self.debug:
+                LOGGER.warning("LOG FOUND!")
             self.started = True
             return Register.next()
 

@@ -120,7 +120,12 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         Register.on_start(gazebo, context),
-        Register.on_start(bridge, context),
+        Register.on_log(
+            bridge,
+            "Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
+            context,
+            debug=True,
+        ),
         *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
         Register.on_start(unpause_sim, context),
     ]
