@@ -5,7 +5,7 @@ SPDX-FileCopyrightText: Alliander N. V.
 SPDX-License-Identifier: Apache-2.0
 -->
 <sdf version="1.6">
-  <world name="empty">
+  <world name="table_with_1_brick">
     <!-- World plugin things-->
     <physics name="1ms" type="ode">
       <max_step_size>0.001</max_step_size>
@@ -30,7 +30,7 @@ SPDX-License-Identifier: Apache-2.0
     <plugin
       filename="gz-sim-sensors-system"
       name="gz::sim::systems::Sensors">
-      <render_engine>ogre2</render_engine>
+      <render_engine>ogre</render_engine>
     </plugin>
 
     <!-- Scene-->
