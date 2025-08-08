@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #Pull the base image:
-FROM osrf/ros:humble-desktop
+FROM rcdt/humble-cuda-full:latest
 ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV UID=1000
@@ -22,3 +22,5 @@ RUN apt update
 RUN echo "if test -f ~/.personal.bashrc; then\nsource ~/.personal.bashrc\nfi" >> /home/$UNAME/.bashrc
 RUN echo "if test -f ~/.env; then\nset -a && source ~/.env && set +a\nfi" >> /home/$UNAME/.bashrc
 RUN echo "source /opt/ros/humble/setup.bash" >> /home/$UNAME/.bashrc
+
+RUN rosdep update
