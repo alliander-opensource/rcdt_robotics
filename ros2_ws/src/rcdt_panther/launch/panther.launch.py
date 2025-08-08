@@ -15,6 +15,7 @@ world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
@@ -43,8 +44,8 @@ def launch_setup(context: LaunchContext) -> list:
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
 
-    if use_collision_monitor:
-        use_velodyne = True
+    if use_collision_monitor or use_nav2:
+        use_slam = True
 
     if use_slam:
         use_velodyne = True
@@ -129,6 +130,7 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
+            use_collision_monitor_arg.declaration,
             use_nav2_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

@@ -69,7 +69,6 @@ def launch_setup(context: LaunchContext) -> list:
             {"sub_topic": "/panther/joy"},
             {"pub_topic": "/panther/cmd_vel"},
             {"config_pkg": "rcdt_panther"},
-            {"stamped": False},
             {"scale": 1.0 if use_sim else scale_speed},
         ],
         namespace="panther",

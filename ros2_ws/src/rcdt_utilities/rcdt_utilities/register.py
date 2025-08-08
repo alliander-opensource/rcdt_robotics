@@ -168,10 +168,11 @@ class Register:
 
     def __init__(self):
         """Initializes the Register class with default values."""
-        self.action: Node | ExecuteProcess
+        self.action: Node | ExecuteProcess | None = None
 
         self.is_started = False
         self.log: str
+        self.buffer: str = "\n"
 
     @classmethod
     def on_start(
@@ -250,7 +251,14 @@ class Register:
         """
         if self.is_started:
             return
-        if self.log in event.text.decode():
+
+        buffer = event.text.decode()
+        if self.buffer.endswith("\n"):
+            self.buffer = buffer
+        else:
+            self.buffer += buffer
+
+        if self.log in self.buffer:
             self.started = True
             return Register.next()
 

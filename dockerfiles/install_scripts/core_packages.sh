@@ -6,18 +6,34 @@
 
 set -e
 
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 apt update
 apt install -y \
-    ros-humble-ament-cmake-clang-format \
-    ros-humble-ros2-controllers \
-    ros-humble-ros2-control \
-    ros-humble-ros2-control-test-assets \
-    ros-humble-controller-manager \
-    ros-humble-control-msgs \
-    ros-humble-control-toolbox \
-    ros-humble-xacro \
-    ros-humble-rqt-tf-tree \
-    ros-humble-rmw-cyclonedds-cpp \
+    nano \
     htop \
     python3-pip \
-    git-lfs 
+    git-lfs \
+    ros-dev-tools
+
+apt install -y \
+    ros-jazzy-ros-gz \
+    ros-jazzy-ros2-controllers \
+    ros-jazzy-moveit \
+    ros-jazzy-moveit-servo \
+    ros-jazzy-moveit-visual-tools \
+    ros-jazzy-navigation2 \
+    ros-jazzy-nav2-bringup \
+    ros-jazzy-slam-toolbox \
+    ros-jazzy-realsense2-camera \
+    ros-jazzy-realsense2-description \
+    ros-jazzy-velodyne-description \
+    ros-jazzy-launch-pytest \
+    ros-jazzy-rmw-cyclonedds-cpp
+
+pip install uv --break-system-packages
+
+echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.12/site-packages:\$PYTHONPATH\"" \
+  >> /home/$UNAME/.bashrc
+
+echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
+  >> /home/$UNAME/.bashrc
