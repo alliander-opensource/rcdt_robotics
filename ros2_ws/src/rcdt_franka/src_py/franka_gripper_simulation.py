@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
-from control_msgs.action import GripperCommand
+from control_msgs.action import ParallelGripperCommand
 from franka_msgs.action import Grasp, Homing, Move
 from rcdt_utilities.launch_utils import spin_executor
 from rclpy.action import ActionClient, ActionServer
@@ -23,7 +23,7 @@ class GripperActionControllerClient(Node):
         """Initialize the Gripper Action Controller Client."""
         super().__init__("gripper_action_controller_client")
         self.client = ActionClient(
-            self, GripperCommand, "/franka/gripper_action_controller/gripper_cmd"
+            self, ParallelGripperCommand, "/franka/gripper_action_controller/gripper_cmd"
         )
 
     def move(self, width: float) -> bool:
@@ -35,11 +35,11 @@ class GripperActionControllerClient(Node):
         Returns:
             bool: True if the gripper reached the goal, False otherwise.
         """
-        goal = GripperCommand.Goal()
-        goal.command.position = self.respect_limits(width)
+        goal = ParallelGripperCommand.Goal()
+        goal.command.position = [self.respect_limits(width)]
         self.client.wait_for_server()
         result = self.client.send_goal(goal)
-        result: GripperCommand.Impl.GetResultService.Response
+        result: ParallelGripperCommand.Impl.GetResultService.Response
         return result.result.reached_goal
 
     def grasp(self, width: float, max_effort: float) -> bool:
@@ -52,12 +52,12 @@ class GripperActionControllerClient(Node):
         Returns:
             bool: True if the gripper reached the goal or stalled, False otherwise.
         """
-        goal = GripperCommand.Goal()
-        goal.command.position = self.respect_limits(width)
-        goal.command.max_effort = max_effort
+        goal = ParallelGripperCommand.Goal()
+        goal.command.position = [self.respect_limits(width)]
+        goal.command.effort = [max_effort]
         self.client.wait_for_server()
         result = self.client.send_goal(goal)
-        result: GripperCommand.Impl.GetResultService.Response
+        result: ParallelGripperCommand.Impl.GetResultService.Response
         return result.result.reached_goal or result.result.stalled
 
     @staticmethod

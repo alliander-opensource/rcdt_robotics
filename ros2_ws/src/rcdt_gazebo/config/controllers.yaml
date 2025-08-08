@@ -16,7 +16,7 @@ franka:
         type: joint_trajectory_controller/JointTrajectoryController
 
       gripper_action_controller:
-        type: position_controllers/GripperActionController
+        type: parallel_gripper_action_controller/GripperActionController
 
   fr3_arm_controller:
     ros__parameters:
