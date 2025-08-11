@@ -36,8 +36,10 @@ def wait_for_nodes_to_shutdown(test_node: Node) -> None:
         node_names = list({active_node.full_name for active_node in active_nodes})
         if node_names == ["/test_node"]:
             break
-        print(f"Waiting for all nodes to shut down, currently active: {node_names}")
-        time.sleep(5)
+        test_node.get_logger().info(
+            f"Waiting for all nodes to shut down, currently active: {node_names}"
+        )
+        time.sleep(3)
 
 
 @pytest.fixture(scope="module")
