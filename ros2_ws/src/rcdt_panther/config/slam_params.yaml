@@ -15,7 +15,7 @@ slam_toolbox:
     # ROS Parameters
     odom_frame: panther/odom
     map_frame: map
-    base_frame: panther/base_link
+    base_frame: panther/base_footprint
     scan_topic: panther/velodyne/scan
     use_map_saver: true
     mode: mapping #localization
