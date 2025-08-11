@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+source /home/$UNAME/.bashrc
 apt update
 
 #Install husarion_ugv_ros: https://github.com/husarion/husarion_ugv_ros
@@ -18,8 +19,5 @@ vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_de
 rosdep update --rosdistro $ROS_DISTRO
 rosdep install --from-paths src -y -i
 
-source /home/$UNAME/.bashrc
-
 colcon build --symlink-install --packages-up-to husarion_ugv --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
-
 echo "source /home/$UNAME/husarion_ws/install/setup.bash" >>/home/$UNAME/.bashrc
