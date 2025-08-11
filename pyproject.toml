@@ -22,6 +22,7 @@ dependencies = [
     "numpy<2.0",
     "opencv-python>=4.11.0.86",
     "pre-commit>=4.2.0",
+    "psutil>=7.0.0",
     "pydoclint>=0.6.6",
     "pyrealsense2>=2.56.5.9235",
     "pytest<8.4.0",
