@@ -29,6 +29,7 @@ apt install -y \
     ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
     ros-$ROS_DISTRO-ros-gz \
     ros-$ROS_DISTRO-ros2-controllers \
+    ros-$ROS_DISTRO-rqt-tf-tree \
     ros-$ROS_DISTRO-slam-toolbox \
     ros-$ROS_DISTRO-velodyne \
     ros-$ROS_DISTRO-velodyne-description
