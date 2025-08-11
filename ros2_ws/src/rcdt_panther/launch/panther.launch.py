@@ -43,8 +43,8 @@ def launch_setup(context: LaunchContext) -> list:
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
 
-    if use_collision_monitor:
-        use_velodyne = True
+    if use_collision_monitor or use_nav2:
+        use_slam = True
 
     if use_slam:
         use_velodyne = True
@@ -150,6 +150,7 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
+            use_collision_monitor_arg.declaration,
             use_nav2_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

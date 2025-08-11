@@ -41,7 +41,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${robot_namespace}/${device_namespace}/color/image_raw</topic>
           <visualize>false</visualize>
 
-          <ignition_frame_id>${robot_namespace}/${device_namespace}/${name}_${align}_optical_frame</ignition_frame_id>
+          <gz_frame_id>${robot_namespace}/${device_namespace}/${name}_${align}_optical_frame</gz_frame_id>
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov>
             <image>
@@ -63,7 +63,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${robot_namespace}/${device_namespace}/depth/image_rect_raw_float</topic>
           <visualize>false</visualize>
 
-          <ignition_frame_id>${robot_namespace}/${device_namespace}/${name}_${align}_optical_frame</ignition_frame_id>
+          <gz_frame_id>${robot_namespace}/${device_namespace}/${name}_${align}_optical_frame</gz_frame_id>
           <camera>
             <horizontal_fov>${69.0/180.0*pi}</horizontal_fov> <!-- Using color FOV, to avoid align. -->
             <image>

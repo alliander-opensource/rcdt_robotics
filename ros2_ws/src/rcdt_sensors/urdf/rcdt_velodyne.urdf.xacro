@@ -80,7 +80,7 @@ Based on:
         <topic>${namespace}/scan</topic>
         <visualize>false</visualize>
 
-        <ignition_frame_id>${namespace}/lidar</ignition_frame_id>
+        <gz_frame_id>${namespace}/lidar</gz_frame_id>
         <frame_id>${namespace}/lidar</frame_id>
 
         <ray>
