@@ -9,9 +9,9 @@
 
 set -e
 
-UBUNTU_RELEASE_YEAR=22      
-CUDA_MAJOR=11              
-CUDA_MINOR=8                
+UBUNTU_RELEASE_YEAR=24      
+CUDA_MAJOR=12              
+CUDA_MINOR=9                
 ZED_SDK_MAJOR=5
 ZED_SDK_MINOR=0             
 
