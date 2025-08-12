@@ -15,7 +15,7 @@ world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
-use_nav2_arg = LaunchArgument("nav2", True, [True, False])
+use_nav2_arg = LaunchArgument("nav2", False, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
