@@ -50,7 +50,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     robots = ["panther"]
-    positions = ["0-0-0"]
+    positions = ["0-0-0.2"]
     if child == "velodyne":
         robots.append("velodyne")
         positions.append("0-0-0.35")
