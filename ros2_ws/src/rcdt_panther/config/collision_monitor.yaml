@@ -59,11 +59,11 @@ collision_monitor:
     observation_sources: ["pointcloud"]
     scan:
       type: "scan"
-      topic: "panther/velodyne/scan"
+      topic: "/velodyne/scan"
       enabled: True
     pointcloud:
       type: "pointcloud"
-      topic: "panther/velodyne/scan/points"
+      topic: "/velodyne/scan/points"
       min_height: 0.1
       max_height: 1.0
       enabled: True
