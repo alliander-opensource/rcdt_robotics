@@ -69,7 +69,7 @@ To use the ZED 2i camera, ssh into the *ThinkStation*. Here you can find the clo
 cd ~/zed-docker/demo;
 xhost local:root;
 export ZED_IMAGE=husarion/zed-desktop:humble;
-export CAMERA_MODEL=zed2;
+export CAMERA_MODEL=zed2i;
 docker compose up zed;
 ```
 

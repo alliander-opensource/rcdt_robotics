@@ -22,6 +22,8 @@ services:
       - "../pyproject.toml:/home/rcdt/pyproject.toml"
       - "../.config:/home/rcdt/.config"
       - "/dev:/dev"
+      - "${HOME}/zed_resources:/usr/local/zed/resources"
+      - "${HOME}/zed_settings:/usr/local/zed/settings"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"

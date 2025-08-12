@@ -17,6 +17,12 @@ RUN ./husarion_ugv_ros.sh
 COPY ./install_scripts/franka_lock_unlock.sh .
 RUN ./franka_lock_unlock.sh
 
+COPY ./install_scripts/zed_sdk.sh .
+RUN ./zed_sdk.sh
+
+COPY ./install_scripts/zed_wrapper.sh .
+RUN ./zed_wrapper.sh
+
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 

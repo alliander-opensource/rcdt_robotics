@@ -18,6 +18,7 @@ robots_arg = LaunchArgument("robots", "")
 positions_arg = LaunchArgument("positions", "0-0-0")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
+use_zed2i_arg = LaunchArgument("zed2i", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -38,6 +39,7 @@ def launch_setup(context: LaunchContext) -> list:
     positions = positions_arg.string_value(context).split(" ")
     use_realsense = use_realsense_arg.bool_value(context)
     use_velodyne = use_velodyne_arg.bool_value(context)
+    use_zed2i = use_zed2i_arg.bool_value(context)
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
@@ -70,6 +72,16 @@ def launch_setup(context: LaunchContext) -> list:
             [
                 "/panther/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
                 "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+            ]
+        )
+
+    if use_zed2i:
+        bridge_topics.extend(
+            [
+                "/zed/zed_node/rgb/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/zed/zed_node/rgb/image_rect_color@sensor_msgs/msg/Image@gz.msgs.Image",
+                "/zed/zed_node/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                "/zed/zed_node/depth/depth_registered@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
 
@@ -144,6 +156,7 @@ def generate_launch_description() -> LaunchDescription:
             positions_arg.declaration,
             use_realsense_arg.declaration,
             use_velodyne_arg.declaration,
+            use_zed2i_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
