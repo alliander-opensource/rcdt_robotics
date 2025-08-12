@@ -28,8 +28,7 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
 
-    namespace = "panther"
-    device = "velodyne"
+    namespace = "velodyne"
     frame_prefix = namespace + "/" if namespace else ""
 
     xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro")
@@ -38,7 +37,7 @@ def launch_setup(context: LaunchContext) -> list:
         package="robot_state_publisher",
         executable="robot_state_publisher",
         namespace="velodyne",
-        parameters=[velodyne_description, {"frame_prefix": "velodyne/"}],
+        parameters=[velodyne_description, {"frame_prefix": frame_prefix}],
     )
 
     velodyne_driver_node = Node(
@@ -51,7 +50,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "frame_id": frame_prefix + "velodyne",
             }
         ],
-        namespace=namespace + "/" + device,
+        namespace=namespace,
     )
 
     velodyne_transform_node = Node(
@@ -68,7 +67,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "max_range": 130.0,
             }
         ],
-        namespace=namespace + "/" + device,
+        namespace=namespace,
     )
 
     velodyne_laserscan_node = Node(
@@ -81,7 +80,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "resolution": 0.007,
             }
         ],
-        namespace=namespace + "/" + device,
+        namespace=namespace,
     )
 
     static_transform_publisher = Node(
