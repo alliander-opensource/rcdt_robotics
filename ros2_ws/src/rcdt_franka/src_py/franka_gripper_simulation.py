@@ -23,7 +23,9 @@ class GripperActionControllerClient(Node):
         """Initialize the Gripper Action Controller Client."""
         super().__init__("gripper_action_controller_client")
         self.client = ActionClient(
-            self, ParallelGripperCommand, "/franka/gripper_action_controller/gripper_cmd"
+            self,
+            ParallelGripperCommand,
+            "/franka/gripper_action_controller/gripper_cmd",
         )
 
     def move(self, width: float) -> bool:

@@ -172,6 +172,7 @@ class Register:
 
         self.is_started = False
         self.log: str
+        self.buffer: str = "\n"
 
     @classmethod
     def on_start(
@@ -250,7 +251,14 @@ class Register:
         """
         if self.is_started:
             return
-        if self.log in event.text.decode():
+
+        buffer = event.text.decode()
+        if self.buffer.endswith("\n"):
+            self.buffer = buffer
+        else:
+            self.buffer += buffer
+
+        if self.log in self.buffer:
             self.started = True
             return Register.next()
 

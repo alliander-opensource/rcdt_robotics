@@ -5,30 +5,32 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+source /home/$UNAME/.bashrc
+apt update
 
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-apt update
 apt install -y \
-    nano \
-    htop \
-    python3-pip \
+    flake8 \
     git-lfs \
-    ros-dev-tools
+    htop \
+    nano \
+    python3-pip
 
 apt install -y \
-    ros-jazzy-ros-gz \
-    ros-jazzy-ros2-controllers \
-    ros-jazzy-moveit \
-    ros-jazzy-moveit-servo \
-    ros-jazzy-moveit-visual-tools \
-    ros-jazzy-navigation2 \
-    ros-jazzy-nav2-bringup \
-    ros-jazzy-slam-toolbox \
-    ros-jazzy-realsense2-camera \
-    ros-jazzy-realsense2-description \
-    ros-jazzy-velodyne-description \
-    ros-jazzy-launch-pytest \
-    ros-jazzy-rmw-cyclonedds-cpp
+    ros-$ROS_DISTRO-launch-pytest \
+    ros-$ROS_DISTRO-moveit \
+    ros-$ROS_DISTRO-moveit-servo \
+    ros-$ROS_DISTRO-moveit-visual-tools \
+    ros-$ROS_DISTRO-navigation2 \
+    ros-$ROS_DISTRO-nav2-bringup \
+    ros-$ROS_DISTRO-plotjuggler-ros \
+    ros-$ROS_DISTRO-realsense2-camera \
+    ros-$ROS_DISTRO-realsense2-description \
+    ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
+    ros-$ROS_DISTRO-ros-gz \
+    ros-$ROS_DISTRO-ros2-controllers \
+    ros-$ROS_DISTRO-slam-toolbox \
+    ros-$ROS_DISTRO-velodyne-description
 
 pip install uv --break-system-packages
 
