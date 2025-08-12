@@ -4,7 +4,6 @@
 
 """Global pytest fixtures for ROS 2 integration testing."""
 
-import time
 from typing import Iterator
 
 import pytest
@@ -12,7 +11,6 @@ import rclpy
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
 from rclpy.node import Node
-from ros2node.api import get_node_names
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -22,24 +20,6 @@ def pytest_addoption(parser: Parser) -> None:
         parser (Parser): The pytest parser to add options to.
     """
     parser.addoption("--simulation", action="store", default="True")
-
-
-@pytest.fixture(scope="module", autouse=True)
-def wait_for_nodes_to_shutdown(test_node: Node) -> None:
-    """Wait for all nodes to shut down before starting tests.
-
-    Args:
-        test_node (Node): The test node, used to check for active nodes.
-    """
-    while True:
-        active_nodes = get_node_names(node=test_node)
-        node_names = list({active_node.full_name for active_node in active_nodes})
-        if node_names == ["/test_node"]:
-            break
-        test_node.get_logger().info(
-            f"Waiting for all nodes to shut down, currently active: {node_names}"
-        )
-        time.sleep(3)
 
 
 @pytest.fixture(scope="module")

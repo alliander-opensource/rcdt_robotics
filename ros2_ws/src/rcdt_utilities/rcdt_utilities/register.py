@@ -97,9 +97,6 @@ class Register:
         Args:
             *_ (Any): Ignored. Additional arguments from `OnProcessStart` or `OnProcessExit`.
 
-        Raises:
-            IndexError: If there are not enough registered actions to start.
-
         Returns:
             LaunchDescription: A launch description containing the next action to start, or an empty launch description if all actions have been started.
         """
@@ -111,10 +108,6 @@ class Register:
                 Register.all_started = True
                 Register.reset()
                 return LaunchDescription([])
-            if not (len(Register.register) > 1):
-                raise IndexError(
-                    f"Expected at least 2 registered actions, but got {len(Register.register)}."
-                )
             item = Register.register.pop(1)
         log_progress(item.action)
         return LaunchDescription([item.action])
