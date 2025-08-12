@@ -17,7 +17,6 @@ world_arg = LaunchArgument("world", "empty_camera.sdf")
 robots_arg = LaunchArgument("robots", "")
 positions_arg = LaunchArgument("positions", "0-0-0")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
-use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -37,7 +36,6 @@ def launch_setup(context: LaunchContext) -> list:
     robots = robots_arg.string_value(context).split(" ")
     positions = positions_arg.string_value(context).split(" ")
     use_realsense = use_realsense_arg.bool_value(context)
-    use_velodyne = use_velodyne_arg.bool_value(context)
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
@@ -46,7 +44,7 @@ def launch_setup(context: LaunchContext) -> list:
         raise ValueError("sdf file should contain a world attribute with a name.")
     else:
         world_name = world_attribute.attrib.get("name")
-    cmd = ["ign", "gazebo", sdf_file]
+    cmd = ["gz", "sim", sdf_file]
     if not load_gazebo_ui:
         cmd.append("-s")
     gazebo = ExecuteProcess(
@@ -55,7 +53,7 @@ def launch_setup(context: LaunchContext) -> list:
         additional_env=GazeboRosPaths.get_env(),
     )
 
-    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock"]
+    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"]
     if use_realsense:
         bridge_topics.extend(
             [
@@ -65,11 +63,11 @@ def launch_setup(context: LaunchContext) -> list:
                 "/franka/realsense/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
-    if use_velodyne:
+    if "velodyne" in robots:
         bridge_topics.extend(
             [
-                "/panther/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+                "/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                "/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
 
@@ -102,14 +100,14 @@ def launch_setup(context: LaunchContext) -> list:
 
     unpause_sim = ExecuteProcess(
         cmd=[
-            "ign",
+            "gz",
             "service",
             "-s",
             f"/world/{world_name}/control",
             "--reqtype",
-            "ignition.msgs.WorldControl",
+            "gz.msgs.WorldControl",
             "--reptype",
-            "ignition.msgs.Boolean",
+            "gz.msgs.Boolean",
             "--timeout",
             "3000",
             "--req",
@@ -122,7 +120,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(gazebo, context),
         Register.on_log(
             bridge,
-            "Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
+            "Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
             context,
         ),
         *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
@@ -143,7 +141,6 @@ def generate_launch_description() -> LaunchDescription:
             robots_arg.declaration,
             positions_arg.declaration,
             use_realsense_arg.declaration,
-            use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

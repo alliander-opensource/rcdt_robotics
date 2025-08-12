@@ -122,12 +122,38 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_base_link:
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: /panther
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /velodyne/robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        velodyne_lidar:
+        lidar:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -136,7 +162,7 @@ Visualization Manager:
         Inertia: false
         Mass: false
       Name: RobotModel
-      TF Prefix: /panther
+      TF Prefix: velodyne
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -170,7 +196,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /panther/velodyne/scan/points
+        Value: /velodyne/scan/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -220,7 +246,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.8377578258514404
+      Distance: 7.152005672454834
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -235,10 +261,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.32539844512939453
+      Pitch: 0.7303981781005859
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.965397834777832
+      Yaw: 0.9753978252410889
     Saved: ~
 Window Geometry:
   Displays:
@@ -256,5 +282,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 360
+  X: 328
   Y: 0

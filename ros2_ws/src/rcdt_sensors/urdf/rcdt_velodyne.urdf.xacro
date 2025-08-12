@@ -17,8 +17,6 @@ Based on:
     params="
     *origin 
     namespace
-    parent:=cover_link 
-    name:=velodyne 
     update_rate:=10 
     lasers:=16 
     samples:=1875 
@@ -28,13 +26,7 @@ Based on:
     max_angle:=${M_PI}
     ">
 
-    <joint name="${name}_base_mount_joint" type="fixed">
-      <xacro:insert_block name="origin" />
-      <parent link="${parent}" />
-      <child link="${name}_base_link" />
-    </joint>
-
-    <link name="${name}_base_link">
+    <link name="base_link">
       <inertial>
         <mass value="0.83" />
         <origin xyz="0 0 0.03585" />
@@ -60,13 +52,13 @@ Based on:
       </collision>
     </link>
 
-    <joint name="${name}_base_scan_joint" type="fixed">
+    <joint name="base_scan_joint" type="fixed">
       <origin xyz="0 0 0.0377" rpy="0 0 0" />
-      <parent link="${name}_base_link" />
-      <child link="${name}_lidar" />
+      <parent link="base_link" />
+      <child link="lidar" />
     </joint>
 
-    <link name="${name}_lidar">
+    <link name="lidar">
       <inertial>
         <mass value="0.01" />
         <origin xyz="0 0 0" />
@@ -80,16 +72,16 @@ Based on:
       </visual>
     </link>
 
-    <gazebo reference="${name}_lidar">
-      <sensor type="gpu_lidar" name="${name}">
+    <gazebo reference="lidar">
+      <sensor type="gpu_lidar" name="${namespace}">
         <always_on>true</always_on>
         <update_rate>${update_rate}</update_rate>
 
-        <topic>${namespace}/${name}/scan</topic>
+        <topic>${namespace}/scan</topic>
         <visualize>false</visualize>
 
-        <ignition_frame_id>${namespace}/${name}_lidar</ignition_frame_id>
-        <frame_id>${namespace}/${name}_lidar</frame_id>
+        <gz_frame_id>${namespace}/lidar</gz_frame_id>
+        <frame_id>${namespace}/lidar</frame_id>
 
         <ray>
           <scan>
@@ -121,4 +113,8 @@ Based on:
     </gazebo>
 
   </xacro:macro>
+
+  <xacro:VLP-16 namespace="velodyne">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:VLP-16>
 </robot>
