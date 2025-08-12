@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", True, [True, False])
+enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -34,7 +34,7 @@ def launch_setup(context: LaunchContext) -> list:
     username = os.getenv("FRANKA_USERNAME", "")
     password = os.getenv("FRANKA_PASSWORD", "")
 
-    if not hostname or not username or not password:
+    if (not hostname or not username or not password) and enable_lock_unlock:
         raise RuntimeError(
             """You must set FRANKA_HOSTNAME, FRANKA_USERNAME and FRANKA_PASSWORD
             in your environment if you want to enable the Franka Lock/Unlock

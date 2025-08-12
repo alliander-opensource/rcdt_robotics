@@ -5,7 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
-
+source /home/$UNAME/.bashrc
 apt update
+
 apt install -y libxcb-cursor-dev
 pip install git+https://github.com/alliander-opensource/PyFlow.git@master
