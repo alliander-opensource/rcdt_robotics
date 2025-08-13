@@ -4,66 +4,99 @@
 
 collision_monitor:
   ros__parameters:
-    use_sim_time: True
-    base_frame_id: "panther/base_link"
+    base_frame_id: "panther/base_footprint"
     odom_frame_id: "panther/odom"
     cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
+    state_topic: "collision_monitor_state"
     transform_tolerance: 0.5
     source_timeout: 5.0
     base_shift_correction: True
     stop_pub_timeout: 2.0
-    # Polygons represent zone around the robot for "stop" and "slowdown" action types,
+    # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
     # and robot footprint for "approach" action type.
-    # Footprint could be "polygon" type with dynamically set footprint from footprint_topic
-    # or "circle" type with static footprint set by radius. "footprint_topic" parameter
+    # (1) Footprint could be "polygon" type with dynamically set footprint from footprint_topic
+    # (2) "circle" type with static footprint set by radius. "footprint_topic" parameter
     # to be ignored in circular case.
-    polygons: ["PolygonSlower", "PolygonSlow"]
+    # (3) "velocity_polygon" type with dynamically set polygon from velocity_polygons
+    polygons: ["PolygonStopForward", "PolygonSlow", "PolygonSlower", "VelocityPolygonStop"]
+
+    PolygonStopForward:
+      type: "polygon"
+      # Only front half of robot
+      points: "[[0.35, 0.35], [0.35, -0.35], [-0.35, -0.35], [-0.35, 0.35]]"
+      action_type: "stop"
+      min_points: 4
+      visualize: True
+      polygon_pub_topic: "polygon_stop_forward"
+      enabled: False
+
+    PolygonSlow:
+      type: "polygon"
+      points: "[[-1.0, 0.65], [1.0, 0.65], [1.0, -0.65], [-1.0, -0.65]]"
+      action_type: "slowdown"
+      min_points: 4
+      slowdown_ratio: 0.3
+      visualize: True
+      polygon_pub_topic: "polygon_slowdown"
+      enabled: True
+
     PolygonSlower:
       type: "polygon"
-      points: [
-        -0.7,  0.55, 
-         0.7,  0.55, 
-         0.7, -0.55, 
-        -0.7, -0.55
-        ]
+      points: "[[-1.5, 0.9], [1.5, 0.9], [1.5, -0.9], [-1.5, -0.9]]"
       action_type: "slowdown"
-      max_points: 10
-      slowdown_ratio: 0.1
+      min_points: 4
+      slowdown_ratio: 0.7
       visualize: True
       polygon_pub_topic: "polygon_slower"
       enabled: True
-    PolygonSlow:
-      type: "polygon"
-      points: [
-        -1.2,  0.75, 
-         1.2,  0.75,
-         1.2, -0.75, 
-        -1.2, -0.75
-        ]
-      action_type: "slowdown"
-      max_points: 10
-      slowdown_ratio: 0.3
+
+    VelocityPolygonStop:
+      type: "velocity_polygon"
+      action_type: "stop"
+      min_points: 6
       visualize: True
-      polygon_pub_topic: "polygon_slow"
       enabled: True
-    FootprintApproach:
-      type: "polygon"
-      action_type: "approach"
-      footprint_topic: "/local_costmap/published_footprint"
-      time_before_collision: 2.0
-      simulation_time_step: 0.1
-      max_points: 5
-      visualize: False
-      enabled: True
+      polygon_pub_topic: "velocity_polygon_stop"
+      velocity_polygons: ["rotation", "translation_forward", "translation_backward", "stopped"]
+      holonomic: false
+      rotation:
+        points: "[[0.55, 0.55], [0.55, -0.55], [-0.55, -0.55], [-0.55, 0.55]]"
+        linear_min: 0.0
+        linear_max: 0.05
+        theta_min: -1.0
+        theta_max: 1.0
+
+      translation_forward:
+        points: "[[0.7, 0.55], [0.7, -0.55], [-0.4, -0.55], [-0.4, 0.55]]"
+        linear_min: 0.0
+        linear_max: 1.0
+        theta_min: -1.0
+        theta_max: 1.0
+
+      translation_backward:
+        points: "[[0.4, 0.55], [0.4, -0.55], [-0.7, -0.55], [-0.7, 0.55]]"
+        linear_min: -1.0
+        linear_max: 0.0
+        theta_min: -1.0
+        theta_max: 1.0
+
+      stopped:
+        points: "[[0.5, 0.5], [0.5, -0.5], [-0.5, -0.5], [-0.5, 0.5]]"
+        linear_min: -1.0
+        linear_max: 1.0
+        theta_min: -1.0
+        theta_max: 1.0
+
+
     observation_sources: ["pointcloud"]
     scan:
       type: "scan"
-      topic: "/velodyne/scan"
+      topic: "scan"
       enabled: True
     pointcloud:
       type: "pointcloud"
       topic: "/velodyne/scan/points"
       min_height: 0.1
-      max_height: 1.0
+      max_height: 0.5
       enabled: True

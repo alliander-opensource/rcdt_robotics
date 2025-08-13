@@ -61,7 +61,6 @@ def launch_setup(context: LaunchContext) -> list:
             "robots": " ".join(robots),
             "positions": " ".join(positions),
             "load_gazebo_ui": str(load_gazebo_ui),
-            "positions": positions,
         },
     )
 
