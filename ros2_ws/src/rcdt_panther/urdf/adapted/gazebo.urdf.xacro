@@ -61,6 +61,16 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
         </plugin>
       </gazebo>
     </xacro:if>
+    <xacro:if value="${connected_to == 'velodyne'}">
+      <gazebo>
+        <plugin filename="libignition-gazebo-detachable-joint-system.so"
+          name="ignition::gazebo::systems::DetachableJoint">
+          <parent_link>base_link</parent_link>
+          <child_model>VLP-16</child_model>
+          <child_link>base_link</child_link>
+        </plugin>
+      </gazebo>
+    </xacro:if>
   </xacro:macro>
 
   <!-- Gauss noise macro -->
