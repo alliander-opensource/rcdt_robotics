@@ -67,6 +67,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "max_range": 130.0,
             }
         ],
+        remappings=[("velodyne_points", "scan/points")],
         namespace=namespace,
     )
 
@@ -80,6 +81,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "resolution": 0.007,
             }
         ],
+        remappings=[("velodyne_points", "scan/points")],
         namespace=namespace,
     )
 
@@ -88,11 +90,15 @@ def launch_setup(context: LaunchContext) -> list:
         executable="static_transform_publisher",
         arguments=[
             "--frame-id",
-            "panther/base_link",
+            "panther/base_footprint",
             "--child-frame-id",
             "velodyne/base_link",
+            "--x",
+            "0.13",
+            "--y",
+            "-0.13",
             "--z",
-            "0.35",
+            "0.55",
         ],
     )
 

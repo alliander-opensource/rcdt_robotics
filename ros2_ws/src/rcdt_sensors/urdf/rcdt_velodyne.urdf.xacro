@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 <!-- 
 Based on:
 1.https://bitbucket.org/DataspeedInc/velodyne_simulator/src/master/velodyne_description/urdf/VLP-16.urdf.xacro
-2.https://github.com/husarion/ros_components_description/blob/ros2/urdf/velodyne_puck.urdf.xacro
+2.https://github.com/husarion/husarion_components_description/blob/ros2/urdf/velodyne_puck.urdf.xacro
 -->
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="VLP-16">
@@ -17,6 +17,7 @@ Based on:
     params="
     *origin 
     namespace
+    name:=velodyne
     update_rate:=10 
     lasers:=16 
     samples:=1875 
@@ -55,10 +56,10 @@ Based on:
     <joint name="base_scan_joint" type="fixed">
       <origin xyz="0 0 0.0377" rpy="0 0 0" />
       <parent link="base_link" />
-      <child link="lidar" />
+      <child link="${name}" />
     </joint>
 
-    <link name="lidar">
+    <link name="${name}">
       <inertial>
         <mass value="0.01" />
         <origin xyz="0 0 0" />
@@ -72,7 +73,7 @@ Based on:
       </visual>
     </link>
 
-    <gazebo reference="lidar">
+    <gazebo reference="${name}">
       <sensor type="gpu_lidar" name="${namespace}">
         <always_on>true</always_on>
         <update_rate>${update_rate}</update_rate>
@@ -80,8 +81,8 @@ Based on:
         <topic>${namespace}/scan</topic>
         <visualize>false</visualize>
 
-        <gz_frame_id>${namespace}/lidar</gz_frame_id>
-        <frame_id>${namespace}/lidar</frame_id>
+        <gz_frame_id>${namespace}/${name}</gz_frame_id>
+        <frame_id>${namespace}/${name}</frame_id>
 
         <ray>
           <scan>

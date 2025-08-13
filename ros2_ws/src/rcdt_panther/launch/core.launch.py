@@ -50,10 +50,10 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     robots = ["panther"]
-    positions = ["0-0-0.2"]
+    positions = ["0,0,0.2"]
     if child == "velodyne":
         robots.append("velodyne")
-        positions.append("0-0-0.35")
+        positions.append("0.13,-0.13,0.55")
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={

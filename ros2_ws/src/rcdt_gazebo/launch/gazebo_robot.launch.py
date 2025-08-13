@@ -15,7 +15,7 @@ from rcdt_utilities.register import Register
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 robots_arg = LaunchArgument("robots", "")
-positions_arg = LaunchArgument("positions", "0-0-0")
+positions_arg = LaunchArgument("positions", "0,0,0")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 
 
@@ -80,7 +80,7 @@ def launch_setup(context: LaunchContext) -> list:
     spawn_robots: list[Node] = []
     for robot, position in zip(robots, positions, strict=False):
         namespace = "" if not robot else f"/{robot}"
-        x, y, z = position.split("-")
+        x, y, z = position.split(",")
         spawn_robot = Node(
             package="ros_gz_sim",
             executable="create",
