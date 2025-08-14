@@ -13,12 +13,13 @@ load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 world_arg = LaunchArgument("world", "walls.sdf")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", True, [True, False])
-use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
-use_slam_arg = LaunchArgument("slam", False, [True, False])
-use_nav2_arg = LaunchArgument("nav2", False, [True, False])
+use_velodyne_arg = LaunchArgument("velodyne", True, [True, False])
+use_slam_arg = LaunchArgument("slam", True, [True, False])
+use_nav2_arg = LaunchArgument("nav2", True, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
+panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -39,24 +40,25 @@ def launch_setup(context: LaunchContext) -> list:
     use_slam = use_slam_arg.bool_value(context)
     use_nav2 = use_nav2_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
+    panther_xyz = panther_xyz_arg.string_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
 
-    if use_collision_monitor or use_nav2:
+    if use_collision_monitor:
         use_slam = True
-
-    if use_slam:
         use_velodyne = True
+        use_nav2 = True
 
     if use_nav2:
-        use_velodyne = True
         use_slam = True
+        use_velodyne = True
 
     launch_arguments = {
         "simulation": str(use_sim),
         "load_gazebo_ui": str(load_gazebo_ui),
         "world": world,
+        "panther_xyz": panther_xyz,
     }
     if use_velodyne:
         launch_arguments["child"] = "velodyne"
@@ -133,6 +135,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "params_file": get_file_path(
                     "rcdt_panther", ["config"], "collision_monitor.yaml"
                 ),
+                "autostart": str(True),
             },
         )
 
@@ -167,6 +170,7 @@ def generate_launch_description() -> LaunchDescription:
             use_slam_arg.declaration,
             use_collision_monitor_arg.declaration,
             use_nav2_arg.declaration,
+            panther_xyz_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

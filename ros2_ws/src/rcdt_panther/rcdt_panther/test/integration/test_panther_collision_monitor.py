@@ -8,7 +8,7 @@ import time
 import launch_pytest
 import pytest
 import rclpy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
@@ -32,8 +32,7 @@ def panther_launch() -> LaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
-            "collision_monitor": "True",
-            "positions": "3.8-0-0",
+            "panther_xyz": "3.6,0,0.2",
         },
     )
     return Register.connect_context([panther])
@@ -79,37 +78,36 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
 
 @pytest.mark.launch(fixture=panther_launch)
 def test_collision_monitoring(test_node: Node, timeout: int) -> None:
-    """Test that cmd_vel is reduced to 30% by the collision monitor.
+    """Test that cmd_vel is reduced to 70% by the collision monitor.
 
     Args:
         test_node (Node): The ROS 2 node to use for the test.
         timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
     input_velocity = 0.0001
-    expected_output = input_velocity * 0.3
+    expected_output = input_velocity * 0.7
 
-    publisher = test_node.create_publisher(Twist, "/panther/cmd_vel_raw", 10)
+    publisher = test_node.create_publisher(TwistStamped, "/panther/cmd_vel_raw", 10)
     result = {}
 
-    def callback_function_cmd_vel(msg: Twist) -> None:
+    def callback_function_cmd_vel(msg: TwistStamped) -> None:
         """Callback function to handle messages from the state topic.
 
         Args:
-            msg (Twist): The message received from the state topic.
+            msg (TwistStamped): The message received from the state topic.
         """
-        result["output_velocity"] = msg.linear.x
+        result["output_velocity"] = msg.twist.linear.x
 
     test_node.create_subscription(
-        msg_type=Twist,
+        msg_type=TwistStamped,
         topic="/panther/cmd_vel",
         callback=callback_function_cmd_vel,
         qos_profile=10,
     )
 
     wait_for_subscriber(publisher, timeout)
-
-    msg = Twist()
-    msg.linear.x = input_velocity
+    msg = TwistStamped()
+    msg.twist.linear.x = input_velocity
 
     publish_duration = 1  # seconds
     publish_rate_sec = 0.1  # seconds

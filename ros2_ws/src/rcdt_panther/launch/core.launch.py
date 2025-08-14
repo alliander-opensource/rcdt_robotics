@@ -17,6 +17,7 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 child_arg = LaunchArgument("child", "", ["", "franka", "velodyne"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
+panther_xyz_arg = LaunchArgument("panther_xyz", "3,0,0.2")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -32,6 +33,7 @@ def launch_setup(context: LaunchContext) -> list:
     child = child_arg.string_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
+    panther_xyz = panther_xyz_arg.string_value(context)
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""
@@ -50,10 +52,15 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     robots = ["panther"]
-    positions = ["0,0,0.2"]
+    positions = [panther_xyz]
     if child == "velodyne":
         robots.append("velodyne")
-        positions.append("0.13,-0.13,0.55")
+        px, py, pz = map(float, panther_xyz.split(","))
+        velodyne_offset = (0.13, -0.13, 0.55)  # relative mount offset
+        vx = px + velodyne_offset[0]
+        vy = py + velodyne_offset[1]
+        vz = pz + velodyne_offset[2]
+        positions.append(f"{vx},{vy},{vz}")
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
@@ -83,6 +90,7 @@ def generate_launch_description() -> LaunchDescription:
             child_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
+            panther_xyz_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

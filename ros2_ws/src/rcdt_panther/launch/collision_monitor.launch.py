@@ -37,7 +37,10 @@ def launch_setup(context: LaunchContext) -> list:
 
     lifecycle_nodes = ["collision_monitor"]
 
-    param_substitutions = {"use_sim_time": str(use_sim_time)}
+    param_substitutions = {
+        "use_sim_time": str(use_sim_time),
+        "autostart": str(autostart),
+    }
 
     configured_params = ParameterFile(
         RewrittenYaml(
