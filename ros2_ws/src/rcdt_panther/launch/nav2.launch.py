@@ -7,7 +7,7 @@ from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter, SetRemap
 from launch_ros.descriptions import ParameterFile
 from nav2_common.launch import RewrittenYaml
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
 namespace_arg = LaunchArgument("namespace", "", None)
@@ -47,6 +47,9 @@ def launch_setup(context: LaunchContext) -> list:
         "waypoint_follower",
         "velocity_smoother",
     ]
+
+    if use_collision_monitor:
+        lifecycle_nodes.append("collision_monitor")
 
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
 
@@ -149,6 +152,17 @@ def launch_setup(context: LaunchContext) -> list:
         + [("cmd_vel", "cmd_vel_nav"), ("cmd_vel_smoothed", "cmd_vel")],
     )
 
+    collision_monitor_node = Node(
+        package="nav2_collision_monitor",
+        executable="collision_monitor",
+        output="screen",
+        emulate_tty=True,
+        parameters=[
+            get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml")
+        ],
+        arguments=["--ros-args", "--log-level", log_level],
+    )
+
     lifecycle_node = Node(
         package="nav2_lifecycle_manager",
         executable="lifecycle_manager",
@@ -176,6 +190,9 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(bt_navigator_node, context),
         Register.on_start(waypoint_node, context),
         Register.on_start(velocity_smoother_node, context),
+        Register.on_start(collision_monitor_node, context)
+        if use_collision_monitor
+        else SKIP,
         Register.on_log(lifecycle_node, "Managed nodes are active", context),
     ]
 

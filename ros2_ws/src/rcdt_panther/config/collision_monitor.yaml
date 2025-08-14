@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+## Based on https://docs.nav2.org/tutorials/docs/using_collision_monitor.html
+
 collision_monitor:
   ros__parameters:
     base_frame_id: "panther/base_footprint"

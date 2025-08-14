@@ -46,8 +46,6 @@ def launch_setup(context: LaunchContext) -> list:
     ns = f"/{namespace}" if namespace else ""
 
     if use_collision_monitor:
-        use_slam = True
-        use_velodyne = True
         use_nav2 = True
 
     if use_nav2:
@@ -127,18 +125,6 @@ def launch_setup(context: LaunchContext) -> list:
             },
         )
 
-    if use_collision_monitor:
-        collision_monitor = RegisteredLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "collision_monitor.launch.py"),
-            launch_arguments={
-                "use_sim_time": str(use_sim),
-                "params_file": get_file_path(
-                    "rcdt_panther", ["config"], "collision_monitor.yaml"
-                ),
-                "autostart": str(True),
-            },
-        )
-
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(velodyne, context) if use_velodyne else SKIP,
@@ -147,7 +133,6 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(joystick, context),
         Register.group(slam, context) if use_slam else SKIP,
         Register.group(nav2, context) if use_nav2 else SKIP,
-        Register.group(collision_monitor, context) if use_collision_monitor else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,
     ]
 
