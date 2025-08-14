@@ -4,21 +4,20 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter, SetRemap
-from launch_ros.descriptions import ParameterFile
+from launch_ros.actions import Node, SetRemap
 from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-namespace_arg = LaunchArgument("namespace", "", None)
-use_sim_time_arg = LaunchArgument("use_sim_time", True, [True, False])
+use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
-params_file_arg = LaunchArgument(
-    "params_file", get_file_path("nav2_bringup", ["params"], "nav2_params.yaml")
-)
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
-log_level_arg = LaunchArgument("log_level", "info")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
+controller_arg = LaunchArgument(
+    "controller",
+    "pure_pursuit",
+    ["dwb", "graceful_motion", "mppi", "pure_pursuit", "rotation_shim"],
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -30,136 +29,96 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    namespace = namespace_arg.string_value(context)
-    use_sim_time = use_sim_time_arg.bool_value(context)
+    use_sim = use_sim_arg.bool_value(context)
     autostart = autostart_arg.bool_value(context)
-    params_file = params_file_arg.string_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
-    log_level = log_level_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
+    controller = controller_arg.string_value(context)
 
     lifecycle_nodes = [
         "controller_server",
-        "smoother_server",
         "planner_server",
         "behavior_server",
         "bt_navigator",
-        "waypoint_follower",
-        "velocity_smoother",
     ]
 
-    remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
+    param_substitutions = {"use_sim_time": str(use_sim)}
 
-    param_substitutions = {
-        "use_sim_time": str(use_sim_time),
-        "autostart": str(autostart),
-    }
-
-    configured_params = ParameterFile(
-        RewrittenYaml(
-            source_file=params_file,
-            root_key=namespace,
-            param_rewrites=param_substitutions,
-            convert_types=True,
+    local_costmap_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "local_costmap.yaml"
         ),
-        allow_substs=True,
+        param_rewrites=param_substitutions,
     )
 
-    controller_node = Node(
+    global_costmap_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "global_costmap.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
+    controller_server_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "controller_server.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
+    follow_path_params = load_follow_path_parameters(controller)
+
+    bt_navigator_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
+    controller_server = Node(
         package="nav2_controller",
         executable="controller_server",
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings + [("cmd_vel", "cmd_vel_nav")],
+        parameters=[local_costmap_params, controller_server_params, follow_path_params],
     )
 
-    smoother_node = Node(
-        package="nav2_smoother",
-        executable="smoother_server",
-        name="smoother_server",
-        output="screen",
-        respawn=use_respawn,
-        respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings,
-    )
-
-    planner_node = Node(
+    planner_server = Node(
         package="nav2_planner",
         executable="planner_server",
         name="planner_server",
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings,
+        parameters=[global_costmap_params],
     )
 
-    behavior_node = Node(
+    behavior_server = Node(
         package="nav2_behaviors",
         executable="behavior_server",
         name="behavior_server",
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings,
+        parameters=[],
     )
 
-    bt_navigator_node = Node(
+    bt_navigator = Node(
         package="nav2_bt_navigator",
         executable="bt_navigator",
         name="bt_navigator",
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings,
+        parameters=[bt_navigator_params],
     )
 
-    waypoint_node = Node(
-        package="nav2_waypoint_follower",
-        executable="waypoint_follower",
-        name="waypoint_follower",
-        output="screen",
-        respawn=use_respawn,
-        respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings,
-    )
-
-    velocity_smoother_node = Node(
-        package="nav2_velocity_smoother",
-        executable="velocity_smoother",
-        name="velocity_smoother",
-        output="screen",
-        respawn=use_respawn,
-        respawn_delay=2.0,
-        parameters=[configured_params],
-        arguments=["--ros-args", "--log-level", log_level],
-        remappings=remappings
-        + [("cmd_vel", "cmd_vel_nav"), ("cmd_vel_smoothed", "cmd_vel")],
-    )
-
-    lifecycle_node = Node(
+    lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
         executable="lifecycle_manager",
         name="lifecycle_manager_navigation",
         output="screen",
-        arguments=["--ros-args", "--log-level", log_level],
-        parameters=[
-            {"use_sim_time": use_sim_time},
-            {"autostart": autostart},
-            {"node_names": lifecycle_nodes},
-        ],
+        parameters=[{"autostart": autostart}, {"node_names": lifecycle_nodes}],
     )
 
     pub_topic = (
@@ -167,17 +126,38 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        SetParameter(name="enable_stamped_cmd_vel", value=True),
         SetRemap(src="/cmd_vel", dst=pub_topic),
-        Register.on_start(controller_node, context),
-        Register.on_start(smoother_node, context),
-        Register.on_start(planner_node, context),
-        Register.on_start(behavior_node, context),
-        Register.on_start(bt_navigator_node, context),
-        Register.on_start(waypoint_node, context),
-        Register.on_start(velocity_smoother_node, context),
-        Register.on_log(lifecycle_node, "Managed nodes are active", context),
+        Register.on_start(controller_server, context),
+        Register.on_start(planner_server, context),
+        Register.on_start(behavior_server, context),
+        Register.on_start(bt_navigator, context),
+        Register.on_log(lifecycle_manager, "Managed nodes are active", context),
     ]
+
+
+def load_follow_path_parameters(plugin: str = "dwb") -> RewrittenYaml:
+    """Load the follow path parameters for the specified plugin.
+
+    Supported plugins are listed here: https://docs.nav2.org/plugins/index.html#controllers
+    But only the types declared by nav2 (without extra installs) are supported:
+        - dwb_core::DWBLocalPlanner
+        - nav2_graceful_controller::GracefulController
+        - nav2_mppi_controller::MPPIController
+        - nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
+        - nav2_rotation_shim_controller::RotationShimController
+
+    Args:
+        plugin (str): The name of the plugin for which to load parameters.
+
+    Returns:
+        RewrittenYaml: The rewritten YAML configuration for the specified plugin.
+    """
+    return RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2", "controllers"], f"{plugin}.yaml"
+        ),
+        param_rewrites={},
+    )
 
 
 def generate_launch_description() -> LaunchDescription:
@@ -188,13 +168,11 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
-            namespace_arg.declaration,
-            use_sim_time_arg.declaration,
-            params_file_arg.declaration,
+            use_sim_arg.declaration,
             use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,
-            log_level_arg.declaration,
+            controller_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
