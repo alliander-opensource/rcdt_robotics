@@ -19,6 +19,7 @@ params_file_arg = LaunchArgument(
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 log_level_arg = LaunchArgument("log_level", "info")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
+use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -37,19 +38,22 @@ def launch_setup(context: LaunchContext) -> list:
     use_respawn = use_respawn_arg.bool_value(context)
     log_level = log_level_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
+    use_navigation = use_navigation_arg.bool_value(context)
 
-    lifecycle_nodes = [
-        "controller_server",
-        "smoother_server",
-        "planner_server",
-        "behavior_server",
-        "bt_navigator",
-        "waypoint_follower",
-        "velocity_smoother",
-    ]
+    lifecycle_nodes = []
 
     if use_collision_monitor:
         lifecycle_nodes.append("collision_monitor")
+
+    if use_navigation:
+        lifecycle_nodes.extend(
+            [
+                "controller_server",
+                "planner_server",
+                "behavior_server",
+                "bt_navigator",
+            ]
+        )
 
     remappings = [("/tf", "tf"), ("/tf_static", "tf_static")]
 
@@ -79,7 +83,7 @@ def launch_setup(context: LaunchContext) -> list:
         remappings=remappings + [("cmd_vel", "cmd_vel_nav")],
     )
 
-    smoother_node = Node(
+    Node(
         package="nav2_smoother",
         executable="smoother_server",
         name="smoother_server",
@@ -127,7 +131,7 @@ def launch_setup(context: LaunchContext) -> list:
         remappings=remappings,
     )
 
-    waypoint_node = Node(
+    Node(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
         name="waypoint_follower",
@@ -139,7 +143,7 @@ def launch_setup(context: LaunchContext) -> list:
         remappings=remappings,
     )
 
-    velocity_smoother_node = Node(
+    Node(
         package="nav2_velocity_smoother",
         executable="velocity_smoother",
         name="velocity_smoother",
@@ -183,13 +187,10 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         SetParameter(name="enable_stamped_cmd_vel", value=True),
         SetRemap(src="/cmd_vel", dst=pub_topic),
-        Register.on_start(controller_node, context),
-        Register.on_start(smoother_node, context),
-        Register.on_start(planner_node, context),
-        Register.on_start(behavior_node, context),
-        Register.on_start(bt_navigator_node, context),
-        Register.on_start(waypoint_node, context),
-        Register.on_start(velocity_smoother_node, context),
+        Register.on_start(controller_node, context) if use_navigation else SKIP,
+        Register.on_start(planner_node, context) if use_navigation else SKIP,
+        Register.on_start(behavior_node, context) if use_navigation else SKIP,
+        Register.on_start(bt_navigator_node, context) if use_navigation else SKIP,
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,
@@ -212,6 +213,7 @@ def generate_launch_description() -> LaunchDescription:
             autostart_arg.declaration,
             use_respawn_arg.declaration,
             log_level_arg.declaration,
+            # use_navigation_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

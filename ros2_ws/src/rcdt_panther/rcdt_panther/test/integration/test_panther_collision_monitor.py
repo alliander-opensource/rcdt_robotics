@@ -33,6 +33,7 @@ def panther_launch() -> LaunchDescription:
         launch_arguments={
             "rviz": "False",
             "panther_xyz": "3.6,0,0.2",
+            "collision_monitor": "True",
         },
     )
     return Register.connect_context([panther])
