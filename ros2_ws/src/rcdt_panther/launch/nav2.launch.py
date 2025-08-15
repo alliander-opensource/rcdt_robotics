@@ -138,7 +138,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[
-            get_file_path("rcdt_panther", ["config"], "collision_monitor.yaml")
+            get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml")
         ],
     )
 

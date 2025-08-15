@@ -125,6 +125,43 @@ class LaunchArgument:
         return float_value
 
 
+class LaunchPosition:
+    """Provide conversions between position strings (used in launch files) and positions lists for calculations."""
+
+    def __init__(self, position: list | str) -> None:
+        """Initialize the LaunchPosition with a position.
+
+        Args:
+            position (list | str): The position as a list of floats or a comma-separated string.
+        """
+        if isinstance(position, str):
+            position = [float(axis) for axis in position.split(",")]
+        self.position = position
+
+    @property
+    def string(self) -> str:
+        """Get the position as a comma-separated string, suitable to pass as launch argument.
+
+        Returns:
+            str: The position as a comma-separated string.
+        """
+        return ",".join(map(str, self.position))
+
+    def absolute(self, relative_position: list) -> str:
+        """Convert a relative position to an absolute position.
+
+        Args:
+            relative_position (list): The relative position to convert.
+
+        Returns:
+            str: The absolute position as a comma-separated string.
+        """
+        absolute = [
+            sum(axis) for axis in zip(self.position, relative_position, strict=False)
+        ]
+        return ",".join(map(str, absolute))
+
+
 def get_package_path(package: str) -> str:
     """Retrieve the share directory path of a ROS 2 package.
 

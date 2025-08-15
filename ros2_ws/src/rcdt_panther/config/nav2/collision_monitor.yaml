@@ -10,41 +10,10 @@ collision_monitor:
     odom_frame_id: "panther/odom"
     cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
-    state_topic: "collision_monitor_state"
     enable_stamped_cmd_vel: True
-    transform_tolerance: 0.5
-    source_timeout: 5.0
-    base_shift_correction: True
-    stop_pub_timeout: 2.0
-    # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
-    # and robot footprint for "approach" action type.
-    # (1) Footprint could be "polygon" type with dynamically set footprint from footprint_topic
-    # (2) "circle" type with static footprint set by radius. "footprint_topic" parameter
-    # to be ignored in circular case.
-    # (3) "velocity_polygon" type with dynamically set polygon from velocity_polygons
-    polygons: ["PolygonStopForward", "PolygonSlow", "PolygonSlower", "VelocityPolygonStop"]
-
-    PolygonStopForward:
-      type: "polygon"
-      # Only front half of robot
-      points: "[[0.35, 0.35], [0.35, -0.35], [-0.35, -0.35], [-0.35, 0.35]]"
-      action_type: "stop"
-      min_points: 4
-      visualize: True
-      polygon_pub_topic: "polygon_stop_forward"
-      enabled: False
+    polygons: ["PolygonSlow", "VelocityPolygonStop"]
 
     PolygonSlow:
-      type: "polygon"
-      points: "[[-1.0, 0.65], [1.0, 0.65], [1.0, -0.65], [-1.0, -0.65]]"
-      action_type: "slowdown"
-      min_points: 4
-      slowdown_ratio: 0.3
-      visualize: True
-      polygon_pub_topic: "polygon_slowdown"
-      enabled: False
-
-    PolygonSlower:
       type: "polygon"
       points: "[[-1.5, 0.9], [1.5, 0.9], [1.5, -0.9], [-1.5, -0.9]]"
       action_type: "slowdown"
@@ -93,10 +62,6 @@ collision_monitor:
         theta_max: 1.0
 
     observation_sources: ["pointcloud"]
-    scan:
-      type: "scan"
-      topic: "/velodyne/scan"
-      enabled: True
     pointcloud:
       type: "pointcloud"
       topic: "/velodyne/scan/points"

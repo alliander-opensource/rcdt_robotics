@@ -69,10 +69,12 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_panther", ["launch"], "controllers.launch.py")
     )
 
-    if use_collision_monitor:
+    if use_navigation and use_collision_monitor:
+        rviz_display_config = "panther_navigation_and_collision_monitor.rviz"
+    elif use_collision_monitor:
         rviz_display_config = "panther_collision_monitor.rviz"
     elif use_navigation:
-        rviz_display_config = "panther_nav2.rviz"
+        rviz_display_config = "panther_navigation.rviz"
     elif use_slam:
         rviz_display_config = "panther_slam.rviz"
     elif use_velodyne:
