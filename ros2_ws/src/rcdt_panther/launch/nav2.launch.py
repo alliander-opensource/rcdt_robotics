@@ -6,13 +6,14 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetRemap
 from nav2_common.launch import RewrittenYaml
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
+use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
     "controller",
     "pure_pursuit",
@@ -33,14 +34,23 @@ def launch_setup(context: LaunchContext) -> list:
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
+    use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
 
-    lifecycle_nodes = [
-        "controller_server",
-        "planner_server",
-        "behavior_server",
-        "bt_navigator",
-    ]
+    lifecycle_nodes = []
+
+    if use_collision_monitor:
+        lifecycle_nodes.append("collision_monitor")
+
+    if use_navigation:
+        lifecycle_nodes.extend(
+            [
+                "controller_server",
+                "planner_server",
+                "behavior_server",
+                "bt_navigator",
+            ]
+        )
 
     param_substitutions = {"use_sim_time": str(use_sim)}
 
@@ -61,6 +71,13 @@ def launch_setup(context: LaunchContext) -> list:
     controller_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "controller_server.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
+    behavior_server_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
         ),
         param_rewrites=param_substitutions,
     )
@@ -100,7 +117,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[],
+        parameters=[behavior_server_params],
     )
 
     bt_navigator = Node(
@@ -111,6 +128,18 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[bt_navigator_params],
+    )
+
+    collision_monitor_node = Node(
+        package="nav2_collision_monitor",
+        executable="collision_monitor",
+        name="collision_monitor",
+        output="screen",
+        respawn=use_respawn,
+        respawn_delay=2.0,
+        parameters=[
+            get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml")
+        ],
     )
 
     lifecycle_manager = Node(
@@ -127,10 +156,13 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetRemap(src="/cmd_vel", dst=pub_topic),
-        Register.on_start(controller_server, context),
-        Register.on_start(planner_server, context),
-        Register.on_start(behavior_server, context),
-        Register.on_start(bt_navigator, context),
+        Register.on_start(controller_server, context) if use_navigation else SKIP,
+        Register.on_start(planner_server, context) if use_navigation else SKIP,
+        Register.on_start(behavior_server, context) if use_navigation else SKIP,
+        Register.on_start(bt_navigator, context) if use_navigation else SKIP,
+        Register.on_start(collision_monitor_node, context)
+        if use_collision_monitor
+        else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
     ]
 

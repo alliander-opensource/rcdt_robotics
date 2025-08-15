@@ -154,12 +154,6 @@ A map should be visualized in Rviz and be updated when driving around.
 ros2 launch rcdt_panther panther.launch.py collision_monitor:=True
 ```
 
-Next, start the collision monitor in a second terminal:
-
-```bash
-ros2 launch rcdt_panther collision_monitor.launch.py
-```
-
 Rviz should visualize "slow-down" regions around the Panther and the Panther should slow down when objects are in these regions.
 
 **Navigation:**

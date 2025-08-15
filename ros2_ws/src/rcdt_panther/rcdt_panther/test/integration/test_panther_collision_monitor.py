@@ -3,26 +3,22 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import time
+
 import launch_pytest
-import numpy as np
 import pytest
 import rclpy
-from action_msgs.msg import GoalStatus
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
-from nav2_msgs.action import NavigateToPose
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
     call_trigger_service,
-    create_ready_action_client,
     wait_for_register,
+    wait_for_subscriber,
 )
-from rclpy.action.client import ClientGoalHandle
 from rclpy.node import Node
-from rclpy.task import Future
 from sensor_msgs.msg import JointState
-from tf_transformations import quaternion_from_euler
 
 
 @launch_pytest.fixture(scope="module")
@@ -34,12 +30,15 @@ def panther_launch() -> LaunchDescription:
     """
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
-        launch_arguments={"navigation": "True", "rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "panther_xyz": "3.6,0,0.2",
+            "collision_monitor": "True",
+        },
     )
     return Register.connect_context([panther])
 
 
-@pytest.mark.timeout(150)
 @pytest.mark.launch(fixture=panther_launch)
 def test_wait_for_register(timeout: int) -> None:
     """Test that the panther core is registered in the RCDT.
@@ -79,52 +78,48 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
 
 
 @pytest.mark.launch(fixture=panther_launch)
-def test_nav2_goal(test_node: Node, timeout: int) -> None:
-    """Test that the Panther can receive and process a navigation goal.
+def test_collision_monitoring(test_node: Node, timeout: int) -> None:
+    """Test that cmd_vel is reduced to 70% by the collision monitor.
 
     Args:
         test_node (Node): The ROS 2 node to use for the test.
-        timeout (int): The timeout in seconds to wait for the goal to be processed.
+        timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
-    action_client = create_ready_action_client(
-        node=test_node,
-        action_type=NavigateToPose,
-        action_name="/navigate_to_pose",
-        timeout=timeout,
+    input_velocity = 0.0001
+    expected_output = input_velocity * 0.7
+
+    publisher = test_node.create_publisher(TwistStamped, "/panther/cmd_vel_raw", 10)
+    result = {}
+
+    def callback_function_cmd_vel(msg: TwistStamped) -> None:
+        """Callback function to handle messages from the state topic.
+
+        Args:
+            msg (TwistStamped): The message received from the state topic.
+        """
+        result["output_velocity"] = msg.twist.linear.x
+
+    test_node.create_subscription(
+        msg_type=TwistStamped,
+        topic="/panther/cmd_vel",
+        callback=callback_function_cmd_vel,
+        qos_profile=10,
     )
 
-    goal_msg = NavigateToPose.Goal()
+    wait_for_subscriber(publisher, timeout)
+    msg = TwistStamped()
+    msg.twist.linear.x = input_velocity
 
-    pose_stamped = PoseStamped()
+    publish_duration = 1  # seconds
+    publish_rate_sec = 0.1  # seconds
+    deadline = time.monotonic() + publish_duration
 
-    pose_stamped.header.stamp = test_node.get_clock().now().to_msg()
-    pose_stamped.header.frame_id = "map"
+    while (
+        time.monotonic() < deadline and result.get("output_velocity") != expected_output
+    ):
+        publisher.publish(msg)
+        rclpy.spin_once(test_node, timeout_sec=publish_rate_sec)
 
-    # 2) Position:
-    pose_stamped.pose.position.x = 0.3
-    pose_stamped.pose.position.y = 0.0
-    pose_stamped.pose.position.z = 0.0
-
-    # 3) Orientation with 30 degrees (quaternion):
-    yaw = 30.0 * (np.pi / 180.0)
-    qx, qy, qz, qw = quaternion_from_euler(0.0, 0.0, yaw)
-    pose_stamped.pose.orientation.x = qx
-    pose_stamped.pose.orientation.y = qy
-    pose_stamped.pose.orientation.z = qz
-    pose_stamped.pose.orientation.w = qw
-
-    goal_msg.pose = pose_stamped
-
-    future = action_client.send_goal_async(goal_msg)
-    rclpy.spin_until_future_complete(test_node, future, timeout_sec=timeout)
-    goal_handle: ClientGoalHandle = future.result()
-
-    assert goal_handle.accepted
-
-    result_future: Future = goal_handle.get_result_async()
-    rclpy.spin_until_future_complete(test_node, result_future, timeout_sec=timeout)
-
-    result: NavigateToPose.Impl.GetResultService.Response = result_future.result()
-    assert result.status == GoalStatus.STATUS_SUCCEEDED, (
-        f"Navigation failed with status: {result.status}"
+    assert result.get("output_velocity") == expected_output, (
+        f"Expected output velocity to be ~{expected_output}, got {result.get('output_velocity')}"
     )
