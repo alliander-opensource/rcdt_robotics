@@ -12,9 +12,9 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 world_arg = LaunchArgument("world", "walls.sdf")
-use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
@@ -35,9 +35,9 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
     world = world_arg.string_value(context)
-    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_velodyne = use_velodyne_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
+    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
     panther_xyz = panther_xyz_arg.string_value(context)
@@ -45,10 +45,7 @@ def launch_setup(context: LaunchContext) -> list:
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
 
-    if use_navigation:
-        use_slam = True
-
-    if use_slam or use_collision_monitor:
+    if use_slam or use_collision_monitor or use_navigation:
         use_velodyne = True
 
     launch_arguments = {
@@ -119,6 +116,7 @@ def launch_setup(context: LaunchContext) -> list:
         launch_arguments={
             "simulation": str(use_sim),
             "autostart": str(True),
+            "slam": str(use_slam),
             "collision_monitor": str(use_collision_monitor),
             "navigation": str(use_navigation),
         },
@@ -151,7 +149,6 @@ def generate_launch_description() -> LaunchDescription:
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
             world_arg.declaration,
-            use_collision_monitor_arg.declaration,
             use_velodyne_arg.declaration,
             use_slam_arg.declaration,
             use_collision_monitor_arg.declaration,
