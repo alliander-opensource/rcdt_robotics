@@ -11,6 +11,7 @@ collision_monitor:
     cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
     state_topic: "collision_monitor_state"
+    enable_stamped_cmd_vel: True
     transform_tolerance: 0.5
     source_timeout: 5.0
     base_shift_correction: True

@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on: https://docs.nav2.org/configuration/packages/configuring-costmaps.html
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      robot_base_frame: panther/base_footprint
+      robot_radius: 0.6
+      inflation_layer:
+        inflation_radius: 0.7
