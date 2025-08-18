@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Based on: https://docs.nav2.org/configuration/packages/configuring-behavior-server.html
+# Based on: https://docs.nav2.org/configuration/packages/configuring-amcl.html
 
 amcl:
   ros__parameters:
