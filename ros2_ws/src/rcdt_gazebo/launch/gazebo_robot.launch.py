@@ -15,9 +15,8 @@ from rcdt_utilities.register import Register
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 robots_arg = LaunchArgument("robots", "")
-positions_arg = LaunchArgument("positions", "0-0-0")
+positions_arg = LaunchArgument("positions", "0,0,0")
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
-use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -37,7 +36,6 @@ def launch_setup(context: LaunchContext) -> list:
     robots = robots_arg.string_value(context).split(" ")
     positions = positions_arg.string_value(context).split(" ")
     use_realsense = use_realsense_arg.bool_value(context)
-    use_velodyne = use_velodyne_arg.bool_value(context)
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
@@ -65,11 +63,11 @@ def launch_setup(context: LaunchContext) -> list:
                 "/franka/realsense/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
             ]
         )
-    if use_velodyne:
+    if "velodyne" in robots:
         bridge_topics.extend(
             [
-                "/panther/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                "/panther/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+                "/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                "/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
 
@@ -82,7 +80,7 @@ def launch_setup(context: LaunchContext) -> list:
     spawn_robots: list[Node] = []
     for robot, position in zip(robots, positions, strict=False):
         namespace = "" if not robot else f"/{robot}"
-        x, y, z = position.split("-")
+        x, y, z = position.split(",")
         spawn_robot = Node(
             package="ros_gz_sim",
             executable="create",
@@ -143,7 +141,6 @@ def generate_launch_description() -> LaunchDescription:
             robots_arg.declaration,
             positions_arg.declaration,
             use_realsense_arg.declaration,
-            use_velodyne_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

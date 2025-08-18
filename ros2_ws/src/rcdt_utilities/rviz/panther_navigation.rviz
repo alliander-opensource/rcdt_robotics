@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 Panels:
   - Class: rviz_common/Displays
     Help Height: 78
@@ -70,6 +69,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -83,11 +86,19 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        fl_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fl_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        fr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -109,7 +120,15 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rear_bumper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rl_wheel_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -118,17 +137,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rr_wheel_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_lidar:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -138,6 +151,42 @@ Visualization Manager:
         Mass: false
       Name: RobotModel
       TF Prefix: /panther
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /velodyne/robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: velodyne
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -168,14 +217,15 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
-        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /panther/velodyne/scan/points
+        Value: /velodyne/scan/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
     - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
       Class: rviz_default_plugins/Map
       Color Scheme: map
       Draw Behind: false
@@ -197,6 +247,8 @@ Visualization Manager:
       Use Timestamp: false
       Value: true
     - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
       Draw Behind: false

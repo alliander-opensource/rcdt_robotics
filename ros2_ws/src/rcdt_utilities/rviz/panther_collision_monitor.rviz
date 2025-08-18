@@ -70,6 +70,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -83,11 +87,19 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        fl_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fl_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        fr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -109,7 +121,15 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rear_bumper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rl_wheel_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -118,17 +138,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rr_wheel_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        velodyne_lidar:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -168,52 +182,45 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
-        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /panther/velodyne/scan/points
+        Value: /velodyne/scan/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz_default_plugins/Map
-      Color Scheme: map
-      Draw Behind: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 25; 255; 0
       Enabled: true
-      Name: Map
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /map
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /map_updates
-      Use Timestamp: false
+        Value: /plan
       Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
       Color: 25; 255; 0
       Enabled: true
-      Name: Polygon
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /polygon_slow
-      Value: true
-    - Alpha: 1
-      Class: rviz_default_plugins/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: Polygon
+      Name: PolygonSlow
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -222,10 +229,23 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /polygon_slower
       Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: PolygonStop
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /velocity_polygon_stop
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: panther/odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -268,16 +288,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 13.885334968566895
+      Distance: 7.972400188446045
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.1741686761379242
-        Y: 0.5766842365264893
-        Z: -1.3313781023025513
+        X: -0.07419729232788086
+        Y: 0.12190007418394089
+        Z: -0.8994024991989136
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -304,5 +324,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 328
+  X: 318
   Y: 0
