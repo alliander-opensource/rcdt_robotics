@@ -30,10 +30,10 @@ def launch_setup(context: LaunchContext) -> list:
     package_name = moveit_package_name_arg.string_value(context)
 
     arguments = []
-    if rviz_frame:
-        arguments.extend(["-f", rviz_frame])
+    # if rviz_frame:
+    #     arguments.extend(["-f", rviz_frame])
     display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
-    arguments.extend(["--display-config", display_config])
+    arguments.extend(["--display-config", "/tmp/rviz.rviz"])
 
     parameters = []
     if package_name:

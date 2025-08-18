@@ -33,7 +33,7 @@ def launch_setup(context: LaunchContext) -> list:
     """
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
-    robots = robots_arg.string_value(context).split(" ")
+    robots = robots_arg.string_value(context).split()
     positions = positions_arg.string_value(context).split(" ")
     use_realsense = use_realsense_arg.bool_value(context)
 
@@ -87,6 +87,8 @@ def launch_setup(context: LaunchContext) -> list:
             arguments=[
                 "-topic",
                 f"{namespace}/robot_description",
+                "-name",
+                robot,
                 "-x",
                 str(x),
                 "-y",
