@@ -113,6 +113,20 @@ class Platform:
                 controllers.append(robot.create_controller())
         return controllers
 
+    @staticmethod
+    def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
+        """Create launch descriptions for all robots.
+
+        Returns:
+            list[RegisteredLaunchDescription]: A list of all launch descriptions.
+        """
+        launch_descriptions = []
+        for robot in Platform.platforms:
+            launch_description = robot.create_launch_description()
+            if launch_description != []:
+                launch_descriptions.extend(launch_description)
+        return launch_descriptions
+
     def create_world_links() -> list[Node]:
         """Create world links for all robots.
 
@@ -309,6 +323,14 @@ class Platform:
             launch_arguments={"namespace": self.namespace},
         )
 
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:  # noqa: PLR6301
+        """Create the launch description for the specific platform.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        return []
+
 
 class Lidar(Platform):
     """Extension on Platform with lidar specific functionalities."""
@@ -345,6 +367,7 @@ class Arm(Platform):
         platform: Literal["franka"],
         position: list,
         parent: Platform | None = None,
+        moveit: bool = False,
     ):
         """Initialize the Arm platform.
 
@@ -352,8 +375,40 @@ class Arm(Platform):
             platform (Literal["franka"]): The platform type.
             position (list): The position of the arm.
             parent (Platform | None): The parent platform.
+            moveit (bool): Whether to use MoveIt for the arm.
         """
         super().__init__(platform, position, parent)
+        self.moveit = moveit
+
+        if moveit:
+            Rviz.add_motion_planning_plugin(self.namespace)
+
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:
+        """Create the launch description with specific elements for an arm.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        launch_descriptions = []
+        if self.moveit:
+            launch_descriptions.append(self.create_moveit_launch())
+        return launch_descriptions
+
+    def create_moveit_launch(self) -> RegisteredLaunchDescription:
+        """Create the MoveIt launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the MoveIt.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
+            launch_arguments={
+                "robot_name": "fr3",
+                "moveit_package_name": "rcdt_franka_moveit_config",
+                "servo_params_package": "rcdt_franka",
+                "namespace": self.namespace,
+            },
+        )
 
 
 class Vehicle(Platform):

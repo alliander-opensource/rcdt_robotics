@@ -12,9 +12,11 @@ class Rviz:
 
     Attributes:
         yaml (dict): The default RViz configuration.
+        load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
     """
 
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
+    load_motion_planning_plugin: bool = False
 
     @staticmethod
     def set_fixed_frame(frame: str) -> None:
@@ -69,6 +71,25 @@ class Rviz:
                 "Enabled": "true",
                 "Topic": {"Value": f"/{namespace}/scan/points"},
                 "Name": f"{namespace}_point_cloud",
+            }
+        )
+
+    @staticmethod
+    def add_motion_planning_plugin(namespace: str) -> None:
+        """Add the motion planning plugin to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        if not Rviz.load_motion_planning_plugin:
+            return
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Class": "moveit_rviz_plugin/MotionPlanning",
+                "Move Group Namespace": namespace,
+                "Name": f"{namespace}_motion_planning",
+                "Planning Scene Topic": f"/{namespace}/monitored_planning_scene",
             }
         )
 
