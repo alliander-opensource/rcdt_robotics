@@ -7,7 +7,7 @@ from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Robot
+from rcdt_utilities.robot import Arm, Lidar, Platform, Vehicle
 from rcdt_utilities.rviz import Rviz
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -36,28 +36,28 @@ def launch_setup(context: LaunchContext) -> list:
 
     match configuration:
         case "franka":
-            Robot("franka", [0, 0, 0])
+            Arm("franka", [0, 0, 0])
         case "panther":
-            Robot("panther", [0, 0, 0.2])
+            Vehicle("panther", [0, 0, 0.2])
         case "lidar":
-            Robot("velodyne", [0, 0, 0.5])
+            Lidar("velodyne", [0, 0, 0.5])
         case "panther_lidar":
-            panther = Robot("panther", [0, 0, 0.2])
-            Robot("velodyne", [0.13, -0.13, 0.35], parent=panther)
+            panther = Vehicle("panther", [0, 0, 0.2])
+            Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
-            panther = Robot("panther", [0, 0, 0.2])
-            Robot("franka", [0, 0, 0.14], parent=panther)
-            Robot("velodyne", [0.13, -0.13, 0.35], parent=panther)
+            panther = Vehicle("panther", [0, 0, 0.2])
+            Arm("franka", [0, 0, 0.14], parent=panther)
+            Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm_lidar":
-            panther = Robot("panther", [0, 0, 0.2])
-            Robot("franka", [0, 0, 0.14], parent=panther)
-            Robot("velodyne", [0.13, -0.13, 0.35], parent=panther)
+            panther = Vehicle("panther", [0, 0, 0.2])
+            Arm("franka", [0, 0, 0.14], parent=panther)
+            Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
-    state_publishers = Robot.create_state_publishers()
-    gazebo = Robot.create_gazebo_launch(load_gazebo_ui)
-    tf_publishers = Robot.create_tf_publishers()
-    world_links = Robot.create_world_links()
-    controllers = Robot.create_controllers()
+    state_publishers = Platform.create_state_publishers()
+    gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
+    tf_publishers = Platform.create_tf_publishers()
+    world_links = Platform.create_world_links()
+    controllers = Platform.create_controllers()
 
     Rviz.set_fixed_frame("world")
     Rviz.create_rviz_file()

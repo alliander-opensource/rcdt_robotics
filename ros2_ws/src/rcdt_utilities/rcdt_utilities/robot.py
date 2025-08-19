@@ -13,35 +13,35 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 from rcdt_utilities.rviz import Rviz
 
 
-class Robot:
-    """A class used to dynamically create all the required nodes for a robot.
+class Platform:
+    """A class used to dynamically create all the required nodes for a platform.
 
     Attributes:
-        robots (list[Robot]): A list of all robot instances.
-        platforms (dict[str, int]): A collections of the different platforms and the number of occurrences.
+        platforms (list[Platform]): A list of all the platforms.
+        platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
         names (list[str]): A list of all robot names.
         bridge_topics (list[str]): A list of all topics that should be bridged between Gazebo and ROS.
     """
 
-    robots: list["Robot"] = []
-    platforms: dict[str, int] = {"panther": 0, "franka": 0, "velodyne": 0}
+    platforms: list["Platform"] = []
+    platform_indices: dict[str, int] = {"panther": 0, "franka": 0, "velodyne": 0}
     names: list[str] = []
     bridge_topics: list[str] = []
 
     @staticmethod
-    def add(robot: "Robot") -> str:
-        """Add a robot instance to the general list.
+    def add(platform: "Platform") -> str:
+        """Add a platform instance to the general list.
 
         Args:
-            robot (Robot): The robot instance to add.
+            platform (Platform): The platform instance to add.
 
         Returns:
-            str: The namespace assigned to the robot instance.
+            str: The namespace assigned to the platform instance.
         """
-        Robot.robots.append(robot)
-        Robot.platforms[robot.platform] += 1
-        index = Robot.platforms[robot.platform]
-        return f"{robot.platform}{index}"
+        Platform.platforms.append(platform)
+        Platform.platform_indices[platform.name] += 1
+        index = Platform.platform_indices[platform.name]
+        return f"{platform.name}{index}"
 
     @staticmethod
     def create_state_publishers() -> list[Node]:
@@ -50,7 +50,7 @@ class Robot:
         Returns:
             list[Node]: A list of all state publisher nodes.
         """
-        return [robot.create_state_publisher() for robot in Robot.robots]
+        return [robot.create_state_publisher() for robot in Platform.platforms]
 
     @staticmethod
     def move_franka_robots_to_front() -> None:
@@ -59,9 +59,9 @@ class Robot:
         For some reason, the ros control plugin does not load for Franka robots when another platform is loaded before.
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
         """
-        for index in range(len(Robot.robots)):
-            if Robot.robots[index].platform == "franka":
-                Robot.robots.insert(0, Robot.robots.pop(index))
+        for index in range(len(Platform.platforms)):
+            if Platform.platforms[index].name == "franka":
+                Platform.platforms.insert(0, Platform.platforms.pop(index))
 
     @staticmethod
     def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
@@ -73,9 +73,9 @@ class Robot:
         Returns:
             RegisteredLaunchDescription: The Gazebo launch description.
         """
-        Robot.move_franka_robots_to_front()
-        robots = [robot.namespace for robot in Robot.robots]
-        positions = [",".join(map(str, robot.position)) for robot in Robot.robots]
+        Platform.move_franka_robots_to_front()
+        robots = [robot.namespace for robot in Platform.platforms]
+        positions = [",".join(map(str, robot.position)) for robot in Platform.platforms]
 
         return RegisteredLaunchDescription(
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
@@ -83,7 +83,7 @@ class Robot:
                 "load_gazebo_ui": str(load_gazebo_ui),
                 "robots": " ".join(robots),
                 "positions": " ".join(positions),
-                "bridge_topics": " ".join(Robot.bridge_topics),
+                "bridge_topics": " ".join(Platform.bridge_topics),
             },
         )
 
@@ -95,7 +95,7 @@ class Robot:
             list[Node]: A list of all TF publisher nodes.
         """
         tf_publishers = []
-        for robot in Robot.robots:
+        for robot in Platform.platforms:
             if robot.parent is not None:
                 tf_publishers.append(robot.create_tf_publisher())
         return tf_publishers
@@ -108,7 +108,7 @@ class Robot:
             list[RegisteredLaunchDescription]: A list of all controller launch descriptions.
         """
         controllers = []
-        for robot in Robot.robots:
+        for robot in Platform.platforms:
             if robot.controller_path is not None:
                 controllers.append(robot.create_controller())
         return controllers
@@ -120,7 +120,7 @@ class Robot:
             list[Node]: A list of all tf nodes creating a link between the robot and world.
         """
         world_links = []
-        for robot in Robot.robots:
+        for robot in Platform.platforms:
             if robot.parent is None:
                 world_links.append(robot.create_world_link())
         return world_links
@@ -129,19 +129,19 @@ class Robot:
         self,
         platform: Literal["panther", "franka", "velodyne"],
         position: list,
-        parent: "Robot" | None = None,
+        parent: "Platform" | None = None,
     ):
         """Initialize a robot instance.
 
         Args:
             platform (Literal["panther", "franka", "velodyne"]): The platform type of the robot.
             position (list): The initial position of the robot.
-            parent (Robot | None): The parent robot, if any.
+            parent (Platform | None): The parent robot, if any.
         """
-        self.platform: Literal["panther", "franka", "velodyne"] = platform
+        self.name: Literal["panther", "franka", "velodyne"] = platform
         self.parent = parent
         self.childs = []
-        self.namespace = Robot.add(self)
+        self.namespace = Platform.add(self)
         Rviz.add_robot_model(self.namespace)
 
         if parent is None:
@@ -153,15 +153,6 @@ class Robot:
                 sum(x) for x in zip(parent.position, position, strict=False)
             ]
             parent.add_child(self)
-
-        if self.platform == "velodyne":
-            Rviz.add_point_cloud(self.namespace)
-            Robot.bridge_topics.extend(
-                [
-                    f"/{self.namespace}/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                    f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
-                ]
-            )
 
     @property
     def frame_prefix(self) -> str:
@@ -179,7 +170,7 @@ class Robot:
         Returns:
             str | None: The controller launch file path or None if not applicable.
         """
-        match self.platform:
+        match self.name:
             case "panther":
                 package = "rcdt_panther"
             case "franka":
@@ -199,7 +190,7 @@ class Robot:
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.name:
             case "panther":
                 return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
             case "franka":
@@ -221,7 +212,7 @@ class Robot:
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.name:
             case "panther":
                 return "base_footprint"
             case "franka":
@@ -231,11 +222,11 @@ class Robot:
             case _:
                 raise ValueError("Unknown platform.")
 
-    def add_child(self, child: "Robot") -> None:
+    def add_child(self, child: "Platform") -> None:
         """Add a child robot to this robot.
 
         Args:
-            child (Robot): The child robot to add.
+            child (Platform): The child robot to add.
         """
         self.childs.append([child.namespace, child.base_link])
 
@@ -286,7 +277,7 @@ class Robot:
         Returns:
             Node: The world link node for the robot.
         """
-        if self.platform == "panther":
+        if self.name == "panther":
             child_frame = f"{self.namespace}/odom"
         else:
             child_frame = f"{self.namespace}/world"
@@ -317,3 +308,68 @@ class Robot:
             self.controller_path,
             launch_arguments={"namespace": self.namespace},
         )
+
+
+class Lidar(Platform):
+    """Extension on Platform with lidar specific functionalities."""
+
+    def __init__(
+        self,
+        platform: Literal["velodyne"],
+        position: list,
+        parent: Platform | None = None,
+    ):
+        """Initialize the Lidar platform.
+
+        Args:
+            platform (Literal["velodyne"]): The platform type.
+            position (list): The position of the lidar.
+            parent (Platform | None): The parent platform.
+        """
+        super().__init__(platform, position, parent)
+
+        Rviz.add_point_cloud(self.namespace)
+        Platform.bridge_topics.extend(
+            [
+                f"/{self.namespace}/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+            ]
+        )
+
+
+class Arm(Platform):
+    """Extension on Platform with arm specific functionalities."""
+
+    def __init__(
+        self,
+        platform: Literal["franka"],
+        position: list,
+        parent: Platform | None = None,
+    ):
+        """Initialize the Arm platform.
+
+        Args:
+            platform (Literal["franka"]): The platform type.
+            position (list): The position of the arm.
+            parent (Platform | None): The parent platform.
+        """
+        super().__init__(platform, position, parent)
+
+
+class Vehicle(Platform):
+    """Extension on Platform with vehicle specific functionalities."""
+
+    def __init__(
+        self,
+        platform: Literal["panther"],
+        position: list,
+        parent: Platform | None = None,
+    ):
+        """Initialize the Vehicle platform.
+
+        Args:
+            platform (Literal["panther"]): The platform type.
+            position (list): The position of the vehicle.
+            parent (Platform | None): The parent platform.
+        """
+        super().__init__(platform, position, parent)
