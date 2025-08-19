@@ -20,11 +20,13 @@ class Robot:
         robots (list[Robot]): A list of all robot instances.
         platforms (dict[str, int]): A collections of the different platforms and the number of occurrences.
         names (list[str]): A list of all robot names.
+        bridge_topics (list[str]): A list of all topics that should be bridged between Gazebo and ROS.
     """
 
     robots: list["Robot"] = []
     platforms: dict[str, int] = {"panther": 0, "franka": 0, "velodyne": 0}
     names: list[str] = []
+    bridge_topics: list[str] = []
 
     @staticmethod
     def add(robot: "Robot") -> str:
@@ -81,6 +83,7 @@ class Robot:
                 "load_gazebo_ui": str(load_gazebo_ui),
                 "robots": " ".join(robots),
                 "positions": " ".join(positions),
+                "bridge_topics": " ".join(Robot.bridge_topics),
             },
         )
 
@@ -150,6 +153,15 @@ class Robot:
                 sum(x) for x in zip(parent.position, position, strict=False)
             ]
             parent.add_child(self)
+
+        if self.platform == "velodyne":
+            Rviz.add_point_cloud(self.namespace)
+            Robot.bridge_topics.extend(
+                [
+                    f"/{self.namespace}/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
+                    f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
+                ]
+            )
 
     @property
     def frame_prefix(self) -> str:
@@ -276,10 +288,8 @@ class Robot:
         """
         if self.platform == "panther":
             child_frame = f"{self.namespace}/odom"
-        elif self.platform == "franka":
-            child_frame = f"{self.namespace}/world"
         else:
-            child_frame = f"{self.namespace}/{self.base_link}"
+            child_frame = f"{self.namespace}/world"
         return Node(
             package="tf2_ros",
             executable="static_transform_publisher",

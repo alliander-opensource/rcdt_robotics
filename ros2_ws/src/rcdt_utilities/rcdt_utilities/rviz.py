@@ -55,6 +55,24 @@ class Rviz:
         )
 
     @staticmethod
+    def add_point_cloud(namespace: str) -> None:
+        """Add a point cloud to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Alpha": "1",
+                "Class": "rviz_default_plugins/PointCloud2",
+                "Enabled": "true",
+                "Topic": {"Value": f"/{namespace}/scan/points"},
+                "Name": f"{namespace}_point_cloud",
+            }
+        )
+
+    @staticmethod
     def create_rviz_file() -> None:
         """Create the RViz configuration file."""
         with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:

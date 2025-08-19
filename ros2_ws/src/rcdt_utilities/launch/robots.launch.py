@@ -16,7 +16,7 @@ use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "mm_lidar",
-    ["franka", "panther", "panther_lidar", "mm", "mm_lidar"],
+    ["franka", "panther", "lidar", "panther_lidar", "mm", "mm_lidar"],
 )
 
 
@@ -39,6 +39,8 @@ def launch_setup(context: LaunchContext) -> list:
             Robot("franka", [0, 0, 0])
         case "panther":
             Robot("panther", [0, 0, 0.2])
+        case "lidar":
+            Robot("velodyne", [0, 0, 0.5])
         case "panther_lidar":
             panther = Robot("panther", [0, 0, 0.2])
             Robot("velodyne", [0.13, -0.13, 0.35], parent=panther)
