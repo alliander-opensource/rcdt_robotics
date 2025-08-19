@@ -12,6 +12,7 @@ from rcdt_utilities.register import Register
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
+use_slam_arg = LaunchArgument("slam", False, [True, False])
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
@@ -33,6 +34,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.bool_value(context)
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
+    use_slam = use_slam_arg.bool_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
@@ -41,6 +43,14 @@ def launch_setup(context: LaunchContext) -> list:
 
     if use_collision_monitor:
         lifecycle_nodes.append("collision_monitor")
+
+    if not use_slam:
+        lifecycle_nodes.extend(
+            [
+                "map_server",
+                "amcl",
+            ]
+        )
 
     if use_navigation:
         lifecycle_nodes.extend(
@@ -53,6 +63,11 @@ def launch_setup(context: LaunchContext) -> list:
         )
 
     param_substitutions = {"use_sim_time": str(use_sim)}
+
+    amcl_params = RewrittenYaml(
+        source_file=get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
+        param_rewrites=param_substitutions,
+    )
 
     local_costmap_params = RewrittenYaml(
         source_file=get_file_path(
@@ -89,6 +104,19 @@ def launch_setup(context: LaunchContext) -> list:
             "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
         ),
         param_rewrites=param_substitutions,
+    )
+
+    map_yaml = get_file_path("rcdt_panther", ["config", "nav2"], "map.yaml")
+    map_server = Node(
+        package="nav2_map_server",
+        executable="map_server",
+        parameters=[{"yaml_filename": map_yaml}],
+    )
+
+    amcl = Node(
+        package="nav2_amcl",
+        executable="amcl",
+        parameters=[amcl_params],
     )
 
     controller_server = Node(
@@ -156,6 +184,8 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetRemap(src="/cmd_vel", dst=pub_topic),
+        Register.on_start(map_server, context) if not use_slam else SKIP,
+        Register.on_start(amcl, context) if not use_slam else SKIP,
         Register.on_start(controller_server, context) if use_navigation else SKIP,
         Register.on_start(planner_server, context) if use_navigation else SKIP,
         Register.on_start(behavior_server, context) if use_navigation else SKIP,
