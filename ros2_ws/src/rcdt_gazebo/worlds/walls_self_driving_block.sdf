@@ -24,9 +24,6 @@ SPDX-License-Identifier: Apache-2.0
       <render_engine>ogre2</render_engine>
     </plugin>
 
-    <plugin name="gz::sim::systems::EntityStatePublisher" filename="gz-sim-entity-state-publisher-system"/>
-
-
     <!-- Sunlight -->
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
@@ -165,6 +162,13 @@ SPDX-License-Identifier: Apache-2.0
         <initial_linear>0 0 0</initial_linear>
         <initial_angular>0 0 0</initial_angular>
       </plugin>
+        <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+    <publish_link_pose>true</publish_link_pose>
+    <publish_nested_model_pose>true</publish_nested_model_pose>
+    <publish_model_pose>true</publish_model_pose>
+    <update_rate>20</update_rate>
+    <use_pose_msg>true</use_pose_msg>
+  </plugin>
     </model>
   </world>
 </sdf>
