@@ -24,9 +24,6 @@ SPDX-License-Identifier: Apache-2.0
       <render_engine>ogre2</render_engine>
     </plugin>
 
-    <plugin name="gz::sim::systems::EntityStatePublisher" filename="gz-sim-entity-state-publisher-system"/>
-
-
     <!-- Sunlight -->
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>

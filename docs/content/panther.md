@@ -154,7 +154,17 @@ A map should be visualized in Rviz and be updated when driving around.
 ros2 launch rcdt_panther panther.launch.py collision_monitor:=True
 ```
 
-Rviz should visualize "slow-down" regions around the Panther and the Panther should slow down when objects are in these regions.
+The Collision Monitor filters velocity commands to ensure safe operation.
+It uses two types of polygons:
+
+- PolygonSlow – a rectangular zone around the robot; if obstacles enter, the robot slows down.
+- VelocityPolygonStop – a set of four polygons, active depending on motion:
+  - rotation (around the robot when turning),
+  - translation_forward (in front when moving forward),
+  - translation_backward (behind when reversing),
+  - stopped (around the robot when not moving).
+
+Together, these polygons ensure the Panther slows near obstacles and stops if an obstacle blocks its path. Rviz should visualize "slow-down" regions around the Panther.
 
 **Navigation:**
 
@@ -162,7 +172,7 @@ Rviz should visualize "slow-down" regions around the Panther and the Panther sho
 ros2 launch rcdt_panther panther.launch.py nav2:=True
 ```
 
-Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. The robot should plan, visualize and drive a route to this goal pose.
+Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. The robot should plan, visualize and drive a route to this goal pose. If you have a prebuilt map and run without SLAM, **AMCL (Adaptive Monte Carlo Localization)** is used to localize the robot on the known map.
 
 :::{note}
 Don't forget to reset the E-STOP when the Panther should drive:
@@ -172,6 +182,58 @@ ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
 ```
 
 :::
+
+## Simulation demo: dynamic obstacles
+
+Two ready-made worlds add a moving obstacle:
+
+- **walls_self_driving_block.sdf** — obstacle moves randomly and pauses near the Panther.  
+- **walls_controlled_block.sdf** — obstacle you control with **WASD**.  
+
+---
+
+### Option A — Self-driving obstacle (random walker)
+
+**1) Navigation + Collision Monitor**
+```bash
+ros2 launch rcdt_panther panther.launch.py \
+ navigation:=True collision_monitor:=True \
+  world:=walls_self_driving_block.sdf load_gazebo_ui:=True
+````
+
+**2) Start the random mover (separate terminal)**:
+
+```bash
+uv run /home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_gazebo/src_py/obstacle_mover.py
+```
+
+The block roams within a 4×4 m area and stops if the Panther comes within \~1.5 m.
+
+---
+
+### Option B — Keyboard-controlled obstacle (WASD)
+
+**1) Navigation + Collision Monitor**
+
+```bash
+ros2 launch rcdt_panther panther.launch.py \
+  navigation:=True collision_monitor:=True \
+  world:=walls_controlled_block.sdf load_gazebo_ui:=True
+```
+
+**2) Start the controller (separate terminal)**
+```bash
+uv run /home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_gazebo/src_py/obstacle_controller.py
+```
+
+**Controls**
+
+* `w` forward
+* `s` back
+* `a` left (rotate)
+* `d` right (rotate)
+* `space` stop
+* `q` quit
 
 ## Proposed changes to reduce network traffic
 
