@@ -8,3 +8,5 @@ set -e
 source /home/$UNAME/.bashrc
 apt update
 
+apt install ros-jazzy-pointcloud-to-laserscan
+

@@ -8,6 +8,8 @@ global_costmap:
   global_costmap:
     ros__parameters:
       always_send_full_costmap: True
+      update_frequency: 5.0
+      publish_frequency: 5.0
       robot_base_frame: panther/base_footprint
       robot_radius: 0.6
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
