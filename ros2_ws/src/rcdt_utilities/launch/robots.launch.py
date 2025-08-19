@@ -44,7 +44,7 @@ def launch_setup(context: LaunchContext) -> list:
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
         case "panther_lidar":
-            panther = Vehicle("panther", [0, 0, 0.2])
+            panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
@@ -68,13 +68,13 @@ def launch_setup(context: LaunchContext) -> list:
         executable="static_transform_publisher",
         arguments=[
             "--frame-id",
-            "world",
+            "map",
             "--child-frame-id",
             "base",
         ],
     )
 
-    Rviz.set_fixed_frame("world")
+    Rviz.set_fixed_frame("map")
     Rviz.create_rviz_file()
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py")
@@ -87,6 +87,7 @@ def launch_setup(context: LaunchContext) -> list:
         *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
         *[Register.on_start(world_link, context) for world_link in world_links],
         *[Register.group(controller, context) for controller in controllers],
+        Register.group(rviz, context) if use_rviz else SKIP,
         *[
             Register.group(launch_description, context)
             for launch_description in launch_descriptions
@@ -94,7 +95,6 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context)
         if Rviz.load_motion_planning_plugin
         else SKIP,
-        Register.group(rviz, context) if use_rviz else SKIP,
     ]
 
 

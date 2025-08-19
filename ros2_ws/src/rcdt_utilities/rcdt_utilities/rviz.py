@@ -94,6 +94,30 @@ class Rviz:
         )
 
     @staticmethod
+    def add_map(topic: str) -> None:
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Class": "rviz_default_plugins/Map",
+                "Enabled": True,
+                "Name": topic,
+                "Topic": {"Value": topic},
+            }
+        )
+
+    @staticmethod
+    def add_path(topic: str) -> None:
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Class": "rviz_default_plugins/Path",
+                "Enabled": True,
+                "Name": topic,
+                "Topic": {"Value": topic},
+            }
+        )
+
+    @staticmethod
     def create_rviz_file() -> None:
         """Create the RViz configuration file."""
         with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:

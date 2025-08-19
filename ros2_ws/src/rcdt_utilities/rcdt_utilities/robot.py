@@ -300,7 +300,7 @@ class Platform:
             executable="static_transform_publisher",
             arguments=[
                 "--frame-id",
-                "world",
+                "map",
                 "--child-frame-id",
                 child_frame,
                 "--x",
@@ -339,7 +339,7 @@ class Lidar(Platform):
         self,
         platform: Literal["velodyne"],
         position: list,
-        parent: Platform | None = None,
+        parent: Vehicle | None = None,
     ):
         """Initialize the Lidar platform.
 
@@ -349,6 +349,9 @@ class Lidar(Platform):
             parent (Platform | None): The parent platform.
         """
         super().__init__(platform, position, parent)
+
+        if parent:
+            parent.lidar = self
 
         Rviz.add_point_cloud(self.namespace)
         Platform.bridge_topics.extend(
@@ -419,6 +422,7 @@ class Vehicle(Platform):
         platform: Literal["panther"],
         position: list,
         parent: Platform | None = None,
+        navigation: bool = False,
     ):
         """Initialize the Vehicle platform.
 
@@ -428,3 +432,39 @@ class Vehicle(Platform):
             parent (Platform | None): The parent platform.
         """
         super().__init__(platform, position, parent)
+        self.navigation = navigation
+        self.lidar: Lidar | None = None
+
+        if self.navigation:
+            Rviz.add_map("/map")
+            Rviz.add_map("/global_costmap/costmap")
+            Rviz.add_path("/plan")
+
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:
+        """Create the launch description with specific elements for a vehicle.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        launch_descriptions = []
+        if self.navigation:
+            launch_descriptions.append(self.create_nav2_launch())
+        return launch_descriptions
+
+    def create_nav2_launch(self) -> RegisteredLaunchDescription:
+        """Create the Nav2 launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the Nav2.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
+            launch_arguments={
+                "simulation": str(True),
+                "autostart": str(True),
+                "collision_monitor": str(False),
+                "navigation": str(True),
+                "namespace_vehicle": self.namespace,
+                "namespace_lidar": self.lidar.namespace,
+            },
+        )

@@ -13,6 +13,8 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
+namespace_vehicle_arg = LaunchArgument("namespace_vehicle", "")
+namespace_lidar_arg = LaunchArgument("namespace_lidar", "")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
@@ -35,6 +37,8 @@ def launch_setup(context: LaunchContext) -> list:
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
+    namespace_vehicle = namespace_vehicle_arg.string_value(context)
+    namespace_lidar = namespace_lidar_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
@@ -62,7 +66,15 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
 
-    param_substitutions = {"use_sim_time": str(use_sim)}
+    param_substitutions = {
+        "use_sim_time": str(use_sim),
+        "global_frame": f"{namespace_vehicle}/odom",
+        "robot_base_frame": f"{namespace_vehicle}/base_footprint",
+        "base_frame_id": f"{namespace_vehicle}/base_footprint",
+        "odom_frame_id": f"{namespace_vehicle}/odom",
+        "scan_topic": f"{namespace_lidar}/scan",
+        "topic": f"{namespace_lidar}/scan",
+    }
 
     amcl_params = RewrittenYaml(
         source_file=get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
@@ -179,7 +191,9 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     pub_topic = (
-        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+        f"/{namespace_vehicle}/cmd_vel"
+        if not use_collision_monitor
+        else f"/{namespace_vehicle}/cmd_vel_raw"
     )
 
     return [
@@ -234,6 +248,9 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,
+            use_slam_arg.declaration,
+            namespace_vehicle_arg.declaration,
+            namespace_lidar_arg.declaration,
             controller_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
