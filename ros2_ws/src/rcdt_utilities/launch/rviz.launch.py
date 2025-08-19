@@ -9,8 +9,8 @@ from moveit_configs_utils import MoveItConfigsBuilder
 from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-rviz_frame_arg = LaunchArgument("rviz_frame", "world")
-rviz_display_config_arg = LaunchArgument("rviz_display_config", "general.rviz")
+rviz_frame_arg = LaunchArgument("rviz_frame", "")
+rviz_display_config_arg = LaunchArgument("rviz_display_config", "")
 robot_name_arg = LaunchArgument("robot_name", "")
 moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
 
@@ -30,10 +30,13 @@ def launch_setup(context: LaunchContext) -> list:
     package_name = moveit_package_name_arg.string_value(context)
 
     arguments = []
-    # if rviz_frame:
-    #     arguments.extend(["-f", rviz_frame])
-    display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
-    arguments.extend(["--display-config", "/tmp/rviz.rviz"])
+    if rviz_frame:
+        arguments.extend(["-f", rviz_frame])
+    if rviz_display_config:
+        display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
+    else:
+        display_config = "/tmp/rviz.rviz"
+    arguments.extend(["--display-config", display_config])
 
     parameters = []
     if package_name:
