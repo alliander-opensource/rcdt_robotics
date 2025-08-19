@@ -2,6 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from __future__ import annotations
+
+from typing import Literal
+
 import yaml
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
@@ -19,116 +23,187 @@ use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", True, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 
-robots = []
-positions = []
 
-controllers = []
-state_publishers = []
-tf_publishers = []
+class Rviz:
+    yaml = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
 
-rviz_yaml = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
-rviz_yaml["Visualization Manager"]["Global Options"]["Fixed Frame"] = (
-    "panther1/base_link"
-)
+    @staticmethod
+    def set_fixed_frame(frame: str) -> None:
+        Rviz.yaml["Visualization Manager"]["Global Options"]["Fixed Frame"] = frame
 
-
-class Robot:
-    def __init__(
-        self,
-        namespace: str,
-        position: list,
-        xacro_path: str,
-    ):
-        self.namespace = namespace
-        self.position = position
-        self.xacro_path = xacro_path
-        self.childs = []
-        self.child_links = []
-
-    def add_child(
-        self,
-        namespace: str,
-        parent_link: str,
-        child_link: str,
-        relative_position: list,
-        xacro_path: str,
-    ):
-        position = [sum(x) for x in zip(self.position, relative_position, strict=False)]
-        self.childs.append(Robot(namespace, position, xacro_path))
-        self.child_links.append([namespace, child_link])
-
-        tf_publishers.append(
-            Node(
-                package="tf2_ros",
-                executable="static_transform_publisher",
-                arguments=[
-                    "--frame-id",
-                    f"/{self.namespace}/{parent_link}",
-                    "--child-frame-id",
-                    f"/{namespace}/{child_link}",
-                    "--x",
-                    f"{position[0]}",
-                    "--y",
-                    f"{position[1]}",
-                    "--z",
-                    f"{position[2]}",
-                ],
-            )
-        )
-
-    def create(self, is_child: bool = False) -> None:
-        if "franka" in self.namespace:
-            robots.insert(0, self.namespace)
-            positions.insert(0, ",".join(str(axis) for axis in self.position))
-        else:
-            robots.append(self.namespace)
-            positions.append(",".join(str(axis) for axis in self.position))
-        self.add_to_rviz()
-
-        frame_prefix = self.namespace + "/" if self.namespace else ""
-        xacro_arguments = {"simulation": "true", "namespace": self.namespace}
-        xacro_arguments["childs"] = str(self.child_links)
-        xacro_arguments["parent"] = "" if is_child else "world"
-        robot_description = get_robot_description(self.xacro_path, xacro_arguments)
-
-        state_publishers.append(
-            Node(
-                package="robot_state_publisher",
-                executable="robot_state_publisher",
-                namespace=self.namespace,
-                parameters=[robot_description, {"frame_prefix": frame_prefix}],
-            )
-        )
-
-        if "franka" in self.namespace:
-            controllers.append(
-                RegisteredLaunchDescription(
-                    get_file_path("rcdt_franka", ["launch"], "controllers.launch.py"),
-                    launch_arguments={"namespace": self.namespace},
-                )
-            )
-        elif "panther" in self.namespace:
-            controllers.append(
-                RegisteredLaunchDescription(
-                    get_file_path("rcdt_panther", ["launch"], "controllers.launch.py"),
-                    launch_arguments={"namespace": self.namespace},
-                )
-            )
-
-        for child in self.childs:
-            child.create(is_child=True)
-
-    def add_to_rviz(self):
-        displays: list = rviz_yaml["Visualization Manager"]["Displays"]
+    @staticmethod
+    def add_robot_model(namespace: str) -> None:
+        print(f"Add robot model for namespace: {namespace}")
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
             {
                 "Alpha": "1",
                 "Class": "rviz_default_plugins/RobotModel",
                 "Enabled": "true",
-                "Description Topic": {"Value": f"/{self.namespace}/robot_description"},
-                "TF Prefix": self.namespace,
-                "Name": self.namespace,
+                "Description Topic": {"Value": f"/{namespace}/robot_description"},
+                "TF Prefix": namespace,
+                "Name": namespace,
             }
+        )
+
+    @staticmethod
+    def create_rviz_file() -> None:
+        print("Create rviz file")
+        with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:
+            yaml.dump(Rviz.yaml, outfile, default_flow_style=False)
+
+
+class Robot:
+    robots: list["Robot"] = []
+    platforms = {"panther": 0, "franka": 0, "velodyne": 0}
+    names: list[str] = []
+
+    @staticmethod
+    def add(robot: "Robot") -> str:
+        Robot.robots.append(robot)
+        Robot.platforms[robot.platform] += 1
+        index = Robot.platforms[robot.platform]
+        return f"{robot.platform}{index}"
+
+    @staticmethod
+    def create_state_publishers() -> list[Node]:
+        return [robot.create_state_publisher() for robot in Robot.robots]
+
+    @staticmethod
+    def move_franka_robots_to_front() -> None:
+        for index in range(len(Robot.robots)):
+            if Robot.robots[index].platform == "franka":
+                Robot.robots.insert(0, Robot.robots.pop(index))
+
+    @staticmethod
+    def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
+        Robot.move_franka_robots_to_front()
+        robots = [robot.namespace for robot in Robot.robots]
+        positions = [",".join(map(str, robot.position)) for robot in Robot.robots]
+
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
+            launch_arguments={
+                "load_gazebo_ui": str(load_gazebo_ui),
+                "robots": " ".join(robots),
+                "positions": " ".join(positions),
+            },
+        )
+
+    @staticmethod
+    def create_tf_publishers() -> list[Node]:
+        tf_publishers = []
+        for robot in Robot.robots:
+            if robot.parent is not None:
+                tf_publishers.append(robot.create_tf_publisher())
+        return tf_publishers
+
+    @staticmethod
+    def create_controllers() -> list[RegisteredLaunchDescription]:
+        controllers = []
+        for robot in Robot.robots:
+            if robot.controller_path is not None:
+                controllers.append(robot.create_controller())
+        return controllers
+
+    def __init__(
+        self,
+        platform: Literal["panther", "franka", "velodyne"],
+        position: list,
+        parent: "Robot" | None = None,
+    ):
+        self.platform = platform
+        self.parent = parent
+        self.childs = []
+        self.namespace = Robot.add(self)
+        Rviz.add_robot_model(self.namespace)
+
+        if parent is None:
+            self.is_child = False
+            self.position = position
+        else:
+            self.is_child = True
+            self.position = [
+                sum(x) for x in zip(parent.position, position, strict=False)
+            ]
+            parent.add_child(self)
+
+    @property
+    def frame_prefix(self):
+        return self.namespace + "/" if self.namespace else ""
+
+    @property
+    def controller_path(self):
+        match self.platform:
+            case "panther":
+                package = "rcdt_panther"
+            case "franka":
+                package = "rcdt_franka"
+            case _:
+                return None
+
+        return get_file_path(package, ["launch"], "controllers.launch.py")
+
+    @property
+    def xacro_path(self):
+        match self.platform:
+            case "panther":
+                return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
+            case "franka":
+                return get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
+            case "velodyne":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
+                )
+
+    @property
+    def base_link(self):
+        match self.platform:
+            case "panther":
+                return "base_footprint"
+            case "franka":
+                return "fr3_link0"
+            case "velodyne":
+                return "base_link"
+
+    def add_child(self, child: "Robot") -> None:
+        self.childs.append([child.namespace, child.base_link])
+
+    def create_state_publisher(self) -> Node:
+        xacro_arguments = {"simulation": "true", "namespace": self.namespace}
+        xacro_arguments["childs"] = str(self.childs)
+        xacro_arguments["parent"] = "" if self.is_child else "world"
+        robot_description = get_robot_description(self.xacro_path, xacro_arguments)
+
+        return Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            namespace=self.namespace,
+            parameters=[robot_description, {"frame_prefix": self.frame_prefix}],
+        )
+
+    def create_tf_publisher(self) -> Node:
+        return Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            arguments=[
+                "--frame-id",
+                f"/{self.parent.namespace}/{self.parent.base_link}",
+                "--child-frame-id",
+                f"/{self.namespace}/{self.base_link}",
+                "--x",
+                f"{self.position[0]}",
+                "--y",
+                f"{self.position[1]}",
+                "--z",
+                f"{self.position[2]}",
+            ],
+        )
+
+    def create_controller(self) -> RegisteredLaunchDescription:
+        return RegisteredLaunchDescription(
+            self.controller_path,
+            launch_arguments={"namespace": self.namespace},
         )
 
 
@@ -145,45 +220,17 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
 
-    panther_xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
-    franka_xacro_path = get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
-    velodyne_xacro_path = get_file_path(
-        "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
-    )
+    panther1 = Robot("panther", [0, 0, 0.2])
+    Robot("franka", [0, 0, 0.14], parent=panther1)
+    Robot("velodyne", [0.13, -0.13, 0.35], parent=panther1)
 
-    panther1 = Robot("panther1", [0, 0, 0.2], panther_xacro_path)
-    panther1.add_child(
-        "franka1",
-        "base_footprint",
-        "fr3_link0",
-        [0, 0, 0.14],
-        franka_xacro_path,
-    )
-    panther1.add_child(
-        "velodyne1",
-        "base_footprint",
-        "base_link",
-        [0.13, -0.13, 0.35],
-        velodyne_xacro_path,
-    )
-    panther1.create()
+    state_publishers = Robot.create_state_publishers()
+    gazebo = Robot.create_gazebo_launch(load_gazebo_ui)
+    tf_publishers = Robot.create_tf_publishers()
+    controllers = Robot.create_controllers()
 
-    Robot("franka2", [-1, 1, 0], franka_xacro_path).create()
-    Robot("panther2", [-1, 0, 0.2], panther_xacro_path).create()
-    Robot("velodyne2", [-1, -1, 0], velodyne_xacro_path).create()
-
-    gazebo = RegisteredLaunchDescription(
-        get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
-        launch_arguments={
-            "load_gazebo_ui": str(load_gazebo_ui),
-            "robots": " ".join(robots),
-            "positions": " ".join(positions),
-        },
-    )
-
-    with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:
-        yaml.dump(rviz_yaml, outfile, default_flow_style=False)
-
+    Rviz.set_fixed_frame(f"{panther1.namespace}/base_link")
+    Rviz.create_rviz_file()
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py")
     )
