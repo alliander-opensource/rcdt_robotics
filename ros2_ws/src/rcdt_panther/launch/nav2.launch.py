@@ -106,7 +106,7 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
-    map_yaml = get_file_path("rcdt_panther", ["config", "nav2"], "map.yaml")
+    map_yaml = get_file_path("rcdt_panther", ["config", "maps", "ipkw"], "ipkw.yaml")
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
