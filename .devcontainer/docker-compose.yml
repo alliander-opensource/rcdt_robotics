@@ -11,6 +11,8 @@ services:
     privileged: true
     mem_limit: 6gb
     tty: true
+    group_add:
+      - "106"      
     env_file:
       - .env
     volumes:

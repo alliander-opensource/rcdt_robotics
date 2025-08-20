@@ -63,22 +63,8 @@ def launch_setup(context: LaunchContext) -> list:
                     "velodyne_pointcloud", ["params"], "VLP16db.yaml"
                 ),
                 "model": "VLP16",
-                "min_range": 0.9,
+                "min_range": 0.4,
                 "max_range": 130.0,
-            }
-        ],
-        remappings=[("velodyne_points", "scan/points")],
-        namespace=namespace,
-    )
-
-    velodyne_laserscan_node = Node(
-        package="velodyne_laserscan",
-        executable="velodyne_laserscan_node",
-        output="both",
-        parameters=[
-            {
-                "ring": -1,
-                "resolution": 0.007,
             }
         ],
         remappings=[("velodyne_points", "scan/points")],
@@ -102,7 +88,7 @@ def launch_setup(context: LaunchContext) -> list:
         ],
     )
 
-    best_laserscan_node = Node(
+    pointcloud_to_laserscan_node = Node(
         package="pointcloud_to_laserscan",
         executable="pointcloud_to_laserscan_node",
         remappings=[("cloud_in", "/velodyne/scan/points"), ("scan", "/velodyne/scan")],
@@ -122,8 +108,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context),
         Register.on_start(velodyne_driver_node, context) if not use_sim else SKIP,
         Register.on_start(velodyne_transform_node, context) if not use_sim else SKIP,
-        Register.on_start(velodyne_laserscan_node, context) if not use_sim else SKIP,
-        Register.on_start(best_laserscan_node, context),
+        Register.on_start(pointcloud_to_laserscan_node, context),
     ]
 
 
