@@ -59,6 +59,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "planner_server",
                 "behavior_server",
                 "bt_navigator",
+                "waypoint_follower",
             ]
         )
 
@@ -106,7 +107,7 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
-    map_yaml = get_file_path("rcdt_panther", ["config", "maps", "ipkw"], "ipkw.yaml")
+    map_yaml = get_file_path("rcdt_panther", ["config", "maps"], "map.yaml")
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
@@ -158,6 +159,11 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[bt_navigator_params],
     )
 
+    waypoint_follower = Node(
+        package="nav2_waypoint_follower",
+        executable="waypoint_follower",
+    )
+
     collision_monitor_node = Node(
         package="nav2_collision_monitor",
         executable="collision_monitor",
@@ -190,6 +196,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(planner_server, context) if use_navigation else SKIP,
         Register.on_start(behavior_server, context) if use_navigation else SKIP,
         Register.on_start(bt_navigator, context) if use_navigation else SKIP,
+        Register.on_start(waypoint_follower, context) if use_navigation else SKIP,
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,

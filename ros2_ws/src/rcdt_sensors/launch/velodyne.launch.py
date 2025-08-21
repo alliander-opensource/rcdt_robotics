@@ -94,7 +94,6 @@ def launch_setup(context: LaunchContext) -> list:
         remappings=[("cloud_in", "/velodyne/scan/points"), ("scan", "/velodyne/scan")],
         parameters=[
             {
-                "target_frame": "panther/base_footprint",
                 "min_height": 0.0,
                 "max_height": 2.0,
                 "range_min": 0.05,
