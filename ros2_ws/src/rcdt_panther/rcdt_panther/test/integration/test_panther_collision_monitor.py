@@ -31,8 +31,8 @@ def panther_launch() -> LaunchDescription:
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
-            "rviz": "False",
-            "panther_xyz": "3.6,0,0.2",
+            "rviz": "True",
+            "panther_xyz": "4.0,0,0.2",
             "collision_monitor": "True",
         },
     )
