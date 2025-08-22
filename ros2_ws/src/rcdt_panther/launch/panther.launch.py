@@ -82,7 +82,7 @@ def launch_setup(context: LaunchContext) -> list:
     rviz = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py"),
         launch_arguments={
-            "rviz_frame": "map" if use_slam else f"{ns}/odom",
+            "rviz_frame": "map" if use_slam or use_navigation else f"{ns}/odom",
             "rviz_display_config": rviz_display_config,
         },
     )
