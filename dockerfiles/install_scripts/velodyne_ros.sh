@@ -8,9 +8,8 @@ set -e
 source /home/$UNAME/.bashrc
 apt update
 
-apt install ros-$ROS_DISTRO-pointcloud-to-laserscan
-
-apt-get install -y libpcap-dev
+apt-get install -y libpcap-dev \
+    ros-$ROS_DISTRO-velodyne-description \
 
 mkdir -p /home/$UNAME/velodyne_ws/src
 cd /home/$UNAME/velodyne_ws
