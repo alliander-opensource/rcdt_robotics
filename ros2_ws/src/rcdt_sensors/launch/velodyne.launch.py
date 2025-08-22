@@ -46,6 +46,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="both",
         parameters=[
             {
+                "model": "VLP16",
                 "device_ip": "10.15.20.5",
                 "frame_id": frame_prefix + "velodyne",
             }
@@ -63,7 +64,7 @@ def launch_setup(context: LaunchContext) -> list:
                     "velodyne_pointcloud", ["params"], "VLP16db.yaml"
                 ),
                 "model": "VLP16",
-                "min_range": 0.4,
+                "min_range": 0.1,
                 "max_range": 130.0,
             }
         ],
@@ -97,7 +98,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "min_height": 0.0,
                 "max_height": 2.0,
                 "range_min": 0.05,
-                "range_max": 12.0,
+                "range_max": 100.0,
             }
         ],
     )

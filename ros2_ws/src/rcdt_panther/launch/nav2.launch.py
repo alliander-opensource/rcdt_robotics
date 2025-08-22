@@ -18,7 +18,14 @@ use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
     "controller",
     "vector_pursuit",
-    ["dwb", "graceful_motion", "mppi", "pure_pursuit", "rotation_shim", "vector_pursuit"],
+    [
+        "dwb",
+        "graceful_motion",
+        "mppi",
+        "pure_pursuit",
+        "rotation_shim",
+        "vector_pursuit",
+    ],
 )
 
 
@@ -107,7 +114,9 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
-    map_yaml = get_file_path("rcdt_panther", ["config", "maps"], "map.yaml")
+    map_filename = "map.yaml" if use_sim else "ipkw.yaml"
+    map_yaml = get_file_path("rcdt_panther", ["config", "maps"], map_filename)
+
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
@@ -164,6 +173,13 @@ def launch_setup(context: LaunchContext) -> list:
         executable="waypoint_follower",
     )
 
+    collision_monitor_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
     collision_monitor_node = Node(
         package="nav2_collision_monitor",
         executable="collision_monitor",
@@ -171,9 +187,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[
-            get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml")
-        ],
+        parameters=[collision_monitor_params],
     )
 
     lifecycle_manager = Node(

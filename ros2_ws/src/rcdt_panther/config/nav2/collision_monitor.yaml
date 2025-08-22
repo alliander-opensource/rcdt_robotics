@@ -11,12 +11,12 @@ collision_monitor:
     cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
     enable_stamped_cmd_vel: True
-    transform_tolerance: 0.5
+    transform_tolerance: 1.0
     polygons: ["PolygonSlow", "VelocityPolygonStop"]
 
     PolygonSlow:
       type: "polygon"
-      points: "[[-1.5, 0.9], [1.5, 0.9], [1.5, -0.9], [-1.5, -0.9]]"
+      points: "[[-1.0, 0.6], [1.0, 0.6], [1.0, -0.6], [-1.0, -0.6]]"
       action_type: "slowdown"
       min_points: 4
       slowdown_ratio: 0.7
@@ -35,28 +35,38 @@ collision_monitor:
       holonomic: false
 
       rotation:
-        points: "[[0.65, 0.65], [0.65, -0.65], [-0.65, -0.65], [-0.65, 0.65]]"
+        points: "[[0.750, 0.000], [0.693, 0.287], [0.530, 0.530], [0.287, 0.693],
+              [0.000, 0.750], [-0.287, 0.693], [-0.530, 0.530], [-0.693, 0.287],
+              [-0.750, 0.000], [-0.693, -0.287], [-0.530, -0.530], [-0.287, -0.693],
+              [-0.000, -0.750], [0.287, -0.693], [0.530, -0.530], [0.693, -0.287]]"
         linear_min: 0.0
         linear_max: 0.05
         theta_min: -1.0
         theta_max: 1.0
 
       translation_forward:
-        points: "[[0.90, 0.65], [0.90, -0.65], [-0.50, -0.65], [-0.50, 0.65]]"
+        points: "[[0.90, 0.00], [0.82, 0.30], [0.60, 0.52], [0.30, 0.60],
+              [0.00, 0.52], [-0.22, 0.30], [-0.30, 0.00], [-0.22, -0.30],
+              [0.00, -0.52], [0.30, -0.60], [0.60, -0.52], [0.82, -0.30]]"
         linear_min: 0.0
         linear_max: 1.0
         theta_min: -1.0
         theta_max: 1.0
 
       translation_backward:
-        points: "[[0.50, 0.65], [0.50, -0.65], [-0.90, -0.65], [-0.90, 0.65]]"
+        points: "[[0.30, 0.00], [0.22, 0.30], [0.00, 0.52], [-0.30, 0.60],
+              [-0.60, 0.52], [-0.82, 0.30], [-0.90, 0.00], [-0.82, -0.30],
+              [-0.60, -0.52], [-0.30, -0.60], [0.00, -0.52], [0.22, -0.30]]"
         linear_min: -1.0
         linear_max: 0.0
         theta_min: -1.0
         theta_max: 1.0
 
       stopped:
-        points: "[[0.60, 0.60], [0.60, -0.60], [-0.60, -0.60], [-0.60, 0.60]]"
+        points: "[[0.350, 0.000], [0.323, 0.191], [0.248, 0.354], [0.134, 0.462],
+                [0.000, 0.500], [-0.134, 0.462], [-0.248, 0.354], [-0.323, 0.191],
+                [-0.350, 0.000], [-0.323, -0.191], [-0.248, -0.354], [-0.134, -0.462],
+                [-0.000, -0.500], [0.134, -0.462], [0.248, -0.354], [0.323, -0.191]]"
         linear_min: -1.0
         linear_max: 1.0
         theta_min: -1.0
@@ -64,7 +74,7 @@ collision_monitor:
 
     observation_sources: ["scan"]
     scan:
-      source_timeout: 0.2
+      source_timeout: 1.0
       type: "scan"
       topic: "/velodyne/scan"
       enabled: True

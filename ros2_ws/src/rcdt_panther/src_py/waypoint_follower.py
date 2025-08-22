@@ -5,7 +5,7 @@
 
 import rclpy
 from geometry_msgs.msg import PoseStamped
-from nav2_msgs.action import FollowWaypoints, NavigateThroughPoses
+from nav2_msgs.action import FollowWaypoints
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.action import ActionClient
 from rclpy.node import Node
@@ -17,13 +17,11 @@ class WaypointFollower(Node):
     def __init__(self):
         """Initialize the WaypointFollower node."""
         super().__init__("waypoint_follower")
-        self.action_client = ActionClient(
-            self, FollowWaypoints, "/follow_waypoints"
-        )
+        self.action_client = ActionClient(self, FollowWaypoints, "/follow_waypoints")
 
         goal = FollowWaypoints.Goal()
 
-        corner = 3.3
+        corner = 3.0
 
         pose1 = PoseStamped()
         pose1.header.frame_id = "map"
