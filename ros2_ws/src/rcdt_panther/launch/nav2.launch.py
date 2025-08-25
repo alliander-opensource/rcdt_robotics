@@ -98,6 +98,13 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
+    planner_server_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+
     behavior_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
@@ -145,7 +152,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[global_costmap_params],
+        parameters=[global_costmap_params, planner_server_params],
     )
 
     behavior_server = Node(
