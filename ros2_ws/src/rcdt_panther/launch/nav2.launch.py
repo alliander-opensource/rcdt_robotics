@@ -100,11 +100,7 @@ def launch_setup(context: LaunchContext) -> list:
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
         ),
-        param_rewrites={
-            "default_nav_to_pose_bt_xml": get_file_path(
-                "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
-            )
-        },
+        param_rewrites={},
     )
 
     behavior_server_params = RewrittenYaml(
@@ -120,7 +116,11 @@ def launch_setup(context: LaunchContext) -> list:
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
         ),
-        param_rewrites={},
+        param_rewrites={
+            "default_nav_to_pose_bt_xml": get_file_path(
+                "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
+            )
+        },
     )
 
     map_filename = "map.yaml" if use_sim else "ipkw.yaml"
