@@ -1,7 +1,11 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 frame: map
-loops: 1
+loops: 10
 waypoints:
-  - [3.0, 3.0, 0.0]
-  - [3.0, -3.0, 270]
-  - [-3.0, -3.0, 180.0]
-  - [-3.0, 3.0, 90]
+  - [3.5, 3.5, 0.0]
+  - [3.5, -3.5, 270]
+  - [-3.5, -3.5, 180.0]
+  - [-3.5, 3.5, 90]
