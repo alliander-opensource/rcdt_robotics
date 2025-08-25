@@ -192,6 +192,8 @@ def launch_setup(context: LaunchContext) -> list:
     smoother_remaps = [("cmd_vel", "/panther/cmd_vel_nav")]
     if not use_collision_monitor:
         smoother_remaps.append(("cmd_vel_smoothed", "/panther/cmd_vel"))
+    else:
+        smoother_remaps.append(("cmd_vel_smoothed", "/panther/cmd_vel_smoothed"))
 
     velocity_smoother = Node(
         package="nav2_velocity_smoother",
