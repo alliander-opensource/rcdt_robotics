@@ -6,7 +6,6 @@
 
 bt_navigator:
   ros__parameters:
-    default_nav_to_pose_bt_xml: /home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_panther/config/nav2/behavior_tree.xml
     robot_base_frame: panther/base_footprint
     odom_topic: /panther/odom
     error_code_names:
