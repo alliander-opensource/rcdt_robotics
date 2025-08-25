@@ -7,3 +7,5 @@
 behavior_server:
   ros__parameters:
     enable_stamped_cmd_vel: true
+    local_frame: "panther/odom"
+    robot_base_frame: "panther/base_footprint"

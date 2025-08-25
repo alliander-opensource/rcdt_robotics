@@ -14,6 +14,9 @@ RUN ./franka_ros2.sh
 COPY ./install_scripts/husarion_ugv_ros.sh .
 RUN ./husarion_ugv_ros.sh
 
+COPY ./install_scripts/velodyne_ros.sh .
+RUN ./velodyne_ros.sh
+
 COPY ./install_scripts/franka_lock_unlock.sh .
 RUN ./franka_lock_unlock.sh
 

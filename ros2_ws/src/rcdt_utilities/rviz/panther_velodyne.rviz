@@ -10,6 +10,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /LaserScan1/Status1
       Splitter Ratio: 0.5
     Tree Height: 752
   - Class: rviz_common/Selection
@@ -69,6 +70,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -82,11 +87,19 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        fl_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fl_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        fr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         fr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -108,7 +121,15 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        mount_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rear_bumper_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rl_wheel_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -117,6 +138,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rr_wheel_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rr_wheel_link:
           Alpha: 1
           Show Axes: false
@@ -153,7 +178,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        lidar:
+        velodyne:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -193,10 +218,43 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
-        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /velodyne/scan/points
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /velodyne/scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -246,7 +304,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 7.152005672454834
+      Distance: 9.76075267791748
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -261,10 +319,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7303981781005859
+      Pitch: 0.2403986155986786
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.9753978252410889
+      Yaw: 1.4703973531723022
     Saved: ~
 Window Geometry:
   Displays:
@@ -283,4 +341,4 @@ Window Geometry:
     collapsed: false
   Width: 1920
   X: 328
-  Y: 0
+  Y: 32

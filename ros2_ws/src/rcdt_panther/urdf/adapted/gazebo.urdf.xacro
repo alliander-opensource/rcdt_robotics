@@ -49,6 +49,17 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
     </gazebo>
   </xacro:macro>
 
+  <xacro:macro name="odom_publisher">
+    <gazebo>
+        <plugin
+        filename="gz-sim-odometry-publisher-system"
+        name="gz::sim::systems::OdometryPublisher">
+        <dimensions>3</dimensions>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+
   <!-- Detachable joint: -->
   <xacro:macro name="detachable_joint" params="connected_to:=''">
     <xacro:if value="${connected_to == 'franka'}">
