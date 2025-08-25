@@ -31,7 +31,7 @@ def panther_launch() -> LaunchDescription:
     panther = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
-            "rviz": "True",
+            "rviz": "False",
             "panther_xyz": "4.0,0,0.2",
             "collision_monitor": "True",
         },
@@ -88,7 +88,9 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
     input_velocity = 0.0001
     expected_output = input_velocity * 0.7
 
-    publisher = test_node.create_publisher(TwistStamped, "/panther/cmd_vel_raw", 10)
+    publisher = test_node.create_publisher(
+        TwistStamped, "/panther/cmd_vel_smoothed", 10
+    )
     result = {}
 
     def callback_function_cmd_vel(msg: TwistStamped) -> None:

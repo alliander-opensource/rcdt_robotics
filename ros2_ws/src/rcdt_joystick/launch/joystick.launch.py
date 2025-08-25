@@ -65,7 +65,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     pub_topic = (
-        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_smoothed"
     )
 
     joy_to_twist_panther = Node(

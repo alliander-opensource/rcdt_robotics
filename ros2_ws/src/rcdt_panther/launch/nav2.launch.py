@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetRemap
+from launch_ros.actions import Node
 from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
@@ -67,6 +67,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "behavior_server",
                 "bt_navigator",
                 "waypoint_follower",
+                "velocity_smoother",
             ]
         )
 
@@ -136,6 +137,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[local_costmap_params, controller_server_params, follow_path_params],
+        remappings=[("cmd_vel", "panther/cmd_vel_nav")],
     )
 
     planner_server = Node(
@@ -156,6 +158,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[behavior_server_params],
+        remappings=[("cmd_vel", "panther/cmd_vel_nav")],
     )
 
     bt_navigator = Node(
@@ -171,6 +174,27 @@ def launch_setup(context: LaunchContext) -> list:
     waypoint_follower = Node(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
+    )
+
+    velocity_smoother_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "velocity_smoother.yaml"
+        ),
+        param_rewrites=param_substitutions,
+    )
+    smoother_remaps = [("cmd_vel", "/panther/cmd_vel_nav")]
+    if not use_collision_monitor:
+        smoother_remaps.append(("cmd_vel_smoothed", "/panther/cmd_vel"))
+
+    velocity_smoother = Node(
+        package="nav2_velocity_smoother",
+        executable="velocity_smoother",
+        name="velocity_smoother",
+        output="screen",
+        respawn=use_respawn,
+        respawn_delay=2.0,
+        parameters=[velocity_smoother_params],
+        remappings=smoother_remaps,
     )
 
     collision_monitor_params = RewrittenYaml(
@@ -202,12 +226,7 @@ def launch_setup(context: LaunchContext) -> list:
         package="rcdt_panther", executable="waypoint_follower_controller.py"
     )
 
-    pub_topic = (
-        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
-    )
-
     return [
-        SetRemap(src="/cmd_vel", dst=pub_topic),
         Register.on_start(map_server, context) if not use_slam else SKIP,
         Register.on_start(amcl, context) if not use_slam else SKIP,
         Register.on_start(controller_server, context) if use_navigation else SKIP,
@@ -215,6 +234,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(behavior_server, context) if use_navigation else SKIP,
         Register.on_start(bt_navigator, context) if use_navigation else SKIP,
         Register.on_start(waypoint_follower, context) if use_navigation else SKIP,
+        Register.on_start(velocity_smoother, context) if use_navigation else SKIP,
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,
