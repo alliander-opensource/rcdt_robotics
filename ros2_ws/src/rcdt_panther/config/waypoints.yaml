@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 frame: map
-loops: 1
+loops: 10
 waypoints:
   - [3.3, 3.3, 0.0]
   - [3.3, -3.3, 270]
