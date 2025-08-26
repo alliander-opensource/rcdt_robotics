@@ -64,7 +64,7 @@ def launch_setup(context: LaunchContext) -> list:
                     "velodyne_pointcloud", ["params"], "VLP16db.yaml"
                 ),
                 "model": "VLP16",
-                "min_range": 0.1,
+                "min_range": 0.2,
                 "max_range": 130.0,
             }
         ],
@@ -81,9 +81,9 @@ def launch_setup(context: LaunchContext) -> list:
             "--child-frame-id",
             "velodyne/base_link",
             "--x",
-            "0.13",
+            "0.0",
             "--y",
-            "-0.13",
+            "-0.06",
             "--z",
             "0.55",
         ],
