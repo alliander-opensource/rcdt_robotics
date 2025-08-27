@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+velocity_smoother:
+  ros__parameters:
+    odom_topic: "/panther/odom"
+    enable_stamped_cmd_vel: true       

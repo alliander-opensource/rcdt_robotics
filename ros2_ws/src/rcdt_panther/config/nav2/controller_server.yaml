@@ -7,3 +7,8 @@
 controller_server:
   ros__parameters:
     enable_stamped_cmd_vel: true
+    transform_tolerance:
+    goal_checker:
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.35
+      yaw_goal_tolerance: 6.28
