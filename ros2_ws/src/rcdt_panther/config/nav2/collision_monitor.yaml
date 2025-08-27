@@ -11,7 +11,6 @@ collision_monitor:
     cmd_vel_in_topic: "panther/cmd_vel_raw"
     cmd_vel_out_topic: "panther/cmd_vel"
     enable_stamped_cmd_vel: True
-    transform_tolerance: 1.0
     polygons: ["PolygonSlow", "VelocityPolygonStop"]
 
     PolygonSlow:

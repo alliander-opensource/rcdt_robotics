@@ -64,7 +64,7 @@ def launch_setup(context: LaunchContext) -> list:
                     "velodyne_pointcloud", ["params"], "VLP16db.yaml"
                 ),
                 "model": "VLP16",
-                "min_range": 0.2,
+                "min_range": 0.1,
                 "max_range": 130.0,
             }
         ],
@@ -96,7 +96,7 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[
             {
                 "target_frame": "panther/base_footprint",
-                "min_height": 0.0,
+                "min_height": 0.1,
                 "max_height": 2.0,
                 "range_min": 0.05,
                 "range_max": 100.0,
