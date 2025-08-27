@@ -79,10 +79,10 @@
   ],
   "view": {
     "center": {
-      "x": -0.681740471714145,
-      "y": -0.37862445320923255
+      "x": 6.92626742068131,
+      "y": 0.09940964485070736
     },
-    "scale": 85.51696790581569
+    "scale": 57.88124999999998
   },
   "settings_default": {
     "fixed_frame": "map",
@@ -128,7 +128,7 @@
   },
   "uid": 36,
   "teleop_autoID_1": {
-    "topic": "/panther/cmd_vel",
+    "topic": "/panther/cmd_vel_raw",
     "axis_horiz": "angular_z",
     "axis_vert": "linear_x",
     "vel_vert": 1,
