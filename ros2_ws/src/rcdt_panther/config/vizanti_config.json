@@ -250,7 +250,7 @@
     "throttle": "2000"
   },
   "path_autoID_30": {
-    "topic": "/lookahead_collision_arc",
+    "topic": "/plan",
     "color": "#54db67",
     "throttle": "100"
   },
