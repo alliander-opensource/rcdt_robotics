@@ -24,11 +24,6 @@ https://docs.nav2.org/behavior_trees/overview/detailed_behavior_tree_walkthrough
                             planner_id="{selected_planner}"
                             error_code_id="{compute_path_error_code}" />
                         <Wait wait_duration="2.0" />
-                        <Sequence>
-                            <WouldAPlannerRecoveryHelp error_code="{compute_path_error_code}" />
-                            <ClearEntireCostmap name="ClearGlobalCostmap-Context"
-                                service_name="global_costmap/clear_entirely_global_costmap" />
-                        </Sequence>
                     </RecoveryNode>
                 </RateController>
                 <RecoveryNode number_of_retries="1" name="FollowPath">
