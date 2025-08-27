@@ -122,6 +122,15 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    vizanti_server_launch = RegisteredLaunchDescription(
+        get_file_path("vizanti_server", ["launch"], "vizanti_server.launch.py"),
+        launch_arguments={
+            "default_widget_config": get_file_path(
+                "rcdt_panther", ["config"], "vizanti_config.json"
+            )
+        },
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(velodyne, context) if use_velodyne else SKIP,
@@ -133,6 +142,7 @@ def launch_setup(context: LaunchContext) -> list:
         if use_navigation or use_collision_monitor
         else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(vizanti_server_launch, context),
     ]
 
 
