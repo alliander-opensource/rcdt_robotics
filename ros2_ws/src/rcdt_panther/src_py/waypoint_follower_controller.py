@@ -4,8 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from action_msgs.srv import CancelGoal
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import FollowWaypoints
+from nav_msgs.msg import Path
 from numpy import deg2rad
 from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
 from rclpy.action import ActionClient
@@ -13,6 +15,7 @@ from rclpy.action.client import ClientGoalHandle
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+from std_msgs.msg import Empty
 from std_srvs.srv import Trigger
 from tf_transformations import quaternion_from_euler
 
@@ -27,7 +30,6 @@ class WaypointFollowerController(Node):
             executor (MultiThreadedExecutor): The executor is required for the spin_until_future_complete calls, otherwise a second call never finishes.
         """
         super().__init__("waypoint_follower_controller")
-
         self.executor = executor
 
         cb_start = MutuallyExclusiveCallbackGroup()
@@ -36,11 +38,82 @@ class WaypointFollowerController(Node):
         self.create_service(Trigger, "~/stop", self.stop, callback_group=cb_stop)
 
         self.client = ActionClient(self, FollowWaypoints, "/follow_waypoints")
-
         self.goal = FollowWaypoints.Goal()
         self.goal_handle: ClientGoalHandle | None = None
 
+        cb_ui_cancel = MutuallyExclusiveCallbackGroup()
+        self.create_subscription(
+            Empty, "/ui/cancel_nav", self._ui_cancel_cb, 10, callback_group=cb_ui_cancel
+        )
+        self.cancel_client = self.create_client(
+            CancelGoal, "/navigate_to_pose/_action/cancel_goal"
+        )
+        self.cancel_client.wait_for_service()
+
+        cb_waypoints = MutuallyExclusiveCallbackGroup()
+        self.create_subscription(
+            Path, "/waypoints", self._waypoints_cb, 10, callback_group=cb_waypoints
+        )
+        self._topic_waypoints: list[PoseStamped] | None = None
+
         self.get_logger().info("Controller is ready.")
+
+    def _waypoints_cb(self, msg: Path) -> None:
+        if not msg.poses:
+            self.get_logger().warn("Received /waypoints Path with 0 poses; ignoring.")
+            return
+
+        self._topic_waypoints = list(msg.poses)
+        self.get_logger().info(
+            f"Received {len(self._topic_waypoints)} waypoints; starting navigation."
+        )
+
+        # If a goal is active, cancel it first
+        if self.goal_handle is not None:
+            cancel_future = self.goal_handle.cancel_goal_async()
+            rclpy.spin_until_future_complete(self, cancel_future, self.executor, 2)
+            self.goal_handle = None
+
+        # Start immediately using the just-received waypoints
+        ok = self._start_now_with_topic_waypoints()
+        if not ok:
+            # Fallback: leave message in memory; user can resend or use ~/start
+            self.get_logger().error("Failed to start after receiving /waypoints.")
+
+    def _start_now_with_topic_waypoints(self) -> bool:
+        if not self._topic_waypoints:
+            return False
+        # Build goal directly from topic waypoints
+        self.goal = FollowWaypoints.Goal()
+        self.goal.poses = self._topic_waypoints
+        self.goal.number_of_loops = 0
+
+        future_goal = self.client.send_goal_async(self.goal)
+        rclpy.spin_until_future_complete(self, future_goal, self.executor, 2)
+        if not future_goal.done():
+            self.get_logger().error("Failed to send goal.")
+            return False
+
+        goal_handle: ClientGoalHandle = future_goal.result()
+        if not goal_handle.accepted:
+            self.get_logger().error("Goal was not accepted.")
+            return False
+
+        self.goal_handle = goal_handle
+        self.get_logger().info("Navigation to /waypoints started.")
+        return True
+
+    def _ui_cancel_cb(self, _msg: Empty) -> None:
+        req = CancelGoal.Request()
+        req.goal_info.goal_id.uuid = [0] * 16  # cancel all
+        req.goal_info.stamp.sec = 0
+        req.goal_info.stamp.nanosec = 0
+        _ = self.cancel_client.call_async(req)
+
+        if self.goal_handle is not None:
+            _ = self.goal_handle.cancel_goal_async()
+            self.goal_handle = None
+            self.get_logger().info("Local FollowWaypoints goal_handle cleared.")
 
     def start(self, _: Trigger.Request, response: Trigger.Response) -> Trigger.Response:
         """Callback on the start service call.
@@ -108,7 +181,12 @@ class WaypointFollowerController(Node):
         return True
 
     def update_goal(self) -> None:
-        """Update the goal for the action server."""
+        """Use topic-provided waypoints if present; else load from YAML."""
+        if self._topic_waypoints:
+            self.goal = FollowWaypoints.Goal()
+            self.goal.poses = self._topic_waypoints
+            return
+
         self.goal = FollowWaypoints.Goal()
         file_path = get_file_path("rcdt_panther", ["config"], "waypoints.yaml")
         yaml = get_yaml(file_path)

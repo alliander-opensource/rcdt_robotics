@@ -9,7 +9,6 @@ from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
@@ -27,6 +26,9 @@ controller_arg = LaunchArgument(
         "vector_pursuit",
     ],
 )
+global_map_arg = LaunchArgument(
+    "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -38,13 +40,13 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    use_sim = use_sim_arg.bool_value(context)
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
+    global_map = global_map_arg.string_value(context)
 
     lifecycle_nodes = []
 
@@ -123,13 +125,16 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
-    map_filename = "map.yaml" if use_sim else "ipkw.yaml"
-    map_yaml = get_file_path("rcdt_panther", ["config", "maps"], map_filename)
-
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
-        parameters=[{"yaml_filename": map_yaml}],
+        parameters=[
+            {
+                "yaml_filename": get_file_path(
+                    "rcdt_panther", ["config", "maps"], str(global_map)
+                )
+            }
+        ],
     )
 
     amcl = Node(
@@ -228,7 +233,9 @@ def launch_setup(context: LaunchContext) -> list:
         if use_collision_monitor
         else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
-        Register.on_log(waypoint_follower_controller, "Controller is ready.", context),
+        Register.on_log(waypoint_follower_controller, "Controller is ready.", context)
+        if use_navigation
+        else SKIP,
     ]
 
 
@@ -265,11 +272,11 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
-            use_sim_arg.declaration,
             use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,
             controller_arg.declaration,
+            global_map_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
