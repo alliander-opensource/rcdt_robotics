@@ -56,7 +56,7 @@ def launch_setup(context: LaunchContext) -> list:
     positions = [panther_xyz.string]
     if child == "velodyne":
         robots.append("velodyne")
-        velodyne_relative_position = [0.13, -0.13, 0.55]
+        velodyne_relative_position = [0.0, -0.06, 0.55]
         positions.append(panther_xyz.absolute(velodyne_relative_position))
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),

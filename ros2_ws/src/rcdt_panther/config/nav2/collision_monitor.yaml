@@ -15,7 +15,7 @@ collision_monitor:
 
     PolygonSlow:
       type: "polygon"
-      points: "[[-1.5, 0.9], [1.5, 0.9], [1.5, -0.9], [-1.5, -0.9]]"
+      points: "[[-1.0, 0.6], [1.0, 0.6], [1.0, -0.6], [-1.0, -0.6]]"
       action_type: "slowdown"
       min_points: 4
       slowdown_ratio: 0.7
@@ -30,41 +30,39 @@ collision_monitor:
       visualize: True
       enabled: True
       polygon_pub_topic: "velocity_polygon_stop"
-      velocity_polygons: ["rotation", "translation_forward", "translation_backward", "stopped"]
+      velocity_polygons: ["rotation", "translation_forward", "translation_backward"]
       holonomic: false
 
       rotation:
-        points: "[[0.65, 0.65], [0.65, -0.65], [-0.65, -0.65], [-0.65, 0.65]]"
-        linear_min: 0.0
-        linear_max: 0.05
-        theta_min: -1.0
-        theta_max: 1.0
+        points: "[[0.600, 0.000], [0.554, 0.230], [0.424, 0.424], [0.230, 0.554],
+                  [0.000, 0.600], [-0.230, 0.554], [-0.424, 0.424], [-0.554, 0.230],
+                  [-0.600, 0.000], [-0.554, -0.230], [-0.424, -0.424], [-0.230, -0.554],
+                  [-0.000, -0.600], [0.230, -0.554], [0.424, -0.424], [0.554, -0.230]]"
+        linear_min: -0.02
+        linear_max:  0.02
+        theta_min:   0.2
+        theta_max:   1.0
 
       translation_forward:
-        points: "[[0.90, 0.65], [0.90, -0.65], [-0.50, -0.65], [-0.50, 0.65]]"
+        points: "[[0.75, 0.00], [0.67, 0.30], [0.45, 0.52], [0.15, 0.60],
+                  [0.00, 0.52], [-0.22, 0.30], [-0.30, 0.00], [-0.22, -0.30],
+                  [0.00, -0.52], [0.15, -0.60], [0.45, -0.52], [0.67, -0.30]]"
         linear_min: 0.0
         linear_max: 1.0
         theta_min: -1.0
-        theta_max: 1.0
+        theta_max:  1.0
 
       translation_backward:
-        points: "[[0.50, 0.65], [0.50, -0.65], [-0.90, -0.65], [-0.90, 0.65]]"
+        points: "[[0.30, 0.00], [0.22, 0.30], [0.00, 0.52], [-0.15, 0.60],
+                  [-0.45, 0.52], [-0.67, 0.30], [-0.75, 0.00], [-0.67, -0.30],
+                  [-0.45, -0.52], [-0.15, -0.60], [0.00, -0.52], [0.22, -0.30]]"
         linear_min: -1.0
-        linear_max: 0.0
-        theta_min: -1.0
-        theta_max: 1.0
-
-      stopped:
-        points: "[[0.60, 0.60], [0.60, -0.60], [-0.60, -0.60], [-0.60, 0.60]]"
-        linear_min: -1.0
-        linear_max: 1.0
-        theta_min: -1.0
-        theta_max: 1.0
-
-    observation_sources: ["pointcloud"]
-    pointcloud:
-      type: "pointcloud"
-      topic: "/velodyne/scan/points"
-      min_height: 0.1
-      max_height: 1.0
+        linear_max:  0.0
+        theta_min:  -1.0
+        theta_max:   1.0
+    observation_sources: ["scan"]
+    scan:
+      source_timeout: 1.0
+      type: "scan"
+      topic: "/velodyne/scan"
       enabled: True
