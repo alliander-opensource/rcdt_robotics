@@ -23,7 +23,7 @@ panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
 global_map_arg = LaunchArgument(
     "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
 )
-use_ui_arg = LaunchArgument("use_ui", False, [True, False])
+use_ui_arg = LaunchArgument("ui", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:

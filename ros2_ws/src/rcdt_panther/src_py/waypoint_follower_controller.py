@@ -109,6 +109,7 @@ class WaypointFollowerController(Node):
         req.goal_info.stamp.sec = 0
         req.goal_info.stamp.nanosec = 0
         _ = self.cancel_client.call_async(req)
+        self.get_logger().info("UI requested to cancel navigation.")
 
         if self.goal_handle is not None:
             _ = self.goal_handle.cancel_goal_async()
