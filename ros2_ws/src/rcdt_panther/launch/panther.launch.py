@@ -129,12 +129,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     vizanti_server_launch = RegisteredLaunchDescription(
-        get_file_path("vizanti_server", ["launch"], "vizanti_server.launch.py"),
-        launch_arguments={
-            "default_widget_config": get_file_path(
-                "rcdt_panther", ["config"], "vizanti_config.json"
-            )
-        },
+        get_file_path("rcdt_utilities", ["launch"], "vizanti.launch.py")
     )
 
     return [
