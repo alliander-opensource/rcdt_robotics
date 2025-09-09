@@ -173,6 +173,47 @@ ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
 
 :::
 
+## Using an User Interfaces
+
+### Default Panther UI
+To use the user interface created by Panther:
+
+1. Start the Panther.  
+2. Connect to the Panther network.    
+3. Open a browser and go to: [http://10.15.20.2:8080/ui](http://10.15.20.2:8080/ui)
+
+You can also control the Panther with your mobile phone, tablet or any other device in the same way.
+
+### Our Custom UI
+To use the custom-built user interface:
+
+1. Start the launch file with the UI flag enabled:  
+```bash
+ros2 launch rcdt_panther rcdt_panther.launch.py ui:=True
+````
+
+2. Access the interface:
+
+   * **In simulation:**
+
+     ```
+     http://localhost:5000
+     ```
+   * **On the real robot:** after connecting to the Panther network, open
+
+     ```
+     http://10.15.20.3:5000
+     ```
+
+---
+
+### Example
+
+The interface should look something like this:
+
+![ui](../img/panther/custom_ui.png)
+
+
 ## Proposed changes to reduce network traffic
 
 During experimentation it became clear that at least ethernet-speed connections are required in order to deal with pointcloud data without dropping messages. The current high-level architecture when using a LiDAR is as follows:  
