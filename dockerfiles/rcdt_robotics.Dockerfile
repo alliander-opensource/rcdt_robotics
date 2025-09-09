@@ -14,6 +14,9 @@ RUN ./franka_ros2.sh
 COPY ./install_scripts/husarion_ugv_ros.sh .
 RUN ./husarion_ugv_ros.sh
 
+COPY ./install_scripts/nav2_plugins.sh .
+RUN ./nav2_plugins.sh
+
 COPY ./install_scripts/vizanti.sh .
 RUN ./vizanti.sh
 
