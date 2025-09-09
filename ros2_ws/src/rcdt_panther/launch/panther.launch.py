@@ -20,6 +20,9 @@ scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
 panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
+global_map_arg = LaunchArgument(
+    "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -41,6 +44,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_navigation = use_navigation_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
     panther_xyz = panther_xyz_arg.string_value(context)
+    global_map = global_map_arg.string_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -119,6 +123,7 @@ def launch_setup(context: LaunchContext) -> list:
             "slam": str(use_slam),
             "collision_monitor": str(use_collision_monitor),
             "navigation": str(use_navigation),
+            "global_map": str(global_map),
         },
     )
 
@@ -154,6 +159,7 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             use_navigation_arg.declaration,
             panther_xyz_arg.declaration,
+            global_map_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
