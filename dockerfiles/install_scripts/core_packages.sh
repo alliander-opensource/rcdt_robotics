@@ -31,8 +31,7 @@ apt install -y \
     ros-$ROS_DISTRO-ros2-controllers \
     ros-$ROS_DISTRO-rqt-tf-tree \
     ros-$ROS_DISTRO-slam-toolbox \
-    ros-$ROS_DISTRO-velodyne \
-    ros-$ROS_DISTRO-velodyne-description
+    ros-$ROS_DISTRO-pointcloud-to-laserscan
 
 pip install uv --break-system-packages
 
