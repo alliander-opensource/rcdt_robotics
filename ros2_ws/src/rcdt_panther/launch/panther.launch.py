@@ -20,6 +20,7 @@ scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
 )
 panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
+use_ui_arg = LaunchArgument("ui", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -41,6 +42,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_navigation = use_navigation_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
     panther_xyz = panther_xyz_arg.string_value(context)
+    use_ui = use_ui_arg.bool_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -122,6 +124,10 @@ def launch_setup(context: LaunchContext) -> list:
         },
     )
 
+    vizanti_server_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(velodyne, context) if use_velodyne else SKIP,
@@ -133,6 +139,7 @@ def launch_setup(context: LaunchContext) -> list:
         if use_navigation or use_collision_monitor
         else SKIP,
         Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(vizanti_server_launch, context) if use_ui else SKIP,
     ]
 
 
@@ -154,6 +161,7 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             use_navigation_arg.declaration,
             panther_xyz_arg.declaration,
+            use_ui_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
