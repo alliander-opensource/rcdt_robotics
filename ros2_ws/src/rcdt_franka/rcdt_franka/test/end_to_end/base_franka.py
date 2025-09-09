@@ -94,11 +94,11 @@ def get_tests() -> dict:
         publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
         reached_goal, joint_value = wait_until_reached_joint(
-            namespace="franka",
             joint="fr3_finger_joint1",
             expected_value=expected_value,
             tolerance=finger_joint_fault_tolerance,
             timeout_sec=timeout,
+            node=test_node,
         )
         assert reached_goal is True, (
             f"The joint did not reach the joint. Currently {joint_value}, expected {expected_value}"

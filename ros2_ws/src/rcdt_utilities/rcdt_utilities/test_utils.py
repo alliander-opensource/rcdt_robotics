@@ -315,38 +315,45 @@ def assert_movements_with_joy(  # noqa: PLR0913
 
 
 def wait_until_reached_joint(
-    namespace: str,
     joint: str,
     expected_value: float,
     timeout_sec: int,
+    node: Node,
     tolerance: float = 0.025,
 ) -> tuple[bool, float]:
     """Wait until a joint reaches the expected value within a tolerance.
 
     Args:
-        namespace (str): Namespace of the robot (e.g., 'franka').
         joint (str): Name of the joint to check.
         expected_value (float): Target joint value in radians.
         timeout_sec (int): Timeout duration in seconds.
+        node (Node): The rclpy node to use for getting joint positions.
         tolerance (float): Acceptable deviation from the expected value.
 
     Returns:
         tuple[bool, float]: (True, joint_value) if target reached; otherwise (False , joint_value).
     """
-    end_time = time.monotonic() + timeout_sec
-    while time.monotonic() < end_time:
-        try:
-            joint_value = get_joint_position(
-                namespace=namespace, joint=joint, timeout=timeout_sec
-            )
-            if joint_value == pytest.approx(expected_value, abs=tolerance):
-                time.sleep(2)
-                return (True, joint_value)
-        except ValueError:
-            pass
+    result = {"value": float("nan")}
 
+    def cb(msg: JointState) -> None:
+        """Callback function to update the joint value.
+
+        Args:
+            msg (JointState): The JointState message containing joint positions.
+        """
+        idx = msg.name.index(joint)
+        result["value"] = msg.position[idx]
+
+    node.create_subscription(JointState, "franka/joint_states", cb, 10)
+
+    end = time.monotonic() + timeout_sec
+    while time.monotonic() < end:
+        rclpy.spin_once(node, timeout_sec=0.1)
+        if result["value"] == pytest.approx(expected_value, abs=tolerance):
+            return True, result["value"]
         time.sleep(0.25)
-    return (False, joint_value)
+
+    return False, result["value"]
 
 
 def wait_for_register(timeout: int) -> None:
