@@ -19,8 +19,15 @@ use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, Fa
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
     "controller",
-    "pure_pursuit",
-    ["dwb", "graceful_motion", "mppi", "pure_pursuit", "rotation_shim"],
+    "vector_pursuit",
+    [
+        "dwb",
+        "graceful_motion",
+        "mppi",
+        "pure_pursuit",
+        "rotation_shim",
+        "vector_pursuit",
+    ],
 )
 
 
