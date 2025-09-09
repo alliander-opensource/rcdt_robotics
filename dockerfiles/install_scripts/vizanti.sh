@@ -11,7 +11,7 @@ apt update
 mkdir -p /home/$UNAME/vizanti_ws/src
 cd /home/$UNAME/vizanti_ws/src
 git clone -b ros2 https://github.com/MoffKalast/vizanti.git
-git clone -b jazzy https://github.com/v-kiniv/rws.git
+git clone -b jazzy https://github.com/alliander-opensource/rws.git
 
 cd /home/$UNAME/vizanti_ws
 rosdep update --rosdistro $ROS_DISTRO
