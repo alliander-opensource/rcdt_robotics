@@ -174,6 +174,12 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[bt_navigator_params],
     )
 
+    collision_monitor_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
+        ),
+        param_rewrites={},
+    )
     collision_monitor_node = Node(
         package="nav2_collision_monitor",
         executable="collision_monitor",
@@ -181,9 +187,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[
-            get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml")
-        ],
+        parameters=[collision_monitor_params],
     )
 
     lifecycle_manager = Node(
