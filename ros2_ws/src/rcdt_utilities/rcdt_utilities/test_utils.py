@@ -349,6 +349,9 @@ def wait_until_reached_joint(
     end = time.monotonic() + timeout_sec
     while time.monotonic() < end:
         rclpy.spin_once(node, timeout_sec=0.1)
+        logger.info(
+            f"Current joint value: {result['value']}, expected: {expected_value}"
+        )
         if result["value"] == pytest.approx(expected_value, abs=tolerance):
             return True, result["value"]
         time.sleep(0.25)
