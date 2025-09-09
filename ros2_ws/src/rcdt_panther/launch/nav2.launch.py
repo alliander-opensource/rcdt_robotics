@@ -9,7 +9,6 @@ from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-use_sim_arg = LaunchArgument("simulation", True, [True, False])
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
@@ -41,7 +40,6 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    use_sim = use_sim_arg.bool_value(context)
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
@@ -73,39 +71,37 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
 
-    param_substitutions = {"use_sim_time": str(use_sim)}
-
     amcl_params = RewrittenYaml(
         source_file=get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
-        param_rewrites=param_substitutions,
+        param_rewrites={},
     )
 
     local_costmap_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "local_costmap.yaml"
         ),
-        param_rewrites=param_substitutions,
+        param_rewrites={},
     )
 
     global_costmap_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "global_costmap.yaml"
         ),
-        param_rewrites=param_substitutions,
+        param_rewrites={},
     )
 
     controller_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "controller_server.yaml"
         ),
-        param_rewrites=param_substitutions,
+        param_rewrites={},
     )
 
     behavior_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
         ),
-        param_rewrites=param_substitutions,
+        param_rewrites={},
     )
 
     follow_path_params = load_follow_path_parameters(controller)
@@ -114,7 +110,24 @@ def launch_setup(context: LaunchContext) -> list:
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
         ),
-        param_rewrites=param_substitutions,
+        param_rewrites={
+            "default_nav_to_pose_bt_xml": get_file_path(
+                "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
+            )
+        },
+    )
+    planner_server_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
+        ),
+        param_rewrites={},
+    )
+
+    collision_monitor_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
+        ),
+        param_rewrites={},
     )
 
     map_server = Node(
@@ -151,7 +164,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[global_costmap_params],
+        parameters=[global_costmap_params, planner_server_params],
     )
 
     behavior_server = Node(
@@ -174,12 +187,6 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[bt_navigator_params],
     )
 
-    collision_monitor_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
-        ),
-        param_rewrites={},
-    )
     collision_monitor_node = Node(
         package="nav2_collision_monitor",
         executable="collision_monitor",
@@ -250,7 +257,6 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
-            use_sim_arg.declaration,
             use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,

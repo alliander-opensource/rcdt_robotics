@@ -120,7 +120,6 @@ def launch_setup(context: LaunchContext) -> list:
     nav2 = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
         launch_arguments={
-            "simulation": str(use_sim),
             "autostart": str(True),
             "slam": str(use_slam),
             "collision_monitor": str(use_collision_monitor),
