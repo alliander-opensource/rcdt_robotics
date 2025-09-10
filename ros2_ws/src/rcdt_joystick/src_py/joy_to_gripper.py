@@ -67,7 +67,11 @@ class JoyToGripper(Node):
                 continue
             state = sub_msg.buttons[button]
             if state == self.button_states[button]:
+                self.get_logger().debug(f"Button {button} state unchanged")
                 continue
+            self.get_logger().info(
+                f"Button {button} changed: {self.button_states[button]} -> {state} (action={action})"
+            )
             self.button_states[button] = state
             thread = Thread(target=self.perform_action_if_not_busy, args=[action])
             thread.start()
@@ -81,8 +85,10 @@ class JoyToGripper(Node):
             action (Literal["open_gripper", "close_gripper"]): The action to perform.
         """
         if self.busy:
+            self.get_logger().warn(f"Action {action} skipped: node is busy")
             return
         self.busy = True
+        self.get_logger().info(f"Performing action: {action}")
         match action:
             case "open_gripper":
                 self.open_gripper.call(Trigger.Request())

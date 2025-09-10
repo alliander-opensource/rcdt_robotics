@@ -41,6 +41,9 @@ class OpenGripper(Node):
         self.goal = Move.Goal()
         self.goal.width = 0.08
         self.goal.speed = 0.03
+        self.get_logger().info(
+            f"Move goal created: width={self.goal.width}, speed={self.goal.speed}"
+        )
 
     def callback(
         self, _request: Trigger.Request, response: Trigger.Response
@@ -55,6 +58,10 @@ class OpenGripper(Node):
             Trigger.Response: The response indicating success or failure of the gripper opening operation.
         """
         response.success = self.open_gripper()
+        if response.success:
+            self.get_logger().info("Service request succeeded: gripper opened")
+        else:
+            self.get_logger().error("Service request failed: gripper not opened")
         return response
 
     def open_gripper(self) -> bool:
