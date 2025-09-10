@@ -12,6 +12,7 @@ from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+from rclpy.task import Future
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
 
@@ -86,12 +87,30 @@ class JoyToGripper(Node):
             return
         self.busy = True
         self.get_logger().info(f"Performing action: {action}")
-        match action:
-            case "open_gripper":
-                self.open_gripper.call_async(Trigger.Request())
-            case "close_gripper":
-                self.close_gripper.call_async(Trigger.Request())
-        self.busy = False
+        request = Trigger.Request()
+        client = self.open_gripper if action == "open_gripper" else self.close_gripper
+        future = client.call_async(request)
+
+        def _done(fut: Future) -> None:
+            """Callback for when the service call is done.
+
+            Args:
+                fut (Future): The future object representing the service call.
+            """
+            try:
+                resp = fut.result()
+                if resp.success:
+                    self.get_logger().info(f"{action} succeeded")
+                else:
+                    self.get_logger().error(f"{action} failed")
+            except Exception as e:
+                self.get_logger().error(f"Service call {action} raised: {e}")
+            finally:
+                # Release busy only when the service call has finished
+                self.busy = False
+                self.get_logger().debug(f"Action {action} complete, busy released")
+
+        future.add_done_callback(_done)
 
 
 def main(args: list | None = None) -> None:
