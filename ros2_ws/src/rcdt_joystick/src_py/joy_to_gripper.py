@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from threading import Thread
 from typing import Literal
 
 import rclpy
@@ -71,8 +70,7 @@ class JoyToGripper(Node):
                 f"Button {button} changed: {self.button_states[button]} -> {state} (action={action})"
             )
             self.button_states[button] = state
-            thread = Thread(target=self.perform_action_if_not_busy, args=[action])
-            thread.start()
+            self.perform_action_if_not_busy(action)
 
     def perform_action_if_not_busy(
         self, action: Literal["open_gripper", "close_gripper"]
