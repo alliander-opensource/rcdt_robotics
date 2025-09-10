@@ -21,7 +21,7 @@ scale_speed_arg = LaunchArgument(
 )
 panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
 global_map_arg = LaunchArgument(
-    "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
+    "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
 use_ui_arg = LaunchArgument("ui", False, [True, False])
 

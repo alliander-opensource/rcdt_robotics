@@ -28,7 +28,7 @@ controller_arg = LaunchArgument(
     ],
 )
 global_map_arg = LaunchArgument(
-    "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
+    "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
 
 
@@ -123,7 +123,7 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[
             {
                 "yaml_filename": get_file_path(
-                    "rcdt_panther", ["config", "maps"], str(global_map)
+                    "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
                 )
             }
         ],
