@@ -7,9 +7,8 @@
 from typing import Literal
 
 import rclpy
-from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.task import Future
 from sensor_msgs.msg import Joy
@@ -23,10 +22,9 @@ class JoyToGripper(Node):
     to open or close the gripper based on button presses.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """A ROS2 node that maps joystick button presses to gripper actions."""
         super().__init__("joy_to_gripper")
-
         self.declare_parameter("config_pkg", "")
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
 
@@ -64,11 +62,7 @@ class JoyToGripper(Node):
                 continue
             state = sub_msg.buttons[button]
             if state == self.button_states[button]:
-                self.get_logger().debug(f"Button {button} state unchanged")
                 continue
-            self.get_logger().info(
-                f"Button {button} changed: {self.button_states[button]} -> {state} (action={action})"
-            )
             self.button_states[button] = state
             self.perform_action_if_not_busy(action)
 
@@ -81,32 +75,30 @@ class JoyToGripper(Node):
             action (Literal["open_gripper", "close_gripper"]): The action to perform.
         """
         if self.busy:
-            self.get_logger().warn(f"Action {action} skipped: node is busy")
             return
         self.busy = True
         self.get_logger().info(f"Performing action: {action}")
+
         request = Trigger.Request()
         client = self.open_gripper if action == "open_gripper" else self.close_gripper
         future = client.call_async(request)
 
         def _done(fut: Future) -> None:
-            """Callback for when the service call is done.
+            """Callback function to handle the result of the service call.
 
             Args:
                 fut (Future): The future object representing the service call.
             """
             try:
-                resp = fut.result()
-                if resp.success:
+                resp: Trigger.Response = fut.result()
+                if resp and resp.success:
                     self.get_logger().info(f"{action} succeeded")
                 else:
                     self.get_logger().error(f"{action} failed")
             except Exception as e:
                 self.get_logger().error(f"Service call {action} raised: {e}")
             finally:
-                # Release busy only when the service call has finished
                 self.busy = False
-                self.get_logger().debug(f"Action {action} complete, busy released")
 
         future.add_done_callback(_done)
 
@@ -118,10 +110,8 @@ def main(args: list | None = None) -> None:
         args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
-    executor = MultiThreadedExecutor()
     node = JoyToGripper()
-    executor.add_node(node)
-    spin_executor(executor)
+    spin_node(node)
 
 
 if __name__ == "__main__":

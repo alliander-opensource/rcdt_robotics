@@ -41,9 +41,6 @@ class OpenGripper(Node):
         self.goal = Move.Goal()
         self.goal.width = 0.08
         self.goal.speed = 0.03
-        self.get_logger().info(
-            f"Move goal created: width={self.goal.width}, speed={self.goal.speed}"
-        )
 
     def callback(
         self, _request: Trigger.Request, response: Trigger.Response
@@ -57,12 +54,7 @@ class OpenGripper(Node):
         Returns:
             Trigger.Response: The response indicating success or failure of the gripper opening operation.
         """
-        self.get_logger().info("Received request to open gripper")
         response.success = self.open_gripper()
-        if response.success:
-            self.get_logger().info("Service request succeeded: gripper opened")
-        else:
-            self.get_logger().error("Service request failed: gripper not opened")
         return response
 
     def open_gripper(self) -> bool:
@@ -78,26 +70,12 @@ class OpenGripper(Node):
             return False
         self.get_logger().info("Sending goal to open gripper service...")
 
-        send_future = self.client.send_goal_async(self.goal)
-
-        rclpy.spin_until_future_complete(self, send_future)
-        goal_handle = send_future.result()
-        if not goal_handle.accepted:
-            self.get_logger().error("Goal rejected by action server")
-            return False
-
-        self.get_logger().info("Goal accepted, waiting for result...")
-
-        # Get result asynchronously
-        result_future = goal_handle.get_result_async()
-        rclpy.spin_until_future_complete(self, result_future)
-        result = result_future.result().result
-
-        if result.success:
-            self.get_logger().info("Gripper opened successfully")
+        result: Move.Impl.GetResultService.Response = self.client.send_goal(self.goal)
+        if not result.result.success:
+            self.get_logger().error("Opening gripper did not succeed.")
         else:
-            self.get_logger().error("Opening gripper did not succeed")
-        return result.success
+            self.get_logger().info("Gripper opened successfully.")
+        return result.result.success
 
 
 def main(args: list | None = None) -> None:
