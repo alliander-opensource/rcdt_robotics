@@ -88,9 +88,9 @@ class JoyToGripper(Node):
         self.get_logger().info(f"Performing action: {action}")
         match action:
             case "open_gripper":
-                self.open_gripper.call(Trigger.Request())
+                self.open_gripper.call_async(Trigger.Request())
             case "close_gripper":
-                self.close_gripper.call(Trigger.Request())
+                self.close_gripper.call_async(Trigger.Request())
         self.busy = False
 
 

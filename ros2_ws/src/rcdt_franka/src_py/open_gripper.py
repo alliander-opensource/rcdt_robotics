@@ -57,6 +57,7 @@ class OpenGripper(Node):
         Returns:
             Trigger.Response: The response indicating success or failure of the gripper opening operation.
         """
+        self.get_logger().info("Received request to open gripper")
         response.success = self.open_gripper()
         if response.success:
             self.get_logger().info("Service request succeeded: gripper opened")
