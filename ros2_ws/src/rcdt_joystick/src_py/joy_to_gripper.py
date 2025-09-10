@@ -61,9 +61,6 @@ class JoyToGripper(Node):
         """
         for button, action in self.button_actions.items():
             if button >= len(sub_msg.buttons):
-                self.get_logger().warn(
-                    f"Button index {button} out of range (buttons: {len(sub_msg.buttons)})."
-                )
                 continue
             state = sub_msg.buttons[button]
             if state == self.button_states[button]:
