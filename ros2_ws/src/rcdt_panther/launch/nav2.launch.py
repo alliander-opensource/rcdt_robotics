@@ -29,6 +29,9 @@ controller_arg = LaunchArgument(
         "vector_pursuit",
     ],
 )
+global_map_arg = LaunchArgument(
+    "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -49,6 +52,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
+    global_map = global_map_arg.string_value(context)
 
     lifecycle_nodes = []
 
@@ -125,11 +129,16 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
-    map_yaml = get_file_path("rcdt_panther", ["config", "nav2"], "map.yaml")
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
-        parameters=[{"yaml_filename": map_yaml}],
+        parameters=[
+            {
+                "yaml_filename": get_file_path(
+                    "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
+                )
+            }
+        ],
     )
 
     amcl = Node(
@@ -259,6 +268,7 @@ def generate_launch_description() -> LaunchDescription:
             namespace_vehicle_arg.declaration,
             namespace_lidar_arg.declaration,
             controller_arg.declaration,
+            global_map_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

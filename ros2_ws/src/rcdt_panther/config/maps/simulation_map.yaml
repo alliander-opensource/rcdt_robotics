@@ -4,9 +4,9 @@
 
 # Based on: https://docs.ros.org/en/humble/p/nav2_map_server/
 
-image: map.png
+image: simulation_map.png
 resolution: 0.1
-origin: [-5, -5, 0]
+origin: [-10, -10, 0]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
