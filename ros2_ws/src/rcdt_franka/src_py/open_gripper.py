@@ -75,7 +75,7 @@ class OpenGripper(Node):
         if not self.client.wait_for_server(timeout_sec=3):
             self.get_logger().error("Gripper move client not available.")
             return False
-
+        self.get_logger().info("Sending goal to open gripper service...")
         result: Move.Impl.GetResultService.Response = self.client.send_goal(self.goal)
         if not result.result.success:
             self.get_logger().error("Opening gripper did not succeed.")
