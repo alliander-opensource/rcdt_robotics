@@ -11,6 +11,7 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
+use_velodyne_arg = LaunchArgument("velodyne", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 scale_speed_arg = LaunchArgument(
     "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
@@ -30,6 +31,7 @@ def launch_setup(context: LaunchContext) -> list:
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
     world = world_arg.string_value(context)
+    use_velodyne = use_velodyne_arg.bool_value(context)
     scale_speed = scale_speed_arg.float_value(context)
 
     core = RegisteredLaunchDescription(
@@ -38,6 +40,7 @@ def launch_setup(context: LaunchContext) -> list:
             "simulation": str(use_sim),
             "load_gazebo_ui": str(load_gazebo_ui),
             "world": world,
+            "childs": "franka,velodyne" if use_velodyne else "franka",
         },
     )
 
@@ -88,8 +91,14 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
     )
 
+    velodyne = RegisteredLaunchDescription(
+        get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
+        Register.group(velodyne, context) if use_velodyne else SKIP,
         Register.group(core, context),
         Register.group(franka_controllers, context),
         Register.group(panther_controllers, context) if use_sim else SKIP,
@@ -113,6 +122,7 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
+            use_velodyne_arg.declaration,
             use_rviz_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

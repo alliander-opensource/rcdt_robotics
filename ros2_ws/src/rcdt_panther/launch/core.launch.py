@@ -15,7 +15,7 @@ from rcdt_utilities.launch_utils import (
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-child_arg = LaunchArgument("child", "", ["", "franka", "velodyne"])
+childs_arg = LaunchArgument("childs", "")
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
@@ -31,18 +31,25 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     use_sim = use_sim_arg.bool_value(context)
-    child = child_arg.string_value(context)
+    childs = childs_arg.string_value(context).split(",")
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
     panther_xyz = LaunchPosition(panther_xyz_arg.string_value(context))
 
     namespace = "panther"
     frame_prefix = namespace + "/" if namespace else ""
-    is_mobile_manipulator = child == "franka"
+    is_mobile_manipulator = "franka" in childs
 
     xacro_path = get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
     xacro_arguments = {"simulation": "true"}
-    xacro_arguments["connected_to"] = child
+
+    child_models_and_links = []
+    if "franka" in childs:
+        child_models_and_links.append(["franka", "fr3_link0"])
+    if "velodyne" in childs:
+        child_models_and_links.append(["VLP-16", "base_link"])
+    xacro_arguments["childs"] = str(child_models_and_links)
+
     robot_description = get_robot_description(xacro_path, xacro_arguments)
 
     robot_state_publisher = Node(
@@ -54,7 +61,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     robots = ["panther"]
     positions = [panther_xyz.string]
-    if child == "velodyne":
+    if "velodyne" in childs:
         robots.append("velodyne")
         velodyne_relative_position = [0.0, -0.06, 0.55]
         positions.append(panther_xyz.absolute(velodyne_relative_position))
@@ -84,7 +91,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
-            child_arg.declaration,
+            childs_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
             panther_xyz_arg.declaration,
