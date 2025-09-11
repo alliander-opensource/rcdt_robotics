@@ -193,6 +193,7 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
         <xacro:gazebo.battery config_file="${battery_config_file}" namespace="${namespace}" />
       </xacro:if>
       <xacro:gazebo.controller config_file="${controller_config_file}" namespace="${namespace}" />
+      <xacro:gazebo.odom_publisher />
       <xacro:gazebo.detachable_joint connected_to="${connected_to}"/>
       <xacro:gazebo.imu reference_frame="imu_link" namespace="${namespace}" />
       <xacro:gazebo.light reference_frame="lights_channel_1_link" name="lights_channel_1" topic="lights/channel_1_frame" namespace="${namespace}" />
