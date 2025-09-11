@@ -15,6 +15,7 @@ from rcdt_utilities.launch_utils import (
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
+namespace_arg = LaunchArgument("namespace", "velodyne")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -27,8 +28,8 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed.
     """
     use_sim = use_sim_arg.bool_value(context)
+    namespace = namespace_arg.string_value(context)
 
-    namespace = "velodyne"
     frame_prefix = namespace + "/" if namespace else ""
 
     xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro")
@@ -36,7 +37,7 @@ def launch_setup(context: LaunchContext) -> list:
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        namespace="velodyne",
+        namespace=namespace,
         parameters=[velodyne_description, {"frame_prefix": frame_prefix}],
     )
 
@@ -72,29 +73,16 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=namespace,
     )
 
-    static_transform_publisher = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=[
-            "--frame-id",
-            "panther/base_link",
-            "--child-frame-id",
-            "velodyne/base_link",
-            "--x",
-            "0.0",
-            "--y",
-            "-0.06",
-            "--z",
-            "0.35",
-        ],
-    )
     pointcloud_to_laserscan_node = Node(
         package="pointcloud_to_laserscan",
         executable="pointcloud_to_laserscan_node",
-        remappings=[("cloud_in", "/velodyne/scan/points"), ("scan", "/velodyne/scan")],
+        remappings=[
+            ("cloud_in", f"/{namespace}/scan/points"),
+            ("scan", f"/{namespace}/scan"),
+        ],
         parameters=[
             {
-                "target_frame": "panther/base_footprint",
+                "target_frame": "map",
                 "min_height": 0.1,
                 "max_height": 2.0,
                 "range_min": 0.05,
@@ -105,7 +93,6 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         Register.on_start(robot_state_publisher, context),
-        Register.on_start(static_transform_publisher, context),
         Register.on_start(velodyne_driver_node, context) if not use_sim else SKIP,
         Register.on_start(velodyne_transform_node, context) if not use_sim else SKIP,
         Register.on_start(pointcloud_to_laserscan_node, context),
@@ -121,6 +108,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
+            namespace_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

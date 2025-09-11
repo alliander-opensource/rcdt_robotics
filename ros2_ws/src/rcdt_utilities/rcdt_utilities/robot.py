@@ -271,6 +271,7 @@ class Platform:
         return Node(
             package="tf2_ros",
             executable="static_transform_publisher",
+            name=f"static_tf_{self.parent.namespace}_to_{self.namespace}",
             arguments=[
                 "--frame-id",
                 f"/{self.parent.namespace}/{self.parent.base_link}",
@@ -298,6 +299,7 @@ class Platform:
         return Node(
             package="tf2_ros",
             executable="static_transform_publisher",
+            name="static_tf_world",
             arguments=[
                 "--frame-id",
                 "map",
@@ -354,11 +356,33 @@ class Lidar(Platform):
             parent.lidar = self
 
         Rviz.add_point_cloud(self.namespace)
-        Platform.bridge_topics.extend(
-            [
-                f"/{self.namespace}/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-                f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
-            ]
+        Rviz.add_laser_scan(self.namespace)
+        Platform.bridge_topics.append(
+            f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
+        )
+
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:
+        """Create the launch description with specific elements for a lidar.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        launch_descriptions = []
+        launch_descriptions.append(self.create_velodyne_launch())
+        return launch_descriptions
+
+    def create_velodyne_launch(self) -> RegisteredLaunchDescription:
+        """Create the Velodyne launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for Velodyne.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
+            launch_arguments={
+                "simulation": str(True),
+                "namespace": self.namespace,
+            },
         )
 
 

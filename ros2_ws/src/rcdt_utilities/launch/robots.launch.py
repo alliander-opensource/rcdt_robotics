@@ -35,6 +35,7 @@ def launch_setup(context: LaunchContext) -> list:
     configuration = configuration_arg.string_value(context)
 
     Rviz.load_motion_planning_plugin = False
+    Rviz.load_point_cloud = False
 
     match configuration:
         case "franka":
@@ -49,7 +50,6 @@ def launch_setup(context: LaunchContext) -> list:
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
             Arm("franka", [0, 0, 0.14], parent=panther)
-            Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm_lidar":
             panther = Vehicle("panther", [0, 0, 0.2])
             Arm("franka", [0, 0, 0.14], parent=panther)

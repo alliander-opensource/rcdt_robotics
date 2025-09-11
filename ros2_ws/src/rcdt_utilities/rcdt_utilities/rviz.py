@@ -17,6 +17,7 @@ class Rviz:
 
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
     load_motion_planning_plugin: bool = False
+    load_point_cloud: bool = False
 
     @staticmethod
     def set_fixed_frame(frame: str) -> None:
@@ -63,6 +64,9 @@ class Rviz:
         Args:
             namespace (str): The namespace of the robot.
         """
+        if not Rviz.load_point_cloud:
+            return
+
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
             {
@@ -71,6 +75,30 @@ class Rviz:
                 "Enabled": "true",
                 "Topic": {"Value": f"/{namespace}/scan/points"},
                 "Name": f"{namespace}_point_cloud",
+            }
+        )
+
+    @staticmethod
+    def add_laser_scan(namespace: str) -> None:
+        """Add a laser scan to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Alpha": "1",
+                "Class": "rviz_default_plugins/LaserScan",
+                "Enabled": "true",
+                "Topic": {
+                    "Value": f"/{namespace}/scan",
+                    "Reliability Policy": "Best Effort",
+                },
+                "Name": f"{namespace}_laser_scan",
+                "Color Transformer": "FlatColor",
+                "Color": "255; 0; 0",
+                "Size (m)": 0.02,
             }
         )
 
@@ -95,6 +123,7 @@ class Rviz:
 
     @staticmethod
     def add_map(topic: str) -> None:
+        color_scheme = "costmap" if "costmap" in topic else "map"
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
             {
@@ -102,6 +131,7 @@ class Rviz:
                 "Enabled": True,
                 "Name": topic,
                 "Topic": {"Value": topic},
+                "Color Scheme": color_scheme,
             }
         )
 

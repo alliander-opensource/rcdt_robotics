@@ -6,7 +6,7 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetRemap
 from nav2_common.launch import RewrittenYaml
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path, get_yaml
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -99,11 +99,18 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites=param_substitutions,
     )
 
-    global_costmap_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "global_costmap.yaml"
-        ),
-        param_rewrites=param_substitutions,
+    local_costmap_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "local_costmap.yaml")
+    )
+    local_costmap_params["global_frame"] = f"{namespace_vehicle}/odom"
+    local_costmap_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
+
+    global_costmap_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "global_costmap.yaml")
+    )
+    global_costmap_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
+    global_costmap_params["obstacle_layer"]["scan"]["topic"] = (
+        f"/{namespace_lidar}/scan"
     )
 
     controller_server_params = RewrittenYaml(

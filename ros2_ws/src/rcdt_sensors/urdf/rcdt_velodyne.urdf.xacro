@@ -127,6 +127,8 @@ Based on:
 
   </xacro:macro>
 
+  <xacro:arg name="namespace" default="" />
+  <xacro:arg name="parent" default="" />
   <xacro:VLP-16 namespace="$(arg namespace)" parent="$(arg parent)">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:VLP-16>
