@@ -46,6 +46,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="both",
         parameters=[
             {
+                "model": "VLP16",
                 "device_ip": "10.15.20.5",
                 "frame_id": frame_prefix + "velodyne",
             }
@@ -63,22 +64,8 @@ def launch_setup(context: LaunchContext) -> list:
                     "velodyne_pointcloud", ["params"], "VLP16db.yaml"
                 ),
                 "model": "VLP16",
-                "min_range": 0.9,
+                "min_range": 0.1,
                 "max_range": 130.0,
-            }
-        ],
-        remappings=[("velodyne_points", "scan/points")],
-        namespace=namespace,
-    )
-
-    velodyne_laserscan_node = Node(
-        package="velodyne_laserscan",
-        executable="velodyne_laserscan_node",
-        output="both",
-        parameters=[
-            {
-                "ring": -1,
-                "resolution": 0.007,
             }
         ],
         remappings=[("velodyne_points", "scan/points")],
@@ -94,11 +81,25 @@ def launch_setup(context: LaunchContext) -> list:
             "--child-frame-id",
             "velodyne/base_link",
             "--x",
-            "0.13",
+            "0.0",
             "--y",
-            "-0.13",
+            "-0.06",
             "--z",
             "0.55",
+        ],
+    )
+    pointcloud_to_laserscan_node = Node(
+        package="pointcloud_to_laserscan",
+        executable="pointcloud_to_laserscan_node",
+        remappings=[("cloud_in", "/velodyne/scan/points"), ("scan", "/velodyne/scan")],
+        parameters=[
+            {
+                "target_frame": "panther/base_footprint",
+                "min_height": 0.1,
+                "max_height": 2.0,
+                "range_min": 0.05,
+                "range_max": 100.0,
+            }
         ],
     )
 
@@ -107,7 +108,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context),
         Register.on_start(velodyne_driver_node, context) if not use_sim else SKIP,
         Register.on_start(velodyne_transform_node, context) if not use_sim else SKIP,
-        Register.on_start(velodyne_laserscan_node, context) if not use_sim else SKIP,
+        Register.on_start(pointcloud_to_laserscan_node, context),
     ]
 
 
