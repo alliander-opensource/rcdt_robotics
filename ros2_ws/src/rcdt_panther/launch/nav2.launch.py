@@ -68,6 +68,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "planner_server",
                 "behavior_server",
                 "bt_navigator",
+                "waypoint_follower",
             ]
         )
 
@@ -205,6 +206,15 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[{"autostart": autostart}, {"node_names": lifecycle_nodes}],
     )
 
+    waypoint_follower = Node(
+        package="nav2_waypoint_follower",
+        executable="waypoint_follower",
+    )
+
+    waypoint_follower_controller = Node(
+        package="rcdt_panther", executable="waypoint_follower_controller.py"
+    )
+
     pub_topic = (
         "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
     )
@@ -217,10 +227,14 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(planner_server, context) if use_navigation else SKIP,
         Register.on_start(behavior_server, context) if use_navigation else SKIP,
         Register.on_start(bt_navigator, context) if use_navigation else SKIP,
+        Register.on_start(waypoint_follower, context) if use_navigation else SKIP,
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
+        Register.on_log(waypoint_follower_controller, "Controller is ready.", context)
+        if use_navigation
+        else SKIP,
     ]
 
 
