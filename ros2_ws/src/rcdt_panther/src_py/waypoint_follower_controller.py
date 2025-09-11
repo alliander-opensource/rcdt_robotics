@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import rclpy
+from action_msgs.msg import GoalStatus
 from action_msgs.srv import CancelGoal
 from nav2_msgs.action import FollowWaypoints
 from nav_msgs.msg import Path
@@ -84,30 +85,52 @@ class WaypointFollowerController(Node):
         response.success = self.stop_navigation()
         return response
 
-    def start_navigation(self) -> bool:
-        """Start the navigation to waypoints.
+    def cb_finished(self, future: Future) -> None:
+        """Callback when the navigation to waypoints is finished. Logs the result and resets the goal handle.
 
-        Returns:
-            bool: True if the navigation was started successfully, False otherwise.
+        Args:
+            future (Future): The future containing the result of the action.
         """
+        self.follow_waypoints_goal_handle = None
+        response: FollowWaypoints.Impl.GetResultService.Response = future.result()
+        result = response.result
+        if response.status == GoalStatus.STATUS_CANCELED:
+            self.get_logger().warning("Navigation was canceled.")
+            return
+
+        if response.status != GoalStatus.STATUS_SUCCEEDED:
+            self.get_logger().error(
+                f"Navigation failed with status code {response.status}."
+            )
+            return
+
+        self.get_logger().info("Navigation successfully finished!")
+        if result.missed_waypoints:
+            self.get_logger().warning(
+                f"Missed {len(result.missed_waypoints)} waypoints during navigation: {result.missed_waypoints}."
+            )
+
+    def start_navigation(self) -> None:
+        """Start the navigation to waypoints."""
         pre_msg = "Failed to start navigation:"
         if not self.follow_waypoints_action_client.wait_for_server(1):
             self.get_logger().error(f"{pre_msg} Failed to connect to action server.")
-            return False
+            return
         future = self.follow_waypoints_action_client.send_goal_async(
             self.follow_waypoints_goal
         )
         rclpy.spin_until_future_complete(self, future, self.executor, 1)
         if not future.done():
             self.get_logger().error(f"{pre_msg} No response within timeout.")
-            return False
+            return
         goal_handle: ClientGoalHandle = future.result()
         if not goal_handle.accepted:
             self.get_logger().error(f"{pre_msg} Action goal was not accepted.")
-            return False
+            return
         self.get_logger().info("Navigation to waypoints is started!")
         self.follow_waypoints_goal_handle = goal_handle
-        return True
+        self._get_result_future: Future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.cb_finished)
 
     def stop_navigation(self) -> bool:
         """Stop the active navigation goal. If no goal is active, cancel all goals on the navigate_to_pose action server.
