@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on: https://docs.nav2.org/configuration/packages/configuring-amcl.html
+
+amcl:
+  ros__parameters:
+    base_frame_id: "panther/base_footprint"
+    odom_frame_id: "panther/odom"
+    scan_topic: /velodyne/scan
+    first_map_only: true
+    set_initial_pose: true
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0

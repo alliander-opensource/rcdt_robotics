@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: uv sync
         shell: bash -ieo pipefail {0}
         run: |

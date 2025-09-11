@@ -46,8 +46,8 @@ def launch_setup(context: LaunchContext) -> list:
         "panther",
     ]
     positions = [
-        f"0-0-{FRANKA_HEIGHT}",
-        "0-0-0.2",
+        f"0,0,{FRANKA_HEIGHT}",
+        "0,0,0.2",
     ]
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),

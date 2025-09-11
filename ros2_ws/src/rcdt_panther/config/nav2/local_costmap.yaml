@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on: https://docs.nav2.org/configuration/packages/configuring-costmaps.html
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      global_frame: panther/odom
+      robot_base_frame: panther/base_footprint

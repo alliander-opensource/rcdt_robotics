@@ -259,7 +259,7 @@ class Register:
             self.buffer += buffer
 
         if self.log in self.buffer:
-            self.started = True
+            self.is_started = True
             return Register.next()
 
     def insert_action(
