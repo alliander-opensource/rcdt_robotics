@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="simulation" default="false" />
   <xacro:arg name="parent" default="world" />
   <xacro:arg name="load_realsense" default="false" />
+  <xacro:arg name="childs" default="${[]}" />
 
   <!-- robot: -->
   <xacro:include filename="$(find rcdt_franka)/urdf/adapted/franka_robot.xacro" />
@@ -39,21 +40,8 @@ SPDX-License-Identifier: Apache-2.0
     parent="$(arg parent)"
   />
 
-  <!-- realsense: -->
-  <xacro:if value="$(arg load_realsense)">
-    <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_realsense_d435.urdf.xacro" />
-    <link name="realsense_link" />
-    <joint name="realsense_link_joint" type="fixed">
-      <origin xyz="0.05 -0.02 0.01" rpy="0 ${-0.5*pi} ${pi}" />
-      <parent link="fr3_hand" />
-      <child link="realsense_link" />
-    </joint>
-    <xacro:rcdt_realsense_d435
-      robot_namespace="$(arg namespace)"
-      device_namespace="realsense"
-      parent="realsense_link"
-      gazebo="$(arg simulation)"
-    />
-  </xacro:if>
+  <!-- Create detachable joints between base_link and childs: -->
+  <xacro:include filename="$(find rcdt_utilities)/urdf/detachable_joints.urdf.xacro" />
+  <xacro:detachable_joints parent_link="fr3_link0" childs="${$(arg childs)}" />
 
 </robot>

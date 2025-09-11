@@ -90,7 +90,7 @@ def launch_setup(context: LaunchContext) -> list:
         executable="static_transform_publisher",
         arguments=[
             "--frame-id",
-            "panther/base_footprint",
+            "panther/base_link",
             "--child-frame-id",
             "velodyne/base_link",
             "--x",
@@ -98,7 +98,7 @@ def launch_setup(context: LaunchContext) -> list:
             "--y",
             "-0.13",
             "--z",
-            "0.55",
+            "0.35",
         ],
     )
 
