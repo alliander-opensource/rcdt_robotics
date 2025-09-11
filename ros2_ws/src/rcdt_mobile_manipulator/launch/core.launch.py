@@ -9,6 +9,7 @@ from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
+childs_arg = LaunchArgument("childs", "franka")
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 
@@ -25,6 +26,7 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     use_sim = use_sim_arg.bool_value(context)
+    childs = childs_arg.string_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
 
@@ -36,19 +38,20 @@ def launch_setup(context: LaunchContext) -> list:
     panther_core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
         launch_arguments={
-            "child": "franka",
+            "childs": childs,
             "simulation": str(use_sim),
         },
     )
 
-    robots = [
-        "franka",
-        "panther",
-    ]
-    positions = [
-        f"0,0,{FRANKA_HEIGHT}",
-        "0,0,0.2",
-    ]
+    robots = ["panther"]
+    positions = ["0,0,0.2"]
+    childs_list = childs.split(",")
+    if "franka" in childs_list:
+        robots.insert(0, "franka")
+        positions.insert(0, f"0,0,{FRANKA_HEIGHT}")
+    if "velodyne" in childs_list:
+        robots.append("velodyne")
+        positions.append("0.13,-0.13,0.55")
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
@@ -91,6 +94,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
+            childs_arg.declaration,
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
             OpaqueFunction(function=launch_setup),

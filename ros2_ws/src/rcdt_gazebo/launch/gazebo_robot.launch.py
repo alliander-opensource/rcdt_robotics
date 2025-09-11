@@ -15,8 +15,8 @@ from rcdt_utilities.register import Register
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 robots_arg = LaunchArgument("robots", "")
-positions_arg = LaunchArgument("positions", "0,0,0")
-use_realsense_arg = LaunchArgument("realsense", False, [True, False])
+positions_arg = LaunchArgument("positions", "")
+bridge_topics_arg = LaunchArgument("bridge_topics", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -33,9 +33,9 @@ def launch_setup(context: LaunchContext) -> list:
     """
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
-    robots = robots_arg.string_value(context).split(" ")
-    positions = positions_arg.string_value(context).split(" ")
-    use_realsense = use_realsense_arg.bool_value(context)
+    robots = robots_arg.string_value(context).split()
+    positions = positions_arg.string_value(context).split()
+    bridge_topics = bridge_topics_arg.string_value(context).split()
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
     sdf = ET.parse(sdf_file)
@@ -53,23 +53,7 @@ def launch_setup(context: LaunchContext) -> list:
         additional_env=GazeboRosPaths.get_env(),
     )
 
-    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"]
-    if use_realsense:
-        bridge_topics.extend(
-            [
-                "/franka/realsense/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/franka/realsense/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
-                "/franka/realsense/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-                "/franka/realsense/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
-            ]
-        )
-    if "velodyne" in robots:
-        bridge_topics.extend(
-            [
-                "/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
-            ]
-        )
-
+    bridge_topics.append("/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock")
     bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -86,6 +70,8 @@ def launch_setup(context: LaunchContext) -> list:
             arguments=[
                 "-topic",
                 f"{namespace}/robot_description",
+                "-name",
+                robot,
                 "-x",
                 str(x),
                 "-y",
@@ -139,7 +125,7 @@ def generate_launch_description() -> LaunchDescription:
             world_arg.declaration,
             robots_arg.declaration,
             positions_arg.declaration,
-            use_realsense_arg.declaration,
+            bridge_topics_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

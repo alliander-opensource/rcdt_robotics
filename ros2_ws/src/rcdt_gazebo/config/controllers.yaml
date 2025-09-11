@@ -4,7 +4,7 @@
 
 # Based on: https://github.com/husarion/panther_ros/blob/ros2/panther_controller/config/WH01_controller.yaml
 
-franka:
+/**:
   controller_manager:
     ros__parameters:
       update_rate: 1000
@@ -17,6 +17,9 @@ franka:
 
       gripper_action_controller:
         type: parallel_gripper_action_controller/GripperActionController
+
+      drive_controller:
+        type: diff_drive_controller/DiffDriveController
 
   fr3_arm_controller:
     ros__parameters:
@@ -44,17 +47,6 @@ franka:
       max_effort: 0.0
       stall_timeout: 1.0
       stall_velocity_threshold: 0.001
-
-panther:
-  controller_manager:
-    ros__parameters:
-      update_rate: 1000
-
-      joint_state_broadcaster:
-        type: joint_state_broadcaster/JointStateBroadcaster
-
-      drive_controller:
-        type: diff_drive_controller/DiffDriveController
 
   drive_controller:
     ros__parameters:

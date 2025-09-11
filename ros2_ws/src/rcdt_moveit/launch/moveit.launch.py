@@ -73,7 +73,7 @@ def launch_setup(context: LaunchContext) -> list:
             "ros2",
             "service",
             "call",
-            "/franka/servo_node/switch_command_type",
+            f"/{namespace}/servo_node/switch_command_type",
             "moveit_msgs/srv/ServoCommandType",
             "{command_type: 1}",
         ]
@@ -86,7 +86,7 @@ def launch_setup(context: LaunchContext) -> list:
             "ros2",
             "service",
             "call",
-            "/franka/moveit_manager/move_to_configuration",
+            f"/{namespace}/moveit_manager/move_to_configuration",
             "rcdt_messages/srv/MoveToConfiguration",
             "{configuration: home}",
         ],
