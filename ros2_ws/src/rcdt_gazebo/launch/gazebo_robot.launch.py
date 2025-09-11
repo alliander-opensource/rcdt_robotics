@@ -66,7 +66,6 @@ def launch_setup(context: LaunchContext) -> list:
     if "velodyne" in robots:
         bridge_topics.extend(
             [
-                "/velodyne/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
                 "/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
