@@ -12,7 +12,14 @@ on:
         required: true
 
 jobs:
+  prepare-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clear disk space on host
+        uses: ./.github/actions/clear-disk-space
+
   build-and-test:
+    needs: prepare-runner
     runs-on: ubuntu-latest
     container:
       image: ${{ inputs.container-image }}
