@@ -8,6 +8,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
+namespace_arg = LaunchArgument("namespace", "panther")
 simulation_arg = LaunchArgument("simulation", True, [True, False])
 
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
@@ -22,9 +23,8 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    namespace = namespace_arg.string_value(context)
     simulation = simulation_arg.bool_value(context)
-
-    namespace = "franka"
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
@@ -88,6 +88,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             simulation_arg.declaration,
+            namespace_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
