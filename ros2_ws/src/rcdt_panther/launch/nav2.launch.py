@@ -117,16 +117,15 @@ def launch_setup(context: LaunchContext) -> list:
 
     follow_path_params = load_follow_path_parameters(controller)
 
-    bt_navigator_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
-        ),
-        param_rewrites={
-            "default_nav_to_pose_bt_xml": get_file_path(
-                "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
-            )
-        },
+    bt_navigator_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "bt_navigator.yaml")
     )
+    bt_navigator_params["default_nav_to_pose_bt_xml"] = get_file_path(
+        "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
+    )
+    bt_navigator_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
+    bt_navigator_params["odom_topic"] = f"/{namespace_vehicle}/odom"
+
     planner_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
