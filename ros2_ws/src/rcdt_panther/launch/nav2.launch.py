@@ -27,7 +27,7 @@ controller_arg = LaunchArgument(
     ],
 )
 global_map_arg = LaunchArgument(
-    "map", "map.yaml", ["map.yaml", "ipkw.yaml", "ipkw_buiten.yaml"]
+    "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
 
 
@@ -98,13 +98,6 @@ def launch_setup(context: LaunchContext) -> list:
         param_rewrites={},
     )
 
-    planner_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
-        ),
-        param_rewrites={},
-    )
-
     behavior_server_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
@@ -124,6 +117,19 @@ def launch_setup(context: LaunchContext) -> list:
             )
         },
     )
+    planner_server_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
+        ),
+        param_rewrites={},
+    )
+
+    collision_monitor_params = RewrittenYaml(
+        source_file=get_file_path(
+            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
+        ),
+        param_rewrites={},
+    )
 
     map_server = Node(
         package="nav2_map_server",
@@ -131,7 +137,7 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[
             {
                 "yaml_filename": get_file_path(
-                    "rcdt_panther", ["config", "maps"], str(global_map)
+                    "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
                 )
             }
         ],

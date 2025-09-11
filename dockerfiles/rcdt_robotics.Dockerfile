@@ -20,6 +20,9 @@ RUN ./velodyne_ros.sh
 COPY ./install_scripts/nav2_plugins.sh .
 RUN ./nav2_plugins.sh
 
+COPY ./install_scripts/velodyne_ros.sh .
+RUN ./velodyne_ros.sh
+
 COPY ./install_scripts/vizanti.sh .
 RUN ./vizanti.sh
 

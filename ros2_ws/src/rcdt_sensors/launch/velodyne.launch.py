@@ -88,6 +88,20 @@ def launch_setup(context: LaunchContext) -> list:
             "0.55",
         ],
     )
+    pointcloud_to_laserscan_node = Node(
+        package="pointcloud_to_laserscan",
+        executable="pointcloud_to_laserscan_node",
+        remappings=[("cloud_in", "/velodyne/scan/points"), ("scan", "/velodyne/scan")],
+        parameters=[
+            {
+                "target_frame": "panther/base_footprint",
+                "min_height": 0.1,
+                "max_height": 2.0,
+                "range_min": 0.05,
+                "range_max": 100.0,
+            }
+        ],
+    )
 
     pointcloud_to_laserscan_node = Node(
         package="pointcloud_to_laserscan",
