@@ -104,9 +104,6 @@ class JoyTopicManager(Node):
         """
         for output in self.outputs:
             if output.button >= len(msg.buttons):
-                self.get_logger().warn(
-                    f"Button index {output.button} out of range in Joy message with {len(msg.buttons)} buttons."
-                )
                 continue
             state = msg.buttons[output.button]
             if output.state_changed(state):

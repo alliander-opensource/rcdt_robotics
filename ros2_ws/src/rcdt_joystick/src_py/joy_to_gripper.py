@@ -4,14 +4,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from threading import Thread
 from typing import Literal
 
 import rclpy
-from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_executor
+from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+from rclpy.task import Future
 from sensor_msgs.msg import Joy
 from std_srvs.srv import Trigger
 
@@ -23,10 +22,9 @@ class JoyToGripper(Node):
     to open or close the gripper based on button presses.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """A ROS2 node that maps joystick button presses to gripper actions."""
         super().__init__("joy_to_gripper")
-
         self.declare_parameter("config_pkg", "")
         config_pkg = self.get_parameter("config_pkg").get_parameter_value().string_value
 
@@ -61,16 +59,12 @@ class JoyToGripper(Node):
         """
         for button, action in self.button_actions.items():
             if button >= len(sub_msg.buttons):
-                self.get_logger().warn(
-                    f"Button index {button} out of range (buttons: {len(sub_msg.buttons)})."
-                )
                 continue
             state = sub_msg.buttons[button]
             if state == self.button_states[button]:
                 continue
             self.button_states[button] = state
-            thread = Thread(target=self.perform_action_if_not_busy, args=[action])
-            thread.start()
+            self.perform_action_if_not_busy(action)
 
     def perform_action_if_not_busy(
         self, action: Literal["open_gripper", "close_gripper"]
@@ -83,12 +77,30 @@ class JoyToGripper(Node):
         if self.busy:
             return
         self.busy = True
-        match action:
-            case "open_gripper":
-                self.open_gripper.call(Trigger.Request())
-            case "close_gripper":
-                self.close_gripper.call(Trigger.Request())
-        self.busy = False
+        self.get_logger().info(f"Performing action: {action}")
+
+        request = Trigger.Request()
+        client = self.open_gripper if action == "open_gripper" else self.close_gripper
+        future = client.call_async(request)
+
+        def _done(fut: Future) -> None:
+            """Callback function to handle the result of the service call.
+
+            Args:
+                fut (Future): The future object representing the service call.
+            """
+            try:
+                resp: Trigger.Response = fut.result()
+                if resp and resp.success:
+                    self.get_logger().info(f"{action} succeeded")
+                else:
+                    self.get_logger().error(f"{action} failed")
+            except Exception as e:
+                self.get_logger().error(f"Service call {action} raised: {e}")
+            finally:
+                self.busy = False
+
+        future.add_done_callback(_done)
 
 
 def main(args: list | None = None) -> None:
@@ -98,10 +110,8 @@ def main(args: list | None = None) -> None:
         args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
-    executor = MultiThreadedExecutor()
     node = JoyToGripper()
-    executor.add_node(node)
-    spin_executor(executor)
+    spin_node(node)
 
 
 if __name__ == "__main__":

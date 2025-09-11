@@ -339,6 +339,9 @@ def wait_until_reached_joint(
             joint_value = get_joint_position(
                 namespace=namespace, joint=joint, timeout=timeout_sec
             )
+            logger.info(
+                f"Current joint value: {joint_value}, expected: {expected_value}"
+            )
             if joint_value == pytest.approx(expected_value, abs=tolerance):
                 time.sleep(2)
                 return (True, joint_value)

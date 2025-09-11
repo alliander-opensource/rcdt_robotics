@@ -45,6 +45,10 @@ jobs:
           cd ros2_ws
           source install/setup.bash
           echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          uv run pytest -s --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py src/
-
+          for i in {1..10}; do
+            echo "===== Run $i ====="
+            uv run pytest -s \
+              --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
+              src/rcdt_franka/rcdt_franka/test/end_to_end
+          done
 # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
