@@ -147,10 +147,7 @@
     "keyboard_control": true,
     "joy_offset_x": "88.40116279069767%",
     "joy_offset_y": "81.01460415065334%",
-    "typedict": {
-      "/panther/cmd_vel": "geometry_msgs/msg/TwistStamped",
-      "/panther/cmd_vel_raw": "geometry_msgs/msg/TwistStamped"
-    }
+    "typedict": {}
   },
   "robotmodel_autoID_3": {
     "frame": "panther/base_footprint",
@@ -167,74 +164,17 @@
   "button_autoID_23": {
     "topic": "/panther/hardware/e_stop_trigger",
     "text": "Trigger",
-    "typedict": {
-      "/panther/hardware/e_stop": "std_msgs/msg/Bool",
-      "/panther/localization/enable": "std_srvs/srv/Empty",
-      "/panther/reset": "std_srvs/srv/Empty",
-      "/reinitialize_global_localization": "std_srvs/srv/Empty",
-      "/request_nomotion_update": "std_srvs/srv/Empty",
-      "/rviz/reset_time": "std_srvs/srv/Empty",
-      "/lifecycle_manager_navigation/is_active": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_reset": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_trigger": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/start": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/stop": "std_srvs/srv/Trigger",
-      "/panther/hardware/aux_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/charger_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/digital_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/fan_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/led_control_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/motor_torque_enable": "std_srvs/srv/SetBool",
-      "/ui/cancel_nav": "std_msgs/msg/Empty"
-    }
+    "typedict": {}
   },
   "button_autoID_24": {
     "topic": "/panther/hardware/e_stop_reset",
     "text": "Reset",
-    "typedict": {
-      "/panther/hardware/e_stop": "std_msgs/msg/Bool",
-      "/panther/localization/enable": "std_srvs/srv/Empty",
-      "/panther/reset": "std_srvs/srv/Empty",
-      "/reinitialize_global_localization": "std_srvs/srv/Empty",
-      "/request_nomotion_update": "std_srvs/srv/Empty",
-      "/rviz/reset_time": "std_srvs/srv/Empty",
-      "/lifecycle_manager_navigation/is_active": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_reset": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_trigger": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/start": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/stop": "std_srvs/srv/Trigger",
-      "/panther/hardware/aux_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/charger_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/digital_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/fan_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/led_control_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/motor_torque_enable": "std_srvs/srv/SetBool",
-      "/ui/cancel_nav": "std_msgs/msg/Empty"
-    }
+    "typedict": {}
   },
   "button_autoID_25": {
     "topic": "/panther/hardware/e_stop",
     "text": "Estop Status",
-    "typedict": {
-      "/panther/hardware/e_stop": "std_msgs/msg/Bool",
-      "/panther/localization/enable": "std_srvs/srv/Empty",
-      "/panther/reset": "std_srvs/srv/Empty",
-      "/reinitialize_global_localization": "std_srvs/srv/Empty",
-      "/request_nomotion_update": "std_srvs/srv/Empty",
-      "/rviz/reset_time": "std_srvs/srv/Empty",
-      "/lifecycle_manager_navigation/is_active": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_reset": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_trigger": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/start": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/stop": "std_srvs/srv/Trigger",
-      "/panther/hardware/aux_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/charger_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/digital_power_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/fan_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/led_control_enable": "std_srvs/srv/SetBool",
-      "/panther/hardware/motor_torque_enable": "std_srvs/srv/SetBool",
-      "/ui/cancel_nav": "std_msgs/msg/Empty"
-    }
+    "typedict": {}
   },
   "initialpose_autoID_26": {
     "topic": "/initialpose"
@@ -271,19 +211,8 @@
     "use_timestamp": false
   },
   "button_autoID_40": {
-    "topic": "/ui/cancel_nav",
-    "text": "Cancel navigation",
-    "typedict": {
-      "/panther/hardware/e_stop": "std_msgs/msg/Bool",
-      "/ui/cancel_nav": "std_msgs/msg/Empty",
-      "/reinitialize_global_localization": "std_srvs/srv/Empty",
-      "/request_nomotion_update": "std_srvs/srv/Empty",
-      "/rviz/reset_time": "std_srvs/srv/Empty",
-      "/lifecycle_manager_navigation/is_active": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_reset": "std_srvs/srv/Trigger",
-      "/panther/hardware/e_stop_trigger": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/start": "std_srvs/srv/Trigger",
-      "/waypoint_follower_controller/stop": "std_srvs/srv/Trigger"
-    }
+    "topic": "/waypoint_follower_controller/stop",
+    "text": "Stop",
+    "typedict": {}
   }
 }
