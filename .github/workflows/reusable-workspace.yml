@@ -50,7 +50,7 @@ jobs:
 
       - name: ty check
         run: |
-          docker run --rm -it \
+          docker run --rm -i \
             -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
             --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
               source /home/rcdt/.bashrc &&
