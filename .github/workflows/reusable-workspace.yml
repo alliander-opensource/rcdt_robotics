@@ -30,16 +30,22 @@ jobs:
         run: docker pull "${{ inputs.container-image }}"
 
       - name: uv sync
-        run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" -lc 'uv sync'
+        run: |
+          docker run --rm \
+            -v "$PWD:/ws" -w /ws --user root \
+            "${{ inputs.container-image }}" -lc 'uv sync'
 
       - name: build workspace
-        run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run colcon build --symlink-install'
+        run: |
+          docker run --rm \
+            -v "$PWD:/ws" -w /ws --user root \
+            "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run colcon build --symlink-install'
 
       - name: ty check
-        run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run ty check --error-on-warning'
+        run: |
+          docker run --rm \
+            -v "$PWD:/ws" -w /ws --user root \
+            "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run ty check --error-on-warning'
 
       - name: tests
         run: |
