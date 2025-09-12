@@ -18,43 +18,48 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         
-      - name: Clear disk space on host
-        uses: ./.github/actions/clear-disk-space
-
   build-and-test:
-    needs: prepare-runner
-    runs-on: ubuntu-latest
-    container:
-      image: ${{ inputs.container-image }}
-      options: --user root
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           lfs: true
-      - name: uv sync
-        shell: bash -ieo pipefail {0}
+      - name: Clear disk space
         run: |
-          uv sync
-      - name: build workspace
-        shell: bash -ieo pipefail {0}
-        run: |
-          source /home/rcdt/.bashrc
-          cd ros2_ws
-          uv run colcon build --symlink-install
-      - name: run ty
-        shell: bash -ieo pipefail {0}
-        run: |
-          cd ros2_ws
-          source /home/rcdt/.bashrc
-          uv run ty check --error-on-warning
-      - name: run tests
-        shell: bash -ieo pipefail {0}
-        run: |
-          source /home/rcdt/.bashrc
-          cd ros2_ws
-          source install/setup.bash
-          echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          uv run pytest -s --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py src/
+          df -h /
+          sudo rm -rf /opt/microsoft/msedge
+          df -h /
 
+      - name: Pull image
+        run: docker pull "${{ inputs.container-image }}"
+      - name: Create and start container
+        env:
+          IMAGE: ${{ inputs.container-image }}
+        run: |
+          docker create --name "ws" \
+            -v "$PWD:/ws" -w /ws --user root \
+            "$IMAGE" bash -lc "sleep infinity"
+          docker start "ws"
+
+      - name: uv sync
+        run: docker exec ws bash -lc 'uv sync'
+
+      - name: build workspace
+        run: docker exec ws bash -lc 'cd ros2_ws && uv run colcon build --symlink-install'
+
+      - name: run ty
+        run: docker exec ws bash -lc 'cd ros2_ws && uv run ty check --error-on-warning'
+
+      - name: run tests
+        run: |
+          docker exec ws bash -lc '
+            cd ros2_ws &&
+            source install/setup.bash &&
+            echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}" &&
+            uv run pytest -s --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py src/
+          '
+
+      - name: Cleanup container
+        if: always()
+        run: docker rm -f ws || true
 # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
