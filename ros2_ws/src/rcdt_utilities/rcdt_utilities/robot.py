@@ -11,6 +11,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
 from rcdt_utilities.rviz import Rviz
+from rcdt_utilities.vizanti import Vizanti
 
 
 class Platform:
@@ -357,6 +358,7 @@ class Lidar(Platform):
 
         Rviz.add_point_cloud(self.namespace)
         Rviz.add_laser_scan(self.namespace)
+        Vizanti.add_laser_scan(self.namespace)
         Platform.bridge_topics.append(
             f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
         )
@@ -459,10 +461,26 @@ class Vehicle(Platform):
         self.navigation = navigation
         self.lidar: Lidar | None = None
 
+        if platform == "panther":
+            Vizanti.add_robot_model(self.namespace)
+            Vizanti.add_button("Trigger", f"/{self.namespace}/hardware/e_stop_trigger")
+            Vizanti.add_button("Reset", f"/{self.namespace}/hardware/e_stop_reset")
+            Vizanti.add_button(
+                "Estop Status",
+                f"/{self.namespace}/hardware/e_stop",
+                "std_msgs/msg/Bool",
+            )
+
         if self.navigation:
             Rviz.add_map("/map")
             Rviz.add_map("/global_costmap/costmap")
             Rviz.add_path("/plan")
+            Vizanti.add_button("Stop", "/waypoint_follower_controller/stop")
+            Vizanti.add_initial_pose()
+            Vizanti.add_goal_pose()
+            Vizanti.add_waypoints(self.namespace)
+            Vizanti.add_map("global_costmap", "/global_costmap/costmap")
+            Vizanti.add_path("/plan")
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a vehicle.
