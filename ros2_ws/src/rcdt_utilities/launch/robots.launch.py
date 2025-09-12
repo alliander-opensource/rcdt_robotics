@@ -9,10 +9,11 @@ from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.robot import Arm, Lidar, Platform, Vehicle
 from rcdt_utilities.rviz import Rviz
+from rcdt_utilities.vizanti import Vizanti
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", True, [True, False])
-use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
+use_rviz_arg = LaunchArgument("rviz", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "mm_lidar",
@@ -80,6 +81,11 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py")
     )
 
+    Vizanti.create_config_file()
+    vizanti = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         *[Register.on_start(publisher, context) for publisher in state_publishers],
@@ -95,6 +101,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context)
         if Rviz.load_motion_planning_plugin
         else SKIP,
+        Register.group(vizanti, context),
     ]
 
 
