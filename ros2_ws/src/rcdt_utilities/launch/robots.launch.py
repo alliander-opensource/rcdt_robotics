@@ -13,7 +13,7 @@ from rcdt_utilities.vizanti import Vizanti
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-use_rviz_arg = LaunchArgument("rviz", False, [True, False])
+use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "mm_lidar",
