@@ -51,8 +51,8 @@ def launch_setup(context: LaunchContext) -> list:
             panther = Vehicle("panther", [0, 0, 0.2])
             Arm("franka", [0, 0, 0.14], parent=panther)
         case "mm_lidar":
-            panther = Vehicle("panther", [0, 0, 0.2])
-            Arm("franka", [0, 0, 0.14], parent=panther)
+            panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
+            Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
     state_publishers = Platform.create_state_publishers()
