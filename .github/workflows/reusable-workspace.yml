@@ -43,6 +43,7 @@ jobs:
               source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               uv run colcon build --symlink-install
+              '
 
       - name: ty check
         run: |
@@ -52,7 +53,8 @@ jobs:
               source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               uv run ty check --error-on-warning
-
+            '
+            
       - name: tests
         run: |
           docker run --rm -v "$PWD:/ws" -w /ws --user root \
