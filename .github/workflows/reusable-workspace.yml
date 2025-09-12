@@ -33,19 +33,25 @@ jobs:
         run: |
           docker run --rm \
             -v "$PWD:/ws" -w /ws --user root \
-            "${{ inputs.container-image }}" -lc 'uv sync'
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc 'uv sync'
 
       - name: build workspace
         run: |
           docker run --rm \
             -v "$PWD:/ws" -w /ws --user root \
-            "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run colcon build --symlink-install'
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc '
+              source /home/rcdt/.bashrc &&
+              cd ros2_ws &&
+              uv run colcon build --symlink-install
 
       - name: ty check
         run: |
           docker run --rm \
             -v "$PWD:/ws" -w /ws --user root \
-            "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run ty check --error-on-warning'
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc '
+              source /home/rcdt/.bashrc &&
+              cd ros2_ws &&
+              uv run ty check --error-on-warning
 
       - name: tests
         run: |
