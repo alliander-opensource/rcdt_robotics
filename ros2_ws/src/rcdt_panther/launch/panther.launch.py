@@ -61,7 +61,7 @@ def launch_setup(context: LaunchContext) -> list:
         "panther_xyz": panther_xyz,
     }
     if use_velodyne:
-        launch_arguments["child"] = "velodyne"
+        launch_arguments["childs"] = "velodyne"
 
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
