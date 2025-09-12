@@ -11,19 +11,14 @@ on:
         type: string
         required: true
 
-jobs:
-  prepare-runner:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        
   build-and-test:
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           lfs: true
+          
       - name: Clear disk space
         run: |
           df -h /
@@ -32,6 +27,7 @@ jobs:
 
       - name: Pull image
         run: docker pull "${{ inputs.container-image }}"
+
       - name: Create and start container
         env:
           IMAGE: ${{ inputs.container-image }}
