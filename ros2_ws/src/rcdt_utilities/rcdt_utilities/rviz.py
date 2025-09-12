@@ -13,6 +13,7 @@ class Rviz:
     Attributes:
         yaml (dict): The default RViz configuration.
         load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
+        load_point_cloud (bool): Whether to load the point cloud display.
     """
 
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
@@ -123,6 +124,11 @@ class Rviz:
 
     @staticmethod
     def add_map(topic: str) -> None:
+        """Add a map display to the RViz configuration.
+
+        Args:
+            topic (str): The topic of the map to add.
+        """
         color_scheme = "costmap" if "costmap" in topic else "map"
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
@@ -137,6 +143,11 @@ class Rviz:
 
     @staticmethod
     def add_path(topic: str) -> None:
+        """Add a path display to the RViz configuration.
+
+        Args:
+            topic (str): The topic of the path to add.
+        """
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
             {

@@ -11,8 +11,9 @@ from rcdt_utilities.robot import Arm, Lidar, Platform, Vehicle
 from rcdt_utilities.rviz import Rviz
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", True, [True, False])
-use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+start_gazebo_ui_arg = LaunchArgument("gazebo", True, [True, False])
+start_rviz_arg = LaunchArgument("rviz", True, [True, False])
+start_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "mm_lidar",
@@ -30,8 +31,9 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     use_sim = use_sim_arg.bool_value(context)
-    load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
-    use_rviz = use_rviz_arg.bool_value(context)
+    start_gazebo_ui = start_gazebo_ui_arg.bool_value(context)
+    start_rviz = start_rviz_arg.bool_value(context)
+    start_vizanti = start_vizanti_arg.bool_value(context)
     configuration = configuration_arg.string_value(context)
 
     Rviz.load_motion_planning_plugin = False
@@ -39,7 +41,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     match configuration:
         case "franka":
-            Arm("franka", [0, 0, 0], moveit=True)
+            Arm("franka", [1, 0, 0])
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
         case "lidar":
@@ -56,7 +58,7 @@ def launch_setup(context: LaunchContext) -> list:
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
     state_publishers = Platform.create_state_publishers()
-    gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
+    gazebo = Platform.create_gazebo_launch(start_gazebo_ui)
     tf_publishers = Platform.create_tf_publishers()
     world_links = Platform.create_world_links()
     controllers = Platform.create_controllers()
@@ -80,6 +82,10 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_utilities", ["launch"], "rviz.launch.py")
     )
 
+    vizanti = RegisteredLaunchDescription(
+        get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         *[Register.on_start(publisher, context) for publisher in state_publishers],
@@ -87,7 +93,7 @@ def launch_setup(context: LaunchContext) -> list:
         *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
         *[Register.on_start(world_link, context) for world_link in world_links],
         *[Register.group(controller, context) for controller in controllers],
-        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(rviz, context) if start_rviz else SKIP,
         *[
             Register.group(launch_description, context)
             for launch_description in launch_descriptions
@@ -95,6 +101,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context)
         if Rviz.load_motion_planning_plugin
         else SKIP,
+        Register.group(vizanti, context) if start_vizanti else SKIP,
     ]
 
 
@@ -107,8 +114,9 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
-            load_gazebo_ui_arg.declaration,
-            use_rviz_arg.declaration,
+            start_gazebo_ui_arg.declaration,
+            start_rviz_arg.declaration,
+            start_vizanti_arg.declaration,
             configuration_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

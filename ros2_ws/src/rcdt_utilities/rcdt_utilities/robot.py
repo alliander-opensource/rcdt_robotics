@@ -348,7 +348,7 @@ class Lidar(Platform):
         Args:
             platform (Literal["velodyne"]): The platform type.
             position (list): The position of the lidar.
-            parent (Platform | None): The parent platform.
+            parent (Vehicle | None): The parent platform.
         """
         super().__init__(platform, position, parent)
 
@@ -454,6 +454,7 @@ class Vehicle(Platform):
             platform (Literal["panther"]): The platform type.
             position (list): The position of the vehicle.
             parent (Platform | None): The parent platform.
+            navigation (bool): Whether to use navigation for the vehicle.
         """
         super().__init__(platform, position, parent)
         self.navigation = navigation
