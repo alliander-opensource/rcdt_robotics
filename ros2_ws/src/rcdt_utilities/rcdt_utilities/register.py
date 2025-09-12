@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import (
@@ -240,7 +240,7 @@ class Register:
 
         return register.insert_action(action, event_handler, context)
 
-    def process_io(self, event: ProcessIO) -> None:
+    def process_io(self, event: ProcessIO) -> Optional[LaunchDescription]:
         """Returns the next register to start if the defined log is captured.
 
         This method is called when a log message is captured from the action's stderr.
@@ -248,6 +248,9 @@ class Register:
 
         Args:
             event (ProcessIO): The event containing the log message.
+
+        Returns:
+            Optional[LaunchDescription]: A launch description containing the next action to start, or None if the action has already started.
         """
         if self.is_started:
             return

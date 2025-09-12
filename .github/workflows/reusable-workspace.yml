@@ -31,36 +31,45 @@ jobs:
 
       - name: uv sync
         run: |
-          docker run --rm \
-            -v "$PWD:/ws" -w /ws --user root \
-            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc 'uv sync'
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -c "
+              source /home/rcdt/.bashrc &&
+              uv sync
+            "
 
       - name: build workspace
         run: |
-          docker run --rm \
-            -v "$PWD:/ws" -w /ws --user root \
-            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc '
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -c "
               source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               uv run colcon build --symlink-install
-              '
+            "
 
       - name: ty check
         run: |
-          docker run --rm \
-            -v "$PWD:/ws" -w /ws --user root \
-            --entrypoint /bin/bash "${{ inputs.container-image }}" -lc '
+          docker run --rm -it \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
               source /home/rcdt/.bashrc &&
-              cd ros2_ws &&
               uv run ty check --error-on-warning
-            '
-            
+            "
+
       - name: tests
         run: |
-          docker run --rm -v "$PWD:/ws" -w /ws --user root \
-            "${{ inputs.container-image }}" -lc '
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" \
+            -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -c "
+              source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               source install/setup.bash &&
-              uv run pytest -s --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py src/
-            '
-# Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
+              cd ../ &&
+              uv run pytest -s \
+                --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
+                ros2_ws/src/
+            "
+
+
