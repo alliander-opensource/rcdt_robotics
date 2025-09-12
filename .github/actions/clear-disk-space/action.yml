@@ -10,7 +10,12 @@ runs:
     - name: clear-disk-space
       shell: bash
       run: |
-        sudo rm -rf \
+          echo "Before cleanup:"
+          df -h /
+          
+          echo "AGENT_TOOLSDIRECTORY is set to: $AGENT_TOOLSDIRECTORY"
+
+          sudo rm -rf \
           "$AGENT_TOOLSDIRECTORY" \
           /opt/google/chrome \
           /opt/microsoft/msedge \
@@ -24,4 +29,6 @@ runs:
           /usr/local/share/powershell \
           /usr/share/dotnet \
           /usr/share/swift
-        df -h /
+
+          echo "After cleanup:"
+          df -h /
