@@ -31,20 +31,20 @@ jobs:
 
       - name: uv sync
         run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" bash -lc 'uv sync'
+             "${{ inputs.container-image }}" -lc 'uv sync'
 
       - name: build workspace
         run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" bash -lc 'cd ros2_ws && uv run colcon build --symlink-install'
+             "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run colcon build --symlink-install'
 
       - name: ty check
         run: docker run --rm -v "$PWD:/ws" -w /ws --user root \
-             "${{ inputs.container-image }}" bash -lc 'cd ros2_ws && uv run ty check --error-on-warning'
+             "${{ inputs.container-image }}" -lc 'cd ros2_ws && uv run ty check --error-on-warning'
 
       - name: tests
         run: |
           docker run --rm -v "$PWD:/ws" -w /ws --user root \
-            "${{ inputs.container-image }}" bash -lc '
+            "${{ inputs.container-image }}" -lc '
               cd ros2_ws &&
               source install/setup.bash &&
               uv run pytest -s --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py src/
