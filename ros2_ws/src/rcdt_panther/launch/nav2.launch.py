@@ -76,17 +76,12 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
 
-    amcl_params = RewrittenYaml(
-        source_file=get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
-        param_rewrites={},
+    amcl_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml")
     )
-
-    local_costmap_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "local_costmap.yaml"
-        ),
-        param_rewrites={},
-    )
+    amcl_params["base_frame_id"] = f"{namespace_vehicle}/base_footprint"
+    amcl_params["odom_frame_id"] = f"{namespace_vehicle}/odom"
+    amcl_params["scan_topic"] = f"/{namespace_lidar}/scan"
 
     local_costmap_params = get_yaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "local_costmap.yaml")
@@ -102,19 +97,16 @@ def launch_setup(context: LaunchContext) -> list:
         f"/{namespace_lidar}/scan"
     )
 
-    controller_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "controller_server.yaml"
-        ),
-        param_rewrites={},
+    controller_server_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "controller_server.yaml")
     )
+    controller_server_params["odom_topic"] = f"/{namespace_vehicle}/odom"
 
-    behavior_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
-        ),
-        param_rewrites={},
+    behavior_server_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "behavior_server.yaml")
     )
+    behavior_server_params["local_frame"] = f"{namespace_vehicle}/odom"
+    behavior_server_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
 
     follow_path_params = load_follow_path_parameters(controller)
 
@@ -127,19 +119,18 @@ def launch_setup(context: LaunchContext) -> list:
     bt_navigator_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
     bt_navigator_params["odom_topic"] = f"/{namespace_vehicle}/odom"
 
-    planner_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
-        ),
-        param_rewrites={},
+    planner_server_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "planner_server.yaml")
     )
 
-    collision_monitor_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
-        ),
-        param_rewrites={},
+    collision_monitor_params = get_yaml(
+        get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml")
     )
+    collision_monitor_params["base_frame_id"] = f"{namespace_vehicle}/base_footprint"
+    collision_monitor_params["odom_frame_id"] = f"{namespace_vehicle}/odom"
+    collision_monitor_params["cmd_vel_in_topic"] = f"/{namespace_vehicle}/cmd_vel_raw"
+    collision_monitor_params["cmd_vel_out_topic"] = f"/{namespace_vehicle}/cmd_vel"
+    collision_monitor_params["scan"]["topic"] = f"/{namespace_lidar}/scan"
 
     map_server = Node(
         package="nav2_map_server",
