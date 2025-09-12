@@ -11,6 +11,7 @@ on:
         type: string
         required: true
 
+jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -18,7 +19,7 @@ on:
         uses: actions/checkout@v4
         with:
           lfs: true
-          
+
       - name: Clear disk space
         run: |
           df -h /
