@@ -20,11 +20,7 @@ jobs:
         with:
           lfs: true
 
-      - name: Clear disk space
-        run: |
-          df -h /
-          sudo rm -rf /opt/microsoft/msedge
-          df -h /
+      - uses: ./.github/actions/clear-disk-space
 
       - name: Pull image
         run: docker pull "${{ inputs.container-image }}"
@@ -66,10 +62,9 @@ jobs:
               source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               source install/setup.bash &&
-              cd ../ &&
               uv run pytest -s \
                 --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
-                ros2_ws/src/
+                src/
             "
 
 

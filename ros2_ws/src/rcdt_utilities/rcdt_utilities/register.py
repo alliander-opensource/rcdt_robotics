@@ -248,7 +248,6 @@ class Register:
 
         Args:
             event (ProcessIO): The event containing the log message.
-
         """
         if self.is_started:
             return
