@@ -12,7 +12,7 @@ on:
         required: true
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -56,6 +56,43 @@ jobs:
               source /home/rcdt/.bashrc &&
               uv run ty check --error-on-warning
             "
+      - name: Package build artifacts
+        run: |
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" \
+            -w /home/rcdt/rcdt_robotics/ros2_ws --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
+              tar -czf /home/rcdt/rcdt_robotics/ros2_install.tgz install
+            "
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ros2-install
+          path: ros2_install.tgz
+          retention-days: 1
+
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Pull image
+        run: docker pull "${{ inputs.container-image }}"
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ros2-install
+          path: .
+
+      - name: Unpack build
+        run: |
+          tar -xzf ros2_install.tgz -C ros2_ws
 
       - name: tests
         run: |
@@ -66,10 +103,8 @@ jobs:
               source /home/rcdt/.bashrc &&
               cd ros2_ws &&
               source install/setup.bash &&
-              cd ../ &&
               uv run pytest -s \
                 --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
-                ros2_ws/src/
+                src/
             "
-
 
