@@ -21,4 +21,7 @@ apt-get install -y --no-install-recommends \
   ros-dev-tools \
   ros-jazzy-desktop
 
+rosdep init 
+rosdep update
+
 echo "source /opt/ros/jazzy/setup.bash" >> /home/$UNAME/.bashrc
