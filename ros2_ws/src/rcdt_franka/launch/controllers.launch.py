@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
-namespace_arg = LaunchArgument("namespace", "panther")
+namespace_arg = LaunchArgument("namespace", "franka")
 simulation_arg = LaunchArgument("simulation", True, [True, False])
 
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
