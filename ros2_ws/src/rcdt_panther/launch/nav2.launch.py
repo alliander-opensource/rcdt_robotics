@@ -188,11 +188,6 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[bt_navigator_params],
     )
 
-    waypoint_follower = Node(
-        package="nav2_waypoint_follower",
-        executable="waypoint_follower",
-    )
-
     collision_monitor_params = RewrittenYaml(
         source_file=get_file_path(
             "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
@@ -216,6 +211,11 @@ def launch_setup(context: LaunchContext) -> list:
         name="lifecycle_manager_navigation",
         output="screen",
         parameters=[{"autostart": autostart}, {"node_names": lifecycle_nodes}],
+    )
+
+    waypoint_follower = Node(
+        package="nav2_waypoint_follower",
+        executable="waypoint_follower",
     )
 
     waypoint_follower_controller = Node(
