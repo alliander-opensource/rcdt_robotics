@@ -30,17 +30,25 @@ class Platform:
     bridge_topics: list[str] = []
 
     @staticmethod
-    def add(platform: "Platform") -> str:
+    def add(platform: "Platform") -> None:
         """Add a platform instance to the general list.
 
         Args:
             platform (Platform): The platform instance to add.
-
-        Returns:
-            str: The namespace assigned to the platform instance.
         """
         Platform.platforms.append(platform)
         Platform.platform_indices[platform.name] += 1
+
+    @staticmethod
+    def generate_namespace(platform: Platform) -> str:
+        """Generate an unique namespace for the given platform.
+
+        Args:
+            platform (Platform): The platform.
+
+        Returns:
+            str: The unique namespace for the platform.
+        """
         index = Platform.platform_indices[platform.name]
         return f"{platform.name}{index}"
 
@@ -144,6 +152,7 @@ class Platform:
         self,
         platform: Literal["panther", "franka", "velodyne"],
         position: list,
+        namespace: str | None = None,
         parent: "Platform" | None = None,
     ):
         """Initialize a robot instance.
@@ -151,12 +160,15 @@ class Platform:
         Args:
             platform (Literal["panther", "franka", "velodyne"]): The platform type of the robot.
             position (list): The initial position of the robot.
+            namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
         self.name: Literal["panther", "franka", "velodyne"] = platform
         self.parent = parent
         self.childs = []
-        self.namespace = Platform.add(self)
+        Platform.add(self)
+        self.namespace = namespace if namespace else Platform.generate_namespace(self)
+
         Rviz.add_robot_model(self.namespace)
 
         if parent is None:
@@ -342,6 +354,7 @@ class Lidar(Platform):
         self,
         platform: Literal["velodyne"],
         position: list,
+        namespace: str | None = None,
         parent: Vehicle | None = None,
     ):
         """Initialize the Lidar platform.
@@ -349,9 +362,10 @@ class Lidar(Platform):
         Args:
             platform (Literal["velodyne"]): The platform type.
             position (list): The position of the lidar.
-            parent (Platform | None): The parent platform.
+            namespace (str | None): The namespace of the lidar.
+            parent (Vehicle | None): The parent platform.
         """
-        super().__init__(platform, position, parent)
+        super().__init__(platform, position, namespace, parent)
 
         if parent:
             parent.lidar = self
@@ -395,6 +409,7 @@ class Arm(Platform):
         self,
         platform: Literal["franka"],
         position: list,
+        namespace: str | None = None,
         parent: Platform | None = None,
         moveit: bool = False,
     ):
@@ -403,10 +418,11 @@ class Arm(Platform):
         Args:
             platform (Literal["franka"]): The platform type.
             position (list): The position of the arm.
+            namespace (str | None): The namespace of the arm.
             parent (Platform | None): The parent platform.
             moveit (bool): Whether to use MoveIt for the arm.
         """
-        super().__init__(platform, position, parent)
+        super().__init__(platform, position, namespace, parent)
         self.moveit = moveit
 
         if moveit:
@@ -447,6 +463,7 @@ class Vehicle(Platform):
         self,
         platform: Literal["panther"],
         position: list,
+        namespace: str | None = None,
         parent: Platform | None = None,
         navigation: bool = False,
     ):
@@ -455,9 +472,11 @@ class Vehicle(Platform):
         Args:
             platform (Literal["panther"]): The platform type.
             position (list): The position of the vehicle.
+            namespace (str | None): The namespace of the vehicle.
             parent (Platform | None): The parent platform.
+            navigation (bool): Whether to start navigation for the vehicle.
         """
-        super().__init__(platform, position, parent)
+        super().__init__(platform, position, namespace, parent)
         self.navigation = navigation
         self.lidar: Lidar | None = None
 
