@@ -14,7 +14,7 @@ from rcdt_utilities.rviz import Rviz
 from rcdt_utilities.vizanti import Vizanti
 
 
-class Platform:
+class Platform:  # noqa: PLR0904
     """A class used to dynamically create all the required nodes for a platform.
 
     Attributes:
@@ -135,6 +135,51 @@ class Platform:
             if launch_description != []:
                 launch_descriptions.extend(launch_description)
         return launch_descriptions
+
+    @staticmethod
+    def create_joystick_nodes() -> list[Node]:
+        """Create joystick nodes for all robots.
+
+        Returns:
+            list[Node]: A list of all joystick nodes.
+        """
+        nodes = []
+
+        nodes.append(
+            Node(
+                package="joy",
+                executable="game_controller_node",
+                parameters=[
+                    {"sticky_buttons": True},
+                ],
+            )
+        )
+
+        buttons = []
+        services = []
+        topics = []
+        for n, robot in enumerate(Platform.platforms):
+            buttons.append(n)
+            services.append(False)
+            topics.append(f"/{robot.namespace}/joy")
+            nodes.extend(robot.joystick_nodes())
+
+        buttons.append(n + 1)
+        services.append(False)
+        topics.append("")
+
+        nodes.append(
+            Node(
+                package="rcdt_joystick",
+                executable="joy_topic_manager.py",
+                parameters=[
+                    {"buttons": buttons},
+                    {"services": services},
+                    {"topics": topics},
+                ],
+            )
+        )
+        return nodes
 
     def create_world_links() -> list[Node]:
         """Create world links for all robots.
@@ -299,6 +344,14 @@ class Platform:
             ],
         )
 
+    def joystick_nodes(self) -> list[Node]:  # noqa: PLR6301
+        """Return the required nodes to control the platform with a joystick.
+
+        Returns:
+            list[Node]: The joystick nodes for the platform.
+        """
+        return []
+
     def create_world_link(self) -> Node:
         """Create a world link for the robot.
 
@@ -423,6 +476,7 @@ class Arm(Platform):
             moveit (bool): Whether to use MoveIt for the arm.
         """
         super().__init__(platform, position, namespace, parent)
+        self.platform = platform
         self.moveit = moveit
 
         if moveit:
@@ -435,9 +489,61 @@ class Arm(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
+        gripper_launch = self.create_gripper_launch()
+        if gripper_launch:
+            launch_descriptions.append(gripper_launch)
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
         return launch_descriptions
+
+    def joystick_nodes(self) -> list[Node]:
+        """Return the required nodes to control the platform with a joystick.
+
+        Returns:
+            list[Node]: The joystick nodes for the platform.
+        """
+        nodes: list[Node] = []
+
+        if self.platform == "franka":
+            nodes.append(
+                Node(
+                    package="rcdt_joystick",
+                    executable="joy_to_twist.py",
+                    parameters=[
+                        {"sub_topic": f"/{self.namespace}/joy"},
+                        {"pub_topic": f"/{self.namespace}/servo_node/delta_twist_cmds"},
+                        {"config_pkg": "rcdt_franka"},
+                        {"pub_frame": "fr3_hand"},
+                    ],
+                    namespace=self.namespace,
+                )
+            )
+            nodes.append(
+                Node(
+                    package="rcdt_joystick",
+                    executable="joy_to_gripper.py",
+                    parameters=[
+                        {"config_pkg": "rcdt_franka"},
+                    ],
+                    namespace=self.namespace,
+                )
+            )
+
+        return nodes
+
+    def create_gripper_launch(self) -> RegisteredLaunchDescription | None:
+        """Create the gripper services launch description.
+
+        Returns:
+            RegisteredLaunchDescription | None: The launch description for the gripper services.
+        """
+        if self.platform == "franka":
+            return RegisteredLaunchDescription(
+                get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py"),
+                launch_arguments={"namespace": self.namespace},
+            )
+
+        return None
 
     def create_moveit_launch(self) -> RegisteredLaunchDescription:
         """Create the MoveIt launch description.
@@ -477,6 +583,7 @@ class Vehicle(Platform):
             navigation (bool): Whether to start navigation for the vehicle.
         """
         super().__init__(platform, position, namespace, parent)
+        self.platform = platform
         self.navigation = navigation
         self.lidar: Lidar | None = None
 
@@ -511,6 +618,30 @@ class Vehicle(Platform):
         if self.navigation:
             launch_descriptions.append(self.create_nav2_launch())
         return launch_descriptions
+
+    def joystick_nodes(self) -> list[Node]:
+        """Return the required nodes to control the platform with a joystick.
+
+        Returns:
+            list[Node]: The joystick nodes for the platform.
+        """
+        nodes: list[Node] = []
+
+        if self.platform == "panther":
+            nodes.append(
+                Node(
+                    package="rcdt_joystick",
+                    executable="joy_to_twist.py",
+                    parameters=[
+                        {"sub_topic": f"/{self.namespace}/joy"},
+                        {"pub_topic": f"/{self.namespace}/cmd_vel"},
+                        {"config_pkg": "rcdt_panther"},
+                    ],
+                    namespace="panther",
+                )
+            )
+
+        return nodes
 
     def create_nav2_launch(self) -> RegisteredLaunchDescription:
         """Create the Nav2 launch description.

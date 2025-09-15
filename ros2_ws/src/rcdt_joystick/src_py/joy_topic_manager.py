@@ -6,10 +6,9 @@
 
 from dataclasses import dataclass
 
-import mashumaro.codecs.yaml as yaml_codec
 import rclpy
 import rclpy.client
-from rcdt_utilities.launch_utils import get_file_path, get_yaml, spin_node
+from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node, Publisher
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile
 from sensor_msgs.msg import Joy
@@ -58,21 +57,40 @@ class Output:
 class JoyTopicManager(Node):
     """A ROS2 node that manages joystick topics based on button presses.
 
-    This node subscribes to a joystick input topic and publishes Joy messages to specific topics
-    based on the configuration defined in a YAML file. It allows dynamic topic switching
-    based on joystick button states.
+    A button can be configured to either switch the topic to which Joy messages are published,
+    or to call a service.
     """
 
     def __init__(self) -> None:
         """Initialize the JoyTopicManager node."""
         super().__init__("joy_topic_manager")
         self.declare_parameter("joy_topic", value="/joy")
+        self.declare_parameter("buttons", [0])
+        self.declare_parameter("services", [False])
+        self.declare_parameter("topics", [""])
+
         joy_input = self.get_parameter("joy_topic").get_parameter_value().string_value
+        buttons = (
+            self.get_parameter("buttons").get_parameter_value().integer_array_value
+        )
+        services = self.get_parameter("services").get_parameter_value().bool_array_value
+        topics = self.get_parameter("topics").get_parameter_value().string_array_value
 
-        file = get_file_path("rcdt_joystick", ["config"], "joy_topics.yaml")
-        yaml = get_yaml(file)
+        if not (len(buttons) == len(services) == len(topics)):
+            self.get_logger().error(
+                "Parameters 'buttons', 'services', and 'topic' must have the same length."
+            )
+            return
 
-        self.outputs = [yaml_codec.decode(str(yaml[output]), Output) for output in yaml]
+        self.outputs: list[Output] = []
+        for i in range(len(buttons)):
+            output = Output(buttons[i])
+            if services[i]:
+                output.service = topics[i]
+            else:
+                output.topic = topics[i]
+            self.outputs.append(output)
+
         self.pubs: dict[str, Publisher] = {}
         self.srvs: dict[str, rclpy.client.Client] = {}
         for output in self.outputs:
