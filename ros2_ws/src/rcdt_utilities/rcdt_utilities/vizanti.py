@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-from importlib.resources import path
 
 from rcdt_utilities.launch_utils import get_file_path
 

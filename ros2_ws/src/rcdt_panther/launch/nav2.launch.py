@@ -33,7 +33,7 @@ global_map_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:
+def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     """Setup the launch description for the navigation stack.
 
     Args:
