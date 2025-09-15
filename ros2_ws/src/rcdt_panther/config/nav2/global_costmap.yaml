@@ -7,9 +7,11 @@
 global_costmap:
   global_costmap:
     ros__parameters:
-      always_send_full_costmap: True
+      always_send_full_costmap: true
+      update_frequency: 30.0
+      publish_frequency: 30.0
       robot_base_frame: panther/base_footprint
-      robot_radius: 0.6
+      footprint: "[[0.4045, 0.424], [0.4045, -0.424], [-0.4045, -0.424], [-0.4045, 0.424]]"
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -34,4 +36,4 @@ global_costmap:
           inf_is_valid: false
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        inflation_radius: 0.7
+        inflation_radius: 1.0
