@@ -65,5 +65,8 @@ def generate_launch_description() -> LaunchDescription:
         LaunchDescription: The launch description containing the Panther controllers.
     """
     return LaunchDescription(
-        [OpaqueFunction(function=launch_setup), namespace_arg.declaration]
+        [
+            namespace_arg.declaration,
+            OpaqueFunction(function=launch_setup),
+        ]
     )
