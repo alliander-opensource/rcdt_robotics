@@ -37,10 +37,9 @@ jobs:
       - name: build workspace
         run: |
           docker run --rm -i \
-            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics/ros2_ws --user root \
             --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
               source /home/rcdt/.bashrc &&
-              cd ros2_ws &&
               uv run colcon build --symlink-install
             "
 
@@ -57,14 +56,24 @@ jobs:
         run: |
           docker run --rm -i \
             -v "$PWD:/home/rcdt/rcdt_robotics" \
-            -w /home/rcdt/rcdt_robotics --user root \
+            -w /home/rcdt/rcdt_robotics/ros2_ws --user root \
             --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
               source /home/rcdt/.bashrc &&
-              cd ros2_ws &&
               source install/setup.bash &&
               uv run pytest -s \
                 --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
                 src/
             "
+        # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
+
+      - name: Show disk usage after job
+        run: |
+          echo "Disk usage on host:"
+          df -h /
+
+          echo
+          echo "Docker disk usage:"
+          docker system df || true
+
 
 
