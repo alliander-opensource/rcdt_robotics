@@ -5,6 +5,9 @@
 
 INCLUDE ./general/pre_install.dockerfile
 
+COPY ./install_scripts/ros2_jazzy.sh .
+RUN ./ros2_jazzy.sh
+
 COPY ./install_scripts/core_packages.sh .
 RUN ./core_packages.sh
 
