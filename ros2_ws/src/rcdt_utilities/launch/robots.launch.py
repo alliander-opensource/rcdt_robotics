@@ -14,6 +14,7 @@ from rcdt_utilities.vizanti import Vizanti
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 use_rviz_arg = LaunchArgument("rviz", True, [True, False])
+use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "mm_lidar",
@@ -33,6 +34,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.bool_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
+    use_vizanti = use_vizanti_arg.bool_value(context)
     configuration = configuration_arg.string_value(context)
 
     Rviz.load_motion_planning_plugin = False
@@ -40,7 +42,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     match configuration:
         case "franka":
-            Arm("franka", [0, 0, 0], moveit=True)
+            Arm("franka", [0, 0, 0], "franka", moveit=True)
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
         case "lidar":
@@ -101,7 +103,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(static_transform_publisher, context)
         if Rviz.load_motion_planning_plugin
         else SKIP,
-        Register.group(vizanti, context),
+        Register.group(vizanti, context) if use_vizanti else SKIP,
     ]
 
 
@@ -116,6 +118,7 @@ def generate_launch_description() -> LaunchDescription:
             use_sim_arg.declaration,
             load_gazebo_ui_arg.declaration,
             use_rviz_arg.declaration,
+            use_vizanti_arg.declaration,
             configuration_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
