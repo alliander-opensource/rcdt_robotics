@@ -67,6 +67,7 @@ jobs:
         # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
 
       - name: Show disk usage after job
+        if: always()
         run: |
           echo "Disk usage on host:"
           df -h /
