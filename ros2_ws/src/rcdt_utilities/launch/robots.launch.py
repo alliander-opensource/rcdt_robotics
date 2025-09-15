@@ -42,7 +42,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     match configuration:
         case "franka":
-            Arm("franka", [0, 0, 0], "franka", moveit=True)
+            Arm("franka", [0, 0, 0], moveit=True)
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
         case "lidar":
@@ -52,7 +52,7 @@ def launch_setup(context: LaunchContext) -> list:
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
-            Arm("franka", [0, 0, 0.14], parent=panther)
+            Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
         case "mm_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
@@ -64,6 +64,7 @@ def launch_setup(context: LaunchContext) -> list:
     world_links = Platform.create_world_links()
     controllers = Platform.create_controllers()
     launch_descriptions = Platform.create_launch_descriptions()
+    joystick_nodes = Platform.create_joystick_nodes()
 
     # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
     static_transform_publisher = Node(
@@ -95,6 +96,7 @@ def launch_setup(context: LaunchContext) -> list:
         *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
         *[Register.on_start(world_link, context) for world_link in world_links],
         *[Register.group(controller, context) for controller in controllers],
+        *[Register.on_start(node, context) for node in joystick_nodes],
         Register.group(rviz, context) if use_rviz else SKIP,
         *[
             Register.group(launch_description, context)
