@@ -137,9 +137,14 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
     )
 
+    navsat_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py")
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(velodyne, context) if use_velodyne else SKIP,
+        Register.group(navsat_launch, context) if use_navsat else SKIP,
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
         Register.group(joystick, context),
