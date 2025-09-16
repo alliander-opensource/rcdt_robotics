@@ -9,16 +9,24 @@ SPDX-License-Identifier: Apache-2.0
 copied from:  https://github.com/husarion/husarion_components_description/blob/ros2/urdf/teltonika_003R-00253.urdf.xacro
 -->
 
-<robot xmlns:xacro="http://wiki.ros.org/xacro">
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="nmea_navsat">
   <xacro:macro name="teltonika_003R-00253"
-               params="parent_link
+               params="parent_link:=base_link
                        xyz:='0.0 0.0 0.0'
                        rpy:='0.0 0.0 0.0'
-                       namespace:=''
+                       namespace:=navsat
                        device_namespace:=gps">
 
+  
     <xacro:property name="ns" value="${namespace + '/' if namespace != '' else ''}" />
-
+    <link name="base_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.001"/>
+        <inertia ixx="1e-6" iyy="1e-6" izz="1e-6"
+                ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+    </link>
     <joint name="${parent_link.rstrip('_link')}_to_antenna_joint"
       type="fixed">
       <origin xyz="${xyz}" rpy="${rpy}" />
@@ -71,4 +79,10 @@ copied from:  https://github.com/husarion/husarion_components_description/blob/r
       </sensor>
     </gazebo>
   </xacro:macro>
+  <xacro:teltonika_003R-00253
+      parent_link="base_link"
+      xyz="0.0 -0.06 0.55"
+      rpy="0.0 0.0 0.0"
+      namespace="navsat"
+      device_namespace="gps"/>
 </robot>
