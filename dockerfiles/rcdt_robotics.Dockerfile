@@ -5,9 +5,6 @@
 
 INCLUDE ./general/pre_install.dockerfile
 
-COPY ./install_scripts/cuda.sh .
-RUN ./cuda.sh
-
 COPY ./install_scripts/ros2_jazzy.sh .
 RUN ./ros2_jazzy.sh
 
