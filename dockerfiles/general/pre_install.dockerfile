@@ -9,7 +9,6 @@ ENV UNAME=rcdt
 ENV UID=1000
 # Remove existing user with same UID if exists:
 RUN if getent passwd $UID; then userdel $(id -nu $UID); else :; fi
-RUN echo "Building image for user: $UNAME with UID: $UID"
 
 # Add user:
 RUN useradd -m -u $UID -p "$(openssl passwd -1 $UNAME)" $UNAME
