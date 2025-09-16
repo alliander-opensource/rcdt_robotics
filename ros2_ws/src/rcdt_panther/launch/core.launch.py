@@ -15,7 +15,7 @@ from rcdt_utilities.launch_utils import (
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-child_arg = LaunchArgument("child", "", ["", "franka", "velodyne"])
+child_arg = LaunchArgument("child", "", ["", "franka", "velodyne", "navsat"])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "empty_camera.sdf")
 panther_xyz_arg = LaunchArgument("panther_xyz", "0,0,0.2")
@@ -58,6 +58,12 @@ def launch_setup(context: LaunchContext) -> list:
         robots.append("velodyne")
         velodyne_relative_position = [0.0, -0.06, 0.55]
         positions.append(panther_xyz.absolute(velodyne_relative_position))
+
+    if child == "navsat":
+        robots.append("navsat")
+        navsat_relative_position = [0.0, 0.0, 0.1]
+        positions.append(panther_xyz.absolute(navsat_relative_position))
+
     robot = RegisteredLaunchDescription(
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
