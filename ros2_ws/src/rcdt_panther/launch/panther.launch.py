@@ -24,6 +24,7 @@ global_map_arg = LaunchArgument(
     "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
 use_ui_arg = LaunchArgument("ui", False, [True, False])
+use_zed2i_arg = LaunchArgument("zed2i", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -47,6 +48,7 @@ def launch_setup(context: LaunchContext) -> list:
     panther_xyz = panther_xyz_arg.string_value(context)
     global_map = global_map_arg.string_value(context)
     use_ui = use_ui_arg.bool_value(context)
+    use_zed2i = use_zed2i_arg.bool_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -59,6 +61,7 @@ def launch_setup(context: LaunchContext) -> list:
         "load_gazebo_ui": str(load_gazebo_ui),
         "world": world,
         "panther_xyz": panther_xyz,
+        "zed2i": str(use_zed2i),
     }
     if use_velodyne:
         launch_arguments["child"] = "velodyne"
@@ -167,6 +170,7 @@ def generate_launch_description() -> LaunchDescription:
             panther_xyz_arg.declaration,
             global_map_arg.declaration,
             use_ui_arg.declaration,
+            use_zed2i_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
