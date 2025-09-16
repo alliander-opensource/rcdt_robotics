@@ -2,46 +2,70 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import EnvironmentVariable, LaunchConfiguration
+from launch import LaunchContext, LaunchDescription
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 from nav2_common.launch import ReplaceString
-from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.launch_utils import (
+    SKIP,
+    LaunchArgument,
+    get_file_path,
+    get_robot_description,
+)
+from rcdt_utilities.register import Register
+
+use_sim_arg = LaunchArgument("use_sim", True, [True, False])
+device_namespace_arg = LaunchArgument("device_namespace", default_value="gps")
+robot_namespace_arg = LaunchArgument("robot_namespace", default_value="")
 
 
-def generate_launch_description() -> LaunchDescription:
+def launch_setup(context: LaunchContext) -> list:
     """Launch the nmea_socket_driver node from the nmea_navsat_driver package.
 
+    Args:
+        context (LaunchContext): The launch context.
+
     Returns:
-        LaunchDescription: The launch description containing the nmea_socket_driver node.
+        list: A list of actions to be executed in the launch description.
     """
-    device_namespace = LaunchConfiguration("device_namespace")
-    declare_device_namespace_arg = DeclareLaunchArgument(
-        "device_namespace",
-        default_value="gps",
-        description="Namespace for the device, utilized in TF frames and preceding device topics. This aids in differentiating between multiple cameras on the same robot.",
-    )
-
-    params_file = LaunchConfiguration("params_file")
-    declare_params_file_arg = DeclareLaunchArgument(
-        "params_file",
-        default_value=get_file_path(
-            "rcdt_panther", ["config"], "nmea_navsat_params.yaml"
-        ),
-        description="Path to the parameter file for the nmea_socket_driver node.",
-    )
-
-    robot_namespace = LaunchConfiguration("robot_namespace")
-    declare_robot_namespace_arg = DeclareLaunchArgument(
-        "robot_namespace",
-        default_value=EnvironmentVariable("ROBOT_NAMESPACE", default_value=""),
-        description="Namespace to all launched nodes and use namespace as tf_prefix. This aids in differentiating between multiple robots with the same devices.",
-    )
+    use_sim = use_sim_arg.bool_value(context)
+    device_namespace = device_namespace_arg.string_value(context)
+    robot_namespace = robot_namespace_arg.string_value(context)
 
     rename_params_file = ReplaceString(
-        source_file=params_file,
-        replacements={"<device_namespace>": device_namespace, "//": "/"},
+        source_file=get_file_path(
+            "rcdt_panther", ["config"], "nmea_navsat_params.yaml"
+        ),
+        replacements={"<device_namespace>": str(device_namespace), "//": "/"},
+    )
+
+    namespace = "navsat"
+    frame_prefix = namespace + "/" if namespace else ""
+
+    xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro")
+    navsat_description = get_robot_description(xacro_path)
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        namespace="navsat",
+        parameters=[navsat_description, {"frame_prefix": frame_prefix}],
+    )
+
+    static_transform_publisher = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=[
+            "--frame-id",
+            "panther/base_footprint",
+            "--child-frame-id",
+            "navsat/gps_mounting_point",
+            "--x",
+            "0.0",
+            "--y",
+            "-0.06",
+            "--z",
+            "0.55",
+        ],
     )
 
     nmea_driver = Node(
@@ -64,11 +88,23 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
+    return [
+        Register.on_start(robot_state_publisher, context),
+        Register.on_start(static_transform_publisher, context),
+        Register.on_start(nmea_driver, context) if not use_sim else SKIP,
+    ]
+
+
+def generate_launch_description() -> LaunchDescription:
+    """Generate the launch description for the realsense camera.
+
+    Returns:
+        LaunchDescription: The launch description for the realsense camera.
+    """
     return LaunchDescription(
         [
-            declare_params_file_arg,
-            declare_robot_namespace_arg,
-            declare_device_namespace_arg,
-            nmea_driver,
+            device_namespace_arg.declaration,
+            robot_namespace_arg.declaration,
+            OpaqueFunction(function=launch_setup),
         ]
     )
