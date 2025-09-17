@@ -136,7 +136,7 @@ You can control the simulated Panther if a gamepad is connected. By default, the
 ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
 ```
 
-## Slam Collision Monitor and Navigation
+## Slam, Collision Monitor and Navigation
 
 It is possible to run the Panther with additional tools, both in simulation and on the real robot. When using the real robot, make sure to have your laptop connected to the Panther network (preferably by ethernet for the best results) and to pass the `simulation:=True` flag to each launch command mentioned in the next steps:
 
