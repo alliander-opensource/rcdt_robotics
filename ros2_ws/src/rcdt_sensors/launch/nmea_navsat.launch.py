@@ -14,7 +14,7 @@ from rcdt_utilities.launch_utils import (
 )
 from rcdt_utilities.register import Register
 
-use_sim_arg = LaunchArgument("use_sim", True, [True, False])
+use_sim_arg = LaunchArgument("simulation", True, [True, False])
 device_namespace_arg = LaunchArgument("device_namespace", default_value="gps")
 robot_namespace_arg = LaunchArgument("robot_namespace", default_value="")
 
