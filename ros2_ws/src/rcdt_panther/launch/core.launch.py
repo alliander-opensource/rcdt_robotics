@@ -61,7 +61,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     if child == "navsat":
         robots.append("navsat")
-        navsat_relative_position = [0.0, 0.0, 0.1]
+        navsat_relative_position = [0.0, 0.0, 0.60]
         positions.append(panther_xyz.absolute(navsat_relative_position))
 
     robot = RegisteredLaunchDescription(

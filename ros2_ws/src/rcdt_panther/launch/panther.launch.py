@@ -87,6 +87,8 @@ def launch_setup(context: LaunchContext) -> list:
         rviz_display_config = "panther_slam.rviz"
     elif use_velodyne:
         rviz_display_config = "panther_velodyne.rviz"
+    elif use_navsat:
+        rviz_display_config = "panther_navsat.rviz"
     else:
         rviz_display_config = "panther_general.rviz"
 
@@ -138,7 +140,8 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     navsat_launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py")
+        get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
     )
 
     return [

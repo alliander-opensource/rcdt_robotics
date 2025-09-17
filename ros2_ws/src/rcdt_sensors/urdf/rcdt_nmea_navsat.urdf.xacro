@@ -19,14 +19,6 @@ copied from:  https://github.com/husarion/husarion_components_description/blob/r
 
   
     <xacro:property name="ns" value="${namespace + '/' if namespace != '' else ''}" />
-    <link name="base_link">
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.001"/>
-        <inertia ixx="1e-6" iyy="1e-6" izz="1e-6"
-                ixy="0" ixz="0" iyz="0"/>
-      </inertial>
-    </link>
     <joint name="${parent_link.rstrip('_link')}_to_antenna_joint"
       type="fixed">
       <origin xyz="${xyz}" rpy="${rpy}" />
@@ -83,6 +75,6 @@ copied from:  https://github.com/husarion/husarion_components_description/blob/r
       parent_link="base_link"
       xyz="0.0 -0.06 0.55"
       rpy="0.0 0.0 0.0"
-      namespace="navsat"
+      namespace=""
       device_namespace="gps"/>
 </robot>
