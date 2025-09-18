@@ -24,11 +24,13 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinx_copybutton",
     "sphinxcontrib.video",
+    "sphinxcontrib.mermaid",
 ]
 
 myst_enable_extensions = ["colon_fence"]
 templates_path = ["_templates"]
 exclude_patterns = []
+mermaid_version = "11.6.0"
 
 
 # -- Options for HTML output -------------------------------------------------
