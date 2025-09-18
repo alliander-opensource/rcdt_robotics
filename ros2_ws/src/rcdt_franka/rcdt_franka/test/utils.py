@@ -18,12 +18,13 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 
 
 def call_move_to_configuration_service(
-    node: Node, configuration: str, timeout: int
+    node: Node, namespace: str, configuration: str, timeout: int
 ) -> bool:
     """Call the move_to_configuration service and return True if a response from the service was received.
 
     Args:
         node (Node): The ROS 2 node to use for the service call.
+        namespace (str): The namespace of the robot.
         configuration (str): The configuration to move to.
         timeout (int): The timeout in seconds for the service call.
 
@@ -33,7 +34,7 @@ def call_move_to_configuration_service(
     client = create_ready_service_client(
         node,
         MoveToConfiguration,
-        "franka/moveit_manager/move_to_configuration",
+        f"/{namespace}/moveit_manager/move_to_configuration",
         timeout_sec=timeout,
     )
     request = MoveToConfiguration.Request()

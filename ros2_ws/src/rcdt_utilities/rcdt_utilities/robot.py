@@ -465,6 +465,7 @@ class Arm(Platform):
         namespace: str | None = None,
         parent: Platform | None = None,
         moveit: bool = False,
+        gripper: bool = False,
     ):
         """Initialize the Arm platform.
 
@@ -474,10 +475,12 @@ class Arm(Platform):
             namespace (str | None): The namespace of the arm.
             parent (Platform | None): The parent platform.
             moveit (bool): Whether to use MoveIt for the arm.
+            gripper (bool): Whether to add a start the gripper services.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
         self.moveit = moveit
+        self.gripper = gripper
 
         if moveit:
             Rviz.add_motion_planning_plugin(self.namespace)
@@ -489,9 +492,8 @@ class Arm(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        gripper_launch = self.create_gripper_launch()
-        if gripper_launch:
-            launch_descriptions.append(gripper_launch)
+        if self.gripper:
+            launch_descriptions.append(self.create_gripper_launch())
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
         return launch_descriptions
