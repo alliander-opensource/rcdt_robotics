@@ -3,39 +3,38 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from time import sleep, time
+
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from rcdt_utilities.launch_utils import assert_for_message
+from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.robot import Arm
 from rcdt_utilities.test_utils import (
     call_trigger_service,
-    get_joint_position,
     wait_for_register,
+    wait_until_reached_joint,
 )
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
+namespace = f"franka_{int(time())}"
+
 
 @launch_pytest.fixture(scope="module")
-def franka_and_gripper_launch(
-    core_launch: RegisteredLaunchDescription,
-    controllers_launch: RegisteredLaunchDescription,
-    gripper_services_launch: RegisteredLaunchDescription,
-) -> LaunchDescription:
+def franka_and_gripper_launch() -> LaunchDescription:
     """Fixture to create launch file for the franka core, controllers, and gripper services.
-
-    Args:
-        core_launch (RegisteredLaunchDescription): The launch description for the core.
-        controllers_launch (RegisteredLaunchDescription): The launch description for the controllers.
-        gripper_services_launch (RegisteredLaunchDescription): The launch description for the gripper services.
 
     Returns:
         LaunchDescription: The launch description for the franka core, controllers, and gripper services.
     """
-    return Register.connect_context(
-        [core_launch, controllers_launch, gripper_services_launch]
+    Arm(platform="franka", position=[0, 0, 0], namespace=namespace, gripper=True)
+    launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        launch_arguments={"rviz": "False"},
     )
+    return Register.connect_context([launch])
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
@@ -55,15 +54,15 @@ def test_joint_states_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds before stopping the test.
     """
-    assert_for_message(JointState, "franka/joint_states", timeout=timeout)
+    assert_for_message(JointState, f"{namespace}/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=franka_and_gripper_launch)
 @pytest.mark.parametrize(
     "service, expected_value",
     [
-        ("/franka/close_gripper", 0.00),
-        ("/franka/open_gripper", 0.04),
+        (f"{namespace}/close_gripper", 0.00),
+        (f"{namespace}/open_gripper", 0.04),
     ],
 )
 def test_gripper_action(
@@ -83,9 +82,13 @@ def test_gripper_action(
         timeout (int): The timeout in seconds before stopping the test.
     """
     assert call_trigger_service(test_node, service, timeout=timeout) is True
-    joint_value = get_joint_position(
-        namespace="franka", joint="fr3_finger_joint1", timeout=timeout
+    reached_goal, joint_value = wait_until_reached_joint(
+        namespace=namespace,
+        joint="fr3_finger_joint1",
+        expected_value=expected_value,
+        tolerance=finger_joint_fault_tolerance,
+        timeout_sec=timeout,
     )
-    assert joint_value == pytest.approx(
-        expected_value, abs=finger_joint_fault_tolerance
-    ), f"The joint value is {joint_value}"
+    assert reached_goal is True, (
+        f"The joint did not reach the joint. Currently {joint_value}, expected {expected_value}"
+    )

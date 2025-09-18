@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from time import time
+
 import launch_pytest
 import pytest
 from _pytest.fixtures import SubRequest
@@ -13,7 +15,7 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.robot import Arm
 from rcdt_utilities.test_utils import add_tests_to_class
 
-namespace = "franka"
+namespace = f"franka_{int(time())}"
 
 
 @launch_pytest.fixture(scope="class")

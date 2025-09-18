@@ -30,6 +30,9 @@ def launch_setup(context: LaunchContext) -> list:
 
     Returns:
         list: A list of actions to be executed in the launch description.
+
+    Raises:
+        RuntimeError: If no platforms are specified.
     """
     use_sim = use_sim_arg.bool_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
@@ -42,7 +45,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     match configuration:
         case "franka":
-            Arm("franka", [0, 0, 0], moveit=True)
+            Arm("franka", [0, 0, 0], gripper=True, moveit=True)
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
         case "lidar":
