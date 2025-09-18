@@ -17,8 +17,8 @@ use_rviz_arg = LaunchArgument("rviz", True, [True, False])
 use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
-    "mm_lidar",
-    ["franka", "panther", "lidar", "panther_lidar", "mm", "mm_lidar"],
+    "",
+    ["", "franka", "panther", "lidar", "panther_lidar", "mm", "mm_lidar"],
 )
 
 
@@ -58,6 +58,9 @@ def launch_setup(context: LaunchContext) -> list:
             Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
+    if Platform.platforms == []:
+        raise RuntimeError("No platforms specified. Please specify a platform.")
+
     state_publishers = Platform.create_state_publishers()
     gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
     tf_publishers = Platform.create_tf_publishers()
@@ -78,6 +81,10 @@ def launch_setup(context: LaunchContext) -> list:
         ],
     )
 
+    utilities = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
+    )
+
     Rviz.set_fixed_frame("map")
     Rviz.create_rviz_file()
     rviz = RegisteredLaunchDescription(
@@ -96,6 +103,7 @@ def launch_setup(context: LaunchContext) -> list:
         *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
         *[Register.on_start(world_link, context) for world_link in world_links],
         *[Register.group(controller, context) for controller in controllers],
+        Register.group(utilities, context),
         *[Register.on_start(node, context) for node in joystick_nodes],
         Register.group(rviz, context) if use_rviz else SKIP,
         *[
