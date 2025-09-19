@@ -37,7 +37,15 @@ class Platform:  # noqa: PLR0904
             platform (Platform): The platform instance to add.
         """
         Platform.platforms.append(platform)
-        Platform.platform_indices[platform.name] += 1
+        Platform.platform_indices[platform.platform] += 1
+
+    @staticmethod
+    def reset() -> None:
+        """Reset the platform class to its initial state."""
+        Platform.platforms = []
+        Platform.platform_indices = {"panther": 0, "franka": 0, "velodyne": 0}
+        Platform.names = []
+        Platform.bridge_topics = []
 
     @staticmethod
     def generate_namespace(platform: Platform) -> str:
@@ -49,8 +57,8 @@ class Platform:  # noqa: PLR0904
         Returns:
             str: The unique namespace for the platform.
         """
-        index = Platform.platform_indices[platform.name]
-        return f"{platform.name}{index}"
+        index = Platform.platform_indices[platform.platform]
+        return f"{platform.platform}{index}"
 
     @staticmethod
     def create_state_publishers() -> list[Node]:
@@ -69,7 +77,7 @@ class Platform:  # noqa: PLR0904
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
         """
         for index in range(len(Platform.platforms)):
-            if Platform.platforms[index].name == "franka":
+            if Platform.platforms[index].platform == "franka":
                 Platform.platforms.insert(0, Platform.platforms.pop(index))
 
     @staticmethod
@@ -145,6 +153,37 @@ class Platform:  # noqa: PLR0904
         """
         nodes = []
 
+        # At the moment, we only support one vehicle and one arm being linked to the joystick.
+        # The vehicle (base) is linked to the B button and the arm to the A button.
+        # The X button is always available to stop joystick control of all platforms.
+        buttons = [2]  # X button (to stop)
+        services = [False]
+        topics = [""]
+        vehicle_linked = False
+        arm_linked = False
+        for robot in Platform.platforms:
+            button = None
+            if isinstance(robot, Vehicle):
+                if vehicle_linked:
+                    raise ValueError("Only one vehicle can be linked to the joystick.")
+                button = 1  # B button (for base)
+                vehicle_linked = True
+            elif isinstance(robot, Arm):
+                if arm_linked:
+                    raise ValueError("Only one arm can be linked to the joystick.")
+                button = 0  # A button (for arm)
+                arm_linked = True
+            if button is not None:
+                buttons.append(button)
+                services.append(False)
+                topics.append(f"/{robot.namespace}/joy")
+                nodes.extend(robot.joystick_nodes())
+
+        # If none of the platforms require joystick nodes, return:
+        if len(nodes) == 0:
+            return nodes
+
+        # Add the general joystick node:
         nodes.append(
             Node(
                 package="joy",
@@ -155,19 +194,7 @@ class Platform:  # noqa: PLR0904
             )
         )
 
-        buttons = []
-        services = []
-        topics = []
-        for n, robot in enumerate(Platform.platforms):
-            buttons.append(n)
-            services.append(False)
-            topics.append(f"/{robot.namespace}/joy")
-            nodes.extend(robot.joystick_nodes())
-
-        buttons.append(n + 1)
-        services.append(False)
-        topics.append("")
-
+        # Add the joy topic manager node:
         nodes.append(
             Node(
                 package="rcdt_joystick",
@@ -208,7 +235,7 @@ class Platform:  # noqa: PLR0904
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
-        self.name: Literal["panther", "franka", "velodyne"] = platform
+        self.platform: Literal["panther", "franka", "velodyne"] = platform
         self.parent = parent
         self.childs = []
         Platform.add(self)
@@ -221,6 +248,7 @@ class Platform:  # noqa: PLR0904
             self.position = position
         else:
             self.is_child = True
+            self.relative_position = position
             self.position = [
                 sum(x) for x in zip(parent.position, position, strict=False)
             ]
@@ -242,7 +270,7 @@ class Platform:  # noqa: PLR0904
         Returns:
             str | None: The controller launch file path or None if not applicable.
         """
-        match self.name:
+        match self.platform:
             case "panther":
                 package = "rcdt_panther"
             case "franka":
@@ -262,7 +290,7 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.name:
+        match self.platform:
             case "panther":
                 return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
             case "franka":
@@ -284,7 +312,7 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.name:
+        match self.platform:
             case "panther":
                 return "base_footprint"
             case "franka":
@@ -336,11 +364,11 @@ class Platform:  # noqa: PLR0904
                 "--child-frame-id",
                 f"/{self.namespace}/{self.base_link}",
                 "--x",
-                f"{self.position[0]}",
+                f"{self.relative_position[0]}",
                 "--y",
-                f"{self.position[1]}",
+                f"{self.relative_position[1]}",
                 "--z",
-                f"{self.position[2]}",
+                f"{self.relative_position[2]}",
             ],
         )
 
@@ -358,7 +386,7 @@ class Platform:  # noqa: PLR0904
         Returns:
             Node: The world link node for the robot.
         """
-        if self.name == "panther":
+        if self.platform == "panther":
             child_frame = f"{self.namespace}/odom"
         else:
             child_frame = f"{self.namespace}/world"
@@ -574,6 +602,7 @@ class Vehicle(Platform):
         namespace: str | None = None,
         parent: Platform | None = None,
         navigation: bool = False,
+        collision_monitor: bool = False,
     ):
         """Initialize the Vehicle platform.
 
@@ -583,10 +612,13 @@ class Vehicle(Platform):
             namespace (str | None): The namespace of the vehicle.
             parent (Platform | None): The parent platform.
             navigation (bool): Whether to start navigation for the vehicle.
+            collision_monitor (bool): Whether to start the collision monitor for the vehicle.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
+        self.namespace = self.namespace
         self.navigation = navigation
+        self.collision_monitor = collision_monitor
         self.lidar: Lidar | None = None
 
         if platform == "panther":
@@ -610,6 +642,10 @@ class Vehicle(Platform):
             Vizanti.add_map("global_costmap", "/global_costmap/costmap")
             Vizanti.add_path("/plan")
 
+        if self.collision_monitor:
+            Rviz.add_polygon("/polygon_slower")
+            Rviz.add_polygon("/velocity_polygon_stop")
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a vehicle.
 
@@ -617,7 +653,7 @@ class Vehicle(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        if self.navigation:
+        if self.navigation or self.collision_monitor:
             launch_descriptions.append(self.create_nav2_launch())
         return launch_descriptions
 
@@ -650,14 +686,19 @@ class Vehicle(Platform):
 
         Returns:
             RegisteredLaunchDescription: The launch description for the Nav2.
+
+        Raises:
+            ValueError: If no lidar is attached to the vehicle.
         """
+        if not self.lidar:
+            raise ValueError("A lidar is required for use of nav2.")
+
         return RegisteredLaunchDescription(
             get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
             launch_arguments={
                 "simulation": str(True),
-                "autostart": str(True),
-                "collision_monitor": str(False),
-                "navigation": str(True),
+                "collision_monitor": str(self.collision_monitor),
+                "navigation": str(self.navigation),
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
             },

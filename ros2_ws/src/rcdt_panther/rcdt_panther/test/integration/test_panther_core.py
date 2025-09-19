@@ -3,12 +3,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from time import time
+
 import launch_pytest
 import pytest
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
-from rcdt_utilities.launch_utils import assert_for_message
+from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.robot import Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     get_joint_position,
@@ -19,22 +22,23 @@ from rcdt_utilities.test_utils import (
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
+namespace = f"panther_{int(time())}"
+
 
 @launch_pytest.fixture(scope="module")
-def panther_core_launch(
-    core_launch: RegisteredLaunchDescription,
-    controllers_launch: RegisteredLaunchDescription,
-) -> LaunchDescription:
+def panther_core_launch() -> LaunchDescription:
     """Fixture to create launch file for panther core and controllers.
-
-    Args:
-        core_launch (RegisteredLaunchDescription): The launch description for the panther core.
-        controllers_launch (RegisteredLaunchDescription): The launch description for the panther controllers.
 
     Returns:
         LaunchDescription: The launch description for the panther core and controllers.
     """
-    return Register.connect_context([core_launch, controllers_launch])
+    Platform.reset()
+    Vehicle(platform="panther", position=[0, 0, 0.2], namespace=namespace)
+    launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        launch_arguments={"rviz": "False"},
+    )
+    return Register.connect_context([launch])
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
@@ -54,7 +58,7 @@ def test_joint_states_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds to wait for the joint states to be published.
     """
-    assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
+    assert_for_message(JointState, f"/{namespace}/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=panther_core_launch)
@@ -68,7 +72,7 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
     assert (
         call_trigger_service(
             node=test_node,
-            service_name="/panther/hardware/e_stop_reset",
+            service_name=f"/{namespace}/hardware/e_stop_reset",
             timeout=timeout,
         )
         is True
@@ -84,10 +88,10 @@ def test_driving(test_node: Node, timeout: int) -> None:
         timeout (int): The timeout in seconds to wait for the wheels to turn.
     """
     joint_value_before_driving = get_joint_position(
-        "panther", "fl_wheel_joint", timeout=timeout
+        namespace, "fl_wheel_joint", timeout=timeout
     )
 
-    pub = test_node.create_publisher(TwistStamped, "/panther/cmd_vel", 10)
+    pub = test_node.create_publisher(TwistStamped, f"/{namespace}/cmd_vel", 10)
     wait_for_subscriber(pub, timeout)
 
     msg = TwistStamped()
@@ -96,7 +100,7 @@ def test_driving(test_node: Node, timeout: int) -> None:
     publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
     joint_value_after_driving = get_joint_position(
-        "panther", "fl_wheel_joint", timeout=timeout
+        namespace, "fl_wheel_joint", timeout=timeout
     )
 
     delta = joint_value_after_driving - joint_value_before_driving
@@ -117,7 +121,7 @@ def test_e_stop_request_trigger(test_node: Node, timeout: int) -> None:
     assert (
         call_trigger_service(
             node=test_node,
-            service_name="/panther/hardware/e_stop_trigger",
+            service_name=f"/{namespace}/hardware/e_stop_trigger",
             timeout=timeout,
         )
         is True

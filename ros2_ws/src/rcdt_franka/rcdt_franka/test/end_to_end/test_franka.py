@@ -12,7 +12,7 @@ from launch import LaunchDescription
 from rcdt_franka.test.end_to_end.base_franka import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Arm
+from rcdt_utilities.robot import Arm, Platform
 from rcdt_utilities.test_utils import add_tests_to_class
 
 namespace = f"franka_{int(time())}"
@@ -32,6 +32,7 @@ def franka(request: SubRequest) -> LaunchDescription:
         LaunchDescription: The launch description containing the Franka robot setup.
 
     """
+    Platform.reset()
     Arm(platform="franka", position=[0, 0, 0], namespace=namespace, moveit=True)
     franka_launch = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
