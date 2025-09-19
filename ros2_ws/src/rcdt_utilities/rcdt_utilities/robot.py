@@ -150,6 +150,9 @@ class Platform:  # noqa: PLR0904
 
         Returns:
             list[Node]: A list of all joystick nodes.
+
+        Raises:
+            ValueError: If more than one vehicle or arm is linked to the joystick.
         """
         nodes = []
 
@@ -486,7 +489,7 @@ class Lidar(Platform):
 class Arm(Platform):
     """Extension on Platform with arm specific functionalities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         platform: Literal["franka"],
         position: list,
@@ -595,7 +598,7 @@ class Arm(Platform):
 class Vehicle(Platform):
     """Extension on Platform with vehicle specific functionalities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         platform: Literal["panther"],
         position: list,
