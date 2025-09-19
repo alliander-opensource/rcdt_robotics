@@ -14,11 +14,14 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
 
-def get_tests() -> dict:
+def get_tests(namespace: str) -> dict:
     """Test class for the Panther.
 
     This class contains all the tests that are run in the Panther test suite.
     It dynamically creates test methods based on the defined functions.
+
+    Args:
+        namespace (str): The namespace of the robot.
 
     Returns:
         dict: A dictionary of test methods.
@@ -40,7 +43,7 @@ def get_tests() -> dict:
             _self (object): The test class instance.
             timeout (int): The timeout in seconds to wait before failing the test.
         """
-        assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
+        assert_for_message(JointState, f"/{namespace}/joint_states", timeout=timeout)
 
     def test_e_stop_request_reset(_self: object, test_node: Node, timeout: int) -> None:
         """Test that the E-Stop request service can be called to unlock the Panther.
@@ -53,7 +56,7 @@ def get_tests() -> dict:
         assert (
             call_trigger_service(
                 node=test_node,
-                service_name="/panther/hardware/e_stop_reset",
+                service_name=f"/{namespace}/hardware/e_stop_reset",
                 timeout=timeout,
             )
             is True
@@ -71,7 +74,7 @@ def get_tests() -> dict:
         """
         assert_joy_topic_switch(
             node=test_node,
-            expected_topic="/panther/joy",
+            expected_topic=f"/{namespace}/joy",
             button_config=[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             timeout=timeout,
         )
@@ -96,8 +99,8 @@ def get_tests() -> dict:
             compare_fn=compare_fn,
             threshold=0.001,
             description="x position",
-            frame_base="panther/base_link",
-            frame_target="panther/odom",
+            frame_base=f"{namespace}/base_link",
+            frame_target=f"{namespace}/odom",
             timeout=timeout,
         )
 
@@ -121,8 +124,8 @@ def get_tests() -> dict:
             compare_fn=compare_fn,
             threshold=0.0001,
             description="orientation.w",
-            frame_base="panther/base_link",
-            frame_target="panther/odom",
+            frame_base=f"{namespace}/base_link",
+            frame_target=f"{namespace}/odom",
             timeout=timeout,
         )
 
@@ -139,7 +142,7 @@ def get_tests() -> dict:
         assert (
             call_trigger_service(
                 node=test_node,
-                service_name="/panther/hardware/e_stop_trigger",
+                service_name=f"/{namespace}/hardware/e_stop_trigger",
                 timeout=timeout,
             )
             is True

@@ -12,6 +12,7 @@ from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     wait_for_register,
@@ -19,6 +20,8 @@ from rcdt_utilities.test_utils import (
 )
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+
+namespace = f"panther_{int(time.time())}"
 
 
 @launch_pytest.fixture(scope="module")
@@ -28,15 +31,19 @@ def panther_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
-    panther = RegisteredLaunchDescription(
-        get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
-        launch_arguments={
-            "rviz": "False",
-            "panther_xyz": "4.0,0,0.2",
-            "collision_monitor": "True",
-        },
+    Platform.reset()
+    vehicle = Vehicle(
+        platform="panther",
+        position=[4.0, 0, 0.2],
+        namespace=namespace,
+        collision_monitor=True,
     )
-    return Register.connect_context([panther])
+    Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle)
+    launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        launch_arguments={"rviz": "False"},
+    )
+    return Register.connect_context([launch])
 
 
 @pytest.mark.launch(fixture=panther_launch)
@@ -56,7 +63,7 @@ def test_joint_states_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds to wait for the joint states to be published.
     """
-    assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
+    assert_for_message(JointState, f"/{namespace}/joint_states", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=panther_launch)
@@ -70,7 +77,7 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
     assert (
         call_trigger_service(
             node=test_node,
-            service_name="/panther/hardware/e_stop_reset",
+            service_name=f"/{namespace}/hardware/e_stop_reset",
             timeout=timeout,
         )
         is True
@@ -88,7 +95,9 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
     input_velocity = 0.0001
     expected_output = input_velocity * 0.7
 
-    publisher = test_node.create_publisher(TwistStamped, "/panther/cmd_vel_raw", 10)
+    publisher = test_node.create_publisher(
+        TwistStamped, f"/{namespace}/cmd_vel_raw", 10
+    )
     result = {}
 
     def callback_function_cmd_vel(msg: TwistStamped) -> None:
@@ -101,7 +110,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
 
     test_node.create_subscription(
         msg_type=TwistStamped,
-        topic="/panther/cmd_vel",
+        topic=f"/{namespace}/cmd_vel",
         callback=callback_function_cmd_vel,
         qos_profile=10,
     )
@@ -110,7 +119,7 @@ def test_collision_monitoring(test_node: Node, timeout: int) -> None:
     msg = TwistStamped()
     msg.twist.linear.x = input_velocity
 
-    publish_duration = 1  # seconds
+    publish_duration = 30  # seconds
     publish_rate_sec = 0.1  # seconds
     deadline = time.monotonic() + publish_duration
 

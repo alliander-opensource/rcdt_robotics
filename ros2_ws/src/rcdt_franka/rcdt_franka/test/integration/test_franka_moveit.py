@@ -11,7 +11,7 @@ from launch import LaunchDescription
 from rcdt_franka.test.utils import call_move_to_configuration_service
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Arm
+from rcdt_utilities.robot import Arm, Platform
 from rcdt_utilities.test_utils import get_joint_position, wait_for_register
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
@@ -26,6 +26,7 @@ def franka_and_moveit_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the franka core, controllers, and MoveIt.
     """
+    Platform.reset()
     Arm(platform="franka", position=[0, 0, 0], namespace=namespace, moveit=True)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
