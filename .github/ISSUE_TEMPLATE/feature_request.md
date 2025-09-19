@@ -10,6 +10,12 @@ assignees: ''
 ## Summary
 Describe the proposed enhancement.
 
+## DOD:
+ 
+- [ ] Works in simulation
+- [ ] Documentation up-to-date
+- [ ] Reviewed
+
 ## Motivation
 Why this feature is useful or necessary.
 
