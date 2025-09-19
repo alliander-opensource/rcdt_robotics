@@ -13,8 +13,6 @@ services:
     tty: true
     env_file:
       - .env
-    group_add:
-      - "106"
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
       - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
@@ -29,6 +27,7 @@ services:
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
   rcdt_ros2:
     image: rcdt/ros2:${IMAGE_TAG}
     container_name: rcdt_ros2

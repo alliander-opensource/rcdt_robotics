@@ -27,6 +27,7 @@ def panther_launch(request: SubRequest) -> LaunchDescription:
         get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
         launch_arguments={
             "rviz": "False",
+            "world": "empty_camera.sdf",
             "simulation": request.config.getoption("simulation"),
         },
     )

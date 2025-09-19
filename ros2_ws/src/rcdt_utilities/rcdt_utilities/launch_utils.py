@@ -32,6 +32,8 @@ class LaunchArgument:
         name: str,
         default_value: str | bool | int | float,
         choices: list | None = None,
+        min_value: float | None = None,
+        max_value: float | None = None,
     ) -> None:
         """Initializes a LaunchArgument instance.
 
@@ -39,8 +41,12 @@ class LaunchArgument:
             name (str): The name of the launch argument.
             default_value (str | bool | int | float): The default value of the launch argument.
             choices (list | None): A list of valid choices for the launch argument. Defaults to None.
+            min_value (float | None): The minimum value for the launch argument if it is a number. Defaults to None.
+            max_value (float | None): The maximum value for the launch argument if it is a number. Defaults to None.
         """
         self.configuration = LaunchConfiguration(name)
+        self.min_value = min_value
+        self.max_value = max_value
         if choices is not None:
             choices = [str(choice) for choice in choices]
             self.declaration = DeclareLaunchArgument(
@@ -100,11 +106,60 @@ class LaunchArgument:
         Args:
             context (LaunchContext): The launch context in which to evaluate the argument.
 
+        Raises:
+            RuntimeError: If the float value is outside the specified min or max range.
+
         Returns:
             float: The float value of the launch argument.
         """
         string_value = self.string_value(context)
-        return float(string_value)
+        float_value = float(string_value)
+        if self.min_value is not None and float_value < self.min_value:
+            raise RuntimeError(
+                f"'Value must be ≥ {self.min_value}, but got {float_value}"
+            )
+        if self.max_value is not None and float_value > self.max_value:
+            raise RuntimeError(
+                f"'Value must be ≤ {self.max_value}, but got {float_value}"
+            )
+        return float_value
+
+
+class LaunchPosition:
+    """Provide conversions between position strings (used in launch files) and positions lists for calculations."""
+
+    def __init__(self, position: list | str) -> None:
+        """Initialize the LaunchPosition with a position.
+
+        Args:
+            position (list | str): The position as a list of floats or a comma-separated string.
+        """
+        if isinstance(position, str):
+            position = [float(axis) for axis in position.split(",")]
+        self.position = position
+
+    @property
+    def string(self) -> str:
+        """Get the position as a comma-separated string, suitable to pass as launch argument.
+
+        Returns:
+            str: The position as a comma-separated string.
+        """
+        return ",".join(map(str, self.position))
+
+    def absolute(self, relative_position: list) -> str:
+        """Convert a relative position to an absolute position.
+
+        Args:
+            relative_position (list): The relative position to convert.
+
+        Returns:
+            str: The absolute position as a comma-separated string.
+        """
+        absolute = [
+            sum(axis) for axis in zip(self.position, relative_position, strict=False)
+        ]
+        return ",".join(map(str, absolute))
 
 
 def get_package_path(package: str) -> str:

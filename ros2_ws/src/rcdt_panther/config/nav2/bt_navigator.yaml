@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on: https://docs.nav2.org/configuration/packages/configuring-bt-navigator.html
+
+bt_navigator:
+  ros__parameters:
+    default_nav_to_pose_bt_xml: # required (although empty), so that it can be filled during launch using param_rewrites in RewrittenYaml method.
+    robot_base_frame: panther/base_footprint
+    odom_topic: /panther/odom
+    error_code_names:
+      - compute_path_error_code
+      - follow_path_error_code

@@ -1,0 +1,218 @@
+{
+  "navbar": [
+    {
+      "type": "settings",
+      "id": "settings_default"
+    },
+    {
+      "type": "rosbridge",
+      "id": "rosbridge_default"
+    },
+    {
+      "type": "grid",
+      "id": "grid_default"
+    },
+    {
+      "type": "tf",
+      "id": "tf_default"
+    },
+    {
+      "type": "teleop",
+      "id": "teleop_autoID_1",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "robotmodel",
+      "id": "robotmodel_autoID_3",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "battery",
+      "id": "battery_autoID_15",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "button",
+      "id": "button_autoID_23",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "button",
+      "id": "button_autoID_24",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "button",
+      "id": "button_autoID_25",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "initialpose",
+      "id": "initialpose_autoID_26",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "simplegoal",
+      "id": "simplegoal_autoID_27",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "waypoints",
+      "id": "waypoints_autoID_28",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "scan",
+      "id": "scan_autoID_29",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "path",
+      "id": "path_autoID_30",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "map",
+      "id": "map_autoID_32",
+      "container_id": "icon_container"
+    },
+    {
+      "type": "button",
+      "id": "button_autoID_40",
+      "container_id": "icon_container"
+    }
+  ],
+  "view": {
+    "center": {
+      "x": 0.573299321935286,
+      "y": 0.11668942079405467
+    },
+    "scale": 114.60091589005168
+  },
+  "settings_default": {
+    "fixed_frame": "map",
+    "background_color": "#273444"
+  },
+  "tf_default": {
+    "show_names": false,
+    "show_axes": true,
+    "show_lines": true,
+    "scale": 1,
+    "frame_visibility": {
+      "velodyne/base_link": false,
+      "panther/base_footprint": true,
+      "panther/fl_wheel_link": false,
+      "panther/fl_wheel_base_link": false,
+      "panther/fr_wheel_link": false,
+      "panther/fr_wheel_base_link": false,
+      "panther/rl_wheel_link": false,
+      "panther/rl_wheel_base_link": false,
+      "panther/rr_wheel_link": false,
+      "panther/rr_wheel_base_link": false,
+      "panther/base_link": false,
+      "panther/odom": false,
+      "map": false,
+      "velodyne/velodyne": false,
+      "panther/body_link": false,
+      "panther/cover_link": false,
+      "panther/front_bumper_link": false,
+      "panther/imu_link": false,
+      "panther/rear_bumper_link": false,
+      "panther/mount_link": false,
+      "panther/lights_channel_1_link": false,
+      "panther/lights_channel_2_link": false
+    }
+  },
+  "grid_default": {
+    "size": 2,
+    "thickness": 1,
+    "colour": "#3e556a",
+    "colour_sub": "#294056",
+    "autoscale": "Coarse",
+    "subdivisions": 2
+  },
+  "uid": 41,
+  "teleop_autoID_1": {
+    "topic": "/panther/cmd_vel_raw",
+    "axis_horiz": "angular_z",
+    "axis_vert": "linear_x",
+    "vel_vert": 1,
+    "vel_horiz": 1,
+    "accel_vert": 2,
+    "accel_horiz": 2,
+    "invert_vert": false,
+    "invert_horiz": false,
+    "ackermann_emulation": true,
+    "instant_stop": false,
+    "keyboard_control": true,
+    "joy_offset_x": "88.40116279069767%",
+    "joy_offset_y": "81.01460415065334%",
+    "typedict": {}
+  },
+  "robotmodel_autoID_3": {
+    "frame": "panther/base_footprint",
+    "sprite": "jaguar",
+    "opacity": "1.0",
+    "length": "0.5",
+    "offset_x": "0.0",
+    "offset_y": "0.0",
+    "offset_yaw": "0.0"
+  },
+  "battery_autoID_15": {
+    "topic": "/panther/battery/battery_status"
+  },
+  "button_autoID_23": {
+    "topic": "/panther/hardware/e_stop_trigger",
+    "text": "Trigger",
+    "typedict": {}
+  },
+  "button_autoID_24": {
+    "topic": "/panther/hardware/e_stop_reset",
+    "text": "Reset",
+    "typedict": {}
+  },
+  "button_autoID_25": {
+    "topic": "/panther/hardware/e_stop",
+    "text": "Estop Status",
+    "typedict": {}
+  },
+  "initialpose_autoID_26": {
+    "topic": "/initialpose"
+  },
+  "simplegoal_autoID_27": {
+    "topic": "/goal_pose"
+  },
+  "waypoints_autoID_28": {
+    "topic": "/waypoints",
+    "topic_type": "nav_msgs/msg/Path",
+    "fixed_frame": "map",
+    "base_link_frame": "panther/base_link",
+    "points": [],
+    "start_closest": false,
+    "margin": "0.8"
+  },
+  "scan_autoID_29": {
+    "topic": "/velodyne/scan",
+    "opacity": "1",
+    "thickness": "0.02",
+    "color": "#ff0000",
+    "throttle": "2000"
+  },
+  "path_autoID_30": {
+    "topic": "/plan",
+    "color": "#54db67",
+    "throttle": "100"
+  },
+  "map_autoID_32": {
+    "topic": "/global_costmap/costmap",
+    "opacity": "0.7",
+    "colour_scheme": 1,
+    "throttle": "100",
+    "use_timestamp": false
+  },
+  "button_autoID_40": {
+    "topic": "/waypoint_follower_controller/stop",
+    "text": "Stop",
+    "typedict": {}
+  }
+}

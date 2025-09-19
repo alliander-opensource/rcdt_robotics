@@ -8,7 +8,12 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
 
+use_sim_arg = LaunchArgument("simulation", True, [True, False])
 robots_arg = LaunchArgument("robots", "")
+use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
+scale_speed_arg = LaunchArgument(
+    "scale_speed", default_value=0.4, min_value=0.0, max_value=1.0
+)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -20,7 +25,10 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    use_sim = use_sim_arg.bool_value(context)
     robots = robots_arg.string_value(context).split(" ")
+    use_collision_monitor = use_collision_monitor_arg.bool_value(context)
+    scale_speed = scale_speed_arg.float_value(context)
 
     joy = Node(
         package="joy",
@@ -56,14 +64,18 @@ def launch_setup(context: LaunchContext) -> list:
         namespace="franka",
     )
 
+    pub_topic = (
+        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+    )
+
     joy_to_twist_panther = Node(
         package="rcdt_joystick",
         executable="joy_to_twist.py",
         parameters=[
             {"sub_topic": "/panther/joy"},
-            {"pub_topic": "/panther/cmd_vel"},
+            {"pub_topic": pub_topic},
             {"config_pkg": "rcdt_panther"},
-            {"stamped": False},
+            {"scale": 1.0 if use_sim else scale_speed},
         ],
         namespace="panther",
     )
@@ -89,7 +101,10 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            use_sim_arg.declaration,
             robots_arg.declaration,
+            use_collision_monitor_arg.declaration,
+            scale_speed_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

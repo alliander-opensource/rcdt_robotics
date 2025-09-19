@@ -11,22 +11,13 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="connected_to" default="" />
 
   <!-- Load panther: -->
-  <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro" ns="husarion" />
+  <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro"
+    ns="husarion" />
   <xacro:husarion.panther_robot
-    panther_version="1.0"
     use_sim="$(arg simulation)"
-    wheel_config_file="$(find panther_description)/config/WH01.yaml"
+    wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
     controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
     battery_config_file=""
     namespace="panther"
     connected_to="$(arg connected_to)" />
-
-  <!-- Load Velodyne: -->
-  <xacro:arg name="load_velodyne" default="false" />
-  <xacro:if value="$(arg load_velodyne)">
-    <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_velodyne.urdf.xacro" />
-    <xacro:VLP-16 namespace="panther">
-      <origin xyz="0.18 0 0.03" rpy="0 0 0" />
-    </xacro:VLP-16>
-  </xacro:if>
 </robot>

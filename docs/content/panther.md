@@ -154,24 +154,12 @@ A map should be visualized in Rviz and be updated when driving around.
 ros2 launch rcdt_panther panther.launch.py collision_monitor:=True
 ```
 
-Next, start the collision monitor in a second terminal:
-
-```bash
-ros2 launch rcdt_panther collision_monitor.launch.py
-```
-
 Rviz should visualize "slow-down" regions around the Panther and the Panther should slow down when objects are in these regions.
 
 **Navigation:**
 
 ```bash
 ros2 launch rcdt_panther panther.launch.py nav2:=True
-```
-
-Next, start navigation in a second terminal:
-
-```bash
-ros2 launch rcdt_panther navigation.launch.py
 ```
 
 Now you should be able to place a *2D Goal Pose* in Rviz, somewhere on the map. The robot should plan, visualize and drive a route to this goal pose.
@@ -184,6 +172,47 @@ ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
 ```
 
 :::
+
+## Using an User Interfaces
+
+### Default Panther UI
+To use the user interface created by Panther:
+
+1. Start the Panther.  
+2. Connect to the Panther network.    
+3. Open a browser and go to: [http://10.15.20.2:8080/ui](http://10.15.20.2:8080/ui)
+
+You can also control the Panther with your mobile phone, tablet or any other device in the same way.
+
+### Our Custom UI
+To use the custom-built user interface:
+
+1. Start the launch file with the UI flag enabled:  
+```bash
+ros2 launch rcdt_panther rcdt_panther.launch.py ui:=True
+````
+
+2. Access the interface:
+
+   * **In simulation:**
+
+     ```
+     http://localhost:5000
+     ```
+   * **On the real robot:** after connecting to the Panther network, open
+
+     ```
+     http://10.15.20.3:5000
+     ```
+
+---
+
+### Example
+
+The interface should look something like this:
+
+![ui](../img/panther/custom_ui.png)
+
 
 ## Proposed changes to reduce network traffic
 

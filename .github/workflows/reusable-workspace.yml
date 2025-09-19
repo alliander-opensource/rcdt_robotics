@@ -14,33 +14,67 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    container:
-      image: ${{ inputs.container-image }}
-      options: --user root
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: ./.github/actions/clear-disk-space
+
+      - name: Pull image
+        run: docker pull "${{ inputs.container-image }}"
+
       - name: uv sync
-        shell: bash -ieo pipefail {0}
         run: |
-          uv sync
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
+              source /home/rcdt/.bashrc &&
+              uv sync
+            "
+
       - name: build workspace
-        shell: bash -ieo pipefail {0}
         run: |
-          source /home/rcdt/.bashrc
-          cd ros2_ws
-          uv run colcon build --symlink-install
-      - name: run ty
-        shell: bash -ieo pipefail {0}
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics/ros2_ws --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
+              source /home/rcdt/.bashrc &&
+              uv run colcon build --symlink-install
+            "
+
+      - name: ty check
         run: |
-          cd ros2_ws
-          source /home/rcdt/.bashrc
-          uv run ty check --error-on-warning
-      - name: run tests
-        shell: bash -ieo pipefail {0}
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" -w /home/rcdt/rcdt_robotics --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
+              source /home/rcdt/.bashrc &&
+              uv run ty check --error-on-warning
+            "
+
+      - name: tests
         run: |
-          source /home/rcdt/.bashrc
-          cd ros2_ws
-          source install/setup.bash
-          echo "GZ_SIM_RESOURCE_PATH: ${GZ_SIM_RESOURCE_PATH}"
-          uv run pytest src/
+          docker run --rm -i \
+            -v "$PWD:/home/rcdt/rcdt_robotics" \
+            -w /home/rcdt/rcdt_robotics/ros2_ws --user root \
+            --entrypoint /bin/bash "${{ inputs.container-image }}" -i -c "
+              source /home/rcdt/.bashrc &&
+              source install/setup.bash &&
+              uv run pytest -s \
+                --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
+                src/
+            "
+        # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
+
+      - name: Show disk usage after job
+        if: always()
+        run: |
+          echo "Disk usage on host:"
+          df -h /
+
+          echo
+          echo "Docker disk usage:"
+          docker system df || true
+
+
+
