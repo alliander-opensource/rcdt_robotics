@@ -159,6 +159,24 @@ class Rviz:
         )
 
     @staticmethod
+    def add_polygon(topic: str) -> None:
+        """Add a polygon to the RViz configuration.
+
+        Args:
+            topic (str): The topic of the polygon.
+        """
+        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
+        displays.append(
+            {
+                "Class": "rviz_default_plugins/Polygon",
+                "Enabled": True,
+                "Name": topic,
+                "Topic": {"Value": topic},
+                "Color": "25; 255; 0",
+            }
+        )
+
+    @staticmethod
     def create_rviz_file() -> None:
         """Create the RViz configuration file."""
         with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:
