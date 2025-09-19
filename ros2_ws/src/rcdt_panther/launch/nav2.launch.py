@@ -57,14 +57,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     if use_collision_monitor:
         lifecycle_nodes.append("collision_monitor")
 
-    if not use_slam:
-        lifecycle_nodes.extend(
-            [
-                "map_server",
-                "amcl",
-            ]
-        )
-
     if use_navigation:
         lifecycle_nodes.extend(
             [
@@ -73,6 +65,14 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
                 "behavior_server",
                 "bt_navigator",
                 "waypoint_follower",
+            ]
+        )
+
+    if not use_slam and use_navigation:
+        lifecycle_nodes.extend(
+            [
+                "map_server",
+                "amcl",
             ]
         )
 
