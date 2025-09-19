@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import sleep, time
+from time import time
 
 import launch_pytest
 import pytest
