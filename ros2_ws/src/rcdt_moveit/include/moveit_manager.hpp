@@ -94,6 +94,6 @@ private:
   //   Methods:
   void initialize_clients();
   void initialize_services();
-  PoseStamped change_frame_to_base(PoseStamped pose);
+  PoseStamped change_frame_to_world(PoseStamped pose);
   bool plan_and_execute(std::string planning_type = "");
 };

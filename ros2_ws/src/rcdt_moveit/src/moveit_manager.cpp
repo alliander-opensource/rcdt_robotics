@@ -23,7 +23,7 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
       moveit_visual_tools(node, "base", "/rviz_markers") {
 
   moveit_visual_tools.loadMarkerPub(false);
-  move_group.setEndEffectorLink("fr3_hand_tcp");
+  move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
 
   initialize_clients();
@@ -103,7 +103,7 @@ void MoveitManager::clear_objects(
 void MoveitManager::define_goal_pose(
     const std::shared_ptr<DefineGoalPose::Request> request,
     std::shared_ptr<DefineGoalPose::Response> response) {
-  auto pose = change_frame_to_base(request->pose);
+  auto pose = change_frame_to_world(request->pose);
   goal_pose = pose;
   response->success = true;
 };
@@ -166,10 +166,10 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
   return true;
 };
 
-PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
+PoseStamped MoveitManager::change_frame_to_world(PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
-  request->target_frame = "base";
+  request->target_frame = "world";
   auto future = express_pose_in_other_frame_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
   auto response = future.get();
@@ -179,7 +179,7 @@ PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
 void MoveitManager::add_marker(
     const std::shared_ptr<AddMarker::Request> request,
     std::shared_ptr<AddMarker::Response> response) {
-  auto pose = change_frame_to_base(request->marker_pose);
+  auto pose = change_frame_to_world(request->marker_pose);
   moveit_visual_tools.publishAxis(pose.pose);
   moveit_visual_tools.trigger();
   response->success = true;
