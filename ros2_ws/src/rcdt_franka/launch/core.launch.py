@@ -62,6 +62,7 @@ def launch_setup(context: LaunchContext) -> list:
             launch_arguments={
                 "world": world,
                 "robots": namespace,
+                "positions": "0,0,0",
                 "realsense": str(use_realsense),
                 "load_gazebo_ui": str(load_gazebo_ui),
             },

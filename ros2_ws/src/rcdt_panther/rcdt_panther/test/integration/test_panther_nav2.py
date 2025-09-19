@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+from time import time
+
 import launch_pytest
 import numpy as np
 import pytest
@@ -13,6 +15,7 @@ from launch import LaunchDescription
 from nav2_msgs.action import NavigateToPose
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     create_ready_action_client,
@@ -24,6 +27,9 @@ from rclpy.task import Future
 from sensor_msgs.msg import JointState
 from tf_transformations import quaternion_from_euler
 
+namespace_vehicle = f"panther_{int(time())}"
+namespace_lidar = f"velodyne_{int(time())}"
+
 
 @launch_pytest.fixture(scope="module")
 def panther_launch() -> LaunchDescription:
@@ -32,11 +38,19 @@ def panther_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
-    panther = RegisteredLaunchDescription(
-        get_file_path("rcdt_panther", ["launch"], "panther.launch.py"),
-        launch_arguments={"navigation": "True", "rviz": "False"},
+    Platform.reset()
+    vehicle = Vehicle(
+        platform="panther",
+        position=[0, 0, 0.2],
+        namespace=namespace_vehicle,
+        navigation=True,
     )
-    return Register.connect_context([panther])
+    Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle, namespace=namespace_lidar)
+    launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        launch_arguments={"rviz": "False"},
+    )
+    return Register.connect_context([launch])
 
 
 @pytest.mark.timeout(150)
@@ -57,7 +71,9 @@ def test_joint_states_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds to wait for the joint states to be published.
     """
-    assert_for_message(JointState, "/panther/joint_states", timeout=timeout)
+    assert_for_message(
+        JointState, f"/{namespace_vehicle}/joint_states", timeout=timeout
+    )
 
 
 @pytest.mark.launch(fixture=panther_launch)
@@ -71,7 +87,7 @@ def test_e_stop_request(test_node: Node, timeout: int) -> None:
     assert (
         call_trigger_service(
             node=test_node,
-            service_name="/panther/hardware/e_stop_reset",
+            service_name=f"/{namespace_vehicle}/hardware/e_stop_reset",
             timeout=timeout,
         )
         is True

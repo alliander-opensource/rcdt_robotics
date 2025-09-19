@@ -18,8 +18,11 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState, Joy
 
 
-def get_tests() -> dict:
+def get_tests(namespace: str) -> dict:
     """Test class for the Franka robot.
+
+    Args:
+        namespace (str): The namespace of the robot.
 
     Returns:
         dict: A dictionary containing the test methods.
@@ -41,7 +44,7 @@ def get_tests() -> dict:
             _self (object): The test class instance.
             timeout (int): The timeout in seconds to wait for the joint states to be published.
         """
-        assert_for_message(JointState, "franka/joint_states", timeout=timeout)
+        assert_for_message(JointState, f"/{namespace}/joint_states", timeout=timeout)
 
     def test_switch_joy_to_franka_topic(
         _self: object, test_node: Node, timeout: int
@@ -55,7 +58,7 @@ def get_tests() -> dict:
         """
         assert_joy_topic_switch(
             node=test_node,
-            expected_topic="/franka/joy",
+            expected_topic=f"/{namespace}/joy",
             button_config=[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             timeout=timeout,
         )
@@ -97,7 +100,7 @@ def get_tests() -> dict:
         publish_for_duration(node=test_node, publisher=pub, msg=msg)
 
         reached_goal, joint_value = wait_until_reached_joint(
-            namespace="franka",
+            namespace=namespace,
             joint="fr3_finger_joint1",
             expected_value=expected_value,
             tolerance=finger_joint_fault_tolerance,
@@ -152,8 +155,8 @@ def get_tests() -> dict:
             compare_fn=compare_fn,
             threshold=movement_threshold,
             description=f"{direction} position",
-            frame_base="franka/fr3_hand",
-            frame_target="franka/fr3_link0",
+            frame_base=f"{namespace}/fr3_hand",
+            frame_target=f"{namespace}/fr3_link0",
             timeout=timeout,
         )
 
