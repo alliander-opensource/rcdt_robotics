@@ -17,14 +17,12 @@ dependencies = [
     "flake8>=7.2.0",
     "flake8-pyproject>=1.2.3",
     "gdown>=5.2.0",
-    "graspnetpy",
     "flask>=3.1.2",
     "inflection>=0.5.1",
     "lark>=1.2.2",
     "mashumaro>=3.16",
     "myst-parser>=4.0.1",
     "numpy<2.0",
-    "opencv-python>=4.11.0.86",
     "pillow>=11.3.0",
     "pre-commit>=4.2.0",
     "psutil>=7.0.0",
@@ -46,9 +44,6 @@ dependencies = [
     "waitress>=3.0.2",
     "pandas>=2.2.0",
     "trimesh>=4.8.2",
-    "autolab-core>=1.1.1",
-    "cvxopt>=1.3.2",
-    "grasp-nms>=1.0.2",
 ]
 
 [dependency-groups]
@@ -58,7 +53,17 @@ dev = [
     "ruff>=0.11.12",
     "ty>=0.0.1a7",
 ]
+graspnet = [
+    "graspnetpy",
+    "autolab-core>=1.1.1",
+    "cvxopt>=1.3.2",
+    "grasp-nms>=1.0.2",
+    "ros2_numpy"
+    ]
 
+[tool.uv.sources]
+graspnetpy = { git = "https://github.com/alliander-opensource/graspnet-baseline" }
+ros2_numpy = { path = "../ros2_numpy", editable = true }
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
@@ -100,6 +105,3 @@ style = "google"
 skip-checking-short-docstrings = false
 allow-init-docstring = true
 check-style-mismatch = true
-
-[tool.uv.sources]
-graspnetpy = { git = "https://github.com/alliander-opensource/graspnet-baseline" }
