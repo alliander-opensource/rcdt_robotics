@@ -9,20 +9,20 @@ from dataclasses import dataclass
 import numpy as np
 import open3d as o3d
 import rclpy
-import ros2_numpy as rnp
 import torch
-from geometry_msgs.msg import Point, PoseStamped, Quaternion
-from graspnetAPI import Grasp, GraspGroup
+from graspnetAPI import GraspGroup
 from graspnetpy_models.graspnet import GraspNet, pred_decode
-from graspnetpy_utils import data_utils
+from graspnetpy_utils import collision_detector, data_utils
 from rcdt_messages.srv import AddMarker, DefineGoalPose
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
+from rclpy import logging
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
-from scipy.spatial.transform import Rotation
 from sensor_msgs.msg import CameraInfo, Image
 from std_srvs.srv import Trigger
+
+ros_logger = logging.get_logger(__name__)
 
 CHECKPOINT_DIR = "/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_grasping/checkpoint/"
 CHECKPOINT_FILE = "checkpoint.tar"
@@ -73,6 +73,23 @@ class GenerateGrasp(Node):
         """Initialize the PublishImage node."""
         super().__init__("grasp")
         self.init_net()
+
+        self.declare_parameter("collision_thresh", 0.01)
+        self.declare_parameter("voxel_size", 0.01)
+        self.declare_parameter("visualize", False)
+
+        self.visualize = (
+            self.get_parameter("visualize").get_parameter_value().bool_value
+        )
+
+        # Read back the values
+        self.collision_thresh = (
+            self.get_parameter("collision_thresh").get_parameter_value().double_value
+        )
+        self.voxel_size = (
+            self.get_parameter("voxel_size").get_parameter_value().double_value
+        )
+
         self.create_service(Trigger, "/grasp/generate", self.callback)
         self.marker_client = self.create_client(
             AddMarker, "/franka/moveit_manager/add_marker"
@@ -111,6 +128,8 @@ class GenerateGrasp(Node):
         # set model to eval mode
         self.net.eval()
 
+        ros_logger.info("GraspNet model initialized and weights loaded")
+
     def process_data(self) -> tuple[dict, o3d.geometry.PointCloud]:  # type: ignore[attr-defined]
         """Process the depth and camera info data to create a point cloud and end points.
 
@@ -148,20 +167,37 @@ class GenerateGrasp(Node):
         end_points["point_clouds"] = cloud_sampled
         end_points["cloud_colors"] = color_sampled
 
+        assert len(cloud.points) > 0, "PointCloud has no points"
+        ros_logger.info(f"PointCloud has {len(cloud.points)} points")
         return end_points, cloud
 
     def get_grasps(self, end_points: dict) -> GraspGroup:
         """Define grasps from the end points using the GraspNet model.
 
         Args:
-            end_points (dict): The end points.
+            end_points (dict): The end points dictionary containing the point cloud and colors.
 
         Returns:
-            GraspGroup: The predicted grasp group.
+            GraspGroup: The GraspGroup containing the predicted grasps.
         """
-        with torch.no_grad():
-            end_points = self.net(end_points)
-            grasp_preds = pred_decode(end_points)
+        for i in range(10):
+            with torch.no_grad():
+                end_points = self.net(end_points)
+                grasp_preds = pred_decode(end_points)
+                ros_logger.info(
+                    f"Grasp prediction attempt {i + 1}, grasps: {len(grasp_preds[0])}"
+                )
+
+            if len(grasp_preds[0]) > 0:
+                break
+            else:
+                if not self.get_messages():
+                    ros_logger.error(
+                        "Failed to refresh messages, aborting grasp prediction"
+                    )
+                    break
+                end_points, _ = self.process_data()
+
         grasps_array = grasp_preds[0].detach().cpu().numpy()
         return GraspGroup(grasps_array)
 
@@ -185,9 +221,8 @@ class GenerateGrasp(Node):
             self.camera_info.ros_value.k[4],
             self.camera_info.ros_value.k[2],
             self.camera_info.ros_value.k[5],
-            1000,
+            1,
         )
-
         return True
 
     def callback(
@@ -210,40 +245,65 @@ class GenerateGrasp(Node):
 
         # Define cloud and grasps:
         end_points, cloud = self.process_data()
+
         grasps = self.get_grasps(end_points)
+
+        if len(grasps) == 0:
+            response.success = False
+            response.message = "No grasps found."
+            self.get_logger().warn("GraspNet returned 0 grasps")
+            return response
+
+        ros_logger.info(f"GraspNet returned {len(grasps)} grasps")
         grasps.nms()
         grasps.sort_by_score()
-        grasp: Grasp = grasps[0]
-
-        # Define pose:
-        pose = PoseStamped()
-        pose.header.frame_id = "franka/realsense/camera_color_optical_frame"
-        pose.pose.position = rnp.msgify(Point, grasp.translation.astype(float))
-        rotation = np.array(grasp.rotation_matrix).reshape(3, 3)
-        rotation = rotation @ Rotation.from_euler("y", 90, degrees=True).as_matrix()  # noqa: PLR6104
-        euler = Rotation.from_matrix(rotation).as_euler("xyz", degrees=True)
-        if euler[-1] > 0:
-            rotation = (  # noqa: PLR6104
-                rotation @ Rotation.from_euler("z", 180, degrees=True).as_matrix()
-            )
-        quaternion = Rotation.from_matrix(rotation).as_quat()
-        quaternion = rnp.msgify(Quaternion, quaternion)
-        pose.pose.orientation = quaternion
-
-        # Add marker to the Rviz:
-        add_marker = AddMarker.Request()
-        add_marker.marker_pose = pose
-        self.marker_client.call_async(add_marker)
-
-        # Define goal pose:
-        define_goal_pose = DefineGoalPose.Request()
-        define_goal_pose.pose = pose
-        self.define_goal_pose_client.call_async(define_goal_pose)
+        grasps = self.collision_detection(grasps, np.array(cloud.points))
+        if self.visualize:
+            self.vis_grasps(grasps, cloud)
 
         # Return response:
         response.success = True
         response.message = "Grasps generated and visualized successfully."
+
         return response
+
+    def collision_detection(self, grasps: GraspGroup, cloud: np.ndarray) -> GraspGroup:
+        """Perform collision detection on the grasps using the point cloud.
+
+        Args:
+            grasps (GraspGroup): The GraspGroup containing the grasps to be checked.
+            cloud (np.ndarray): The point cloud as a numpy array.
+
+        Returns:
+            GraspGroup: The filtered GraspGroup after collision detection.
+        """
+        mfcdetector = collision_detector.ModelFreeCollisionDetector(
+            cloud, voxel_size=self.voxel_size
+        )
+        collision_mask = mfcdetector.detect(
+            grasps, approach_dist=0.05, collision_thresh=self.collision_thresh
+        )
+        grasps = grasps[~collision_mask]
+        ros_logger.info(
+            f"Collision detection filtered {np.sum(collision_mask)} grasps, {len(grasps)} grasps remaining"
+        )
+        return grasps
+
+    @staticmethod
+    def vis_grasps(gg: GraspGroup, cloud: np.ndarray) -> None:
+        """Visualize the grasps using Open3D.
+
+        Args:
+            gg (GraspGroup): The GraspGroup containing the grasps to visualize.
+            cloud (np.ndarray): The point cloud as a numpy array.
+        """
+        gg.nms()
+        gg.sort_by_score()
+        gg = gg[:50]
+        grippers = gg.to_open3d_geometry_list()
+        ros_logger.info(f"Visualizing {len(grippers)} grasps")
+
+        o3d.visualization.draw_geometries([cloud, *grippers])  # type: ignore[attr-defined]
 
 
 def main(args: list | None = None) -> None:

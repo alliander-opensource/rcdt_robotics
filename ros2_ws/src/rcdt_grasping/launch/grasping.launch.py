@@ -22,7 +22,11 @@ def launch_setup(context: LaunchContext) -> list:
         executable="generate_grasp.py",
     )
 
-    return [Register.on_start(grasping_node, context)]
+    return [
+        Register.on_log(
+            grasping_node, "GraspNet model initialized and weights loaded", context
+        )
+    ]
 
 
 def generate_launch_description() -> LaunchDescription:

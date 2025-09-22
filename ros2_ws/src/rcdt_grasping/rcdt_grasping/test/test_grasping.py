@@ -23,6 +23,7 @@ def grasping_launch() -> LaunchDescription:
         get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
         launch_arguments={
             "realsense": "True",
+            "world": "table_with_1_brick.sdf",
         },
     )
 
@@ -43,13 +44,16 @@ def test_wait_for_register(timeout: int) -> None:
 
 
 @pytest.mark.launch(fixture=grasping_launch)
-def test_trigger_request(test_node: Node, timeout: int = 5) -> None:
+def test_trigger_request(test_node: Node, timeout: int = 100) -> None:
     """Test that the robot is registered in the system to start the tests.
 
     Args:
         test_node (Node): The ROS2 node to use for the service call.
         timeout (int): The timeout in seconds before stopping the test.
     """
-    call_trigger_service(
-        node=test_node, service_name="/grasp/generate", timeout=timeout
+    assert (
+        call_trigger_service(
+            node=test_node, service_name="/grasp/generate", timeout=timeout
+        )
+        is True
     )
