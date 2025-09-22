@@ -4,11 +4,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import os
 from dataclasses import dataclass
-from pathlib import Path
 
-import gdown
 import numpy as np
 import open3d as o3d
 import rclpy
@@ -18,7 +15,6 @@ from geometry_msgs.msg import Point, PoseStamped, Quaternion
 from graspnetAPI import Grasp, GraspGroup
 from graspnetpy_models.graspnet import GraspNet, pred_decode
 from graspnetpy_utils import data_utils
-from open3d.visualization.draw import draw
 from rcdt_messages.srv import AddMarker, DefineGoalPose
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
@@ -28,10 +24,9 @@ from scipy.spatial.transform import Rotation
 from sensor_msgs.msg import CameraInfo, Image
 from std_srvs.srv import Trigger
 
-CHECKPOINT_DIR = "/home/rcdt/rcdt_robotics/.cache/graspnet/"
-CHECKPOINT_FILE = "checkpoint-rs.tar"
+CHECKPOINT_DIR = "/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_grasping/checkpoint/"
+CHECKPOINT_FILE = "checkpoint.tar"
 CHECKPOINT = CHECKPOINT_DIR + CHECKPOINT_FILE
-DRIVE_LINK = "https://drive.google.com/uc?id=1hd0G8LN6tRpi4742XOTEisbTXNZ-1jmk"
 
 TIMEOUT = 5.0  # seconds
 NUM_VIEW = 300
@@ -88,7 +83,7 @@ class GenerateGrasp(Node):
 
         self.color = Message(topic="/franka/realsense/color/image_raw", msg_type=Image)
         self.depth = Message(
-            topic="/franka/realsense/depth/image_rect_raw", msg_type=Image
+            topic="/franka/realsense/depth/image_rect_raw_float", msg_type=Image
         )
         self.camera_info = Message(
             topic="/franka/realsense/depth/camera_info", msg_type=CameraInfo
@@ -110,17 +105,13 @@ class GenerateGrasp(Node):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(device)
 
-        # Load checkpoint
-        if not os.path.isfile(CHECKPOINT):
-            Path(CHECKPOINT_DIR).mkdir(parents=True, exist_ok=True)
-            gdown.download(url=DRIVE_LINK, output=CHECKPOINT)
         checkpoint = torch.load(CHECKPOINT)
         self.net.load_state_dict(checkpoint["model_state_dict"])
 
         # set model to eval mode
         self.net.eval()
 
-    def process_data(self) -> tuple[dict, o3d.geometry.PointCloud]:
+    def process_data(self) -> tuple[dict, o3d.geometry.PointCloud]:  # type: ignore[attr-defined]
         """Process the depth and camera info data to create a point cloud and end points.
 
         Returns:
@@ -147,9 +138,9 @@ class GenerateGrasp(Node):
         color_sampled = color_masked[idxs]
 
         # convert data
-        cloud = o3d.geometry.PointCloud()
-        cloud.points = o3d.utility.Vector3dVector(cloud_masked.astype(np.float32))
-        cloud.colors = o3d.utility.Vector3dVector(color_masked.astype(np.float32))
+        cloud = o3d.geometry.PointCloud()  # type: ignore[attr-defined]
+        cloud.points = o3d.utility.Vector3dVector(cloud_masked.astype(np.float32))  # type: ignore[attr-defined]
+        cloud.colors = o3d.utility.Vector3dVector(color_masked.astype(np.float32))  # type: ignore[attr-defined]
         end_points = {}
         cloud_sampled = torch.from_numpy(cloud_sampled[np.newaxis].astype(np.float32))
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -173,20 +164,6 @@ class GenerateGrasp(Node):
             grasp_preds = pred_decode(end_points)
         grasps_array = grasp_preds[0].detach().cpu().numpy()
         return GraspGroup(grasps_array)
-
-    @staticmethod
-    def visualize_grasps(grasps: GraspGroup, cloud: o3d.geometry.PointCloud) -> None:
-        """Visualize the grasps on the point cloud.
-
-        Args:
-            grasps (GraspGroup): The predicted grasp group.
-            cloud (o3d.geometry.PointCloud): The point cloud to visualize the grasps on.
-        """
-        grasps.nms()
-        grasps.sort_by_score()
-        grasps = grasps[:1]
-        grippers = grasps.to_open3d_geometry_list()
-        draw([cloud, *grippers])
 
     def get_messages(self) -> bool:
         """Get the messages from the topics and convert to correct format.

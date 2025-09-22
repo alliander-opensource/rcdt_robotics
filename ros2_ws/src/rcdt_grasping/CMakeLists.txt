@@ -13,10 +13,18 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(rcdt_utilities REQUIRED)
 
+ament_python_install_package(${PROJECT_NAME})
+
 # Python executables:
 install(
   DIRECTORY src_py/
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Shared folders:
+install(
+  DIRECTORY launch 
+  DESTINATION share/${PROJECT_NAME}
 )
 
 # Default test:
