@@ -13,11 +13,13 @@ class Rviz:
         yaml (dict): The default RViz configuration.
         load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
         load_point_cloud (bool): Whether to load point cloud displays.
+        moveit_namespaces (list[str]): A list of the namespaces where MoveIt is launched.
     """
 
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
     load_motion_planning_plugin: bool = False
     load_point_cloud: bool = False
+    moveit_namespaces: list[str] = []
 
     @staticmethod
     def set_fixed_frame(frame: str) -> None:
@@ -39,11 +41,12 @@ class Rviz:
         displays[0]["Offset"]["Z"] = height
 
     @staticmethod
-    def add_robot_model(namespace: str) -> None:
+    def add_robot_model(namespace: str, use_prefix: bool) -> None:
         """Add a robot model to the RViz configuration.
 
         Args:
             namespace (str): The namespace of the robot.
+            use_prefix (bool): Whether to use the namespace as TF prefix.
         """
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
@@ -52,7 +55,7 @@ class Rviz:
                 "Class": "rviz_default_plugins/RobotModel",
                 "Enabled": "true",
                 "Description Topic": {"Value": f"/{namespace}/robot_description"},
-                "TF Prefix": namespace,
+                "TF Prefix": namespace if use_prefix else "",
                 "Name": namespace,
             }
         )
@@ -111,11 +114,13 @@ class Rviz:
         """
         if not Rviz.load_motion_planning_plugin:
             return
+        Rviz.moveit_namespaces.append(namespace)
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
             {
                 "Class": "moveit_rviz_plugin/MotionPlanning",
                 "Move Group Namespace": namespace,
+                "Robot Description": f"{namespace}_robot_description",
                 "Name": f"{namespace}_motion_planning",
                 "Planning Scene Topic": f"/{namespace}/monitored_planning_scene",
             }

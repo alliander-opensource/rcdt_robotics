@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node, SetParameter
+from launch_ros.actions import SetParameter
 from rcdt_launch.robot import Arm, Lidar, Platform, Vehicle
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
@@ -40,12 +40,15 @@ def launch_setup(context: LaunchContext) -> list:
     use_vizanti = use_vizanti_arg.bool_value(context)
     configuration = configuration_arg.string_value(context)
 
-    Rviz.load_motion_planning_plugin = False
+    Rviz.load_motion_planning_plugin = True
     Rviz.load_point_cloud = False
+
+    use_joystick = False
 
     match configuration:
         case "franka":
-            Arm("franka", [0, 0, 0], gripper=True, moveit=True)
+            Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
+            Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
         case "lidar":
@@ -70,19 +73,7 @@ def launch_setup(context: LaunchContext) -> list:
     world_links = Platform.create_world_links()
     controllers = Platform.create_controllers()
     launch_descriptions = Platform.create_launch_descriptions()
-    joystick_nodes = Platform.create_joystick_nodes()
-
-    # Create a tf frame called 'base', required for the MotionPlanning plugin in Rviz:
-    static_transform_publisher = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=[
-            "--frame-id",
-            "map",
-            "--child-frame-id",
-            "base",
-        ],
-    )
+    joystick_nodes = Platform.create_joystick_nodes() if use_joystick else []
 
     utilities = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
@@ -108,14 +99,11 @@ def launch_setup(context: LaunchContext) -> list:
         *[Register.group(controller, context) for controller in controllers],
         Register.group(utilities, context),
         *[Register.on_start(node, context) for node in joystick_nodes],
-        Register.group(rviz, context) if use_rviz else SKIP,
         *[
             Register.group(launch_description, context)
             for launch_description in launch_descriptions
         ],
-        Register.on_start(static_transform_publisher, context)
-        if Rviz.load_motion_planning_plugin
-        else SKIP,
+        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(vizanti, context) if use_vizanti else SKIP,
     ]
 

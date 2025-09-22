@@ -6,7 +6,13 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path, get_yaml
+from rcdt_utilities.launch_utils import (
+    LaunchArgument,
+    add_prefix_in_robot_description_semantic,
+    get_file_path,
+    get_robot_description,
+    get_yaml,
+)
 from rcdt_utilities.register import Register
 
 robot_name_arg = LaunchArgument("robot_name", "")
@@ -36,35 +42,56 @@ def launch_setup(context: LaunchContext) -> list:
     moveit_config.moveit_cpp(
         get_file_path(package_name, ["config"], "planning_pipeline.yaml")
     )
-    moveit_config = moveit_config.to_dict()
+    configs = moveit_config.to_moveit_configs()
 
+    srdf_path = get_file_path("rcdt_franka_moveit_config", ["config"], "fr3.srdf")
+    robot_description_semantic = get_robot_description(srdf_path, semantic=True)
+    add_prefix_in_robot_description_semantic(robot_description_semantic, namespace)
+
+    # Parameters required for move_group:
+    move_group_parameters = []
+    move_group_parameters.append(robot_description_semantic)
+    move_group_parameters.append({"publish_robot_description_semantic": True})
+    move_group_parameters.append(configs.robot_description_kinematics)
+    move_group_parameters.append(configs.joint_limits)
+    move_group_parameters.append(configs.trajectory_execution)
+    move_group_parameters.append(configs.planning_pipelines)
+    move_group_parameters.append(configs.pilz_cartesian_limits)
+
+    # Parameters required for moveit_manager:
+    moveit_manager_parameters = []
+    moveit_manager_parameters.append(configs.robot_description_kinematics)
+
+    # Parameters required for moveit_servo:
+    moveit_servo_parameters = []
+    moveit_servo_parameters.append(configs.robot_description_kinematics)
     file = get_file_path(servo_params_package, ["config"], "servo_params.yaml")
     servo_config = get_yaml(file)
-    servo_params = {"moveit_servo": servo_config}
     if namespace:
         for param in ["joint_topic", "command_out_topic"]:
-            value = servo_params["moveit_servo"][param]
-            servo_params["moveit_servo"][param] = "/" + namespace + value
+            value = servo_config[param]
+            servo_config[param] = "/" + namespace + value
+    moveit_servo_parameters.append({"moveit_servo": servo_config})
+
+    move_group = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        parameters=move_group_parameters,
+        namespace=namespace,
+    )
 
     moveit_manager = Node(
         package="rcdt_moveit",
         executable="moveit_manager",
         output="screen",
-        parameters=[moveit_config],
-        namespace=namespace,
-    )
-
-    move_group = Node(
-        package="moveit_ros_move_group",
-        executable="move_group",
-        parameters=[moveit_config],
+        parameters=moveit_manager_parameters,
         namespace=namespace,
     )
 
     moveit_servo = Node(
         package="moveit_servo",
         executable="servo_node",
-        parameters=[moveit_config, servo_params],
+        parameters=moveit_servo_parameters,
         namespace=namespace,
     )
 
@@ -97,11 +124,11 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_log(
             move_group, "MoveGroup context initialization complete", context
         ),
-        Register.on_log(moveit_servo, "Servo initialized successfully", context),
-        Register.on_exit(switch_servo_type_to_twist, context),
         Register.on_log(
             moveit_manager, "Ready to take commands for planning group", context
         ),
+        Register.on_log(moveit_servo, "Servo initialized successfully", context),
+        Register.on_exit(switch_servo_type_to_twist, context),
         Register.on_exit(move_to_home, context),
     ]
 
