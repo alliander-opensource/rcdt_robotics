@@ -20,15 +20,15 @@ You can see two robots (`franka` and `panther`) and four sensors (`realsense`, `
 \
 This joystick contains a `joystick_topic_manager` to switch the control between franka and panther. A `joy_to_twist` node converts the joy message to a twist message. For panther, this twist message can be directly send to the drive controller. For franka, `moveit_servo` is used to calculate the required joint command that results in the desired twist command of the end effector.
 
-*moveit_manger*:
+*moveit_manager*:
 \
-For robot ams, we created a `moveit_manager` node as a layer above the `moveit_ros_move_group` node. This manager provides functionality like moving to a default configuration or moving the end effector to a given pose.
+For robot arms, we created a `moveit_manager` node as a layer above the `moveit_ros_move_group` node. This manager provides functionality like moving to a default configuration or moving the end effector to a given pose.
 
 *nav2*
 \
 For robot vehicles, we use `nav2`, a set of nodes that provide functionality like navigating to a pose or following waypoints.
 
-At the moment, we can use the joystick, or functionality og the moveit_manager or nav2 to control the robots.
+At the moment, we can use the joystick, or functionality of the moveit_manager or nav2 to control the robots.
 
 **vendor elements**
 \
@@ -44,8 +44,8 @@ Note that each robot and sensor *lives* in it's own namespace. This enables us t
 
 **modularity**
 \
-With this setup we focus on the modularity of the system. We can add sensors and robots if we like and reuse nodes that we already developed. If we add another robot arm, we expect the vendor to provide the correct controller nodes. We only need to define the related parameters and should be able to use it again with out Moveit Manager and the default Moveit nodes provided in ROS. And if we add another robot vehicle, we can still use our current Nav2 setup, only requiring the correct definition of the related parameters. Note that adaptions to the joystick node may be required if still desired to use with new robots, since this node is currently only able to switch between the franka arm and panther vehicle.
+With this setup we focus on the modularity of the system. We can add sensors and robots if we like and reuse nodes that we already developed. If we add another robot arm, we expect the vendor to provide the correct controller nodes. We only need to define the related parameters and should be able to use it again with our Moveit Manager and the default Moveit nodes provided in ROS. And if we add another robot vehicle, we can still use our current Nav2 setup, only requiring the correct definition of the related parameters.
 
 **central controller**
 \
-At the moment, a human is still the central controller in our system. A human can control both the robots using the joystick or via service/action calls to the Moveit Manager or Nav2. Our goal is to get the human out of the loop. This could be achieved with the development of a central controller node which can communicate with the moveit manager of an arm or the nav2 stack of a vehicle. Note that this central controller should not be affected when we switch to another arm or vehicle, as long as these still provide the moveit manager and nav2 stack to control.
+At the moment, a human is still the central controller in our system. A human can control both the robots using the joystick or via service/action calls to the Moveit Manager or Nav2. Our goal is to get the human out of the loop.
