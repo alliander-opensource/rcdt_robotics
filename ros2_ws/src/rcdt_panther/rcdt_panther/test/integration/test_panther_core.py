@@ -9,9 +9,9 @@ import launch_pytest
 import pytest
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
+from rcdt_launch.robot import Platform, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     get_joint_position,
@@ -35,7 +35,7 @@ def panther_core_launch() -> LaunchDescription:
     Platform.reset()
     Vehicle(platform="panther", position=[0, 0, 0.2], namespace=namespace)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
         launch_arguments={"rviz": "False"},
     )
     return Register.connect_context([launch])

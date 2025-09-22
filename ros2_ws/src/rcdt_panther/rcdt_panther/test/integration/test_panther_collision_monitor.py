@@ -10,9 +10,9 @@ import pytest
 import rclpy
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
+from rcdt_launch.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     wait_for_register,
@@ -40,7 +40,7 @@ def panther_launch() -> LaunchDescription:
     )
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
         launch_arguments={"rviz": "False"},
     )
     return Register.connect_context([launch])

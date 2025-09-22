@@ -5,11 +5,11 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter
+from rcdt_launch.robot import Arm, Lidar, Platform, Vehicle
+from rcdt_launch.rviz import Rviz
+from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Arm, Lidar, Platform, Vehicle
-from rcdt_utilities.rviz import Rviz
-from rcdt_utilities.vizanti import Vizanti
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])

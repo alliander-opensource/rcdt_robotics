@@ -13,9 +13,9 @@ from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from launch import LaunchDescription
 from nav2_msgs.action import NavigateToPose
+from rcdt_launch.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.test_utils import (
     call_trigger_service,
     create_ready_action_client,
@@ -47,7 +47,7 @@ def panther_launch() -> LaunchDescription:
     )
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle, namespace=namespace_lidar)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
         launch_arguments={"rviz": "False"},
     )
     return Register.connect_context([launch])

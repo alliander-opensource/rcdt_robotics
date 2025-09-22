@@ -9,9 +9,9 @@ import launch_pytest
 import pytest
 from launch import LaunchDescription
 from rcdt_franka.test.end_to_end.base_franka import get_tests
+from rcdt_launch.robot import Arm, Platform, Vehicle
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
-from rcdt_utilities.robot import Arm, Platform, Vehicle
 from rcdt_utilities.test_utils import add_tests_to_class
 
 namespace_vehicle = f"panther_{int(time())}"
@@ -40,7 +40,7 @@ def mobile_manipulator() -> LaunchDescription:
     )
 
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_utilities", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
         launch_arguments={"rviz": "False"},
     )
     return Register.connect_context([launch])

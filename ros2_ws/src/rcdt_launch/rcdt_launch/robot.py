@@ -7,11 +7,11 @@ from __future__ import annotations
 from typing import Literal
 
 from launch_ros.actions import Node
-
 from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
-from rcdt_utilities.rviz import Rviz
-from rcdt_utilities.vizanti import Vizanti
+
+from rcdt_launch.rviz import Rviz
+from rcdt_launch.vizanti import Vizanti
 
 
 class Platform:  # noqa: PLR0904

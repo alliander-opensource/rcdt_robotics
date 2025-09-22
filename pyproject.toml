@@ -78,6 +78,7 @@ extra-paths = [
     "ros2_ws/src/rcdt_panther/",
     "ros2_ws/src/rcdt_utilities/",
     "ros2_ws/src/rcdt_gazebo/",
+    "ros2_ws/src/rcdt_launch/",
 ]
 
 # Settings of pydoclint, also in flake8 to use in vscode:
