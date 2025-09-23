@@ -41,12 +41,11 @@ class Rviz:
         displays[0]["Offset"]["Z"] = height
 
     @staticmethod
-    def add_robot_model(namespace: str, use_prefix: bool) -> None:
+    def add_robot_model(namespace: str) -> None:
         """Add a robot model to the RViz configuration.
 
         Args:
             namespace (str): The namespace of the robot.
-            use_prefix (bool): Whether to use the namespace as TF prefix.
         """
         displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
         displays.append(
@@ -55,7 +54,7 @@ class Rviz:
                 "Class": "rviz_default_plugins/RobotModel",
                 "Enabled": "true",
                 "Description Topic": {"Value": f"/{namespace}/robot_description"},
-                "TF Prefix": namespace if use_prefix else "",
+                "TF Prefix": namespace,
                 "Name": namespace,
             }
         )

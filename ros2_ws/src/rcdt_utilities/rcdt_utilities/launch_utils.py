@@ -7,7 +7,6 @@ import os
 
 import rclpy
 import xacro
-import xmltodict
 import yaml
 from ament_index_python.packages import get_package_prefix, get_package_share_directory
 from launch import LaunchContext, LaunchDescriptionEntity
@@ -237,54 +236,6 @@ def get_robot_description(
     robot_description_config = xacro.process_file(xacro_path, mappings=xacro_arguments)
     name = "robot_description_semantic" if semantic else "robot_description"
     return {name: robot_description_config.toxml()}
-
-
-def add_prefix_in_robot_description(description: dict, prefix: str) -> None:
-    """Add a prefix to all links in the robot description.
-
-    This is required for MoveIt, since the move_group node uses the /robot_description topic as configuration.
-    The robot_state_publisher can add a prefix to each frame, but this result only applies to the /tf topic, not the /robot_description topic.
-    This method modifies each link, except the "world" link, since this link should not change for gazebo.
-
-    Args:
-        description (dict): The robot description dictionary.
-        prefix (str): The prefix to add to each link.
-    """
-    xml_dict = xmltodict.parse(description["robot_description"])
-
-    for link in xml_dict["robot"]["link"]:
-        name = link["@name"]
-        if name == "world":
-            continue
-        link["@name"] = f"{prefix}/{name}"
-    for joint in xml_dict["robot"]["joint"]:
-        parent = joint["parent"]["@link"]
-        child = joint["child"]["@link"]
-        if parent != "world":
-            joint["parent"]["@link"] = f"{prefix}/{parent}"
-        if child != "world":
-            joint["child"]["@link"] = f"{prefix}/{child}"
-
-    description["robot_description"] = xmltodict.unparse(xml_dict)
-
-
-def add_prefix_in_robot_description_semantic(description: dict, prefix: str) -> None:
-    """Add a prefix to all links in the semantic robot description.
-
-    This is required when using MoveIt in a namespace.
-
-    Args:
-        description (dict): The semantic robot description dictionary.
-        prefix (str): The prefix to add to each link.
-    """
-    xml_dict = xmltodict.parse(description["robot_description_semantic"])
-    for disable_collision in xml_dict["robot"]["disable_collisions"]:
-        link1 = disable_collision["@link1"]
-        link2 = disable_collision["@link2"]
-        disable_collision["@link1"] = f"{prefix}/{link1}"
-        disable_collision["@link2"] = f"{prefix}/{link2}"
-
-    description["robot_description_semantic"] = xmltodict.unparse(xml_dict)
 
 
 def spin_node(node: Node) -> None:

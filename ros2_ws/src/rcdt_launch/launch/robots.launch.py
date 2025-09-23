@@ -18,7 +18,16 @@ use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "",
-    ["", "franka", "panther", "lidar", "panther_lidar", "mm", "mm_lidar"],
+    [
+        "",
+        "franka",
+        "double_franka",
+        "panther",
+        "lidar",
+        "panther_lidar",
+        "mm",
+        "mm_lidar",
+    ],
 )
 
 
@@ -40,13 +49,17 @@ def launch_setup(context: LaunchContext) -> list:
     use_vizanti = use_vizanti_arg.bool_value(context)
     configuration = configuration_arg.string_value(context)
 
-    Rviz.load_motion_planning_plugin = True
+    Rviz.load_motion_planning_plugin = False
     Rviz.load_point_cloud = False
 
-    use_joystick = False
+    use_joystick = True
 
     match configuration:
         case "franka":
+            Arm("franka", [0, 0, 0], gripper=True, moveit=True)
+        case "double_franka":
+            use_joystick = False
+            Rviz.load_motion_planning_plugin = True
             Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
             Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
         case "panther":

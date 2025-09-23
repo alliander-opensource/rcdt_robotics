@@ -7,13 +7,10 @@ from __future__ import annotations
 from typing import Literal
 
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import (
-    add_prefix_in_robot_description,
-    get_file_path,
-    get_robot_description,
-)
+from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
 
+from rcdt_launch.moveit import Moveit
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 
@@ -248,8 +245,7 @@ class Platform:  # noqa: PLR0904
         Platform.add(self)
         self.namespace = namespace if namespace else Platform.generate_namespace(self)
 
-        use_prefix = bool(not isinstance(self, Arm))
-        Rviz.add_robot_model(self.namespace, use_prefix)
+        Rviz.add_robot_model(self.namespace)
 
         if parent is None:
             self.is_child = False
@@ -261,6 +257,19 @@ class Platform:  # noqa: PLR0904
                 sum(x) for x in zip(parent.position, position, strict=False)
             ]
             parent.add_child(self)
+
+    @property
+    def robot_description(self) -> dict:
+        """Return the robot description for the robot.
+
+        Returns:
+            dict: The robot description for the robot.
+        """
+        xacro_arguments = {"simulation": "true", "namespace": self.namespace}
+        xacro_arguments["childs"] = str(self.childs)
+        xacro_arguments["parent"] = "" if self.is_child else "world"
+
+        return get_robot_description(self.xacro_path, xacro_arguments)
 
     @property
     def frame_prefix(self) -> str:
@@ -344,23 +353,11 @@ class Platform:  # noqa: PLR0904
         Returns:
             Node: The state publisher node for the robot.
         """
-        xacro_arguments = {"simulation": "true", "namespace": self.namespace}
-        xacro_arguments["childs"] = str(self.childs)
-        xacro_arguments["parent"] = "" if self.is_child else "world"
-
-        robot_description = get_robot_description(self.xacro_path, xacro_arguments)
-        parameters = []
-        if isinstance(self, Arm):
-            add_prefix_in_robot_description(robot_description, self.namespace)
-        else:
-            parameters.append({"frame_prefix": self.frame_prefix})
-        parameters.append(robot_description)
-
         return Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
             namespace=self.namespace,
-            parameters=parameters,
+            parameters=[self.robot_description, {"frame_prefix": self.frame_prefix}],
         )
 
     def create_tf_publisher(self) -> Node:
@@ -526,6 +523,7 @@ class Arm(Platform):
         self.gripper = gripper
 
         if moveit:
+            Moveit.add(self.namespace, self.robot_description, self.platform)
             Rviz.add_motion_planning_plugin(self.namespace)
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:

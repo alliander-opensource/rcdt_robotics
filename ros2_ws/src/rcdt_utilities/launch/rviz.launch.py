@@ -7,7 +7,7 @@ import os.path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from moveit_configs_utils import MoveItConfigsBuilder
+from rcdt_launch.moveit import Moveit
 from rcdt_launch.rviz import Rviz
 from rcdt_utilities.register import Register
 
@@ -30,29 +30,28 @@ def launch_setup(context: LaunchContext) -> list:
         arguments.extend(["--display-config", file_name])
 
     if Rviz.load_motion_planning_plugin:
-        for ns in Rviz.moveit_namespaces:
-            moveit_config = MoveItConfigsBuilder(
-                "franka", package_name="rcdt_franka_moveit_config"
-            )
-            moveit_config = moveit_config.to_moveit_configs()
+        for namespace in Rviz.moveit_namespaces:
+            configuration = Moveit.configurations[namespace]
 
-            kinematics = moveit_config.robot_description_kinematics[
-                "robot_description_kinematics"
-            ]
-            parameters.append({f"{ns}_robot_description_kinematics": kinematics})
-            parameters.append(moveit_config.planning_pipelines)
-            parameters.append(moveit_config.pilz_cartesian_limits)
-
-            remappings.extend(
+            parameters.extend(
                 [
-                    (
-                        f"/{ns}_robot_description",
-                        f"/{ns}/robot_description",
-                    ),
-                    (
-                        f"/{ns}_robot_description_semantic",
-                        f"/{ns}/robot_description_semantic",
-                    ),
+                    {
+                        f"{namespace}_robot_description": configuration.robot_description[
+                            "robot_description"
+                        ]
+                    },
+                    {
+                        f"{namespace}_robot_description_semantic": configuration.robot_description_semantic[
+                            "robot_description_semantic"
+                        ]
+                    },
+                    {
+                        f"{namespace}_robot_description_kinematics": configuration.robot_description_kinematics[
+                            "robot_description_kinematics"
+                        ]
+                    },
+                    configuration.planning_pipelines,
+                    configuration.pilz_cartesian_limits,
                 ]
             )
 
