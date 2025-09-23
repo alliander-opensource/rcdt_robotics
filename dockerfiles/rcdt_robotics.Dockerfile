@@ -32,7 +32,4 @@ RUN ./franka_lock_unlock.sh
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 
-COPY ./install_scripts/graspnet.sh .
-RUN ./graspnet.sh
-
 INCLUDE ./general/post_install.dockerfile
