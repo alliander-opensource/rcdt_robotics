@@ -486,11 +486,17 @@ class Lidar(Platform):
         Returns:
             RegisteredLaunchDescription: The launch description for Velodyne.
         """
+        if self.parent:
+            target_frame = f"{self.parent.namespace}/{self.parent.base_link}"
+        else:
+            target_frame = f"{self.namespace}/base_link"
+
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
             launch_arguments={
                 "simulation": str(True),
                 "namespace": self.namespace,
+                "target_frame": target_frame,
             },
         )
 

@@ -6,16 +6,12 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import (
-    SKIP,
-    LaunchArgument,
-    get_file_path,
-    get_robot_description,
-)
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 namespace_arg = LaunchArgument("namespace", "velodyne")
+target_frame_arg = LaunchArgument("target_frame", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -29,17 +25,11 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
+    target_frame = target_frame_arg.string_value(context)
+    if not target_frame:
+        target_frame = f"{namespace}/base_link"
 
     frame_prefix = namespace + "/" if namespace else ""
-
-    xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro")
-    velodyne_description = get_robot_description(xacro_path)
-    robot_state_publisher = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        namespace=namespace,
-        parameters=[velodyne_description, {"frame_prefix": frame_prefix}],
-    )
 
     velodyne_driver_node = Node(
         package="velodyne_driver",
@@ -82,7 +72,7 @@ def launch_setup(context: LaunchContext) -> list:
         ],
         parameters=[
             {
-                "target_frame": "map",
+                "target_frame": target_frame,
                 "min_height": 0.1,
                 "max_height": 2.0,
                 "range_min": 0.05,
@@ -92,7 +82,6 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        Register.on_start(robot_state_publisher, context),
         Register.on_start(velodyne_driver_node, context) if not use_sim else SKIP,
         Register.on_start(velodyne_transform_node, context) if not use_sim else SKIP,
         Register.on_start(pointcloud_to_laserscan_node, context),
