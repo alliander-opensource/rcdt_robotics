@@ -651,9 +651,9 @@ class Vehicle(Platform):
             )
 
         if self.navigation:
-            Rviz.add_map("/map")
-            Rviz.add_map("/global_costmap/costmap")
-            Rviz.add_path("/plan")
+            Rviz.add_map(f"/{self.namespace}/map")
+            Rviz.add_map(f"/{self.namespace}/global_costmap/costmap")
+            Rviz.add_path(f"/{self.namespace}/plan")
             Vizanti.add_button("Stop", "/waypoint_follower_controller/stop")
             Vizanti.add_initial_pose()
             Vizanti.add_goal_pose()
