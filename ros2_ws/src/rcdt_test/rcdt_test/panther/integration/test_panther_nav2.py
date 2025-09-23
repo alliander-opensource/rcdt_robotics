@@ -105,7 +105,7 @@ def test_nav2_goal(test_node: Node, timeout: int) -> None:
     action_client = create_ready_action_client(
         node=test_node,
         action_type=NavigateToPose,
-        action_name="/navigate_to_pose",
+        action_name=f"{namespace_vehicle}/navigate_to_pose",
         timeout=timeout,
     )
 
