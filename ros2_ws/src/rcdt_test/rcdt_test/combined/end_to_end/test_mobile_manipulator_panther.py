@@ -2,14 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 from time import time
 
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from rcdt_franka.test.end_to_end.base_franka import get_tests
 from rcdt_launch.robot import Arm, Platform, Vehicle
+from rcdt_test.panther.end_to_end.base_panther import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class
@@ -21,6 +20,9 @@ namespace_arm = f"franka_{int(time())}"
 @launch_pytest.fixture(scope="class")
 def mobile_manipulator() -> LaunchDescription:
     """Fixture to launch the mobile manipulator.
+
+    Returns:
+        LaunchDescription: The launch description for the mobile manipulator.
 
     Returns:
         LaunchDescription: The launch description for the mobile manipulator.
@@ -47,8 +49,8 @@ def mobile_manipulator() -> LaunchDescription:
 
 
 @pytest.mark.launch(fixture=mobile_manipulator)
-class TestFrankaMMLaunch:
-    """Run all the FrankaLaunchTests under mobile_manipulator.launch.py."""
+class TestPantherMMLaunch:
+    """Run all the PantherFullTests under mobile_manipulator.launch.py."""
 
 
-add_tests_to_class(TestFrankaMMLaunch, get_tests(namespace_arm))
+add_tests_to_class(TestPantherMMLaunch, get_tests(namespace_vehicle))

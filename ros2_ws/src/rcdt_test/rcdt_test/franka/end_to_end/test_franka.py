@@ -9,8 +9,8 @@ import launch_pytest
 import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
-from rcdt_franka.test.end_to_end.base_franka import get_tests
 from rcdt_launch.robot import Arm, Platform
+from rcdt_test.franka.end_to_end.base_franka import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class

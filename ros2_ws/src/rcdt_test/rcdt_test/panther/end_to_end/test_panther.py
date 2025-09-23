@@ -10,7 +10,7 @@ import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_launch.robot import Platform, Vehicle
-from rcdt_panther.test.end_to_end.base_panther import get_tests
+from rcdt_test.panther.end_to_end.base_panther import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class
