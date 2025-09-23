@@ -9,7 +9,8 @@ from dataclasses import dataclass
 import numpy as np
 import rclpy
 from graspnetpy_utils import data_utils
-from rcdt_messages.srv import GenerateGraspnetGrasp
+from rcdt_messages.msg import Grasp
+from rcdt_messages.srv import DefineGoalPose, GenerateGraspnetGrasp
 from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -76,11 +77,15 @@ class GraspLogic(Node):
             Trigger, "/grasp/trigger", self.callback, callback_group=self.cb_group
         )
 
-        self.client = self.create_client(
+        self.grasp_generation_client = self.create_client(
             GenerateGraspnetGrasp, "/graspnet/generate", callback_group=self.cb_group
         )
 
-        self.client.wait_for_service(timeout_sec=TIMEOUT)
+        self.define_goal_pose_client = self.create_client(
+            DefineGoalPose, "/franka/moveit_manager/define_goal_pose"
+        )
+        self.grasp_generation_client.wait_for_service(timeout_sec=TIMEOUT)
+        self.define_goal_pose_client.wait_for_service(timeout_sec=TIMEOUT)
         ros_logger.info("GraspLogicNode initialized!")
 
     def get_messages(self) -> bool:
@@ -117,17 +122,21 @@ class GraspLogic(Node):
         request.camera_info = self.camera_info.ros_value
 
         ros_logger.info("Calling grasp generation service...")
-        future = self.client.call_async(request)
+        future = self.grasp_generation_client.call_async(request)
         rclpy.spin_until_future_complete(self, future=future, timeout_sec=30.0)
 
-        if future.result().success is not True:
-            ros_logger.error(f"Service call failed: {future.exception()}")
+        result: GenerateGraspnetGrasp.Response = future.result()
+        if result.success is not True:
+            ros_logger.error(f"Service call failed because of: {result.message}")
             response.success = False
             response.message = "Service call failed"
             return response
 
-        ros_logger.info(f"Service call succeeded: {future.result().success}")
+        ros_logger.info(f"Service call succeeded: {result.success}")
 
+        best_grasp: Grasp = result.grasps[0]
+
+        ros_logger.info(f"Best grasp score: {best_grasp.score}")
         response.success = True
         response.message = "Messages received successfully"
         return response

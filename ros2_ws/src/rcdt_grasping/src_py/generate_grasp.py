@@ -88,6 +88,7 @@ class GenerateGrasp(Node):
         """
         if not self.convert_messages(request):
             response.success = False
+            response.message = "Failed to convert messages"
             return response
 
         # Define cloud and grasps:
@@ -97,10 +98,12 @@ class GenerateGrasp(Node):
 
         if len(grasps) == 0:
             response.success = False
+            response.message = "GraspNet returned 0 grasps"
             self.get_logger().warn("GraspNet returned 0 grasps")
             return response
 
         ros_logger.info(f"GraspNet returned {len(grasps)} grasps")
+
         grasps.nms()
         grasps.sort_by_score()
         grasps = self.collision_detection(grasps, np.array(cloud.points))
@@ -237,8 +240,6 @@ class GenerateGrasp(Node):
             gg (GraspGroup): The GraspGroup containing the grasps to visualize.
             cloud (np.ndarray): The point cloud as a numpy array.
         """
-        gg.nms()
-        gg.sort_by_score()
         gg = gg[:50]
         grippers = gg.to_open3d_geometry_list()
         ros_logger.info(f"Visualizing {len(grippers)} grasps")
