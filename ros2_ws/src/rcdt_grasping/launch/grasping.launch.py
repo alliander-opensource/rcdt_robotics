@@ -17,15 +17,21 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    grasping_node = Node(
+    graspnet_node = Node(
         package="rcdt_grasping",
         executable="generate_grasp.py",
     )
 
+    grasping_logic = Node(
+        package="rcdt_grasping",
+        executable="grasp_logic.py",
+    )
+
     return [
         Register.on_log(
-            grasping_node, "GraspNet model initialized and weights loaded", context
-        )
+            graspnet_node, "GraspNet model initialized and weights loaded", context
+        ),
+        Register.on_log(grasping_logic, "GraspLogicNode initialized!", context),
     ]
 
 

@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from dataclasses import dataclass
 
 import numpy as np
 import open3d as o3d
@@ -13,14 +12,13 @@ import torch
 from graspnetAPI import GraspGroup
 from graspnetpy_models.graspnet import GraspNet, pred_decode
 from graspnetpy_utils import collision_detector, data_utils
-from rcdt_messages.srv import AddMarker, DefineGoalPose
+from rcdt_messages.msg import Grasp
+from rcdt_messages.srv import GenerateGraspnetGrasp
 from rcdt_utilities.cv_utils import ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
 from rclpy.node import Node
-from rclpy.wait_for_message import wait_for_message
-from sensor_msgs.msg import CameraInfo, Image
-from std_srvs.srv import Trigger
+from scipy.spatial.transform import Rotation
 
 ros_logger = logging.get_logger(__name__)
 
@@ -28,42 +26,8 @@ CHECKPOINT_DIR = "/home/rcdt/rcdt_robotics/ros2_ws/src/rcdt_grasping/checkpoint/
 CHECKPOINT_FILE = "checkpoint.tar"
 CHECKPOINT = CHECKPOINT_DIR + CHECKPOINT_FILE
 
-TIMEOUT = 5.0  # seconds
 NUM_VIEW = 300
 NUM_POINT = 20000
-
-
-@dataclass
-class Message:
-    """Data class to define messages that will be obtained using the wait_for_message function.
-
-    Attributes:
-        topic (str): The ROS topic to subscribe to.
-        msg_type (type): The type of the message.
-        ros_value (None | Image | CameraInfo): The raw ROS message received.
-        value (None | np.ndarray | data_utils.CameraInfo): The processed value.
-    """
-
-    topic: str
-    msg_type: type
-    ros_value: None | Image | CameraInfo = None
-    value: None | np.ndarray | data_utils.CameraInfo = None
-
-    def get_message(self, node: Node) -> bool:
-        """Get the message from the topic.
-
-        Args:
-            node (Node): The ROS 2 node to use.
-
-        Returns:
-            bool: True if the message was received successfully, False otherwise.
-        """
-        success, self.ros_value = wait_for_message(
-            self.msg_type, node, self.topic, time_to_wait=TIMEOUT
-        )
-        if not success:
-            node.get_logger().error(f"Failed to get message from {self.topic}")
-        return success
 
 
 class GenerateGrasp(Node):
@@ -71,40 +35,18 @@ class GenerateGrasp(Node):
 
     def __init__(self) -> None:
         """Initialize the PublishImage node."""
-        super().__init__("grasp")
+        super().__init__("graspnet_node")
         self.init_net()
 
-        self.declare_parameter("collision_thresh", 0.01)
-        self.declare_parameter("voxel_size", 0.01)
-        self.declare_parameter("visualize", False)
+        self.collision_threshold = 0.01
+        self.voxel_size = 0.01
+        self.visualize = False
 
-        self.visualize = (
-            self.get_parameter("visualize").get_parameter_value().bool_value
-        )
+        self.depth = None
+        self.color = None
+        self.camera_info = None
 
-        # Read back the values
-        self.collision_thresh = (
-            self.get_parameter("collision_thresh").get_parameter_value().double_value
-        )
-        self.voxel_size = (
-            self.get_parameter("voxel_size").get_parameter_value().double_value
-        )
-
-        self.create_service(Trigger, "/grasp/generate", self.callback)
-        self.marker_client = self.create_client(
-            AddMarker, "/franka/moveit_manager/add_marker"
-        )
-        self.define_goal_pose_client = self.create_client(
-            DefineGoalPose, "/franka/moveit_manager/define_goal_pose"
-        )
-
-        self.color = Message(topic="/franka/realsense/color/image_raw", msg_type=Image)
-        self.depth = Message(
-            topic="/franka/realsense/depth/image_rect_raw_float", msg_type=Image
-        )
-        self.camera_info = Message(
-            topic="/franka/realsense/depth/camera_info", msg_type=CameraInfo
-        )
+        self.create_service(GenerateGraspnetGrasp, "/graspnet/generate", self.callback)
 
     def init_net(self) -> None:
         """Initialize the GraspNet model and load the pre-trained weights."""
@@ -130,6 +72,84 @@ class GenerateGrasp(Node):
 
         ros_logger.info("GraspNet model initialized and weights loaded")
 
+    def callback(
+        self,
+        request: GenerateGraspnetGrasp.Request,
+        response: GenerateGraspnetGrasp.Response,
+    ) -> GenerateGraspnetGrasp.Response:
+        """Callback for the generate grasps service.
+
+        Args:
+            request (GenerateGraspnetGrasp.Request): The request for the service.
+            response (GenerateGraspnetGrasp.Response): The response to be filled.
+
+        Returns:
+            GenerateGraspnetGrasp.Response: The response indicating success or failure of the grasp generation.
+        """
+        if not self.convert_messages(request):
+            response.success = False
+            return response
+
+        # Define cloud and grasps:
+        end_points, cloud = self.process_data()
+
+        grasps = self.get_grasps(end_points)
+
+        if len(grasps) == 0:
+            response.success = False
+            self.get_logger().warn("GraspNet returned 0 grasps")
+            return response
+
+        ros_logger.info(f"GraspNet returned {len(grasps)} grasps")
+        grasps.nms()
+        grasps.sort_by_score()
+        grasps = self.collision_detection(grasps, np.array(cloud.points))
+        if self.visualize:
+            self.vis_grasps(grasps, cloud)
+
+        grasps_msg = self.grasps_to_ros_msg(grasps)
+        response.success = True
+        response.message = "worked!"
+        response.grasps = grasps_msg
+        ros_logger.info("Returning success response!")
+        return response
+
+    @staticmethod
+    def grasps_to_ros_msg(grasps: GraspGroup) -> list[Grasp]:
+        """Convert the GraspGroup to a list of ROS Grasp messages.
+
+        Args:
+            grasps (GraspGroup): The GraspGroup containing the grasps to be converted.
+
+        Returns:
+            list[Grasp]: A list of ROS Grasp messages.
+        """
+        msgs: list[Grasp] = []
+        for g in grasps:
+            t = np.asarray(g.translation, dtype=float).reshape(3)
+            # some versions use "rotation", others "rotation_matrix"
+            rotation_matrix = np.asarray(
+                getattr(g, "rotation", g.rotation_matrix), dtype=float
+            ).reshape(3, 3)
+
+            qx, qy, qz, qw = Rotation.from_matrix(rotation_matrix).as_quat()
+
+            m = Grasp()
+            m.pose.position.x = float(t[0])
+            m.pose.position.y = float(t[1])
+            m.pose.position.z = float(t[2])
+            m.pose.orientation.x = float(qx)
+            m.pose.orientation.y = float(qy)
+            m.pose.orientation.z = float(qz)
+            m.pose.orientation.w = float(qw)
+
+            m.score = float(g.score)
+            m.width = float(g.width)
+            m.depth = float(g.depth)
+
+            msgs.append(m)
+        return msgs
+
     def process_data(self) -> tuple[dict, o3d.geometry.PointCloud]:  # type: ignore[attr-defined]
         """Process the depth and camera info data to create a point cloud and end points.
 
@@ -137,12 +157,12 @@ class GenerateGrasp(Node):
             tuple[dict, o3d.geometry.PointCloud]: A tuple containing the end points dictionary and the point cloud object.
         """
         cloud = data_utils.create_point_cloud_from_depth_image(
-            self.depth.value, self.camera_info.value, organized=True
+            self.depth, self.camera_info, organized=True
         )
 
-        mask = self.depth.value > 0
+        mask = self.depth > 0
         cloud_masked = cloud[mask]
-        color_masked = self.color.value[mask]
+        color_masked = self.color[mask]
 
         # sample points
         if len(cloud_masked) >= NUM_POINT:
@@ -180,92 +200,12 @@ class GenerateGrasp(Node):
         Returns:
             GraspGroup: The GraspGroup containing the predicted grasps.
         """
-        for i in range(10):
-            with torch.no_grad():
-                end_points = self.net(end_points)
-                grasp_preds = pred_decode(end_points)
-                ros_logger.info(
-                    f"Grasp prediction attempt {i + 1}, grasps: {len(grasp_preds[0])}"
-                )
-
-            if len(grasp_preds[0]) > 0:
-                break
-            else:
-                if not self.get_messages():
-                    ros_logger.error(
-                        "Failed to refresh messages, aborting grasp prediction"
-                    )
-                    break
-                end_points, _ = self.process_data()
+        with torch.no_grad():
+            end_points = self.net(end_points)
+            grasp_preds = pred_decode(end_points)
 
         grasps_array = grasp_preds[0].detach().cpu().numpy()
         return GraspGroup(grasps_array)
-
-    def get_messages(self) -> bool:
-        """Get the messages from the topics and convert to correct format.
-
-        Returns:
-            bool: True if all messages are successfully retrieved, False otherwise.
-        """
-        for message in [self.color, self.depth, self.camera_info]:
-            if not message.get_message(self):
-                return False
-
-        self.color.value = (ros_image_to_cv2_image(self.color.ros_value)) / 255.0
-        self.depth.value = ros_image_to_cv2_image(self.depth.ros_value)
-
-        self.camera_info.value = data_utils.CameraInfo(
-            self.camera_info.ros_value.width,
-            self.camera_info.ros_value.height,
-            self.camera_info.ros_value.k[0],
-            self.camera_info.ros_value.k[4],
-            self.camera_info.ros_value.k[2],
-            self.camera_info.ros_value.k[5],
-            1,
-        )
-        return True
-
-    def callback(
-        self, _request: Trigger.Request, response: Trigger.Response
-    ) -> Trigger.Response:
-        """Callback for the generate grasps service.
-
-        Args:
-            _request (Trigger.Request): The request for the service.
-            response (Trigger.Response): The response to be filled.
-
-        Returns:
-            Trigger.Response: The response indicating success or failure of the grasp generation.
-        """
-        # Get ROS messages:
-        if not self.get_messages():
-            response.success = False
-            response.message = "Failed to retrieve messages."
-            return response
-
-        # Define cloud and grasps:
-        end_points, cloud = self.process_data()
-
-        grasps = self.get_grasps(end_points)
-
-        if len(grasps) == 0:
-            response.success = False
-            response.message = "No grasps found."
-            self.get_logger().warn("GraspNet returned 0 grasps")
-            return response
-
-        ros_logger.info(f"GraspNet returned {len(grasps)} grasps")
-        grasps.nms()
-        grasps.sort_by_score()
-        grasps = self.collision_detection(grasps, np.array(cloud.points))
-        if self.visualize:
-            self.vis_grasps(grasps, cloud)
-
-        # Return response:
-        response.success = True
-        response.message = "Grasps generated and visualized successfully."
-
-        return response
 
     def collision_detection(self, grasps: GraspGroup, cloud: np.ndarray) -> GraspGroup:
         """Perform collision detection on the grasps using the point cloud.
@@ -281,7 +221,7 @@ class GenerateGrasp(Node):
             cloud, voxel_size=self.voxel_size
         )
         collision_mask = mfcdetector.detect(
-            grasps, approach_dist=0.05, collision_thresh=self.collision_thresh
+            grasps, approach_dist=0.05, collision_thresh=self.collision_threshold
         )
         grasps = grasps[~collision_mask]
         ros_logger.info(
@@ -304,6 +244,34 @@ class GenerateGrasp(Node):
         ros_logger.info(f"Visualizing {len(grippers)} grasps")
 
         o3d.visualization.draw_geometries([cloud, *grippers])  # type: ignore[attr-defined]
+
+    def convert_messages(self, request: GenerateGraspnetGrasp.Request) -> bool:
+        """Convert the messages to correct format.
+
+        Args:
+            request (GenerateGraspnetGrasp.Request): The request containing the messages.
+
+        Returns:
+            bool: True if all messages are successfully retrieved, False otherwise.
+        """
+        try:
+            self.color = (ros_image_to_cv2_image(request.color)) / 255.0
+            self.depth = ros_image_to_cv2_image(request.depth)
+
+            # Camera intrinsics
+            self.camera_info = data_utils.CameraInfo(
+                request.camera_info.width,
+                request.camera_info.height,
+                request.camera_info.k[0],
+                request.camera_info.k[4],
+                request.camera_info.k[2],
+                request.camera_info.k[5],
+                1,
+            )
+            return True
+        except Exception as e:
+            ros_logger.error(f"Error converting messages: {e}")
+            return False
 
 
 def main(args: list | None = None) -> None:

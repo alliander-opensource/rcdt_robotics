@@ -44,8 +44,8 @@ def test_wait_for_register(timeout: int) -> None:
 
 
 @pytest.mark.launch(fixture=grasping_launch)
-def test_trigger_request(test_node: Node, timeout: int = 100) -> None:
-    """Test that the robot is registered in the system to start the tests.
+def test_graspnet_request(test_node: Node, timeout: int = 100) -> None:
+    """Test the grasp generation service.
 
     Args:
         test_node (Node): The ROS2 node to use for the service call.
@@ -53,7 +53,7 @@ def test_trigger_request(test_node: Node, timeout: int = 100) -> None:
     """
     assert (
         call_trigger_service(
-            node=test_node, service_name="/grasp/generate", timeout=timeout
+            node=test_node, service_name="/grasp/trigger", timeout=timeout
         )
         is True
     )
