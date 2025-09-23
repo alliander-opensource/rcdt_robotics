@@ -61,7 +61,7 @@ jobs:
               source /home/rcdt/.bashrc &&
               source install/setup.bash &&
               uv run pytest -s \
-                --ignore=src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py \
+                --ignore=src/rcdt_test/rcdt_test/franka/integration/test_franka_realsense.py \
                 src/
             "
         # Ignore src/rcdt_franka/rcdt_franka/test/integration/test_franka_realsense.py due to gpu limitation in CICD.
