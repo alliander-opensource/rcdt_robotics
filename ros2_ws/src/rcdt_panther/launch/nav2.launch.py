@@ -5,7 +5,6 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetRemap
-from nav2_common.launch import RewrittenYaml
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path, get_yaml
 from rcdt_utilities.register import Register
 
@@ -108,7 +107,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     behavior_server_params["local_frame"] = f"{namespace_vehicle}/odom"
     behavior_server_params["robot_base_frame"] = f"{namespace_vehicle}/base_footprint"
 
-    follow_path_params = load_follow_path_parameters(controller)
+    follow_path_params = get_yaml(
+        get_file_path(
+            "rcdt_panther", ["config", "nav2", "controllers"], f"{controller}.yaml"
+        )
+    )
 
     bt_navigator_params = get_yaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "bt_navigator.yaml")
@@ -239,31 +242,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         if use_navigation
         else SKIP,
     ]
-
-
-def load_follow_path_parameters(plugin: str = "dwb") -> RewrittenYaml:
-    """Load the follow path parameters for the specified plugin.
-
-    Supported plugins are listed here: https://docs.nav2.org/plugins/index.html#controllers
-    But only the types declared by nav2 (without extra installs) are supported:
-        - dwb_core::DWBLocalPlanner
-        - nav2_graceful_controller::GracefulController
-        - nav2_mppi_controller::MPPIController
-        - nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
-        - nav2_rotation_shim_controller::RotationShimController
-
-    Args:
-        plugin (str): The name of the plugin for which to load parameters.
-
-    Returns:
-        RewrittenYaml: The rewritten YAML configuration for the specified plugin.
-    """
-    return RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2", "controllers"], f"{plugin}.yaml"
-        ),
-        param_rewrites={},
-    )
 
 
 def generate_launch_description() -> LaunchDescription:
