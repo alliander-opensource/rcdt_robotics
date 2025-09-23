@@ -694,7 +694,7 @@ class Vehicle(Platform):
                         {"pub_topic": f"/{self.namespace}/cmd_vel"},
                         {"config_pkg": "rcdt_panther"},
                     ],
-                    namespace="panther",
+                    namespace=self.namespace,
                 )
             )
 

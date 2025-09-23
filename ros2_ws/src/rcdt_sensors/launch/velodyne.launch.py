@@ -79,6 +79,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "range_max": 100.0,
             }
         ],
+        namespace=namespace,
     )
 
     return [
