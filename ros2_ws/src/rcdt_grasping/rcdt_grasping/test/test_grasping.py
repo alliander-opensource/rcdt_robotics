@@ -19,18 +19,18 @@ def grasping_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the franka core, controllers, and gripper services.
     """
-    franka_core_launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_franka", ["launch"], "core.launch.py"),
+    franka_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_franka", ["launch"], "franka.launch.py"),
         launch_arguments={
             "realsense": "True",
             "world": "table_with_1_brick.sdf",
+            "graspnet": "True",
+            "rviz": "False",
+            "load_gazebo_ui": "True",
         },
     )
 
-    grasping_launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_grasping", ["launch"], "grasping.launch.py"),
-    )
-    return Register.connect_context([franka_core_launch, grasping_launch])
+    return Register.connect_context([franka_launch])
 
 
 @pytest.mark.launch(fixture=grasping_launch)

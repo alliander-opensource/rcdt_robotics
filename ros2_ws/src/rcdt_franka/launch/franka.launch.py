@@ -16,6 +16,7 @@ world_arg = LaunchArgument(
 )
 use_realsense_arg = LaunchArgument("realsense", False, [True, False])
 enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", False, [True, False])
+use_graspnet_arg = LaunchArgument("graspnet", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -33,6 +34,7 @@ def launch_setup(context: LaunchContext) -> list:
     world = str(world_arg.string_value(context))
     use_realsense = use_realsense_arg.bool_value(context)
     enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
+    use_graspnet = use_graspnet_arg.bool_value(context)
 
     namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
@@ -92,6 +94,10 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")
     )
 
+    graspnet_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_grasping", ["launch"], "grasping.launch.py"),
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(core, context),
@@ -102,6 +108,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(utilities, context),
         Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(realsense, context) if use_realsense else SKIP,
+        Register.group(graspnet_launch, context) if use_graspnet else SKIP,
     ]
 
 
@@ -119,6 +126,7 @@ def generate_launch_description() -> LaunchDescription:
             use_rviz_arg.declaration,
             world_arg.declaration,
             use_realsense_arg.declaration,
+            use_graspnet_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

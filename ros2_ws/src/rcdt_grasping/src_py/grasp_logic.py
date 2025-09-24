@@ -5,15 +5,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dataclasses import dataclass
+from typing import Any, Optional
 
 import numpy as np
 import rclpy
 from graspnetpy_utils import data_utils
 from rcdt_messages.msg import Grasp
-from rcdt_messages.srv import DefineGoalPose, GenerateGraspnetGrasp
+from rcdt_messages.srv import (
+    AddMarker,
+    DefineGoalPose,
+    GenerateGraspnetGrasp,
+    MoveHandToPose,
+    MoveToConfiguration,
+)
 from rcdt_utilities.launch_utils import spin_node
 from rclpy import logging
 from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.client import Client
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import CameraInfo, Image
@@ -21,7 +29,7 @@ from std_srvs.srv import Trigger
 
 ros_logger = logging.get_logger(__name__)
 
-TIMEOUT = 5.0
+TIMEOUT = 30.0
 
 
 @dataclass
@@ -84,8 +92,36 @@ class GraspLogic(Node):
         self.define_goal_pose_client = self.create_client(
             DefineGoalPose, "/franka/moveit_manager/define_goal_pose"
         )
-        self.grasp_generation_client.wait_for_service(timeout_sec=TIMEOUT)
-        self.define_goal_pose_client.wait_for_service(timeout_sec=TIMEOUT)
+        self.move_hand_to_pose_client = self.create_client(
+            MoveHandToPose, "/franka/moveit_manager/move_hand_to_pose"
+        )
+
+        self.marker_client = self.create_client(
+            AddMarker, "/franka/moveit_manager/add_marker"
+        )
+        self.open_gripper_client = self.create_client(
+            Trigger, "/franka/open_gripper", callback_group=self.cb_group
+        )
+
+        self.close_gripper_client = self.create_client(
+            Trigger, "/franka/close_gripper", callback_group=self.cb_group
+        )
+
+        self.move_to_configuration_client = self.create_client(
+            MoveToConfiguration, "/franka/moveit_manager/move_to_configuration"
+        )
+
+        for name, client in [
+            ("graspnet/generate", self.grasp_generation_client),
+            ("define_goal_pose", self.define_goal_pose_client),
+            ("move_hand_to_pose", self.move_hand_to_pose_client),
+            ("add_marker", self.marker_client),
+            ("open_gripper", self.open_gripper_client),
+            ("close_gripper", self.close_gripper_client),
+            ("move_to_configuration", self.move_to_configuration_client),
+        ]:
+            if not client.wait_for_service(timeout_sec=5.0):
+                self.get_logger().error(f"Service '/{name}' not available")
         ros_logger.info("GraspLogicNode initialized!")
 
     def get_messages(self) -> bool:
@@ -99,13 +135,35 @@ class GraspLogic(Node):
                 return False
         return True
 
-    def callback(
-        self, request: Trigger.Request, response: Trigger.Response
-    ) -> Trigger.Response:
+    def _call(
+        self, client: Client, request: Any, timeout: float, tag: str
+    ) -> Optional[Any]:
+        """Call a service and handle timeout/exception consistently.
+
+        Args:
+            client (Client): The service client to call.
+            request (Any): The service request.
+            timeout (float): The timeout in seconds.
+            tag (str): A tag to identify the service in logs.
+
+        Returns:
+            Optional[Any]: The service response if successful, None otherwise.
+        """
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(self, future=future, timeout_sec=timeout)
+        if not future.done():
+            self.get_logger().error(f"{tag}: timed out after {timeout}s")
+            return None
+        exc = future.exception()
+        if exc is not None:
+            self.get_logger().exception(f"{tag}: raised: {exc}")
+            return None
+        return future.result()
+
+    def callback(self, response: Trigger.Response) -> Trigger.Response:
         """Callback function for the Trigger service.
 
         Args:
-            request (Trigger.Request): The service request.
             response (Trigger.Response): The service response.
 
         Returns:
@@ -116,29 +174,74 @@ class GraspLogic(Node):
             response.message = "Failed to get messages"
             return response
 
-        request: GenerateGraspnetGrasp.Request = GenerateGraspnetGrasp.Request()
-        request.color = self.color.ros_value
-        request.depth = self.depth.ros_value
-        request.camera_info = self.camera_info.ros_value
-
         ros_logger.info("Calling grasp generation service...")
-        future = self.grasp_generation_client.call_async(request)
-        rclpy.spin_until_future_complete(self, future=future, timeout_sec=30.0)
+        graspnet_request: GenerateGraspnetGrasp.Request = (
+            GenerateGraspnetGrasp.Request()
+        )
+        graspnet_request.color = self.color.ros_value
+        graspnet_request.depth = self.depth.ros_value
+        graspnet_request.camera_info = self.camera_info.ros_value
 
-        result: GenerateGraspnetGrasp.Response = future.result()
-        if result.success is not True:
-            ros_logger.error(f"Service call failed because of: {result.message}")
+        graspnet_response = self._call(
+            self.grasp_generation_client, graspnet_request, TIMEOUT, "GraspNet"
+        )
+        if (
+            graspnet_response is None
+            or not graspnet_response.success
+            or len(graspnet_response.grasps) == 0
+        ):
             response.success = False
-            response.message = "Service call failed"
+            response.message = "GraspNet failed or returned no grasps"
             return response
 
-        ros_logger.info(f"Service call succeeded: {result.success}")
+        best_grasp: Grasp = graspnet_response.grasps[0]
+        ros_logger.info(f"Number of grasps received: {len(graspnet_response.grasps)}")
+        ros_logger.info("Calling grasping movement service...")
 
-        best_grasp: Grasp = result.grasps[0]
+        define_goal_pose = DefineGoalPose.Request()
+        define_goal_pose.pose = best_grasp.pose
 
-        ros_logger.info(f"Best grasp score: {best_grasp.score}")
+        def_res = self._call(
+            self.define_goal_pose_client, define_goal_pose, TIMEOUT, "DefineGoalPose"
+        )
+        if def_res is None or not def_res.success:
+            response.success = False
+            response.message = "DefineGoalPose failed"
+            return response
+
+        # Add marker to the Rviz:
+        add_marker = AddMarker.Request()
+        add_marker.marker_pose = best_grasp.pose
+        _ = self._call(self.marker_client, add_marker, 5.0, "AddMarker")
+
+        _ = self._call(self.open_gripper_client, Trigger.Request(), 10.0, "OpenGripper")
+
+        mh_res = self._call(
+            self.move_hand_to_pose_client,
+            MoveHandToPose.Request(),
+            TIMEOUT,
+            "MoveHandToPose",
+        )
+        if mh_res is None or not mh_res.success:
+            response.success = False
+            response.message = "MoveHandToPose failed"
+            return response
+
+        _ = self._call(
+            self.close_gripper_client, Trigger.Request(), 10.0, "CloseGripper"
+        )
+
+        home = MoveToConfiguration.Request()
+        home.configuration = "home"
+        _ = self._call(
+            self.move_to_configuration_client,
+            home,
+            TIMEOUT,
+            "MoveToConfiguration(home)",
+        )
+
         response.success = True
-        response.message = "Messages received successfully"
+        response.message = "Pick sequence executed"
         return response
 
 

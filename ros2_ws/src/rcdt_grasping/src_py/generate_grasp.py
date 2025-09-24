@@ -45,6 +45,7 @@ class GenerateGrasp(Node):
         self.depth = None
         self.color = None
         self.camera_info = None
+        self.depth_frame_id = None
 
         self.create_service(GenerateGraspnetGrasp, "/graspnet/generate", self.callback)
 
@@ -109,7 +110,6 @@ class GenerateGrasp(Node):
         grasps = self.collision_detection(grasps, np.array(cloud.points))
         if self.visualize:
             self.vis_grasps(grasps, cloud)
-
         grasps_msg = self.grasps_to_ros_msg(grasps)
         response.success = True
         response.message = "worked!"
@@ -117,8 +117,7 @@ class GenerateGrasp(Node):
         ros_logger.info("Returning success response!")
         return response
 
-    @staticmethod
-    def grasps_to_ros_msg(grasps: GraspGroup) -> list[Grasp]:
+    def grasps_to_ros_msg(self, grasps: GraspGroup) -> list[Grasp]:
         """Convert the GraspGroup to a list of ROS Grasp messages.
 
         Args:
@@ -135,16 +134,22 @@ class GenerateGrasp(Node):
                 getattr(g, "rotation", g.rotation_matrix), dtype=float
             ).reshape(3, 3)
 
-            qx, qy, qz, qw = Rotation.from_matrix(rotation_matrix).as_quat()
+            rotation_x = Rotation.from_euler("x", -90, degrees=True)
+            rotation_orig = Rotation.from_matrix(rotation_matrix)
+
+            rotation_new = rotation_x * rotation_orig
+
+            qx, qy, qz, qw = rotation_new.as_quat()
 
             m = Grasp()
-            m.pose.position.x = float(t[0])
-            m.pose.position.y = float(t[1])
-            m.pose.position.z = float(t[2])
-            m.pose.orientation.x = float(qx)
-            m.pose.orientation.y = float(qy)
-            m.pose.orientation.z = float(qz)
-            m.pose.orientation.w = float(qw)
+            m.pose.header.frame_id = self.depth_frame_id
+            m.pose.pose.position.x = float(t[0])
+            m.pose.pose.position.y = float(t[1])
+            m.pose.pose.position.z = float(t[2])
+            m.pose.pose.orientation.x = float(qx)
+            m.pose.pose.orientation.y = float(qy)
+            m.pose.pose.orientation.z = float(qz)
+            m.pose.pose.orientation.w = float(qw)
 
             m.score = float(g.score)
             m.width = float(g.width)
@@ -240,7 +245,7 @@ class GenerateGrasp(Node):
             gg (GraspGroup): The GraspGroup containing the grasps to visualize.
             cloud (np.ndarray): The point cloud as a numpy array.
         """
-        gg = gg[:50]
+        gg = gg[:1]
         grippers = gg.to_open3d_geometry_list()
         ros_logger.info(f"Visualizing {len(grippers)} grasps")
 
@@ -258,7 +263,7 @@ class GenerateGrasp(Node):
         try:
             self.color = (ros_image_to_cv2_image(request.color)) / 255.0
             self.depth = ros_image_to_cv2_image(request.depth)
-
+            self.depth_frame_id = request.depth.header.frame_id
             # Camera intrinsics
             self.camera_info = data_utils.CameraInfo(
                 request.camera_info.width,
