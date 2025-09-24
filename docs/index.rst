@@ -17,6 +17,7 @@
    Home <self>
 
    content/getting_started.md
+   content/system_overview.md
 
    content/franka.md
    content/panther.md

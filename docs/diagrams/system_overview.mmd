@@ -1,0 +1,68 @@
+---
+  config:
+    class:
+        hideEmptyMembersBox: true
+---
+
+classDiagram
+
+%% Franka:
+
+namespace franka {
+    class franka.moveit_manager:::moveit_manager
+
+    class franka.moveit_servo:::external_node
+
+    class franka.moveit_ros_move_group:::external_node
+
+    class franka.controller:::vendor
+}
+
+franka.moveit_manager --> franka.moveit_ros_move_group
+franka.moveit_servo --> franka.controller
+franka.moveit_ros_move_group --> franka.controller
+
+%% Panther:
+
+namespace panther{
+    class panther.nav2:::nav2
+
+    class panther.controller:::vendor
+}
+
+panther.nav2 --> panther.controller
+
+
+%% Sensors:
+
+namespace realsense{
+    class realsense.depth_image:::vendor
+}
+
+namespace zed{
+    class zed.depth_image:::vendor
+}
+
+namespace velodyne{
+    class velodyne.pointcloud:::vendor
+}
+
+namespace teltonika{
+    class teltonika.gps:::vendor
+}
+
+velodyne.pointcloud --> panther.nav2
+teltonika.gps --> panther.nav2
+
+%% Joystick:
+
+class joystick
+
+joystick --> franka.moveit_servo
+joystick --> panther.controller
+
+
+classDef external_node stroke: #0000ff
+classDef moveit_manager stroke: #ff0000
+classDef nav2 stroke: #00ff00
+classDef vendor stroke: #ff00ff
