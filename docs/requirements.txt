@@ -7,3 +7,4 @@ myst-parser
 sphinx_copybutton
 sphinx_rtd_theme
 sphinxcontrib-video
+sphinxcontrib-mermaid
