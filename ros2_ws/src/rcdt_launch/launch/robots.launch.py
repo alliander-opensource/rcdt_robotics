@@ -84,8 +84,8 @@ def launch_setup(context: LaunchContext) -> list:
 
     state_publishers = Platform.create_state_publishers()
     gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
-    tf_publishers = Platform.create_tf_publishers()
-    world_links = Platform.create_map_links()
+    map_links = Platform.create_map_links()
+    parent_links = Platform.create_parent_links()
     controllers = Platform.create_controllers()
     launch_descriptions = Platform.create_launch_descriptions()
     joystick_nodes = Platform.create_joystick_nodes() if use_joystick else []
@@ -108,17 +108,14 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(rviz, context) if use_rviz else SKIP,
-        *[Register.on_start(publisher, context) for publisher in state_publishers],
+        *[Register.on_start(node, context) for node in state_publishers],
         Register.group(gazebo, context) if use_sim else SKIP,
-        *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
-        *[Register.on_start(world_link, context) for world_link in world_links],
-        *[Register.group(controller, context) for controller in controllers],
+        *[Register.on_start(node, context) for node in map_links],
+        *[Register.on_start(node, context) for node in parent_links],
+        *[Register.group(node, context) for node in controllers],
         Register.group(utilities, context),
         *[Register.on_start(node, context) for node in joystick_nodes],
-        *[
-            Register.group(launch_description, context)
-            for launch_description in launch_descriptions
-        ],
+        *[Register.group(group, context) for group in launch_descriptions],
         Register.group(vizanti, context) if use_vizanti else SKIP,
     ]
 

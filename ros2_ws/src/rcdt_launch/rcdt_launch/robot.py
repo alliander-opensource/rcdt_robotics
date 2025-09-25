@@ -90,8 +90,6 @@ class Platform:  # noqa: PLR0904
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
-        for platform in Platform.platforms:
-            print(platform.platform)
 
     @staticmethod
     def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
@@ -117,17 +115,17 @@ class Platform:  # noqa: PLR0904
         )
 
     @staticmethod
-    def create_tf_publishers() -> list[Node]:
-        """Create TF publishers for all robots.
+    def create_parent_links() -> list[Node]:
+        """Create a list of nodes that link all the platforms to their parent.
 
         Returns:
-            list[Node]: A list of all TF publisher nodes.
+            list[Node]: A list of all the required static_transform_publisher nodes.
         """
-        tf_publishers = []
+        nodes = []
         for robot in Platform.platforms:
             if robot.parent is not None:
-                tf_publishers.append(robot.create_tf_publisher())
-        return tf_publishers
+                nodes.append(robot.create_parent_link())
+        return nodes
 
     @staticmethod
     def create_controllers() -> list[RegisteredLaunchDescription]:
@@ -379,11 +377,11 @@ class Platform:  # noqa: PLR0904
             parameters=[self.robot_description, {"frame_prefix": self.frame_prefix}],
         )
 
-    def create_tf_publisher(self) -> Node:
-        """Create tf publisher node for the robot.
+    def create_parent_link(self) -> Node:
+        """Create a static_transform_publisher node that links the platform to its parent.
 
         Returns:
-            Node: The tf publisher node for the robot.
+            Node: The static_transform_publisher node.
         """
         return Node(
             package="tf2_ros",
