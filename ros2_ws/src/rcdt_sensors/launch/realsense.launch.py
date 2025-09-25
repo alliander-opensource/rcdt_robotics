@@ -3,12 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import LaunchArgument
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
+namespace_arg = LaunchArgument("namespace", "realsense")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -21,15 +22,18 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed.
     """
     use_sim = use_sim_arg.bool_value(context)
+    namespace = namespace_arg.string_value(context)
 
     if use_sim:
         convert_32FC1_to_16UC1_node = Node(  # noqa: N806
             package="rcdt_sensors",
             executable="convert_32FC1_to_16UC1.py",
+            namespace=namespace,
         )
         combine_camera_topics_node = Node(
             package="rcdt_sensors",
             executable="combine_camera_topics.py",
+            namespace=namespace,
         )
         realsense = LaunchDescription(
             [
@@ -38,15 +42,22 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
     else:
-        realsense = IncludeLaunchDescription(
-            get_file_path("realsense2_camera", ["launch"], "rs_launch.py"),
-            launch_arguments={
-                "align_depth.enable": "true",
-                "enable_sync": "true",
-                "enable_rgbd": "true",
-                "depth_module.depth_profile": "640x480x30",
-                "rgb_camera.color_profile": "640x480x30",
-            }.items(),
+        realsense2_camera_node = Node(
+            package="realsense2_camera",
+            executable="realsense2_camera_node",
+            namespace=namespace,
+            parameters=[
+                {
+                    "align_depth.enable": True,
+                    "enable_sync": True,
+                    "enable_rgbd": True,
+                    "depth_module.depth_profile": "640x480x30",
+                    "rgb_camera.color_profile": "640x480x30",
+                }
+            ],
+        )
+        realsense = LaunchDescription(
+            [Register.on_start(realsense2_camera_node, context)]
         )
 
     return [realsense]
@@ -61,6 +72,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             use_sim_arg.declaration,
+            namespace_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

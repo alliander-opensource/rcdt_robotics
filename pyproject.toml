@@ -42,6 +42,7 @@ dependencies = [
     "tornado>=6.5.1",
     "transforms3d>=0.4.2",
     "waitress>=3.0.2",
+    "xmltodict>=1.0.2",
 ]
 
 [dependency-groups]
@@ -78,6 +79,8 @@ extra-paths = [
     "ros2_ws/src/rcdt_panther/",
     "ros2_ws/src/rcdt_utilities/",
     "ros2_ws/src/rcdt_gazebo/",
+    "ros2_ws/src/rcdt_launch/",
+    "ros2_ws/src/rcdt_test/",
 ]
 
 # Settings of pydoclint, also in flake8 to use in vscode:

@@ -15,9 +15,6 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Python package:
-ament_python_install_package(${PROJECT_NAME})
-
 # Shared folders:
 install(
   DIRECTORY launch config urdf
