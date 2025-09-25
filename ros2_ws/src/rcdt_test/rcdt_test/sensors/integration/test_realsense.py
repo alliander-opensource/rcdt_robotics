@@ -59,9 +59,7 @@ def test_color_camera_info_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds to wait for the joint states to be published.
     """
-    assert_for_message(
-        CameraInfo, f"/{namespace}/color/camera_info", timeout=timeout
-    )
+    assert_for_message(CameraInfo, f"/{namespace}/color/camera_info", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=launch)
@@ -81,9 +79,7 @@ def test_depth_camera_info_published(timeout: int) -> None:
     Args:
         timeout (int): The timeout in seconds to wait for the joint states to be published.
     """
-    assert_for_message(
-        CameraInfo, f"/{namespace}/depth/camera_info", timeout=timeout
-    )
+    assert_for_message(CameraInfo, f"/{namespace}/depth/camera_info", timeout=timeout)
 
 
 @pytest.mark.launch(fixture=launch)
