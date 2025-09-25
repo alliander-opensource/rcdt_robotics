@@ -10,6 +10,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
+namespace_arg = LaunchArgument("namespace", "")
 enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", False, [True, False])
 
 
@@ -25,11 +26,10 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    namespace = namespace_arg.string_value(context)
     enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
 
-    namespace = "franka"
     ns = f"/{namespace}" if namespace else ""
-
     hostname = os.getenv("FRANKA_HOSTNAME", "")
     username = os.getenv("FRANKA_USERNAME", "")
     password = os.getenv("FRANKA_PASSWORD", "")
@@ -41,7 +41,6 @@ def launch_setup(context: LaunchContext) -> list:
             node programmatically, otherwise set franka_lock_unlock:=False ."""
         )
 
-    # only include the node if we actually have a hostname and password
     franka_lock_unlock = Node(
         name="franka_lock_unlock",
         package="franka_lock_unlock",
@@ -49,6 +48,7 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         arguments=[hostname, username, password, "-u", "-l", "-w", "-r", "-p", "-c"],
         respawn=True,
+        namespace=namespace,
     )
 
     franka_controllers = get_file_path("rcdt_franka", ["config"], "controllers.yaml")
@@ -71,6 +71,7 @@ def launch_setup(context: LaunchContext) -> list:
     settings_setter = Node(
         package="rcdt_franka",
         executable="settings_setter.py",
+        namespace=namespace,
     )
 
     joint_state_publisher = Node(
@@ -93,7 +94,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_log(franka_lock_unlock, "Keeping persistent connection...", context)
         if enable_lock_unlock
         else SKIP,
-        Register.on_start(settings_setter, context),
+        Register.on_log(settings_setter, "Thresholds set successfully.", context),
         Register.on_start(ros2_control_node, context),
         Register.on_start(joint_state_publisher, context),
     ]

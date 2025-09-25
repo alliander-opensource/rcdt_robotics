@@ -115,6 +115,27 @@ class Platform:  # noqa: PLR0904
         )
 
     @staticmethod
+    def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
+        """Create hardware interface launch descriptions for the platforms.
+
+        Returns:
+            list[RegisteredLaunchDescription]: A list of all hardware interface launch descriptions.
+        """
+        hardware_interfaces = []
+        if Platform.simulation:
+            return hardware_interfaces
+
+        for robot in Platform.platforms:
+            if robot.platform == "franka":
+                hardware_interfaces.append(
+                    RegisteredLaunchDescription(
+                        get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
+                        launch_arguments={"namespace": robot.namespace},
+                    )
+                )
+        return hardware_interfaces
+
+    @staticmethod
     def create_parent_links() -> list[Node]:
         """Create a list of nodes that link all the platforms to their parent.
 
@@ -136,6 +157,8 @@ class Platform:  # noqa: PLR0904
         """
         controllers = []
         for robot in Platform.platforms:
+            if not Platform.simulation and robot.platform == "panther":
+                continue
             if robot.controller_path is not None:
                 controllers.append(robot.create_controller())
         return controllers

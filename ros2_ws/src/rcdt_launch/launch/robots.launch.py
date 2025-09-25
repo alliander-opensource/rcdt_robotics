@@ -84,6 +84,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     state_publishers = Platform.create_state_publishers()
     gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
+    hardware_interfaces = Platform.create_hardware_interfaces()
     map_links = Platform.create_map_links()
     parent_links = Platform.create_parent_links()
     controllers = Platform.create_controllers()
@@ -110,6 +111,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(rviz, context) if use_rviz else SKIP,
         *[Register.on_start(node, context) for node in state_publishers],
         Register.group(gazebo, context) if use_sim else SKIP,
+        *[Register.group(group, context) for group in hardware_interfaces],
         *[Register.on_start(node, context) for node in map_links],
         *[Register.on_start(node, context) for node in parent_links],
         *[Register.group(node, context) for node in controllers],
