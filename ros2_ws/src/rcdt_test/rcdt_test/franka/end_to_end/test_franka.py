@@ -3,19 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import time
-
 import launch_pytest
 import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
-from rcdt_launch.robot import Arm, Platform
+from rcdt_launch.robot import Arm
 from rcdt_test.franka.end_to_end.base_franka import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class
 
-namespace = f"franka_{int(time())}"
+namespace = "franka"
 
 
 @launch_pytest.fixture(scope="class")
@@ -32,8 +30,13 @@ def franka(request: SubRequest) -> LaunchDescription:
         LaunchDescription: The launch description containing the Franka robot setup.
 
     """
-    Platform.reset()
-    Arm(platform="franka", position=[0, 0, 0], namespace=namespace, moveit=True)
+    Arm(
+        platform="franka",
+        position=[0, 0, 0],
+        namespace=namespace,
+        gripper=True,
+        moveit=True,
+    )
     franka_launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
         launch_arguments={

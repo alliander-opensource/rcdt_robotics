@@ -6,7 +6,7 @@
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from rcdt_launch.robot import Camera, Platform
+from rcdt_launch.robot import Camera
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import wait_for_register
@@ -23,7 +23,6 @@ def launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the realsense test.
     """
-    Platform.reset()
     Camera(platform="realsense", position=[0, 0, 0.5], namespace=namespace)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),

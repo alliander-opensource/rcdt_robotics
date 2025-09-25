@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import time
-
 import launch_pytest
 import numpy as np
 import pytest
@@ -13,7 +11,7 @@ from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from launch import LaunchDescription
 from nav2_msgs.action import NavigateToPose
-from rcdt_launch.robot import Lidar, Platform, Vehicle
+from rcdt_launch.robot import Lidar, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
@@ -27,8 +25,8 @@ from rclpy.task import Future
 from sensor_msgs.msg import JointState
 from tf_transformations import quaternion_from_euler
 
-namespace_vehicle = f"panther_{int(time())}"
-namespace_lidar = f"velodyne_{int(time())}"
+namespace_vehicle = "panther"
+namespace_lidar = "velodyne"
 
 
 @launch_pytest.fixture(scope="module")
@@ -38,7 +36,6 @@ def panther_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
-    Platform.reset()
     vehicle = Vehicle(
         platform="panther",
         position=[0, 0, 0.2],

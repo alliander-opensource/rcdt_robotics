@@ -3,19 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import time
-
 import launch_pytest
 import pytest
 from launch import LaunchDescription
-from rcdt_launch.robot import Arm, Platform, Vehicle
+from rcdt_launch.robot import Arm, Vehicle
 from rcdt_test.franka.end_to_end.base_franka import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class
 
-namespace_vehicle = f"panther_{int(time())}"
-namespace_arm = f"franka_{int(time())}"
+namespace_vehicle = "panther"
+namespace_arm = "franka"
 
 
 @launch_pytest.fixture(scope="class")
@@ -25,7 +23,6 @@ def mobile_manipulator() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the mobile manipulator.
     """
-    Platform.reset()
     vehicle = Vehicle(
         platform="panther",
         position=[0, 0, 0.2],
@@ -36,6 +33,7 @@ def mobile_manipulator() -> LaunchDescription:
         position=[0, 0, 0],
         namespace=namespace_arm,
         parent=vehicle,
+        gripper=True,
         moveit=True,
     )
 

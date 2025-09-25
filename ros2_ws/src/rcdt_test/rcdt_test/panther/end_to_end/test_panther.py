@@ -3,19 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from time import time
-
 import launch_pytest
 import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
-from rcdt_launch.robot import Platform, Vehicle
+from rcdt_launch.robot import Vehicle
 from rcdt_test.panther.end_to_end.base_panther import get_tests
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import add_tests_to_class
 
-namespace = f"panther_{int(time())}"
+namespace = "panther"
 
 
 @launch_pytest.fixture(scope="module")
@@ -28,7 +26,6 @@ def panther_launch(request: SubRequest) -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
-    Platform.reset()
     Vehicle(platform="panther", position=[0, 0, 0.2], namespace=namespace)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),

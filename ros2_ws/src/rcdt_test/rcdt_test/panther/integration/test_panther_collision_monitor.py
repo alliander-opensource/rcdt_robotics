@@ -10,7 +10,7 @@ import pytest
 import rclpy
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
-from rcdt_launch.robot import Lidar, Platform, Vehicle
+from rcdt_launch.robot import Lidar, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
@@ -21,7 +21,7 @@ from rcdt_utilities.test_utils import (
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
-namespace = f"panther_{int(time.time())}"
+namespace = "panther"
 
 
 @launch_pytest.fixture(scope="module")
@@ -31,7 +31,6 @@ def panther_launch() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
-    Platform.reset()
     vehicle = Vehicle(
         platform="panther",
         position=[4.0, 0, 0.2],
