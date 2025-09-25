@@ -28,7 +28,7 @@ class Platform:  # noqa: PLR0904
 
     simulation: bool = True
     platforms: list["Platform"] = []
-    platform_indices: dict[str, int] = {"panther": 0, "franka": 0, "velodyne": 0}
+    platform_indices: dict[str, int] = {}
     names: list[str] = []
     bridge_topics: list[str] = []
 
@@ -40,13 +40,14 @@ class Platform:  # noqa: PLR0904
             platform (Platform): The platform instance to add.
         """
         Platform.platforms.append(platform)
-        Platform.platform_indices[platform.platform] += 1
+        current_value = Platform.platform_indices.get(platform.platform, 0)
+        Platform.platform_indices[platform.platform] = current_value + 1
 
     @staticmethod
     def reset() -> None:
         """Reset the platform class to its initial state."""
         Platform.platforms = []
-        Platform.platform_indices = {"panther": 0, "franka": 0, "velodyne": 0}
+        Platform.platform_indices = {}
         Platform.names = []
         Platform.bridge_topics = []
 
@@ -60,7 +61,7 @@ class Platform:  # noqa: PLR0904
         Returns:
             str: The unique namespace for the platform.
         """
-        index = Platform.platform_indices[platform.platform]
+        index = Platform.platform_indices.get(platform.platform, 0)
         return f"{platform.platform}{index}"
 
     @staticmethod
@@ -86,7 +87,7 @@ class Platform:  # noqa: PLR0904
         When launching a vehicle with Nav2, lidar sensor output is required.
         Therefore we load a lidar before a vehicle.
         """
-        order = ["franka", "velodyne", "panther"]
+        order = ["franka", "velodyne", "realsense", "panther"]
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
@@ -244,6 +245,7 @@ class Platform:  # noqa: PLR0904
         )
         return nodes
 
+    @staticmethod
     def create_map_links() -> list[Node]:
         """Create a list of nodes that link all the platforms to the 'map' frame.
 
@@ -260,7 +262,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(
         self,
-        platform: Literal["panther", "franka", "velodyne"],
+        platform: Literal["panther", "franka", "velodyne", "realsense"],
         position: list,
         namespace: str | None = None,
         parent: "Platform" | None = None,
@@ -268,12 +270,12 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "realsense"]): The platform type of the robot.
             position (list): The initial position of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
-        self.platform: Literal["panther", "franka", "velodyne"] = platform
+        self.platform: Literal["panther", "franka", "velodyne", "realsense"] = platform
         self.parent = parent
         self.childs = []
         Platform.add(self)
@@ -353,6 +355,10 @@ class Platform:  # noqa: PLR0904
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
                 )
+            case "realsense":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
+                )
             case _:
                 raise ValueError("Unknown platform.")
 
@@ -373,8 +379,10 @@ class Platform:  # noqa: PLR0904
                 return "fr3_link0"
             case "velodyne":
                 return "base_link"
+            case "realsense":
+                return "base_link"
             case _:
-                raise ValueError("Unknown platform.")
+                raise ValueError("Unable to provide base_link: Unknown platform.")
 
     def add_child(self, child: "Platform") -> None:
         """Add a child robot to this robot.
@@ -487,6 +495,71 @@ class Platform:  # noqa: PLR0904
         return []
 
 
+class Camera(Platform):
+    """Extension on Platform with camera specific functionalities."""
+
+    def __init__(
+        self,
+        platform: Literal["realsense", "zed"],
+        position: list,
+        namespace: str | None = None,
+        parent: Arm | Vehicle | None = None,
+    ):
+        """Initialize the Camera platform.
+
+        Args:
+            platform (Literal["realsense", "zed"]): The platform type.
+            position (list): The position of the camera.
+            namespace (str | None): The namespace of the camera.
+            parent (Arm | Vehicle | None): The parent platform.
+        """
+        super().__init__(platform, position, namespace, parent)
+
+        if parent:
+            parent.camera = self
+
+        Rviz.add_image(f"/{self.namespace}/color/image_raw")
+        Rviz.add_image(f"/{self.namespace}/depth/image_rect_raw")
+        Rviz.add_depth_cloud(
+            f"/{self.namespace}/color/image_raw",
+            f"/{self.namespace}/depth/image_rect_raw",
+        )
+
+        Platform.bridge_topics.extend(
+            [
+                f"/{self.namespace}/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                f"/{self.namespace}/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+                f"/{self.namespace}/depth/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
+                f"/{self.namespace}/depth/image_rect_raw_float@sensor_msgs/msg/Image@gz.msgs.Image",
+            ]
+        )
+
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:
+        """Create the launch description with specific elements for a camera.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        launch_descriptions = []
+        if self.platform == "realsense":
+            launch_descriptions.append(self.create_realsense_launch())
+        return launch_descriptions
+
+    def create_realsense_launch(self) -> RegisteredLaunchDescription:
+        """Create the Realsense launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the Realsense.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+            },
+        )
+
+
 class Lidar(Platform):
     """Extension on Platform with lidar specific functionalities."""
 
@@ -574,6 +647,8 @@ class Arm(Platform):
         self.platform = platform
         self.moveit = moveit
         self.gripper = gripper
+
+        self.camera: Camera | None = None
 
         if moveit:
             Moveit.add(self.namespace, self.robot_description, self.platform)
@@ -688,7 +763,9 @@ class Vehicle(Platform):
         self.navigation = navigation
         self.slam = slam
         self.collision_monitor = collision_monitor
+
         self.lidar: Lidar | None = None
+        self.camera: Camera | None = None
 
         if platform == "panther":
             Vizanti.add_robot_model(self.namespace)

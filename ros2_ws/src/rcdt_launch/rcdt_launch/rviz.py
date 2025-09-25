@@ -11,12 +11,14 @@ class Rviz:
 
     Attributes:
         yaml (dict): The default RViz configuration.
+        displays (list): The list of displays in the RViz configuration.
         load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
         load_point_cloud (bool): Whether to load point cloud displays.
         moveit_namespaces (list[str]): A list of the namespaces where MoveIt is launched.
     """
 
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
+    displays: list = yaml["Visualization Manager"]["Displays"]
     load_motion_planning_plugin: bool = False
     load_point_cloud: bool = False
     moveit_namespaces: list[str] = []
@@ -37,8 +39,7 @@ class Rviz:
         Args:
             height (float): The grid height to set.
         """
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays[0]["Offset"]["Z"] = height
+        Rviz.displays[0]["Offset"]["Z"] = height
 
     @staticmethod
     def add_robot_model(namespace: str) -> None:
@@ -47,15 +48,47 @@ class Rviz:
         Args:
             namespace (str): The namespace of the robot.
         """
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Alpha": "1",
+                "Enabled": True,
                 "Class": "rviz_default_plugins/RobotModel",
-                "Enabled": "true",
                 "Description Topic": {"Value": f"/{namespace}/robot_description"},
                 "TF Prefix": namespace,
                 "Name": namespace,
+            }
+        )
+
+    @staticmethod
+    def add_image(topic: str) -> None:
+        """Add an image to the RViz configuration.
+
+        Args:
+            topic (str): The topic of the image.
+        """
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "rviz_default_plugins/Image",
+                "Topic": {"Value": topic},
+                "Name": topic,
+            }
+        )
+
+    @staticmethod
+    def add_depth_cloud(color_topic: str, depth_topic: str) -> None:
+        """Add a depth cloud to the RViz configuration.
+
+        Args:
+            color_topic (str): The topic of the color image.
+            depth_topic (str): The topic of the depth image.
+        """
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "rviz_default_plugins/DepthCloud",
+                "Color Image Topic": color_topic,
+                "Depth Map Topic": depth_topic,
+                "Name": depth_topic,
             }
         )
 
@@ -69,14 +102,12 @@ class Rviz:
         if not Rviz.load_point_cloud:
             return
 
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Alpha": "1",
+                "Enabled": True,
                 "Class": "rviz_default_plugins/PointCloud2",
-                "Enabled": "true",
                 "Topic": {"Value": f"/{namespace}/scan/points"},
-                "Name": f"{namespace}_point_cloud",
+                "Name": namespace,
             }
         )
 
@@ -87,17 +118,15 @@ class Rviz:
         Args:
             namespace (str): The namespace of the robot.
         """
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Alpha": "1",
+                "Enabled": True,
                 "Class": "rviz_default_plugins/LaserScan",
-                "Enabled": "true",
                 "Topic": {
                     "Value": f"/{namespace}/scan",
                     "Reliability Policy": "Best Effort",
                 },
-                "Name": f"{namespace}_laser_scan",
+                "Name": namespace,
                 "Color Transformer": "FlatColor",
                 "Color": "255; 0; 0",
                 "Size (m)": 0.02,
@@ -114,9 +143,9 @@ class Rviz:
         if not Rviz.load_motion_planning_plugin:
             return
         Rviz.moveit_namespaces.append(namespace)
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
+                "Enabled": True,
                 "Class": "moveit_rviz_plugin/MotionPlanning",
                 "Move Group Namespace": namespace,
                 "Robot Description": f"{namespace}_robot_description",
@@ -133,11 +162,10 @@ class Rviz:
             topic (str): The topic of the map.
         """
         color_scheme = "costmap" if "costmap" in topic else "map"
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Class": "rviz_default_plugins/Map",
                 "Enabled": True,
+                "Class": "rviz_default_plugins/Map",
                 "Name": topic,
                 "Topic": {"Value": topic},
                 "Color Scheme": color_scheme,
@@ -151,11 +179,10 @@ class Rviz:
         Args:
             topic (str): The topic of the path.
         """
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Class": "rviz_default_plugins/Path",
                 "Enabled": True,
+                "Class": "rviz_default_plugins/Path",
                 "Name": topic,
                 "Topic": {"Value": topic},
             }
@@ -168,11 +195,10 @@ class Rviz:
         Args:
             topic (str): The topic of the polygon.
         """
-        displays: list = Rviz.yaml["Visualization Manager"]["Displays"]
-        displays.append(
+        Rviz.displays.append(
             {
-                "Class": "rviz_default_plugins/Polygon",
                 "Enabled": True,
+                "Class": "rviz_default_plugins/Polygon",
                 "Name": topic,
                 "Topic": {"Value": topic},
                 "Color": "25; 255; 0",

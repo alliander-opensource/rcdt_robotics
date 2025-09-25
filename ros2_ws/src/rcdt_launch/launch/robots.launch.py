@@ -5,7 +5,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
-from rcdt_launch.robot import Arm, Lidar, Platform, Vehicle
+from rcdt_launch.robot import Arm, Camera, Lidar, Platform, Vehicle
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
@@ -20,10 +20,13 @@ configuration_arg = LaunchArgument(
     "",
     [
         "",
-        "franka",
-        "double_franka",
-        "panther",
         "lidar",
+        "realsense",
+        "franka",
+        "franka_double",
+        "franka_realsense",
+        "panther",
+        "panther_realsense",
         "panther_lidar",
         "mm",
         "mm_lidar",
@@ -31,7 +34,7 @@ configuration_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:
+def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     """Setup the launch description for the Panther robot.
 
     Args:
@@ -56,19 +59,27 @@ def launch_setup(context: LaunchContext) -> list:
     use_joystick = True
 
     match configuration:
+        case "lidar":
+            Lidar("velodyne", [0, 0, 0.5])
+        case "realsense":
+            Camera("realsense", [0, 0, 0.5])
         case "franka":
             Arm("franka", [0, 0, 0], gripper=True, moveit=True)
-        case "double_franka":
+        case "franka_double":
             use_joystick = False
             Rviz.load_motion_planning_plugin = True
             Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
             Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
+        case "franka_realsense":
+            arm = Arm("franka", [0, 0, 0])
+            Camera("realsense", [0, 0, 0.5], parent=arm)
         case "panther":
             Vehicle("panther", [0, 0, 0.2])
-        case "lidar":
-            Lidar("velodyne", [0, 0, 0.5])
+        case "panther_realsense":
+            panther = Vehicle("panther", [0, 0, 0.2])
+            Camera("realsense", [0, 0, 0.5], parent=panther)
         case "panther_lidar":
-            panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
+            panther = Vehicle("panther", [0, 0, 0.2], collision_monitor=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
