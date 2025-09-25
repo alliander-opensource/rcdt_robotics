@@ -24,6 +24,7 @@ global_map_arg = LaunchArgument(
     "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
 use_ui_arg = LaunchArgument("ui", False, [True, False])
+use_navsat_arg = LaunchArgument("navsat", False, [True, False])
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -47,6 +48,7 @@ def launch_setup(context: LaunchContext) -> list:
     panther_xyz = panther_xyz_arg.string_value(context)
     global_map = global_map_arg.string_value(context)
     use_ui = use_ui_arg.bool_value(context)
+    use_navsat = use_navsat_arg.bool_value(context)
 
     namespace = "panther"
     ns = f"/{namespace}" if namespace else ""
@@ -62,6 +64,9 @@ def launch_setup(context: LaunchContext) -> list:
     }
     if use_velodyne:
         launch_arguments["child"] = "velodyne"
+
+    if use_navsat:
+        launch_arguments["child"] = "navsat"
 
     core = RegisteredLaunchDescription(
         get_file_path("rcdt_panther", ["launch"], "core.launch.py"),
@@ -82,6 +87,8 @@ def launch_setup(context: LaunchContext) -> list:
         rviz_display_config = "panther_slam.rviz"
     elif use_velodyne:
         rviz_display_config = "panther_velodyne.rviz"
+    elif use_navsat:
+        rviz_display_config = "panther_navsat.rviz"
     else:
         rviz_display_config = "panther_general.rviz"
 
@@ -132,9 +139,15 @@ def launch_setup(context: LaunchContext) -> list:
         get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
     )
 
+    navsat_launch = RegisteredLaunchDescription(
+        get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py"),
+        launch_arguments={"simulation": str(use_sim)},
+    )
+
     return [
         SetParameter(name="use_sim_time", value=use_sim),
         Register.group(velodyne, context) if use_velodyne else SKIP,
+        Register.group(navsat_launch, context) if use_navsat else SKIP,
         Register.group(core, context) if use_sim else SKIP,
         Register.group(controllers, context) if use_sim else SKIP,
         Register.group(joystick, context),
@@ -167,6 +180,7 @@ def generate_launch_description() -> LaunchDescription:
             panther_xyz_arg.declaration,
             global_map_arg.declaration,
             use_ui_arg.declaration,
+            use_navsat_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
