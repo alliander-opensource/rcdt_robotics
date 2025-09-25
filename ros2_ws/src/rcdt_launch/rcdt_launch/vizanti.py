@@ -76,7 +76,7 @@ class Vizanti:
                 "container_id": "icon_container",
             }
         )
-        Vizanti.config["initialpose"] = {"topic": "/initial_pose"}
+        Vizanti.config["initialpose"] = {"topic": "/initialpose"}
 
     @staticmethod
     def add_goal_pose() -> None:

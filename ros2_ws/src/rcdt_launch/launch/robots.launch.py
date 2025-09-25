@@ -49,6 +49,7 @@ def launch_setup(context: LaunchContext) -> list:
     use_vizanti = use_vizanti_arg.bool_value(context)
     configuration = configuration_arg.string_value(context)
 
+    Platform.simulation = use_sim
     Rviz.load_motion_planning_plugin = False
     Rviz.load_point_cloud = False
 
@@ -71,19 +72,20 @@ def launch_setup(context: LaunchContext) -> list:
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
-            Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
+            Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
         case "mm_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
-            Arm("franka", [0, 0, 0.14], parent=panther, moveit=True)
+            Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
     if Platform.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
+    Platform.order_platforms()
 
     state_publishers = Platform.create_state_publishers()
     gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
     tf_publishers = Platform.create_tf_publishers()
-    world_links = Platform.create_world_links()
+    world_links = Platform.create_map_links()
     controllers = Platform.create_controllers()
     launch_descriptions = Platform.create_launch_descriptions()
     joystick_nodes = Platform.create_joystick_nodes() if use_joystick else []
@@ -105,6 +107,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetParameter(name="use_sim_time", value=use_sim),
+        Register.group(rviz, context) if use_rviz else SKIP,
         *[Register.on_start(publisher, context) for publisher in state_publishers],
         Register.group(gazebo, context) if use_sim else SKIP,
         *[Register.on_start(tf_publisher, context) for tf_publisher in tf_publishers],
@@ -116,7 +119,6 @@ def launch_setup(context: LaunchContext) -> list:
             Register.group(launch_description, context)
             for launch_description in launch_descriptions
         ],
-        Register.group(rviz, context) if use_rviz else SKIP,
         Register.group(vizanti, context) if use_vizanti else SKIP,
     ]
 

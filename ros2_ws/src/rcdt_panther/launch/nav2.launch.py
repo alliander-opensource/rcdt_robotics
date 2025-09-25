@@ -57,6 +57,12 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     if use_collision_monitor:
         lifecycle_nodes.append("collision_monitor")
 
+    if use_slam:
+        lifecycle_nodes.append("slam_toolbox")
+    elif use_navigation:
+        lifecycle_nodes.append("map_server")
+        lifecycle_nodes.append("amcl")
+
     if use_navigation:
         lifecycle_nodes.extend(
             [
@@ -68,13 +74,15 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             ]
         )
 
-    if not use_slam and use_navigation:
-        lifecycle_nodes.extend(
-            [
-                "map_server",
-                "amcl",
-            ]
-        )
+    slam_params = RewrittenYaml(
+        get_file_path("rcdt_panther", ["config"], "slam_params.yaml"),
+        {
+            "odom_frame": f"{namespace_vehicle}/odom",
+            "base_frame": f"{namespace_vehicle}/base_footprint",
+            "scan_topic": f"/{namespace_lidar}/scan",
+        },
+        root_key=namespace_vehicle,
+    )
 
     amcl_params = RewrittenYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
@@ -157,6 +165,19 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         root_key=namespace_vehicle,
     )
 
+    slam = Node(
+        package="slam_toolbox",
+        executable="async_slam_toolbox_node",
+        parameters=[
+            slam_params,
+            {
+                "use_lifecycle_manager": True,
+            },
+        ],
+        namespace=namespace_vehicle,
+        remappings=[("/map", f"/{namespace_vehicle}/map")],
+    )
+
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
@@ -164,7 +185,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             {
                 "yaml_filename": get_file_path(
                     "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
-                )
+                ),
+                "topic_name": f"/{namespace_vehicle}/map",
             }
         ],
         namespace=namespace_vehicle,
@@ -175,6 +197,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         executable="amcl",
         parameters=[amcl_params],
         namespace=namespace_vehicle,
+        remappings=[(f"/{namespace_vehicle}/initialpose", "/initialpose")],
     )
 
     controller_server = Node(
@@ -261,6 +284,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
 
     return [
         SetRemap(src="/cmd_vel", dst=pub_topic),
+        Register.on_start(slam, context) if use_slam else SKIP,
         Register.on_start(map_server, context) if not use_slam else SKIP,
         Register.on_start(amcl, context) if not use_slam else SKIP,
         Register.on_start(controller_server, context) if use_navigation else SKIP,
@@ -271,7 +295,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,
-        Register.on_log(lifecycle_manager, "Managed nodes are active", context),
+        Register.on_log(lifecycle_manager, "Managed nodes are active", context)
+        if lifecycle_nodes
+        else SKIP,
         Register.on_log(waypoint_follower_controller, "Controller is ready.", context)
         if use_navigation
         else SKIP,

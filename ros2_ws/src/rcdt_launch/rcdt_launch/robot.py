@@ -19,12 +19,14 @@ class Platform:  # noqa: PLR0904
     """A class used to dynamically create all the required nodes for a platform.
 
     Attributes:
+        simulation (bool): Whether the platforms are in simulation mode or not.
         platforms (list[Platform]): A list of all the platforms.
         platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
         names (list[str]): A list of all robot names.
         bridge_topics (list[str]): A list of all topics that should be bridged between Gazebo and ROS.
     """
 
+    simulation: bool = True
     platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {"panther": 0, "franka": 0, "velodyne": 0}
     names: list[str] = []
@@ -63,23 +65,33 @@ class Platform:  # noqa: PLR0904
 
     @staticmethod
     def create_state_publishers() -> list[Node]:
-        """Create state publishers for all robots.
+        """Create state publisher nodes for all robots.
 
         Returns:
             list[Node]: A list of all state publisher nodes.
         """
-        return [robot.create_state_publisher() for robot in Platform.platforms]
+        nodes = []
+        for robot in Platform.platforms:
+            node = robot.create_state_publisher()
+            if isinstance(node, Node):
+                nodes.append(node)
+        return nodes
 
     @staticmethod
-    def move_franka_robots_to_front() -> None:
-        """Move all the Franka robots to the front of the list.
+    def order_platforms() -> None:
+        """Order the platforms list.
 
-        For some reason, the ros control plugin does not load for Franka robots when another platform is loaded before.
+        For some reason, the ros control plugin in Gazebo does not load for Franka robots when another platform is loaded before.
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
+        When launching a vehicle with Nav2, lidar sensor output is required.
+        Therefore we load a lidar before a vehicle.
         """
-        for index in range(len(Platform.platforms)):
-            if Platform.platforms[index].platform == "franka":
-                Platform.platforms.insert(0, Platform.platforms.pop(index))
+        order = ["franka", "velodyne", "panther"]
+        Platform.platforms = sorted(
+            Platform.platforms, key=lambda platform: order.index(platform.platform)
+        )
+        for platform in Platform.platforms:
+            print(platform.platform)
 
     @staticmethod
     def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
@@ -91,7 +103,6 @@ class Platform:  # noqa: PLR0904
         Returns:
             RegisteredLaunchDescription: The Gazebo launch description.
         """
-        Platform.move_franka_robots_to_front()
         robots = [robot.namespace for robot in Platform.platforms]
         positions = [",".join(map(str, robot.position)) for robot in Platform.platforms]
 
@@ -212,17 +223,19 @@ class Platform:  # noqa: PLR0904
         )
         return nodes
 
-    def create_world_links() -> list[Node]:
-        """Create world links for all robots.
+    def create_map_links() -> list[Node]:
+        """Create a list of nodes that link all the platforms to the 'map' frame.
 
         Returns:
-            list[Node]: A list of all tf nodes creating a link between the robot and world.
+            list[Node]: A list of all the static_transform_publisher nodes linking the platforms to the 'map' frame.
         """
-        world_links = []
+        nodes = []
         for robot in Platform.platforms:
             if robot.parent is None:
-                world_links.append(robot.create_world_link())
-        return world_links
+                node = robot.create_map_link()
+                if isinstance(node, Node):
+                    nodes.append(node)
+        return nodes
 
     def __init__(
         self,
@@ -265,7 +278,10 @@ class Platform:  # noqa: PLR0904
         Returns:
             dict: The robot description for the robot.
         """
-        xacro_arguments = {"simulation": "true", "namespace": self.namespace}
+        xacro_arguments = {
+            "simulation": str(Platform.simulation),
+            "namespace": self.namespace,
+        }
         xacro_arguments["childs"] = str(self.childs)
         xacro_arguments["parent"] = "" if self.is_child else "world"
 
@@ -347,12 +363,15 @@ class Platform:  # noqa: PLR0904
         """
         self.childs.append([child.namespace, child.base_link])
 
-    def create_state_publisher(self) -> Node:
+    def create_state_publisher(self) -> Node | None:
         """Create a state publisher node for the robot.
 
         Returns:
-            Node: The state publisher node for the robot.
+            Node | None: The state publisher node for the robot or None if not applicable.
         """
+        if not Platform.simulation and self.platform == "panther":
+            return None
+
         return Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
@@ -392,16 +411,23 @@ class Platform:  # noqa: PLR0904
         """
         return []
 
-    def create_world_link(self) -> Node:
-        """Create a world link for the robot.
+    def create_map_link(self) -> Node | None:
+        """Create a static_transform_publisher node that links the platform to the map.
+
+        If the platform is a Vehicle that is using SLAM or navigation, None is returned.
+        In this case, a localization node will make the link to the 'map' frame.
+        If a vehicle is not using SLAM or navigation, the 'odom' frame is directly linked to the 'map' frame.
 
         Returns:
-            Node: The world link node for the robot.
+            Node | None: A static_transform_publisher node that links the platform with the world or None if not applicable.
         """
-        if self.platform == "panther":
+        if isinstance(self, Vehicle):
+            if self.navigation or self.slam:
+                return None
             child_frame = f"{self.namespace}/odom"
         else:
             child_frame = f"{self.namespace}/world"
+
         return Node(
             package="tf2_ros",
             executable="static_transform_publisher",
@@ -494,7 +520,7 @@ class Lidar(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
             launch_arguments={
-                "simulation": str(True),
+                "simulation": str(Platform.simulation),
                 "namespace": self.namespace,
                 "target_frame": target_frame,
             },
@@ -621,6 +647,7 @@ class Vehicle(Platform):
         namespace: str | None = None,
         parent: Platform | None = None,
         navigation: bool = False,
+        slam: bool = False,
         collision_monitor: bool = False,
     ):
         """Initialize the Vehicle platform.
@@ -631,12 +658,14 @@ class Vehicle(Platform):
             namespace (str | None): The namespace of the vehicle.
             parent (Platform | None): The parent platform.
             navigation (bool): Whether to start navigation for the vehicle.
+            slam (bool): Whether to start SLAM for the vehicle.
             collision_monitor (bool): Whether to start the collision monitor for the vehicle.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
         self.namespace = self.namespace
         self.navigation = navigation
+        self.slam = slam
         self.collision_monitor = collision_monitor
         self.lidar: Lidar | None = None
 
@@ -650,20 +679,26 @@ class Vehicle(Platform):
                 "std_msgs/msg/Bool",
             )
 
-        if self.navigation:
+        if self.navigation or self.slam:
             Rviz.add_map(f"/{self.namespace}/map")
+
+        if self.navigation:
             Rviz.add_map(f"/{self.namespace}/global_costmap/costmap")
             Rviz.add_path(f"/{self.namespace}/plan")
-            Vizanti.add_button("Stop", "/waypoint_follower_controller/stop")
+            Vizanti.add_button(
+                "Stop", f"/{self.namespace}/waypoint_follower_controller/stop"
+            )
             Vizanti.add_initial_pose()
             Vizanti.add_goal_pose()
             Vizanti.add_waypoints(self.namespace)
-            Vizanti.add_map("global_costmap", "/global_costmap/costmap")
-            Vizanti.add_path("/plan")
+            Vizanti.add_map(
+                "global_costmap", f"/{self.namespace}/global_costmap/costmap"
+            )
+            Vizanti.add_path(f"/{self.namespace}/plan")
 
         if self.collision_monitor:
-            Rviz.add_polygon("/polygon_slower")
-            Rviz.add_polygon("/velocity_polygon_stop")
+            Rviz.add_polygon(f"/{self.namespace}/polygon_slower")
+            Rviz.add_polygon(f"/{self.namespace}/velocity_polygon_stop")
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a vehicle.
@@ -672,7 +707,7 @@ class Vehicle(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        if self.navigation or self.collision_monitor:
+        if self.navigation or self.collision_monitor or self.slam:
             launch_descriptions.append(self.create_nav2_launch())
         return launch_descriptions
 
@@ -684,6 +719,9 @@ class Vehicle(Platform):
         """
         nodes: list[Node] = []
 
+        pub_topic = f"/{self.namespace}/cmd_vel"
+        if self.collision_monitor:
+            pub_topic += "_raw"
         if self.platform == "panther":
             nodes.append(
                 Node(
@@ -691,7 +729,7 @@ class Vehicle(Platform):
                     executable="joy_to_twist.py",
                     parameters=[
                         {"sub_topic": f"/{self.namespace}/joy"},
-                        {"pub_topic": f"/{self.namespace}/cmd_vel"},
+                        {"pub_topic": pub_topic},
                         {"config_pkg": "rcdt_panther"},
                     ],
                     namespace=self.namespace,
@@ -715,7 +753,8 @@ class Vehicle(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
             launch_arguments={
-                "simulation": str(True),
+                "simulation": str(Platform.simulation),
+                "slam": str(self.slam),
                 "collision_monitor": str(self.collision_monitor),
                 "navigation": str(self.navigation),
                 "namespace_vehicle": self.namespace,

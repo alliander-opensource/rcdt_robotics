@@ -26,8 +26,6 @@ def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
     target_frame = target_frame_arg.string_value(context)
-    if not target_frame:
-        target_frame = f"{namespace}/base_link"
 
     frame_prefix = namespace + "/" if namespace else ""
 
