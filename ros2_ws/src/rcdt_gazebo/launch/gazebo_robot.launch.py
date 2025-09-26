@@ -53,7 +53,7 @@ def launch_setup(context: LaunchContext) -> list:
         additional_env=GazeboRosPaths.get_env(),
     )
 
-    bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"]
+    bridge_topics = []
     if use_realsense:
         bridge_topics.extend(
             [
@@ -69,6 +69,8 @@ def launch_setup(context: LaunchContext) -> list:
                 "/velodyne/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
             ]
         )
+
+    bridge_topics.extend(["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"])
 
     bridge = Node(
         package="ros_gz_bridge",
