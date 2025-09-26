@@ -129,17 +129,12 @@ class GenerateGrasp(Node):
         msgs: list[Grasp] = []
         for g in grasps:
             t = np.asarray(g.translation, dtype=float).reshape(3)
-            # some versions use "rotation", others "rotation_matrix"
             rotation_matrix = np.asarray(
                 getattr(g, "rotation", g.rotation_matrix), dtype=float
             ).reshape(3, 3)
 
-            rotation_x = Rotation.from_euler("x", -90, degrees=True)
             rotation_orig = Rotation.from_matrix(rotation_matrix)
-
-            rotation_new = rotation_x * rotation_orig
-
-            qx, qy, qz, qw = rotation_new.as_quat()
+            qx, qy, qz, qw = rotation_orig.as_quat()
 
             m = Grasp()
             m.pose.header.frame_id = self.depth_frame_id

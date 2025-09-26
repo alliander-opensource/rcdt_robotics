@@ -26,7 +26,7 @@ def grasping_launch() -> LaunchDescription:
             "world": "table_with_1_brick.sdf",
             "graspnet": "True",
             "rviz": "False",
-            "load_gazebo_ui": "True",
+            "load_gazebo_ui": "False",
         },
     )
 

@@ -160,10 +160,15 @@ class GraspLogic(Node):
             return None
         return future.result()
 
-    def callback(self, response: Trigger.Response) -> Trigger.Response:
+    def callback(
+        self,
+        _request: Trigger.Request,
+        response: Trigger.Response,
+    ) -> Trigger.Response:
         """Callback function for the Trigger service.
 
         Args:
+            _request (Trigger.Request): The service request.
             response (Trigger.Response): The service response.
 
         Returns:
