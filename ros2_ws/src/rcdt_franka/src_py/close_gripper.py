@@ -23,6 +23,8 @@ class CloseGripper(Node):
     def __init__(self) -> None:
         """Initialize the CloseGripper node."""
         super().__init__("close_gripper")
+        self.declare_parameter("namespace", value="")
+        namespace = self.get_namespace().strip("/")
 
         cbg_service = MutuallyExclusiveCallbackGroup()
         self.create_service(
@@ -31,7 +33,7 @@ class CloseGripper(Node):
 
         cbg_client = MutuallyExclusiveCallbackGroup()
         self.client = ActionClient(
-            self, Grasp, "/franka/fr3_gripper/grasp", callback_group=cbg_client
+            self, Grasp, f"/{namespace}/fr3_gripper/grasp", callback_group=cbg_client
         )
 
         self.create_goal()

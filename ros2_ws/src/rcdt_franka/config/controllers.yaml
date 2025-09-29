@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-franka:
+/**:
   controller_manager:
     ros__parameters:
       update_rate: 1000

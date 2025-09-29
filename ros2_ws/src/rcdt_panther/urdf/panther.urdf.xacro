@@ -8,7 +8,8 @@ SPDX-License-Identifier: Apache-2.0
 
   <!-- Set use_sim argument to let panther xacro load gazebo plugin: -->
   <xacro:arg name="simulation" default="true" />
-  <xacro:arg name="connected_to" default="" />
+  <xacro:arg name="namespace" default="panther" />
+  <xacro:arg name="childs" default="${[]}" />
 
   <!-- Load panther: -->
   <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro"
@@ -18,38 +19,9 @@ SPDX-License-Identifier: Apache-2.0
     wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
     controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
     battery_config_file=""
-    namespace="panther"
-    connected_to="$(arg connected_to)" />
+    namespace="$(arg namespace)" />
 
-  <!-- Load Velodyne: -->
-  <xacro:arg name="load_velodyne" default="false" />
-  <xacro:if value="$(arg load_velodyne)">
-    <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_velodyne.urdf.xacro" />
-    <xacro:VLP-16 namespace="panther">
-      <origin xyz="0.18 0 0.03" rpy="0 0 0" />
-    </xacro:VLP-16>
-  </xacro:if>
-
-  <xacro:include filename="$(find rcdt_sensors)/urdf/rcdt_zed2i.urdf.xacro" />
-
-  <link  name="zed2i_link"/>
-  <joint name="zed2i_link_joint" type="fixed">
-    <origin xyz="0.1 0.0 0.0" rpy="0 0 0"/>
-    <parent link="front_bumper_link"/>
-    <child  link="zed2i_link"/>
-  </joint>
-
-  <!-- Instantiate the camera subtree -->
-  <xacro:rcdt_zed2i
-        robot_namespace="panther"
-        device_namespace="zed2i"
-        parent="zed2i_link"/>
-
-  <joint name="zed2i_mount_joint" type="fixed">
-    <!-- pose of the camera w.r.t. the adapter; adjust if needed -->
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <parent link="zed2i_link"/>
-    <child  link="zed2i_camera_link"/>   <!-- root link inside the macro -->
-  </joint>
-  
+  <!-- Create detachable joints between base_link and childs: -->
+  <xacro:include filename="$(find rcdt_utilities)/urdf/detachable_joints.urdf.xacro" />
+  <xacro:detachable_joints parent_link="base_link" childs="${$(arg childs)}" />
 </robot>

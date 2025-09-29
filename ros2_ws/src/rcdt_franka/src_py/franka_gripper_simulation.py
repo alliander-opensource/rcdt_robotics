@@ -22,10 +22,11 @@ class GripperActionControllerClient(Node):
     def __init__(self):
         """Initialize the Gripper Action Controller Client."""
         super().__init__("gripper_action_controller_client")
+        namespace = self.get_namespace().strip("/")
         self.client = ActionClient(
             self,
             ParallelGripperCommand,
-            "/franka/gripper_action_controller/gripper_cmd",
+            f"/{namespace}/gripper_action_controller/gripper_cmd",
         )
 
     def move(self, width: float) -> bool:
