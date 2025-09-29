@@ -127,6 +127,11 @@ class GenerateGrasp(Node):
             list[Grasp]: A list of ROS Grasp messages.
         """
         msgs: list[Grasp] = []
+
+        desired_dir = np.array([0.0, 0.0, -1.0])
+        tool_axis_local = np.array([0.0, 0.0, -1.0])
+        rotation_x = Rotation.from_euler("x", -90, degrees=True)
+
         for g in grasps:
             t = np.asarray(g.translation, dtype=float).reshape(3)
             rotation_matrix = np.asarray(
@@ -134,7 +139,13 @@ class GenerateGrasp(Node):
             ).reshape(3, 3)
 
             rotation_orig = Rotation.from_matrix(rotation_matrix)
-            qx, qy, qz, qw = rotation_orig.as_quat()
+
+            rotation_new = rotation_x * rotation_orig
+            tool_axis_cam = rotation_new.apply(tool_axis_local)
+            if np.dot(tool_axis_cam, desired_dir) < 0.0:
+                rotation_new *= Rotation.from_euler("x", 180, degrees=True)
+
+            qx, qy, qz, qw = rotation_new.as_quat()
 
             m = Grasp()
             m.pose.header.frame_id = self.depth_frame_id

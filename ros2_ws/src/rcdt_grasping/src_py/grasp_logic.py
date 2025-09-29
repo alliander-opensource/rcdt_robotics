@@ -201,7 +201,9 @@ class GraspLogic(Node):
 
         best_grasp: Grasp = graspnet_response.grasps[0]
         ros_logger.info(f"Number of grasps received: {len(graspnet_response.grasps)}")
-        ros_logger.info("Calling grasping movement service...")
+        ros_logger.info(
+            f"Calling grasping movement service with pose: {best_grasp.pose}"
+        )
 
         define_goal_pose = DefineGoalPose.Request()
         define_goal_pose.pose = best_grasp.pose
