@@ -8,7 +8,8 @@ SPDX-License-Identifier: Apache-2.0
 
   <!-- Set use_sim argument to let panther xacro load gazebo plugin: -->
   <xacro:arg name="simulation" default="true" />
-  <xacro:arg name="connected_to" default="" />
+  <xacro:arg name="namespace" default="panther" />
+  <xacro:arg name="childs" default="${[]}" />
 
   <!-- Load panther: -->
   <xacro:include filename="$(find rcdt_panther)/urdf/adapted/panther_macro.urdf.xacro"
@@ -18,6 +19,9 @@ SPDX-License-Identifier: Apache-2.0
     wheel_config_file="$(find husarion_ugv_description)/config/WH01.yaml"
     controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
     battery_config_file=""
-    namespace="panther"
-    connected_to="$(arg connected_to)" />
+    namespace="$(arg namespace)" />
+
+  <!-- Create detachable joints between base_link and childs: -->
+  <xacro:include filename="$(find rcdt_utilities)/urdf/detachable_joints.urdf.xacro" />
+  <xacro:detachable_joints parent_link="base_link" childs="${$(arg childs)}" />
 </robot>

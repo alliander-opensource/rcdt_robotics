@@ -5,7 +5,6 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import Register
 
 
@@ -44,11 +43,7 @@ def launch_setup(context: LaunchContext) -> list:
             {"flask_debug": True},
             {"base_url": ""},
             {"compression": "cbor"},
-            {
-                "default_widget_config": get_file_path(
-                    "rcdt_panther", ["config"], "vizanti_config.json"
-                )
-            },
+            {"default_widget_config": "/tmp/vizanti.json"},
         ],
     )
 

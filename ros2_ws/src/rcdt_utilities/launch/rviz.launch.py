@@ -2,17 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import os.path
+
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from moveit_configs_utils import MoveItConfigsBuilder
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_launch.moveit import Moveit
+from rcdt_launch.rviz import Rviz
 from rcdt_utilities.register import Register
-
-rviz_frame_arg = LaunchArgument("rviz_frame", "world")
-rviz_display_config_arg = LaunchArgument("rviz_display_config", "general.rviz")
-robot_name_arg = LaunchArgument("robot_name", "")
-moveit_package_name_arg = LaunchArgument("moveit_package_name", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -24,31 +21,46 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    rviz_frame = rviz_frame_arg.string_value(context)
-    rviz_display_config = rviz_display_config_arg.string_value(context)
-    robot_name = robot_name_arg.string_value(context)
-    package_name = moveit_package_name_arg.string_value(context)
-
     arguments = []
-    if rviz_frame:
-        arguments.extend(["-f", rviz_frame])
-    display_config = get_file_path("rcdt_utilities", ["rviz"], rviz_display_config)
-    arguments.extend(["--display-config", display_config])
-
     parameters = []
-    if package_name:
-        moveit_config = MoveItConfigsBuilder(robot_name, package_name=package_name)
-        moveit_config = moveit_config.to_moveit_configs()
-        parameters.append(moveit_config.robot_description)
-        parameters.append(moveit_config.robot_description_semantic)
-        parameters.append(moveit_config.robot_description_kinematics)
-        parameters.append(moveit_config.planning_pipelines)
+    remappings = []
+
+    file_name = "/tmp/rviz.rviz"
+    if os.path.isfile(file_name):
+        arguments.extend(["--display-config", file_name])
+
+    if Rviz.load_motion_planning_plugin:
+        for namespace in Rviz.moveit_namespaces:
+            configuration = Moveit.configurations[namespace]
+
+            parameters.extend(
+                [
+                    {
+                        f"{namespace}_robot_description": configuration.robot_description[
+                            "robot_description"
+                        ]
+                    },
+                    {
+                        f"{namespace}_robot_description_semantic": configuration.robot_description_semantic[
+                            "robot_description_semantic"
+                        ]
+                    },
+                    {
+                        f"{namespace}_robot_description_kinematics": configuration.robot_description_kinematics[
+                            "robot_description_kinematics"
+                        ]
+                    },
+                    configuration.planning_pipelines,
+                    configuration.pilz_cartesian_limits,
+                ]
+            )
 
     rviz = Node(
         package="rviz2",
         executable="rviz2",
         arguments=arguments,
         parameters=parameters,
+        remappings=remappings,
     )
 
     return [
@@ -62,12 +74,4 @@ def generate_launch_description() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for RViz.
     """
-    return LaunchDescription(
-        [
-            rviz_frame_arg.declaration,
-            rviz_display_config_arg.declaration,
-            robot_name_arg.declaration,
-            moveit_package_name_arg.declaration,
-            OpaqueFunction(function=launch_setup),
-        ]
-    )
+    return LaunchDescription([OpaqueFunction(function=launch_setup)])
