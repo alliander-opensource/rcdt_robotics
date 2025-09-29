@@ -13,10 +13,10 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    odom_frame: panther/odom
+    odom_frame: substitute_me
     map_frame: map
-    base_frame: panther/base_footprint
-    scan_topic: velodyne/scan
+    base_frame: substitute_me
+    scan_topic: substitute_me
     use_map_saver: true
     mode: mapping #localization
 

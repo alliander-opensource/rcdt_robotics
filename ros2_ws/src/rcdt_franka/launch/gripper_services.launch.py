@@ -5,7 +5,10 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
+from rcdt_utilities.launch_utils import LaunchArgument
 from rcdt_utilities.register import Register
+
+namespace_arg = LaunchArgument("namespace", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -17,7 +20,7 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    namespace = "franka"
+    namespace = namespace_arg.string_value(context)
 
     open_gripper = Node(
         package="rcdt_franka",
@@ -42,4 +45,9 @@ def generate_launch_description() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description containing the gripper services.
     """
-    return LaunchDescription([OpaqueFunction(function=launch_setup)])
+    return LaunchDescription(
+        [
+            namespace_arg.declaration,
+            OpaqueFunction(function=launch_setup),
+        ]
+    )

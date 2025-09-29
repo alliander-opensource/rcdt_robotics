@@ -10,6 +10,7 @@ import pytest
 import rclpy
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
+from rcdt_launch.robot import Platform
 from rclpy.node import Node
 
 
@@ -20,6 +21,12 @@ def pytest_addoption(parser: Parser) -> None:
         parser (Parser): The pytest parser to add options to.
     """
     parser.addoption("--simulation", action="store", default="True")
+
+
+@pytest.fixture(scope="module", autouse=True)
+def reset_platform() -> None:
+    """Fixture to automatically reset the platform configuration from a previous test module."""
+    Platform.reset()
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +50,7 @@ def timeout(pytestconfig: Config) -> int:
     """Fixture to get the timeout value from pytest config.
 
     Args:
-        pytestconfig (pytest.Config): The pytest configuration object.
+        pytestconfig (Config): The pytest configuration object.
 
     Returns:
         int: The timeout value in seconds.

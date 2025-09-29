@@ -12,6 +12,8 @@ from rcdt_utilities.register import Register
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
+namespace_vehicle_arg = LaunchArgument("namespace_vehicle", "")
+namespace_lidar_arg = LaunchArgument("namespace_lidar", "")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 controller_arg = LaunchArgument(
@@ -31,7 +33,7 @@ global_map_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:
+def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     """Setup the launch description for the navigation stack.
 
     Args:
@@ -43,6 +45,8 @@ def launch_setup(context: LaunchContext) -> list:
     autostart = autostart_arg.bool_value(context)
     use_respawn = use_respawn_arg.bool_value(context)
     use_slam = use_slam_arg.bool_value(context)
+    namespace_vehicle = namespace_vehicle_arg.string_value(context)
+    namespace_lidar = namespace_lidar_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     controller = controller_arg.string_value(context)
@@ -53,13 +57,11 @@ def launch_setup(context: LaunchContext) -> list:
     if use_collision_monitor:
         lifecycle_nodes.append("collision_monitor")
 
-    if not use_slam:
-        lifecycle_nodes.extend(
-            [
-                "map_server",
-                "amcl",
-            ]
-        )
+    if use_slam:
+        lifecycle_nodes.append("slam_toolbox")
+    elif use_navigation:
+        lifecycle_nodes.append("map_server")
+        lifecycle_nodes.append("amcl")
 
     if use_navigation:
         lifecycle_nodes.extend(
@@ -72,63 +74,108 @@ def launch_setup(context: LaunchContext) -> list:
             ]
         )
 
+    slam_params = RewrittenYaml(
+        get_file_path("rcdt_panther", ["config"], "slam_params.yaml"),
+        {
+            "odom_frame": f"{namespace_vehicle}/odom",
+            "base_frame": f"{namespace_vehicle}/base_footprint",
+            "scan_topic": f"/{namespace_lidar}/scan",
+        },
+        root_key=namespace_vehicle,
+    )
+
     amcl_params = RewrittenYaml(
-        source_file=get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
+        {
+            "base_frame_id": f"{namespace_vehicle}/base_footprint",
+            "odom_frame_id": f"{namespace_vehicle}/odom",
+            "scan_topic": f"/{namespace_lidar}/scan",
+        },
+        root_key=namespace_vehicle,
     )
 
     local_costmap_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "local_costmap.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "local_costmap.yaml"),
+        {
+            "global_frame": f"{namespace_vehicle}/odom",
+            "robot_base_frame": f"{namespace_vehicle}/base_footprint",
+        },
+        root_key=namespace_vehicle,
     )
 
     global_costmap_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "global_costmap.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "global_costmap.yaml"),
+        {
+            "robot_base_frame": f"{namespace_vehicle}/base_footprint",
+            "topic": f"/{namespace_lidar}/scan",
+        },
+        root_key=namespace_vehicle,
     )
 
     controller_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "controller_server.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "controller_server.yaml"),
+        {"odom_topic": f"/{namespace_vehicle}/odom"},
+        root_key=namespace_vehicle,
     )
 
     behavior_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "behavior_server.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "behavior_server.yaml"),
+        {
+            "local_frame": f"{namespace_vehicle}/odom",
+            "robot_base_frame": f"{namespace_vehicle}/base_footprint",
+        },
+        root_key=namespace_vehicle,
     )
 
-    follow_path_params = load_follow_path_parameters(controller)
+    follow_path_params = RewrittenYaml(
+        get_file_path(
+            "rcdt_panther", ["config", "nav2", "controllers"], f"{controller}.yaml"
+        ),
+        {},
+        root_key=namespace_vehicle,
+    )
 
     bt_navigator_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"
-        ),
-        param_rewrites={
+        get_file_path("rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"),
+        {
             "default_nav_to_pose_bt_xml": get_file_path(
                 "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
-            )
+            ),
+            "robot_base_frame": f"{namespace_vehicle}/base_footprint",
+            "odom_topic": f"/{namespace_vehicle}/odom",
         },
+        root_key=namespace_vehicle,
     )
+
     planner_server_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "planner_server.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "planner_server.yaml"),
+        {},
+        root_key=namespace_vehicle,
     )
 
     collision_monitor_params = RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"
-        ),
-        param_rewrites={},
+        get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"),
+        {
+            "base_frame_id": f"{namespace_vehicle}/base_footprint",
+            "odom_frame_id": f"{namespace_vehicle}/odom",
+            "cmd_vel_in_topic": f"/{namespace_vehicle}/cmd_vel_raw",
+            "cmd_vel_out_topic": f"/{namespace_vehicle}/cmd_vel",
+            "topic": f"/{namespace_lidar}/scan",
+        },
+        root_key=namespace_vehicle,
+    )
+
+    slam = Node(
+        package="slam_toolbox",
+        executable="async_slam_toolbox_node",
+        parameters=[
+            slam_params,
+            {
+                "use_lifecycle_manager": True,
+            },
+        ],
+        namespace=namespace_vehicle,
+        remappings=[("/map", f"/{namespace_vehicle}/map")],
     )
 
     map_server = Node(
@@ -138,15 +185,19 @@ def launch_setup(context: LaunchContext) -> list:
             {
                 "yaml_filename": get_file_path(
                     "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
-                )
+                ),
+                "topic_name": f"/{namespace_vehicle}/map",
             }
         ],
+        namespace=namespace_vehicle,
     )
 
     amcl = Node(
         package="nav2_amcl",
         executable="amcl",
         parameters=[amcl_params],
+        namespace=namespace_vehicle,
+        remappings=[(f"/{namespace_vehicle}/initialpose", "/initialpose")],
     )
 
     controller_server = Node(
@@ -156,6 +207,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[local_costmap_params, controller_server_params, follow_path_params],
+        namespace=namespace_vehicle,
     )
 
     planner_server = Node(
@@ -166,6 +218,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[global_costmap_params, planner_server_params],
+        namespace=namespace_vehicle,
     )
 
     behavior_server = Node(
@@ -176,6 +229,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[behavior_server_params],
+        namespace=namespace_vehicle,
     )
 
     bt_navigator = Node(
@@ -186,6 +240,8 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[bt_navigator_params],
+        remappings=[(f"/{namespace_vehicle}/goal_pose", "/goal_pose")],
+        namespace=namespace_vehicle,
     )
 
     collision_monitor_node = Node(
@@ -196,6 +252,7 @@ def launch_setup(context: LaunchContext) -> list:
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[collision_monitor_params],
+        namespace=namespace_vehicle,
     )
 
     lifecycle_manager = Node(
@@ -204,23 +261,30 @@ def launch_setup(context: LaunchContext) -> list:
         name="lifecycle_manager_navigation",
         output="screen",
         parameters=[{"autostart": autostart}, {"node_names": lifecycle_nodes}],
+        namespace=namespace_vehicle,
     )
 
     waypoint_follower = Node(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
+        namespace=namespace_vehicle,
     )
 
     waypoint_follower_controller = Node(
-        package="rcdt_panther", executable="waypoint_follower_controller.py"
+        package="rcdt_panther",
+        executable="waypoint_follower_controller.py",
+        namespace=namespace_vehicle,
     )
 
     pub_topic = (
-        "/panther/cmd_vel" if not use_collision_monitor else "/panther/cmd_vel_raw"
+        f"/{namespace_vehicle}/cmd_vel"
+        if not use_collision_monitor
+        else f"/{namespace_vehicle}/cmd_vel_raw"
     )
 
     return [
         SetRemap(src="/cmd_vel", dst=pub_topic),
+        Register.on_start(slam, context) if use_slam else SKIP,
         Register.on_start(map_server, context) if not use_slam else SKIP,
         Register.on_start(amcl, context) if not use_slam else SKIP,
         Register.on_start(controller_server, context) if use_navigation else SKIP,
@@ -231,36 +295,13 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(collision_monitor_node, context)
         if use_collision_monitor
         else SKIP,
-        Register.on_log(lifecycle_manager, "Managed nodes are active", context),
+        Register.on_log(lifecycle_manager, "Managed nodes are active", context)
+        if lifecycle_nodes
+        else SKIP,
         Register.on_log(waypoint_follower_controller, "Controller is ready.", context)
         if use_navigation
         else SKIP,
     ]
-
-
-def load_follow_path_parameters(plugin: str = "dwb") -> RewrittenYaml:
-    """Load the follow path parameters for the specified plugin.
-
-    Supported plugins are listed here: https://docs.nav2.org/plugins/index.html#controllers
-    But only the types declared by nav2 (without extra installs) are supported:
-        - dwb_core::DWBLocalPlanner
-        - nav2_graceful_controller::GracefulController
-        - nav2_mppi_controller::MPPIController
-        - nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
-        - nav2_rotation_shim_controller::RotationShimController
-
-    Args:
-        plugin (str): The name of the plugin for which to load parameters.
-
-    Returns:
-        RewrittenYaml: The rewritten YAML configuration for the specified plugin.
-    """
-    return RewrittenYaml(
-        source_file=get_file_path(
-            "rcdt_panther", ["config", "nav2", "controllers"], f"{plugin}.yaml"
-        ),
-        param_rewrites={},
-    )
 
 
 def generate_launch_description() -> LaunchDescription:
@@ -274,6 +315,9 @@ def generate_launch_description() -> LaunchDescription:
             use_collision_monitor_arg.declaration,
             autostart_arg.declaration,
             use_respawn_arg.declaration,
+            use_slam_arg.declaration,
+            namespace_vehicle_arg.declaration,
+            namespace_lidar_arg.declaration,
             controller_arg.declaration,
             global_map_arg.declaration,
             OpaqueFunction(function=launch_setup),

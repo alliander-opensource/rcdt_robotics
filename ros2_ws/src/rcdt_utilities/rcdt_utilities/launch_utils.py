@@ -218,12 +218,15 @@ def get_yaml(file_path: str) -> dict:
         return {}
 
 
-def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) -> dict:
+def get_robot_description(
+    xacro_path: str, xacro_arguments: dict | None = None, semantic: bool = False
+) -> dict:
     """Process a Xacro file to generate the robot description.
 
     Args:
         xacro_path (str): The path to the Xacro file.
-        xacro_arguments (dict | None): A dictionary of arguments to pass to the Xacro processor. Defaults to None.
+        xacro_arguments (dict | None): A dictionary of arguments to pass to the Xacro processor.
+        semantic (bool): Whether to return the semantic robot description.
 
     Returns:
         dict: A dictionary containing the robot description in XML format.
@@ -231,7 +234,8 @@ def get_robot_description(xacro_path: str, xacro_arguments: dict | None = None) 
     if xacro_arguments is None:
         xacro_arguments = {}
     robot_description_config = xacro.process_file(xacro_path, mappings=xacro_arguments)
-    return {"robot_description": robot_description_config.toxml()}
+    name = "robot_description_semantic" if semantic else "robot_description"
+    return {name: robot_description_config.toxml()}
 
 
 def spin_node(node: Node) -> None:
