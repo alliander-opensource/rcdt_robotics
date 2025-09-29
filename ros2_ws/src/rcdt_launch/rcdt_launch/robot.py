@@ -127,11 +127,14 @@ class Platform:  # noqa: PLR0904
             return hardware_interfaces
 
         for robot in Platform.platforms:
-            if robot.platform == "franka":
+            if isinstance(robot, Arm) and robot.platform == "franka":
                 hardware_interfaces.append(
                     RegisteredLaunchDescription(
                         get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
-                        launch_arguments={"namespace": robot.namespace},
+                        launch_arguments={
+                            "namespace": robot.namespace,
+                            "ip_address": robot.ip_address,
+                        },
                     )
                 )
         return hardware_interfaces
@@ -307,6 +310,8 @@ class Platform:  # noqa: PLR0904
         }
         xacro_arguments["childs"] = str(self.childs)
         xacro_arguments["parent"] = "" if self.is_child else "world"
+        if isinstance(self, Arm) and self.platform == "franka":
+            xacro_arguments["ip_address"] = self.ip_address
 
         return get_robot_description(self.xacro_path, xacro_arguments)
 
@@ -454,6 +459,8 @@ class Platform:  # noqa: PLR0904
             if self.navigation or self.slam:
                 return None
             child_frame = f"{self.namespace}/odom"
+        elif self.platform == "franka" and not Platform.simulation:
+            child_frame = f"{self.namespace}/base"
         else:
             child_frame = f"{self.namespace}/world"
 
@@ -481,9 +488,14 @@ class Platform:  # noqa: PLR0904
         Returns:
             RegisteredLaunchDescription: The controller launch description for the robot.
         """
+        launch_arguments = {
+            "simulation": str(Platform.simulation),
+            "namespace": self.namespace,
+        }
+        if isinstance(self, Arm) and self.platform == "franka":
+            launch_arguments["ip_address"] = self.ip_address
         return RegisteredLaunchDescription(
-            self.controller_path,
-            launch_arguments={"namespace": self.namespace},
+            self.controller_path, launch_arguments=launch_arguments
         )
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:  # noqa: PLR6301
@@ -632,6 +644,7 @@ class Arm(Platform):
         parent: Platform | None = None,
         moveit: bool = False,
         gripper: bool = False,
+        ip_address: str = "",
     ):
         """Initialize the Arm platform.
 
@@ -642,11 +655,13 @@ class Arm(Platform):
             parent (Platform | None): The parent platform.
             moveit (bool): Whether to use MoveIt for the arm.
             gripper (bool): Whether to add a start the gripper services.
+            ip_address (str): The IP address of the arm.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
         self.moveit = moveit
         self.gripper = gripper
+        self.ip_address = ip_address
 
         self.camera: Camera | None = None
 

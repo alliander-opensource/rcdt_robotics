@@ -17,8 +17,8 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="namespace" default="" />
   <xacro:arg name="simulation" default="false" />
   <xacro:arg name="parent" default="world" />
-  <xacro:arg name="load_realsense" default="false" />
   <xacro:arg name="childs" default="${[]}" />
+  <xacro:arg name="ip_address" default="" />
 
   <!-- robot: -->
   <xacro:include filename="$(find rcdt_franka)/urdf/adapted/franka_robot.xacro" />
@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0
     tcp_xyz="$(arg tcp_xyz)"
     tcp_rpy="$(arg tcp_rpy)"
     ros2_control="true"
-    robot_ip="10.15.20.4"
+    robot_ip="$(arg ip_address)"
     namespace="$(arg namespace)"
     parent="$(arg parent)"
   />

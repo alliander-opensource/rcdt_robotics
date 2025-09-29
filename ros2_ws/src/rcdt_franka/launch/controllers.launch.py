@@ -10,6 +10,7 @@ from rcdt_utilities.register import Register
 
 namespace_arg = LaunchArgument("namespace", "franka")
 simulation_arg = LaunchArgument("simulation", True, [True, False])
+ip_address_arg = LaunchArgument("ip_address", "")
 
 gripper_config = get_file_path("franka_gripper", ["config"], "franka_gripper_node.yaml")
 
@@ -25,6 +26,7 @@ def launch_setup(context: LaunchContext) -> list:
     """
     namespace = namespace_arg.string_value(context)
     simulation = simulation_arg.bool_value(context)
+    ip_address = ip_address_arg.string_value(context)
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
@@ -54,7 +56,7 @@ def launch_setup(context: LaunchContext) -> list:
             name="fr3_gripper",
             parameters=[
                 {
-                    "robot_ip": "10.15.20.4",
+                    "robot_ip": ip_address,
                     "joint_names": ["fr3_finger_joint1", "fr3_finger_joint2"],
                 },
                 gripper_config,
@@ -89,6 +91,7 @@ def generate_launch_description() -> LaunchDescription:
         [
             simulation_arg.declaration,
             namespace_arg.declaration,
+            ip_address_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

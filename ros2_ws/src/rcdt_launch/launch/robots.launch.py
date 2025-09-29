@@ -64,7 +64,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         case "realsense":
             Camera("realsense", [0, 0, 0.5])
         case "franka":
-            Arm("franka", [0, 0, 0], gripper=True, moveit=True)
+            if not use_sim:
+                Rviz.load_motion_planning_plugin = True
+            Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
         case "franka_double":
             use_joystick = False
             Rviz.load_motion_planning_plugin = True

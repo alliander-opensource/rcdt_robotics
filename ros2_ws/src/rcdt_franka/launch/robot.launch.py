@@ -12,6 +12,7 @@ from rcdt_utilities.register import Register
 
 namespace_arg = LaunchArgument("namespace", "")
 enable_lock_unlock_arg = LaunchArgument("franka_lock_unlock", False, [True, False])
+ip_address_arg = LaunchArgument("ip_address", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -28,15 +29,16 @@ def launch_setup(context: LaunchContext) -> list:
     """
     namespace = namespace_arg.string_value(context)
     enable_lock_unlock = enable_lock_unlock_arg.bool_value(context)
+    ip_address = ip_address_arg.string_value(context)
 
     ns = f"/{namespace}" if namespace else ""
-    hostname = os.getenv("FRANKA_HOSTNAME", "")
+    hostname = ip_address
     username = os.getenv("FRANKA_USERNAME", "")
     password = os.getenv("FRANKA_PASSWORD", "")
 
-    if (not hostname or not username or not password) and enable_lock_unlock:
+    if (not username or not password) and enable_lock_unlock:
         raise RuntimeError(
-            """You must set FRANKA_HOSTNAME, FRANKA_USERNAME and FRANKA_PASSWORD
+            """You must set FRANKA_USERNAME and FRANKA_PASSWORD
             in your environment if you want to enable the Franka Lock/Unlock
             node programmatically, otherwise set franka_lock_unlock:=False ."""
         )
@@ -47,7 +49,7 @@ def launch_setup(context: LaunchContext) -> list:
         executable="franka_lock_unlock.py",
         output="screen",
         arguments=[hostname, username, password, "-u", "-l", "-w", "-r", "-p", "-c"],
-        respawn=True,
+        respawn=False,
         namespace=namespace,
     )
 
@@ -94,8 +96,8 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_log(franka_lock_unlock, "Keeping persistent connection...", context)
         if enable_lock_unlock
         else SKIP,
-        Register.on_log(settings_setter, "Thresholds set successfully.", context),
         Register.on_start(ros2_control_node, context),
+        Register.on_log(settings_setter, "Thresholds set successfully.", context),
         Register.on_start(joint_state_publisher, context),
     ]
 
@@ -108,7 +110,9 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
+            namespace_arg.declaration,
             enable_lock_unlock_arg.declaration,
+            ip_address_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

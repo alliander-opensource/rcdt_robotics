@@ -80,20 +80,6 @@ def launch_setup(context: LaunchContext) -> list:
         ]
     )
 
-    # Workaround for joystick command initialization issue (see issue #210):
-    # Moving to the 'home' configuration ensures servo_node properly activates.
-    move_to_home = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "service",
-            "call",
-            f"/{namespace}/moveit_manager/move_to_configuration",
-            "rcdt_messages/srv/MoveToConfiguration",
-            "{configuration: home}",
-        ],
-        output="screen",
-    )
-
     return [
         Register.on_log(
             move_group, "MoveGroup context initialization complete", context
@@ -103,7 +89,6 @@ def launch_setup(context: LaunchContext) -> list:
         ),
         Register.on_log(moveit_servo, "Servo initialized successfully", context),
         Register.on_exit(switch_servo_type_to_twist, context),
-        Register.on_exit(move_to_home, context),
     ]
 
 
