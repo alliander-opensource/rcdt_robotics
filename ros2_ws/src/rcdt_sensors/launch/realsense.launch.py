@@ -48,11 +48,14 @@ def launch_setup(context: LaunchContext) -> list:
             namespace=namespace,
             parameters=[
                 {
-                    "align_depth.enable": True,
-                    "enable_sync": True,
+                    "enable_infra": False,
+                    "enable_infra1": False,
+                    "enable_infra2": False,
+                    "enable_accel": False,
+                    "enable_gyro": False,
                     "enable_rgbd": True,
-                    "depth_module.depth_profile": "640x480x30",
-                    "rgb_camera.color_profile": "640x480x30",
+                    "enable_sync": True,
+                    "align_depth.enable": True,
                 }
             ],
         )
