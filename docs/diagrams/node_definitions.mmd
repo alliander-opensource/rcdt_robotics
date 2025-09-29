@@ -1,0 +1,28 @@
+classDiagram
+
+class joystick{
+    mapping parameters
+
+    joy_topic_manager()
+    joy_to_twist(franka)
+    joy_to_twist(panther)
+}
+
+class moveit_manager:::moveit_manager{
+    arm parameters
+
+    move_to_configuration()
+    move_hand_to_pose()
+    add_object()
+    clear_objects()
+}
+
+class nav2:::nav2{
+    vehicle parameters
+
+    navigate_to_pose()
+    follow_waypoints()
+}
+
+classDef moveit_manager stroke: #ff0000
+classDef nav2 stroke: #00ff00
