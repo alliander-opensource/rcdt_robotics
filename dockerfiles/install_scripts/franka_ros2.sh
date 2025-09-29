@@ -14,7 +14,7 @@ mkdir -p /home/$UNAME/franka_ws/src
 cd /home/$UNAME/franka_ws
 
 # Clone a fork with jazzy support, since Franka offers no support yet:
-git clone -b jazzy https://github.com/frankarobotics/franka_ros2.git src/franka_ros2
+git clone -b v3.0.0 https://github.com/frankarobotics/franka_ros2.git src/franka_ros2
 vcs import src --recursive --skip-existing <src/franka_ros2/franka.repos
 
 rosdep update --rosdistro $ROS_DISTRO
