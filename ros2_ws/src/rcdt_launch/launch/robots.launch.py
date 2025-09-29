@@ -74,7 +74,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             arm = Arm("franka", [0, 0, 0])
             Camera("realsense", [0, 0, 0.5], parent=arm)
         case "panther":
-            Vehicle("panther", [0, 0, 0.2])
+            Vehicle("panther", [0, 0, 0.2], namespace="panther")
         case "panther_realsense":
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("realsense", [0, 0, 0.5], parent=panther)
