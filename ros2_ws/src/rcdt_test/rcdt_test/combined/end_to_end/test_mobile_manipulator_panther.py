@@ -4,6 +4,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_launch.robot import Arm, Vehicle
 from rcdt_test.panther.end_to_end.base_panther import get_tests
@@ -16,8 +17,11 @@ namespace_arm = "franka"
 
 
 @launch_pytest.fixture(scope="class")
-def mobile_manipulator() -> LaunchDescription:
+def mobile_manipulator(request: SubRequest) -> LaunchDescription:
     """Fixture to launch the mobile manipulator.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description for the mobile manipulator.
@@ -40,7 +44,10 @@ def mobile_manipulator() -> LaunchDescription:
 
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
-        launch_arguments={"rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
+        },
     )
     return Register.connect_context([launch])
 

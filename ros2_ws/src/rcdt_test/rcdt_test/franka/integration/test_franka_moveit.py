@@ -5,6 +5,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_launch.robot import Arm
 from rcdt_test.franka.utils import call_move_to_configuration_service
@@ -18,8 +19,12 @@ namespace = "franka"
 
 
 @launch_pytest.fixture(scope="module")
-def franka_and_moveit_launch() -> LaunchDescription:
+def franka_and_moveit_launch(request: SubRequest) -> LaunchDescription:
     """Fixture to create launch file for the franka core, controllers, and MoveIt.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
+
 
     Returns:
         LaunchDescription: The launch description for the franka core, controllers, and MoveIt.
@@ -27,7 +32,10 @@ def franka_and_moveit_launch() -> LaunchDescription:
     Arm(platform="franka", position=[0, 0, 0], namespace=namespace, moveit=True)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
-        launch_arguments={"rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
+        },
     )
     return Register.connect_context([launch])
 

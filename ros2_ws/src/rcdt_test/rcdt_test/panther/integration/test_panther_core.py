@@ -5,6 +5,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
 from rcdt_launch.robot import Vehicle
@@ -24,8 +25,11 @@ namespace = "panther"
 
 
 @launch_pytest.fixture(scope="module")
-def panther_core_launch() -> LaunchDescription:
+def panther_core_launch(request: SubRequest) -> LaunchDescription:
     """Fixture to create launch file for panther core and controllers.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description for the panther core and controllers.
@@ -33,7 +37,10 @@ def panther_core_launch() -> LaunchDescription:
     Vehicle(platform="panther", position=[0, 0, 0.2], namespace=namespace)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
-        launch_arguments={"rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
+        },
     )
     return Register.connect_context([launch])
 

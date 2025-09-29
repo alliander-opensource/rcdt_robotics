@@ -7,6 +7,7 @@ import launch_pytest
 import numpy as np
 import pytest
 import rclpy
+from _pytest.fixtures import SubRequest
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from launch import LaunchDescription
@@ -30,8 +31,11 @@ namespace_lidar = "velodyne"
 
 
 @launch_pytest.fixture(scope="module")
-def panther_launch() -> LaunchDescription:
+def panther_launch(request: SubRequest) -> LaunchDescription:
     """Fixture to create launch file for panther robot.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description for the panther robot.
@@ -45,7 +49,10 @@ def panther_launch() -> LaunchDescription:
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle, namespace=namespace_lidar)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
-        launch_arguments={"rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
+        },
     )
     return Register.connect_context([launch])
 

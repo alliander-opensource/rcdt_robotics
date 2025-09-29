@@ -5,6 +5,7 @@
 
 import launch_pytest
 import pytest
+from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_launch.robot import Camera
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
@@ -17,8 +18,11 @@ namespace = "realsense"
 
 
 @launch_pytest.fixture(scope="module")
-def launch() -> LaunchDescription:
+def launch(request: SubRequest) -> LaunchDescription:
     """Fixture to create launch file for the realsense test.
+
+    Args:
+        request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
         LaunchDescription: The launch description for the realsense test.
@@ -26,7 +30,10 @@ def launch() -> LaunchDescription:
     Camera(platform="realsense", position=[0, 0, 0.5], namespace=namespace)
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
-        launch_arguments={"rviz": "False"},
+        launch_arguments={
+            "rviz": "False",
+            "simulation": request.config.getoption("simulation"),
+        },
     )
     return Register.connect_context([launch])
 
