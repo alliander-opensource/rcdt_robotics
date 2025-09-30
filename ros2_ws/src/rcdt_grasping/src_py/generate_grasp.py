@@ -118,7 +118,12 @@ class GenerateGrasp(Node):
         return response
 
     def grasps_to_ros_msg(self, grasps: GraspGroup) -> list[Grasp]:
-        """Convert the GraspGroup to a list of ROS Grasp messages.
+        """Convert a GraspGroup into a list of ROS Grasp messages.
+
+        Each grasp is transformed from the GraspNet frame into the frame of the gripper by
+        applying a fixed axis remapping (X → Z, Z → -X, Y → Y). The resulting
+        rotation matrix is converted to a quaternion and, together with the grasp
+        translation, used to populate the ROS message fields.
 
         Args:
             grasps (GraspGroup): The GraspGroup containing the grasps to be converted.
@@ -128,24 +133,22 @@ class GenerateGrasp(Node):
         """
         msgs: list[Grasp] = []
 
-        desired_dir = np.array([0.0, 0.0, -1.0])
-        tool_axis_local = np.array([0.0, 0.0, -1.0])
-        rotation_x = Rotation.from_euler("x", -90, degrees=True)
+        remap_matrix = np.array(
+            [
+                [0, 0, -1],  # new X = old Z
+                [0, 1, 0],  # new Y = old Y
+                [1, 0, 0],  # new Z = old X
+            ]
+        )
 
         for g in grasps:
             t = np.asarray(g.translation, dtype=float).reshape(3)
             rotation_matrix = np.asarray(
-                getattr(g, "rotation", g.rotation_matrix), dtype=float
+                getattr(g, "rotation", g.rotation_matrix), float
             ).reshape(3, 3)
 
-            rotation_orig = Rotation.from_matrix(rotation_matrix)
-
-            rotation_new = rotation_x * rotation_orig
-            tool_axis_cam = rotation_new.apply(tool_axis_local)
-            if np.dot(tool_axis_cam, desired_dir) < 0.0:
-                rotation_new *= Rotation.from_euler("x", 180, degrees=True)
-
-            qx, qy, qz, qw = rotation_new.as_quat()
+            rotation_new = rotation_matrix @ remap_matrix.T
+            qx, qy, qz, qw = Rotation.from_matrix(rotation_new).as_quat()
 
             m = Grasp()
             m.pose.header.frame_id = self.depth_frame_id
