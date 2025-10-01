@@ -17,28 +17,33 @@ class SettingsSetter(Node):
     def __init__(self):
         """Initialize the SettingsSetter node."""
         super().__init__("settings_setter")
+        namespace = self.get_namespace().lstrip("/")
         self.client = self.create_client(
             SetForceTorqueCollisionBehavior,
-            "/franka/service_server/set_force_torque_collision_behavior",
+            f"/{namespace}/service_server/set_force_torque_collision_behavior",
         )
-        while not self.client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info("service not available, waiting again...")
-        self.request = SetForceTorqueCollisionBehavior.Request()
+        self.set_thresholds()
 
-    def set_thresholds(self) -> SetForceTorqueCollisionBehavior.Response:
+    def set_thresholds(self) -> None:
         """Set the force and torque thresholds for the Franka robot.
 
         This method sends a request to the service to set the upper torque and force thresholds
         to predefined maximum values.
-
-        Returns:
-            SetForceTorqueCollisionBehavior.Response: The response from the service indicating success or failure.
         """
-        self.request.upper_torque_thresholds_nominal = MAX_TORQUES
-        self.request.upper_force_thresholds_nominal = MAX_FORCES
-        future = self.client.call_async(self.request)
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info("service not available, waiting again...")
+
+        request = SetForceTorqueCollisionBehavior.Request()
+        request.upper_torque_thresholds_nominal = MAX_TORQUES
+        request.upper_force_thresholds_nominal = MAX_FORCES
+        future = self.client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
-        return future.result()
+        response: SetForceTorqueCollisionBehavior.Response = future.result()
+
+        if response.success:
+            self.get_logger().info("Thresholds set successfully.")
+        else:
+            self.get_logger().warn("Setting thresholds failed.")
 
 
 def main(args: list | None = None) -> None:
@@ -49,11 +54,6 @@ def main(args: list | None = None) -> None:
     """
     rclpy.init(args=args)
     settings_setter = SettingsSetter()
-    response = settings_setter.set_thresholds()
-    if response.success:
-        settings_setter.get_logger().info("Thresholds set successfully.")
-    else:
-        settings_setter.get_logger().warn("Setting thresholds failed.")
     settings_setter.destroy_node()
     rclpy.shutdown()
 

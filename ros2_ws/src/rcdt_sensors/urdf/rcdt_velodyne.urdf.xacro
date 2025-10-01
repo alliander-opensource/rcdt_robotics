@@ -17,6 +17,7 @@ Based on:
     params="
     *origin 
     namespace
+    parent
     name:=velodyne
     update_rate:=10 
     lasers:=16 
@@ -73,6 +74,17 @@ Based on:
       </visual>
     </link>
 
+    <!-- Gazebo requires a joint to a link called "world" for statically mounted robots -->
+    <xacro:if value="${parent != ''}">
+      <xacro:if value="${parent == 'world'}">
+        <link name="${parent}" />
+        <joint name="${parent}_joint" type="fixed">
+          <parent link="${parent}" />
+          <child link="base_link" />
+        </joint>
+      </xacro:if>
+    </xacro:if>
+
     <gazebo reference="${name}">
       <sensor type="gpu_lidar" name="${namespace}">
         <always_on>true</always_on>
@@ -115,7 +127,9 @@ Based on:
 
   </xacro:macro>
 
-  <xacro:VLP-16 namespace="velodyne">
+  <xacro:arg name="namespace" default="velodyne" />
+  <xacro:arg name="parent" default="" />
+  <xacro:VLP-16 namespace="$(arg namespace)" parent="$(arg parent)">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:VLP-16>
 </robot>

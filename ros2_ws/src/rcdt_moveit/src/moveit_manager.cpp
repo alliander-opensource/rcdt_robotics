@@ -19,7 +19,7 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
           moveit::planning_interface::MoveGroupInterface::Options(
               "fr3_arm",
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
-              "/franka")),
+              node->get_namespace())),
       moveit_visual_tools(node, "base", "/rviz_markers") {
 
   moveit_visual_tools.loadMarkerPub(false);

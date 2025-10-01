@@ -10,3 +10,4 @@ planner_server:
     GridBased:
       plugin: "nav2_smac_planner::SmacPlannerHybrid"
       minimum_turning_radius: 0.0
+

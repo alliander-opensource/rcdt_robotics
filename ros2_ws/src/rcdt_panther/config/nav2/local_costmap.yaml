@@ -7,5 +7,5 @@
 local_costmap:
   local_costmap:
     ros__parameters:
-      global_frame: panther/odom
-      robot_base_frame: panther/base_footprint
+      global_frame: substitute_me
+      robot_base_frame: substitute_me
