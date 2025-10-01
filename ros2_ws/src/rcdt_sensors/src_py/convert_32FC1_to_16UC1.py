@@ -25,12 +25,13 @@ class Convert32FC1to16UC1(Node):
     def __init__(self) -> None:
         """Initialize the Convert32FC1to16UC1 node."""
         super().__init__("convert_32FC1_to_16UC1_node")
+        namespace = self.get_namespace().strip("/")
 
         self.create_subscription(
-            Image, "/franka/realsense/depth/image_rect_raw_float", self.callback, 10
+            Image, f"/{namespace}/depth/image_rect_raw_float", self.callback, 10
         )
         self.publisher = self.create_publisher(
-            Image, "/franka/realsense/depth/image_rect_raw", 10
+            Image, f"/{namespace}/depth/image_rect_raw", 10
         )
 
     def callback(self, msg: Image) -> None:

@@ -29,6 +29,7 @@ class WaypointFollowerController(Node):
         """
         super().__init__("waypoint_follower_controller")
         self.executor = executor
+        self.namespace = self.get_namespace().lstrip("/")
 
         cb_waypoints = MutuallyExclusiveCallbackGroup()
         cb_stop = MutuallyExclusiveCallbackGroup()
@@ -39,13 +40,13 @@ class WaypointFollowerController(Node):
         self.create_service(Trigger, "~/stop", self.cb_stop, callback_group=cb_stop)
 
         self.follow_waypoints_action_client = ActionClient(
-            self, FollowWaypoints, "/follow_waypoints"
+            self, FollowWaypoints, f"/{self.namespace}/follow_waypoints"
         )
         self.follow_waypoints_goal_handle: ClientGoalHandle | None = None
         self.follow_waypoints_goal = FollowWaypoints.Goal()
 
         self.navigate_to_pose_cancel_service_client = self.create_client(
-            CancelGoal, "/navigate_to_pose/_action/cancel_goal"
+            CancelGoal, f"/{self.namespace}/navigate_to_pose/_action/cancel_goal"
         )
 
         self.get_logger().info("Controller is ready.")

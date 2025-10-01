@@ -21,7 +21,7 @@ The physical robot can be started with the following steps:
 - Start the Logitech gamepad:
   - press Logitech button.
   - press *mode* button if mode light is on (should be off).
-  - put the switch at the back on *D*.
+  - put the switch at the back on *X*.
 - Remove the E_STOP by *Left Trigger + A* on the gamepad.
 - You can drive by pressing *Left Button* and use the two joysticks.
 - You can enable the E_STOP by pressing *B*.

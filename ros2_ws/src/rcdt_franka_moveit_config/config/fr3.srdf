@@ -11,7 +11,7 @@ does not replace URDF, and is not an extension of URDF.
     A URDF file must exist for this robot as well, where the joints and the links that are referenced
 are defined
 -->
-<robot name="fr3">
+<robot name="franka">
     <!--GROUPS:
     Representation of a set of joints and links. This can be useful for specifying DOF to plan for,
     defining arms, end effectors, etc-->
@@ -29,7 +29,6 @@ are defined
     <!--SUBGROUPS:
     Groups can also be formed by referencing to already defined group names-->
     <group name="fr3_arm">
-        <joint name="base_joint" />
         <joint name="fr3_joint1" />
         <joint name="fr3_joint2" />
         <joint name="fr3_joint3" />
@@ -37,12 +36,6 @@ are defined
         <joint name="fr3_joint5" />
         <joint name="fr3_joint6" />
         <joint name="fr3_joint7" />
-        <joint name="fr3_joint8" />
-    </group>
-    <group name="franka_hand">
-        <link name="fr3_hand" />
-        <link name="fr3_leftfinger" />
-        <link name="fr3_rightfinger" />
     </group>
     <!--GROUP_STATES:
     Purpose: Define a named state for a particular group, in terms of joint values. This is
@@ -68,7 +61,6 @@ are defined
 
     <!--END_EFFECTOR:
     Purpose: Represent information about an end effector.-->
-    <end_effector name="franka_hand" parent_link="fr3_link8" group="franka_hand" />
     <!--DISABLE_COLLISIONS:
     By default it is assumed that any link of the robot could potentially come into
     collision with any other link in the robot. This tag disables collision checking between a
