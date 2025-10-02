@@ -86,8 +86,16 @@ class Platform:  # noqa: PLR0904
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
         When launching a vehicle with Nav2, lidar sensor output is required.
         Therefore we load a lidar before a vehicle.
+
+        Raises:
+            ValueError: If an unknown platform is encountered.
         """
-        order = ["franka", "velodyne", "realsense", "panther"]
+        order = ["franka", "velodyne", "realsense", "panther", "nmea"]
+
+        for platform in Platform.platforms:
+            if platform.platform not in order:
+                raise ValueError(f"Unknown platform to order: {platform.platform}")
+
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
@@ -265,7 +273,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(
         self,
-        platform: Literal["panther", "franka", "velodyne", "realsense"],
+        platform: Literal["panther", "franka", "velodyne", "realsense", "nmea"],
         position: list,
         namespace: str | None = None,
         parent: "Platform" | None = None,
@@ -273,12 +281,12 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "realsense"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "realsense", "nmea"]): The platform type of the robot.
             position (list): The initial position of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
-        self.platform: Literal["panther", "franka", "velodyne", "realsense"] = platform
+        self.platform = platform
         self.parent = parent
         self.childs = []
         Platform.add(self)
@@ -364,8 +372,12 @@ class Platform:  # noqa: PLR0904
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
                 )
+            case "nmea":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro"
+                )
             case _:
-                raise ValueError("Unknown platform.")
+                raise ValueError("Cannot provide xacro path: unknown platform.")
 
     @property
     def base_link(self) -> str:
@@ -379,12 +391,14 @@ class Platform:  # noqa: PLR0904
         """
         match self.platform:
             case "panther":
-                return "base_footprint"
+                return "base_link"
             case "franka":
                 return "fr3_link0"
             case "velodyne":
                 return "base_link"
             case "realsense":
+                return "base_link"
+            case "nmea":
                 return "base_link"
             case _:
                 raise ValueError("Unable to provide base_link: Unknown platform.")
@@ -873,4 +887,31 @@ class Vehicle(Platform):
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
             },
+        )
+
+
+class GPS(Platform):
+    """Extension on Platform with GPS specific functionalities."""
+
+    def __init__(  # noqa: PLR0913
+        self,
+        platform: Literal["nmea"],
+        position: list,
+        namespace: str | None = None,
+        parent: Platform | None = None,
+    ):
+        """Initialize the GPS platform.
+
+        Args:
+            platform (Literal["nmea"]): The platform type.
+            position (list): The position of the vehicle.
+            namespace (str | None): The namespace of the vehicle.
+            parent (Platform | None): The parent platform.
+        """
+        super().__init__(platform, position, namespace, parent)
+        self.platform = platform
+        self.namespace = self.namespace
+
+        Platform.bridge_topics.append(
+            f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
