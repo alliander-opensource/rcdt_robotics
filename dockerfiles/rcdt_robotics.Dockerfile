@@ -11,6 +11,12 @@ RUN ./ros2_jazzy.sh
 COPY ./install_scripts/core_packages.sh .
 RUN ./core_packages.sh
 
+COPY ./install_scripts/zed_sdk.sh .
+RUN ./zed_sdk.sh
+
+COPY ./install_scripts/zed_wrapper.sh .
+RUN ./zed_wrapper.sh
+
 COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
 
