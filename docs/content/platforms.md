@@ -10,7 +10,13 @@ This page describes the use of the different platforms we support.
 
 ## Franka
 
-### Quick start
+![Franka](../img/franka/franka.png)
+
+### Simulation Franka
+
+A Franka arm can be launched in simulation by creating a configuration with an *Arm* of type *franka*.
+
+### Hardware Franka
 
 - The robot needs to be connected with it's control box.
 - Flip the switch on the control box to start the robot.
@@ -22,7 +28,6 @@ In the web-interface, settings can be changed and the joints can be (un)locked. 
 
 ```text
 # .env
-FRANKA_HOSTNAME=your-hostname
 FRANKA_USERNAME=your-username
 FRANKA_PASSWORD=your-password
 ```
@@ -32,7 +37,17 @@ We created a fork with robot-specific enhancements: [https://github.com/alliande
 
 ## Panther
 
-### Quick start
+![Panther](../img/panther/panther.png)
+
+### Simulation Panther
+
+A Panther vehicle can be launched in simulation by creating a configuration with an *Vehicle* of type *Panther*. Note that the E-Stop is triggered by default and needs to be released before driving is possible. This can be done by a service call:
+
+```bash
+ros2 service call /panther/hardware/e_stop_reset std_srvs/srv/Trigger {}
+```
+
+### Hardware Panther
 
 - Enable the battery (switch at the front of the robot).
 - Start the robot (press red power button).
@@ -46,6 +61,12 @@ We created a fork with robot-specific enhancements: [https://github.com/alliande
 - You can drive by pressing *Left Button* and use the two joysticks.
 - You can enable the E_STOP by pressing *B*.
 - See [this](https://husarion.com/manuals/panther/software/ros2/robot-management/#gamepad) for more information about gamepad control.
+
+One can enable the high voltage system of the Panther (for example to power an Arm) using a service call:
+
+```bash
+ros2 service call /panther/hardware/aux_power_enable std_srvs/srv/SetBool "{data: true}"
+```
 
 The robot can be shut down as follows:
 
@@ -70,3 +91,41 @@ We have also cloned the [nmea-gps-docker](https://github.com/husarion/nmea-gps-d
 **Lenovo ThinkStation P360**
 \
 The *Lenovo ThinkStation P360* is a powerful computer, used to handle the camera stream. We can run our docker image on this built in computer.
+
+## Realsense
+
+![Realsense](../img/realsense/realsense.png)
+
+### Simulation Realsense
+
+A Realsense camera can be launched in simulation by creating a configuration with an *Camera* of type *realsense*.
+
+### Hardware Realsense
+
+One can use a Realsense by connecting it with the host device using USB.
+
+## Velodyne
+
+![Velodyne](../img/velodyne/velodyne.png)
+
+### Simulation Velodyne
+
+A Velodyne lidar can be launched in simulation by creating a configuration with an *Lidar* of type *velodyne*.
+
+### Hardware Velodyne
+
+When using the Velodyne lidar, make sure that the IP-address of the host device (where the velodyne node is running) is set correctly in the settings. One can edit the settings of the velodyne using a web interface on it's IP-adress.
+
+| ![Velodyne settings](../img/velodyne/velodyne_settings.png) | ![Teltonika settings](../img/teltonika/teltonika_settings.png) |
+|-------------------------------------------------------------|----------------------------------------------------------------|
+| velodyne settings                                           | teltonika settings                                             |
+
+## Teltonika GPS
+
+![Teltonika](../img/teltonika/teltonika.png)
+
+### Simulation Teltonika
+
+A Teltonika GPS can be launched in simulation by creating a configuration with an *GPS* of type *teltonika*.
+
+### Hardware Teltonika

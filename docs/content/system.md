@@ -10,7 +10,7 @@ This page gives an overview of the structure and mechanisms we use in our system
 
 ## Modular Launch System
 
-We created a modular launch system that can be used to launch any combination of the 'platforms' we support. We see both sensors and robots as platforms and divide them in the categories *arm*, *vehicle*, *camera* and *lidar*. Any desired combination of platforms can be launched using:
+We created a modular launch system that can be used to launch any combination of the 'platforms' we support. We see both sensors and robots as platforms and divide them in the categories *arm*, *vehicle*, *camera*, *lidar* and *gps*. Any desired combination of platforms can be launched using:
 
 ```bash
 ros2 launch rcdt_launch robots.launch
@@ -20,13 +20,43 @@ When we directly launch this file without passing a desired configuration, the s
 
 ### Modular Configuration
 
-Each platform class will be initialized by at least defining the specific **platform** type. For example, for a camera we support the types *realsense* or *Zed*, related to the different camera types we support. Furthermore we need to specify the **position** of the platform. Next, we can choose to pass a desired **namespace** for the platform, but when not given, a unique namespace will be defined automatically. Finally, we can pass another created platform as a **parent**, where our system will automatically make the required links to combine the two platforms.
+Each platform class will be initialized by at least defining the specific **platform** type. For example, for a camera we support the types *realsense* or *Zed*, related to the different camera types we support. Furthermore we need to specify the **position** of the platform. Next, we can choose to pass a desired **namespace** for the platform, but when not given, a unique namespace will be defined automatically. Finally, we can pass another created platform as a **parent**, where our system will automatically make the required links to combine the two platforms. Some platforms have additional parameters the can be used during initialization. For example: we can define whether we like to use MoveIt or Navigation for an arm or a vehicle respectively.
 
-Some platforms have additional parameters the can be used during initialization. For example: we can define whether we like to use MoveIt or Navigation for an arm or a vehicle respectively. All the nodes required for the selected configuration are automatically started by the launch file.
+### Nodes Started
+
+ All the nodes required for the selected configuration are automatically started by the launch file. For each platform, the following nodes are started:
+
+ **robot_state_publisher:**
+
+- publishes URDF to `/robot_description`
+- updates `/tf` tree based on `/joint_states`
+
+ **static_transform_publisher (links with map frame):**
+
+- Only used for platforms that have no parent (and thus need to be linked to the world)
+- Adds a link between the platform and the map frame to `/tf_static`
+
+ **static_transform_publisher (links with parent):**
+
+- Only used for platforms that have a parent
+- Adds a link between the platform and it's parent to `/tf_static`
+
+With these nodes, a correct *tf tree* is created for the whole system. The other nodes that are automatically started by the launch file are:
+
+- Gazebo (when using simulation)
+- Hardware interfaces (when using hardware)
+- Controllers (for the robots)
+- Joystick nodes
+- Platform specific nodes (like MoveIt or Nav2)
+- Visualization tools (like RViz or Vizanti)
 
 ### Visualization Libraries
 
-To visualize the state of our platforms, we use [RViz](https://github.com/ros2/rviz) and [Vizanti](https://github.com/MoffKalast/vizanti). These libraries use their own configuration files to define what kind of visualizations should be active. We implemented automatic creation of these configuration files, based on the configuration that is passed to the launch file. For example, when the platform configuration is a vehicle with a lidar where navigation is enabled, Rviz starts with the automatically created configuration showing the robot models, lidar scan, maps and planned path.
+To visualize the state of our platforms, we use [RViz](https://github.com/ros2/rviz) and [Vizanti](https://github.com/MoffKalast/vizanti). When RViz is used, a window is automatically opens during launch. When using Vizanti, a server is started wherafter the interface can be reached on [http://127.0.0.1:5000](http://127.0.0.1:5000/):
+
+![Vizanti](../img/system/vizanti.png)
+
+Both libraries use their own configuration files to define what kind of visualizations should be active. We implemented automatic creation of these configuration files, based on the configuration that is passed to the launch file. For example, when the platform configuration is a vehicle with a lidar where navigation is enabled, Rviz starts with the automatically created configuration showing the robot models, lidar scan, maps and planned path:
 
 ![RViz](../img/system/rviz.png)
 
