@@ -49,40 +49,6 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
     </gazebo>
   </xacro:macro>
 
-  <!-- Detachable joint: -->
-  <xacro:macro name="detachable_joint" params="connected_to:=''">
-    <xacro:if value="${connected_to == 'franka'}">
-      <gazebo>
-        <plugin filename="gz-sim-detachable-joint-system"
-          name="gz::sim::systems::DetachableJoint">
-          <parent_link>base_link</parent_link>
-          <child_model>franka</child_model>
-          <child_link>fr3_link0</child_link>
-        </plugin>
-      </gazebo>
-    </xacro:if>
-    <xacro:if value="${connected_to == 'velodyne'}">
-      <gazebo>
-        <plugin filename="libignition-gazebo-detachable-joint-system.so"
-          name="ignition::gazebo::systems::DetachableJoint">
-          <parent_link>base_link</parent_link>
-          <child_model>VLP-16</child_model>
-          <child_link>base_link</child_link>
-        </plugin>
-      </gazebo>
-    </xacro:if>
-    <xacro:if value="${connected_to == 'navsat'}">
-      <gazebo>
-        <plugin filename="libignition-gazebo-detachable-joint-system.so"
-          name="ignition::gazebo::systems::DetachableJoint">
-          <parent_link>base_link</parent_link>
-          <child_model>nmea_navsat</child_model>
-          <child_link>gps_mounting_point</child_link>
-        </plugin>
-      </gazebo>
-    </xacro:if>
-  </xacro:macro>
-  
   <!-- Gauss noise macro -->
   <xacro:macro name="gauss_noise"
     params="mean:=0.0 stddev:=0.0 bias_mean:=0.0 bias_stddev:=0.0 precision:=0.0">
