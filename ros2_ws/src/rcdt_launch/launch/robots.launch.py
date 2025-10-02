@@ -5,7 +5,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
-from rcdt_launch.robot import Arm, Camera, Lidar, Platform, Vehicle
+from rcdt_launch.robot import GPS, Arm, Camera, Lidar, Platform, Vehicle
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
@@ -20,12 +20,14 @@ configuration_arg = LaunchArgument(
     "",
     [
         "",
+        "gps",
         "lidar",
         "realsense",
         "franka",
         "franka_double",
         "franka_realsense",
         "panther",
+        "panther_gps",
         "panther_realsense",
         "panther_lidar",
         "mm",
@@ -34,7 +36,7 @@ configuration_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
+def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     """Setup the launch description for the Panther robot.
 
     Args:
@@ -59,6 +61,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     use_joystick = True
 
     match configuration:
+        case "gps":
+            GPS("nmea", [0, 0, 0.5])
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
         case "realsense":
@@ -77,6 +81,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             Camera("realsense", [0, 0, 0.5], parent=arm)
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
+        case "panther_gps":
+            panther = Vehicle("panther", [0, 0, 0.2])
+            GPS("nmea", [0, 0, 0.2], parent=panther)
         case "panther_realsense":
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("realsense", [0, 0, 0.5], parent=panther)
