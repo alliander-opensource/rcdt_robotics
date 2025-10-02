@@ -90,7 +90,7 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If an unknown platform is encountered.
         """
-        order = ["franka", "velodyne", "realsense", "zed", "panther"]
+        order = ["franka", "velodyne", "realsense", "zed", "nmea", "panther"]
 
         for platform in Platform.platforms:
             if platform.platform not in order:
@@ -273,7 +273,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(
         self,
-        platform: Literal["panther", "franka", "velodyne", "realsense", "zed"],
+        platform: Literal["panther", "franka", "velodyne", "realsense", "zed", "nmea"],
         position: list,
         namespace: str | None = None,
         parent: "Platform" | None = None,
@@ -281,14 +281,12 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "realsense", "zed"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "realsense", "zed", "nmea"]): The platform type of the robot.
             position (list): The initial position of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
-        self.platform: Literal["panther", "franka", "velodyne", "realsense", "zed"] = (
-            platform
-        )
+        self.platform = platform
         self.parent = parent
         self.childs = []
         Platform.add(self)
@@ -376,8 +374,12 @@ class Platform:  # noqa: PLR0904
                 )
             case "zed":
                 return get_file_path("rcdt_sensors", ["urdf"], "rcdt_zed2i.urdf.xacro")
+            case "nmea":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro"
+                )
             case _:
-                raise ValueError("Unknown platform.")
+                raise ValueError("Cannot provide xacro path: unknown platform.")
 
     @property
     def base_link(self) -> str:
@@ -391,7 +393,7 @@ class Platform:  # noqa: PLR0904
         """
         match self.platform:
             case "panther":
-                return "base_footprint"
+                return "base_link"
             case "franka":
                 return "fr3_link0"
             case "velodyne":
@@ -399,6 +401,8 @@ class Platform:  # noqa: PLR0904
             case "realsense":
                 return "base_link"
             case "zed":
+                return "base_link"
+            case "nmea":
                 return "base_link"
             case _:
                 raise ValueError("Unable to provide base_link: Unknown platform.")
@@ -903,4 +907,31 @@ class Vehicle(Platform):
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
             },
+        )
+
+
+class GPS(Platform):
+    """Extension on Platform with GPS specific functionalities."""
+
+    def __init__(  # noqa: PLR0913
+        self,
+        platform: Literal["nmea"],
+        position: list,
+        namespace: str | None = None,
+        parent: Platform | None = None,
+    ):
+        """Initialize the GPS platform.
+
+        Args:
+            platform (Literal["nmea"]): The platform type.
+            position (list): The position of the vehicle.
+            namespace (str | None): The namespace of the vehicle.
+            parent (Platform | None): The parent platform.
+        """
+        super().__init__(platform, position, namespace, parent)
+        self.platform = platform
+        self.namespace = self.namespace
+
+        Platform.bridge_topics.append(
+            f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
