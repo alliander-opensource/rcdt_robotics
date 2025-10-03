@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from launch_ros.actions import Node
@@ -104,13 +105,16 @@ class Platform:  # noqa: PLR0904
         """
         robots = [robot.namespace for robot in Platform.platforms]
         positions = [",".join(map(str, robot.position)) for robot in Platform.platforms]
-
+        orientations = [
+            ",".join(map(str, robot.orientation)) for robot in Platform.platforms
+        ]
         return RegisteredLaunchDescription(
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
             launch_arguments={
                 "load_gazebo_ui": str(load_gazebo_ui),
                 "robots": " ".join(robots),
                 "positions": " ".join(positions),
+                "orientation": " ".join(orientations),
                 "bridge_topics": " ".join(Platform.bridge_topics),
             },
         )
@@ -289,12 +293,15 @@ class Platform:  # noqa: PLR0904
         if parent is None:
             self.is_child = False
             self.position = position
+            self.orientation = [0, 0, 0, 1]
         else:
             self.is_child = True
             self.relative_position = position
             self.position = [
                 sum(x) for x in zip(parent.position, position, strict=False)
             ]
+            theta = math.radians(90)
+            self.orientation = [0, math.sin(theta / 2), 0, math.cos(theta / 2)]
             parent.add_child(self)
 
     @property
@@ -434,6 +441,14 @@ class Platform:  # noqa: PLR0904
                 f"{self.relative_position[1]}",
                 "--z",
                 f"{self.relative_position[2]}",
+                "--qx",
+                f"{self.orientation[0]}",
+                "--qy",
+                f"{self.orientation[1]}",
+                "--qz",
+                f"{self.orientation[2]}",
+                "--qw",
+                f"{self.orientation[3]}",
             ],
         )
 
@@ -479,6 +494,14 @@ class Platform:  # noqa: PLR0904
                 f"{self.position[1]}",
                 "--z",
                 f"{self.position[2]}",
+                "--qx",
+                f"{self.orientation[0]}",
+                "--qy",
+                f"{self.orientation[1]}",
+                "--qz",
+                f"{self.orientation[2]}",
+                "--qw",
+                f"{self.orientation[3]}",
             ],
         )
 
@@ -645,6 +668,7 @@ class Arm(Platform):
         moveit: bool = False,
         gripper: bool = False,
         ip_address: str = "",
+        graspnet: bool = False,
     ):
         """Initialize the Arm platform.
 
@@ -656,12 +680,14 @@ class Arm(Platform):
             moveit (bool): Whether to use MoveIt for the arm.
             gripper (bool): Whether to add a start the gripper services.
             ip_address (str): The IP address of the arm.
+            graspnet (bool): Whether to start the GraspNet node for the arm.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
         self.moveit = moveit
         self.gripper = gripper
         self.ip_address = ip_address
+        self.graspnet = graspnet
 
         self.camera: Camera | None = None
 
@@ -680,6 +706,19 @@ class Arm(Platform):
             launch_descriptions.append(self.create_gripper_launch())
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
+        if self.graspnet:
+            launch_descriptions.append(
+                RegisteredLaunchDescription(
+                    get_file_path("rcdt_grasping", ["launch"], "grasping.launch.py"),
+                    launch_arguments={
+                        "namespace_arm": self.namespace,
+                        "namespace_camera": self.camera.namespace
+                        if self.camera
+                        else None,
+                    },
+                )
+            )
+
         return launch_descriptions
 
     def joystick_nodes(self) -> list[Node]:

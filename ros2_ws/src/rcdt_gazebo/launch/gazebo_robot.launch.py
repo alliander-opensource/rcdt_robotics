@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import math
 import xml.etree.ElementTree as ET
 
 from launch import LaunchContext, LaunchDescription
@@ -16,6 +17,7 @@ load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "walls.sdf")
 robots_arg = LaunchArgument("robots", "")
 positions_arg = LaunchArgument("positions", "")
+orientation_arg = LaunchArgument("orientation", "0,0,0,1")
 bridge_topics_arg = LaunchArgument("bridge_topics", "")
 
 
@@ -35,6 +37,7 @@ def launch_setup(context: LaunchContext) -> list:
     world = world_arg.string_value(context)
     robots = robots_arg.string_value(context).split()
     positions = positions_arg.string_value(context).split()
+    orientations = orientation_arg.string_value(context).split()
     bridge_topics = bridge_topics_arg.string_value(context).split()
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
@@ -61,9 +64,21 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     spawn_robots: list[Node] = []
-    for robot, position in zip(robots, positions, strict=False):
+    for robot, position, orientation in zip(
+        robots, positions, orientations, strict=False
+    ):
         namespace = "" if not robot else f"/{robot}"
         x, y, z = position.split(",")
+        qx, qy, qz, qw = orientation.split(",")
+        roll, pitch, yaw = 0, 0, 0
+        if robot in {"realsense1", "realsense"}:
+            roll = 0
+            pitch = math.radians(90)
+            yaw = 0
+
+        print(
+            f"Spawning robot '{robot}' at position {position} with orientation {roll, pitch, yaw} in world '{world_name}'"
+        )
         spawn_robot = Node(
             package="ros_gz_sim",
             executable="create",
@@ -78,6 +93,12 @@ def launch_setup(context: LaunchContext) -> list:
                 str(y),
                 "-z",
                 str(z),
+                "-P",
+                str(pitch),
+                "-R",
+                str(roll),
+                "-Y",
+                str(yaw),
             ],
             output="screen",
         )
@@ -125,6 +146,7 @@ def generate_launch_description() -> LaunchDescription:
             world_arg.declaration,
             robots_arg.declaration,
             positions_arg.declaration,
+            orientation_arg.declaration,
             bridge_topics_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

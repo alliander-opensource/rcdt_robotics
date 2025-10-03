@@ -73,8 +73,15 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
             Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
         case "franka_realsense":
-            arm = Arm("franka", [0, 0, 0])
-            Camera("realsense", [0, 0, 0.5], parent=arm)
+            arm = Arm(
+                "franka",
+                position=[0, 0, 0],
+                namespace="franka",
+                gripper=True,
+                moveit=True,
+                graspnet=True,
+            )
+            Camera("realsense", [0.33, 0, 0.570], parent=arm, namespace="realsense")
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
         case "panther_realsense":
