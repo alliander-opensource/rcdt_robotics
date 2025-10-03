@@ -20,11 +20,12 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               "fr3_arm",
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               node->get_namespace())),
-      moveit_visual_tools(node, "base", "/rviz_markers") {
+      moveit_visual_tools(node, "franka/fr3_link0", "/rviz_markers") {
 
   moveit_visual_tools.loadMarkerPub(false);
-  move_group.setEndEffectorLink("fr3_hand_tcp");
-  joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");
+  move_group.setEndEffectorLink("franka/fr3_hand_tcp");
+  joint_model_group =
+      move_group.getRobotModel()->getJointModelGroup("franka/fr3_arm");
 
   initialize_clients();
   initialize_services();
@@ -169,7 +170,7 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
 PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
-  request->target_frame = "base";
+  request->target_frame = "franka/fr3_link0";
   auto future = express_pose_in_other_frame_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
   auto response = future.get();

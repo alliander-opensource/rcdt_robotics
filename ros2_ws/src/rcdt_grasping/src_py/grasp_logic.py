@@ -18,7 +18,7 @@ from rcdt_messages.srv import (
     MoveHandToPose,
     MoveToConfiguration,
 )
-from rcdt_utilities.launch_utils import spin_node
+from rcdt_utilities.launch_utils import LaunchArgument, spin_node
 from rclpy import logging
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.client import Client
@@ -28,6 +28,8 @@ from sensor_msgs.msg import CameraInfo, Image
 from std_srvs.srv import Trigger
 
 ros_logger = logging.get_logger(__name__)
+namespace_arm = LaunchArgument("namespace_arm", "franka")
+namespace_camera = LaunchArgument("namespace_camera", "realsense")
 
 TIMEOUT = 30.0
 
@@ -71,13 +73,23 @@ class GraspLogic(Node):
     def __init__(self) -> None:
         """Initialize the GraspLogic node."""
         super().__init__("grasp_logic_node")
+        self.declare_parameter("namespace_arm", "")
+        self.declare_parameter("namespace_camera", "")
+        namespace_arm = (
+            self.get_parameter("namespace_arm").get_parameter_value().string_value
+        )
+        namespace_camera = (
+            self.get_parameter("namespace_camera").get_parameter_value().string_value
+        )
 
-        self.color = Message(topic="/franka/realsense/color/image_raw", msg_type=Image)
+        self.color = Message(
+            topic=f"{namespace_camera}/color/image_raw", msg_type=Image
+        )
         self.depth = Message(
-            topic="/franka/realsense/depth/image_rect_raw_float", msg_type=Image
+            topic=f"{namespace_camera}/depth/image_rect_raw_float", msg_type=Image
         )
         self.camera_info = Message(
-            topic="/franka/realsense/depth/camera_info", msg_type=CameraInfo
+            topic=f"{namespace_camera}/depth/camera_info", msg_type=CameraInfo
         )
         self.cb_group = ReentrantCallbackGroup()
 
@@ -90,25 +102,26 @@ class GraspLogic(Node):
         )
 
         self.define_goal_pose_client = self.create_client(
-            DefineGoalPose, "/franka/moveit_manager/define_goal_pose"
+            DefineGoalPose, f"/{namespace_arm}/moveit_manager/define_goal_pose"
         )
         self.move_hand_to_pose_client = self.create_client(
-            MoveHandToPose, "/franka/moveit_manager/move_hand_to_pose"
+            MoveHandToPose, f"/{namespace_arm}/moveit_manager/move_hand_to_pose"
         )
 
         self.marker_client = self.create_client(
-            AddMarker, "/franka/moveit_manager/add_marker"
+            AddMarker, f"/{namespace_arm}/moveit_manager/add_marker"
         )
         self.open_gripper_client = self.create_client(
-            Trigger, "/franka/open_gripper", callback_group=self.cb_group
+            Trigger, f"/{namespace_arm}/open_gripper", callback_group=self.cb_group
         )
 
         self.close_gripper_client = self.create_client(
-            Trigger, "/franka/close_gripper", callback_group=self.cb_group
+            Trigger, f"/{namespace_arm}/close_gripper", callback_group=self.cb_group
         )
 
         self.move_to_configuration_client = self.create_client(
-            MoveToConfiguration, "/franka/moveit_manager/move_to_configuration"
+            MoveToConfiguration,
+            f"/{namespace_arm}/moveit_manager/move_to_configuration",
         )
 
         for name, client in [
@@ -200,11 +213,19 @@ class GraspLogic(Node):
             return response
 
         best_grasp: Grasp = graspnet_response.grasps[0]
-        ros_logger.info(f"Number of grasps received: {len(graspnet_response.grasps)}")
+        ros_logger.info(
+            f"Number of grasps received: {len(graspnet_response.grasps)} with best grasp: {best_grasp}"
+        )
         ros_logger.info("Calling grasping movement service...")
 
         define_goal_pose = DefineGoalPose.Request()
         define_goal_pose.pose = best_grasp.pose
+
+        add_marker = AddMarker.Request()
+        add_marker.marker_pose = best_grasp.pose
+        _ = self._call(self.marker_client, add_marker, 5.0, "AddMarker")
+
+        _ = self._call(self.open_gripper_client, Trigger.Request(), 10.0, "OpenGripper")
 
         def_res = self._call(
             self.define_goal_pose_client, define_goal_pose, TIMEOUT, "DefineGoalPose"
@@ -214,12 +235,7 @@ class GraspLogic(Node):
             response.message = "DefineGoalPose failed"
             return response
 
-        # Add marker to the Rviz:
-        add_marker = AddMarker.Request()
-        add_marker.marker_pose = best_grasp.pose
-        _ = self._call(self.marker_client, add_marker, 5.0, "AddMarker")
-
-        _ = self._call(self.open_gripper_client, Trigger.Request(), 10.0, "OpenGripper")
+        ros_logger.info(f"DefineGoalPose response: {def_res}")
 
         mh_res = self._call(
             self.move_hand_to_pose_client,
@@ -231,6 +247,8 @@ class GraspLogic(Node):
             response.success = False
             response.message = "MoveHandToPose failed"
             return response
+
+        ros_logger.info(f"MoveHandToPose response: {mh_res}")
 
         _ = self._call(
             self.close_gripper_client, Trigger.Request(), 10.0, "CloseGripper"

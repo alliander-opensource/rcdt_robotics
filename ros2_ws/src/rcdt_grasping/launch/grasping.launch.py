@@ -5,7 +5,11 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
+from rcdt_utilities.launch_utils import LaunchArgument
 from rcdt_utilities.register import Register
+
+namespace_arm_arg = LaunchArgument("namespace_arm", "")
+namespace_camera_arg = LaunchArgument("namespace_camera", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -17,6 +21,9 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
+    namespace_arm = namespace_arm_arg.string_value(context)
+    namespace_camera = namespace_camera_arg.string_value(context)
+
     graspnet_node = Node(
         package="rcdt_grasping",
         executable="generate_grasp.py",
@@ -25,6 +32,9 @@ def launch_setup(context: LaunchContext) -> list:
     grasping_logic = Node(
         package="rcdt_grasping",
         executable="grasp_logic.py",
+        parameters=[
+            {"namespace_arm": namespace_arm, "namespace_camera": namespace_camera}
+        ],
     )
 
     return [
@@ -41,4 +51,10 @@ def generate_launch_description() -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description containing the grasping node.
     """
-    return LaunchDescription([OpaqueFunction(function=launch_setup)])
+    return LaunchDescription(
+        [
+            namespace_arm_arg.declaration,
+            namespace_camera_arg.declaration,
+            OpaqueFunction(function=launch_setup),
+        ]
+    )
