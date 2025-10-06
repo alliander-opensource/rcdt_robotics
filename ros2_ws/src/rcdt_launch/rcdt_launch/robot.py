@@ -919,6 +919,7 @@ class GPS(Platform):
         position: list,
         namespace: str | None = None,
         parent: Platform | None = None,
+        ip_address: str = "",
     ):
         """Initialize the GPS platform.
 
@@ -927,11 +928,39 @@ class GPS(Platform):
             position (list): The position of the vehicle.
             namespace (str | None): The namespace of the vehicle.
             parent (Platform | None): The parent platform.
+            ip_address (str): The IP address of the GPS.
         """
         super().__init__(platform, position, namespace, parent)
         self.platform = platform
         self.namespace = self.namespace
+        self.ip_address = ip_address
 
         Platform.bridge_topics.append(
             f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
+        )
+
+    def create_launch_description(self) -> list[RegisteredLaunchDescription]:
+        """Create the launch description with specific elements for a camera.
+
+        Returns:
+            list[RegisteredLaunchDescription]: The launch description for the platform.
+        """
+        launch_descriptions = []
+        if self.platform == "nmea":
+            launch_descriptions.append(self.create_nmea_launch())
+        return launch_descriptions
+
+    def create_nmea_launch(self) -> RegisteredLaunchDescription:
+        """Create the NMEA launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the Realsense.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+                "ip_address": self.ip_address,
+            },
         )

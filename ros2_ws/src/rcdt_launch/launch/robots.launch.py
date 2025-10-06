@@ -64,7 +64,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
 
     match configuration:
         case "gps":
-            GPS("nmea", [0, 0, 0.5])
+            GPS("nmea", [0, 0, 0.5], ip_address="10.15.20.202")
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
         case "realsense":
