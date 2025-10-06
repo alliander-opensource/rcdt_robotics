@@ -7,6 +7,7 @@ FROM nvidia/cuda:12.9.1-devel-ubuntu24.04 AS base
 ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV UID=1000
+
 # Remove existing user with same UID if exists:
 RUN if getent passwd $UID; then userdel $(id -nu $UID); else :; fi
 
