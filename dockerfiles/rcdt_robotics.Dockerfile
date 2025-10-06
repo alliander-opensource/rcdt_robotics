@@ -29,9 +29,6 @@ RUN ./nav2_plugins.sh
 COPY ./install_scripts/velodyne_ros.sh .
 RUN ./velodyne_ros.sh
 
-COPY ./install_scripts/nmea_navsat.sh .
-RUN ./nmea_navsat.sh
-
 COPY ./install_scripts/vizanti.sh .
 RUN ./vizanti.sh
 
