@@ -5,18 +5,12 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from nav2_common.launch import ReplaceString
-from rcdt_utilities.launch_utils import (
-    SKIP,
-    LaunchArgument,
-    get_file_path,
-    get_robot_description,
-)
+from rcdt_utilities.launch_utils import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-device_namespace_arg = LaunchArgument("device_namespace", default_value="gps")
-robot_namespace_arg = LaunchArgument("robot_namespace", default_value="")
+namespace_arg = LaunchArgument("namespace", default_value="")
+ip_address_arg = LaunchArgument("ip_address", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -29,56 +23,21 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     use_sim = use_sim_arg.bool_value(context)
-    device_namespace = device_namespace_arg.string_value(context)
-    robot_namespace = robot_namespace_arg.string_value(context)
-
-    rename_params_file = ReplaceString(
-        source_file=get_file_path(
-            "rcdt_panther", ["config"], "nmea_navsat_params.yaml"
-        ),
-        replacements={"<device_namespace>": str(device_namespace), "//": "/"},
-    )
-
-    namespace = "navsat"
-    frame_prefix = namespace + "/" if namespace else ""
-
-    xacro_path = get_file_path("rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro")
-    navsat_description = get_robot_description(xacro_path)
-    robot_state_publisher = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        namespace="navsat",
-        parameters=[navsat_description, {"frame_prefix": frame_prefix}],
-    )
-
-    static_transform_publisher = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=[
-            "--frame-id",
-            "panther/base_footprint",
-            "--child-frame-id",
-            "navsat/gps_mounting_point",
-            "--x",
-            "0.0",
-            "--y",
-            "-0.06",
-            "--z",
-            "0.55",
-        ],
-    )
+    namepace = namespace_arg.string_value(context)
+    ip_address = ip_address_arg.string_value(context)
 
     nmea_driver = Node(
         package="nmea_navsat_driver",
         executable="nmea_socket_driver",
-        name=device_namespace,
-        namespace=robot_namespace,
+        name="gps",
+        namespace=namepace,
         parameters=[
             {
-                "frame_id": device_namespace,
-                "tf_prefix": robot_namespace,
+                "ip": ip_address,
+                "port": 5000,
+                "frame_id": "gps",
+                "tf_prefix": namepace,
             },
-            rename_params_file,
         ],
         remappings=[
             ("fix", "~/fix"),
@@ -89,8 +48,6 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        Register.on_start(robot_state_publisher, context),
-        Register.on_start(static_transform_publisher, context),
         Register.on_start(nmea_driver, context) if not use_sim else SKIP,
     ]
 
@@ -103,8 +60,8 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
-            device_namespace_arg.declaration,
-            robot_namespace_arg.declaration,
+            namespace_arg.declaration,
+            ip_address_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
