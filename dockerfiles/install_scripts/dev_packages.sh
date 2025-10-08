@@ -7,4 +7,3 @@
 set -e
 source /home/$UNAME/.bashrc
 apt update
-
