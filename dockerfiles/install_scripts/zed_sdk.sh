@@ -29,7 +29,7 @@ chmod +x "${installer}"
 echo "Running installer …"
 ./"${installer}" -- silent 
 
-sudo chmod -R u+rwX,go+rX /usr/local/zed
+chmod -R u+rwX,go+rX /usr/local/zed
 
 rm -f "${installer}"
 rm -rf /var/lib/apt/lists/*
