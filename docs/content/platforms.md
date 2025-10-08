@@ -122,10 +122,12 @@ When using the Velodyne lidar, make sure that the IP-address of the host device 
 
 ## Teltonika GPS
 
-![Teltonika](../img/teltonika/teltonika.png)
+![Teltonika](../img/teltonika/nmea.png)
 
 ### Simulation Teltonika
 
 A Teltonika GPS can be launched in simulation by creating a configuration with an *GPS* of type *teltonika*.
 
 ### Hardware Teltonika
+
+When using the Teltonika GPS, make sure that the IP-address of the host device (where the nmea node is running) is set correctly in the settings. One can edit the settings of the Teltonika using a web interface on it’s IP-adress.
