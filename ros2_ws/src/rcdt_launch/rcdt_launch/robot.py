@@ -761,6 +761,7 @@ class Arm(Platform):
         moveit: bool = False,
         gripper: bool = False,
         ip_address: str = "",
+        graspnet: bool = False,
     ):
         """Initialize the Arm platform.
 
@@ -774,6 +775,7 @@ class Arm(Platform):
             moveit (bool): Whether to use MoveIt for the arm.
             gripper (bool): Whether to add a start the gripper services.
             ip_address (str): The IP address of the arm.
+            graspnet (bool): Whether to start the GraspNet node for the arm.
         """
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
@@ -782,6 +784,7 @@ class Arm(Platform):
         self.moveit = moveit
         self.gripper = gripper
         self.ip_address = ip_address
+        self.graspnet = graspnet
 
         self.camera: Camera | None = None
 
@@ -800,6 +803,19 @@ class Arm(Platform):
             launch_descriptions.append(self.create_gripper_launch())
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
+        if self.graspnet:
+            launch_descriptions.append(
+                RegisteredLaunchDescription(
+                    get_file_path("rcdt_grasping", ["launch"], "grasping.launch.py"),
+                    launch_arguments={
+                        "namespace_arm": self.namespace,
+                        "namespace_camera": self.camera.namespace
+                        if self.camera
+                        else None,
+                    },
+                )
+            )
+
         return launch_descriptions
 
     def joystick_nodes(self) -> list[Node]:
