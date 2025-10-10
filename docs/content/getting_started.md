@@ -92,24 +92,15 @@ alias cb="cd /home/rcdt/rcdt_robotics/ros2_ws; uv run colcon build --symlink-ins
 From now on, when you open a new terminal, this alias is available and you can simply build and source using the `cb` command.
 :::
 
-## Launch ROS
+## Launch
 
-You can now launch ROS by running a launch file from one of the ROS packages. You could for example start the Franka launch file:
-
-```bash
-ros2 launch rcdt_franka franka.launch.py
-```
-
-This will start the simulation of the Franka arm. You can stop by pressing CTRL+C in the running terminal.
-
-:::{note}
-It is possible to pass launch arguments as additional flags in the format `<argument>:=<value>`. To see which launch arguments are available, run the launch command with an `-s` flag:
+You can now launch our system using:
 
 ```bash
-ros2 launch rcdt_franka franka.launch.py -s
+ros2 launch rcdt_launch robots.launch.py
 ```
 
-:::
+Note that the system won't start if no configuration is provided. The possible launch arguments can be acquired by adding the `-s` flag. More information about launching the system and selecting a configuration can be found on the [](system) page.
 
 ## Firewall
 
@@ -126,14 +117,7 @@ sudo ufw allow to 224.0.0.0/4
 sudo ufw allow from 224.0.0.0/4
 ```
 
-When connected with the Franka arm, communication with its ip-address (default 172.16.0.2) should be allowed:
-
-```bash
-sudo ufw allow to 172.16.0.2
-sudo ufw allow from 172.16.0.2
-```
-
-When connected with the Panther, communication with its ip-addresses in the 10.15.20.0/24 range should be allowed:
+When connected with the Panther network, communication with its ip-addresses in the 10.15.20.0/24 range should be allowed:
 
 ```bash
 sudo ufw allow to 10.15.20.0/24

@@ -17,14 +17,10 @@
    Home <self>
 
    content/getting_started.md
-   content/system_overview.md
+   content/system.md
+   content/platforms.md
 
-   content/franka.md
-   content/panther.md
-   content/mobile_manipulator.md
    content/moveit.md
-   content/realsense.md
-   content/pyflow.md
    content/docker.md
    content/workflows.md
 
