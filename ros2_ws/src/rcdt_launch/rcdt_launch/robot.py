@@ -569,7 +569,23 @@ class Camera(Platform):
         launch_descriptions = []
         if self.platform == "realsense":
             launch_descriptions.append(self.create_realsense_launch())
+        if self.platform == "zed":
+            launch_descriptions.append(self.create_zed_launch())
         return launch_descriptions
+
+    def create_zed_launch(self) -> RegisteredLaunchDescription:
+        """Create the Zed launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the Zed.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "zed.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+            },
+        )
 
     def create_realsense_launch(self) -> RegisteredLaunchDescription:
         """Create the Realsense launch description.

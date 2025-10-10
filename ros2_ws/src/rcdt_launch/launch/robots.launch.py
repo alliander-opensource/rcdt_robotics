@@ -66,7 +66,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         case "realsense":
             Camera("realsense", [0, 0, 0.5])
         case "zed":
-            Camera("zed", [0, 0, 0.5])
+            Camera("zed", [0, 0, 0.5], namespace="zed")
         case "franka":
             if not use_sim:
                 Rviz.load_motion_planning_plugin = True
