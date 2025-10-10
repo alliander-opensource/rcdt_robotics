@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
 from launch_ros.actions import Node
@@ -66,7 +67,7 @@ class Platform:  # noqa: PLR0904
 
     @staticmethod
     def create_state_publishers() -> list[Node]:
-        """Create state publisher nodes for all robots.
+        """Create state publisher nodes for all platforms.
 
         Returns:
             list[Node]: A list of all state publisher nodes.
@@ -87,7 +88,7 @@ class Platform:  # noqa: PLR0904
         When launching a vehicle with Nav2, lidar sensor output is required.
         Therefore we load a lidar before a vehicle.
         """
-        order = ["franka", "velodyne", "realsense", "panther"]
+        order = ["panther", "franka", "velodyne", "realsense"]
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
@@ -102,15 +103,33 @@ class Platform:  # noqa: PLR0904
         Returns:
             RegisteredLaunchDescription: The Gazebo launch description.
         """
-        robots = [robot.namespace for robot in Platform.platforms]
-        positions = [",".join(map(str, robot.position)) for robot in Platform.platforms]
+        platforms = []
+        positions = []
+        orientations = []
+        parents = []
+        parent_links = []
+
+        for platform in Platform.platforms:
+            platforms.append(platform.namespace)
+            positions.append(",".join(map(str, platform.position)))
+            orientations.append(",".join(map(str, platform.orientation)))
+            parent = platform.parent
+            if parent is not None:
+                parents.append(parent.namespace)
+                parent_links.append(platform.parent_link)
+            else:
+                parents.append("none")
+                parent_links.append("none")
 
         return RegisteredLaunchDescription(
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
             launch_arguments={
                 "load_gazebo_ui": str(load_gazebo_ui),
-                "robots": " ".join(robots),
+                "platforms": " ".join(platforms),
                 "positions": " ".join(positions),
+                "orientations": " ".join(orientations),
+                "parents": " ".join(parents),
+                "parent_links": " ".join(parent_links),
                 "bridge_topics": " ".join(Platform.bridge_topics),
             },
         )
@@ -169,7 +188,7 @@ class Platform:  # noqa: PLR0904
 
     @staticmethod
     def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
-        """Create launch descriptions for all robots.
+        """Create launch descriptions for all platforms.
 
         Returns:
             list[RegisteredLaunchDescription]: A list of all launch descriptions.
@@ -263,20 +282,24 @@ class Platform:  # noqa: PLR0904
                     nodes.append(node)
         return nodes
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         platform: Literal["panther", "franka", "velodyne", "realsense"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: "Platform" | None = None,
+        parent_link: str = "",
     ):
         """Initialize a robot instance.
 
         Args:
             platform (Literal["panther", "franka", "velodyne", "realsense"]): The platform type of the robot.
             position (list): The initial position of the robot.
+            orientation (list | None): The initial orientation of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
+            parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
         self.platform: Literal["panther", "franka", "velodyne", "realsense"] = platform
         self.parent = parent
@@ -286,11 +309,17 @@ class Platform:  # noqa: PLR0904
 
         Rviz.add_robot_model(self.namespace)
 
+        self.orientation = (
+            list(map(math.radians, orientation)) if orientation else [0, 0, 0]
+        )
+
         if parent is None:
             self.is_child = False
+            self.parent_link = "none"
             self.position = position
         else:
             self.is_child = True
+            self.parent_link = parent_link if parent_link else parent.base_link
             self.relative_position = position
             self.position = [
                 sum(x) for x in zip(parent.position, position, strict=False)
@@ -395,7 +424,7 @@ class Platform:  # noqa: PLR0904
         Args:
             child (Platform): The child robot to add.
         """
-        self.childs.append([child.namespace, child.base_link])
+        self.childs.append([child.parent_link, child.namespace, child.base_link])
 
     def create_state_publisher(self) -> Node | None:
         """Create a state publisher node for the robot.
@@ -425,7 +454,7 @@ class Platform:  # noqa: PLR0904
             name=f"static_tf_{self.parent.namespace}_to_{self.namespace}",
             arguments=[
                 "--frame-id",
-                f"/{self.parent.namespace}/{self.parent.base_link}",
+                f"/{self.parent.namespace}/{self.parent_link}",
                 "--child-frame-id",
                 f"/{self.namespace}/{self.base_link}",
                 "--x",
@@ -434,6 +463,12 @@ class Platform:  # noqa: PLR0904
                 f"{self.relative_position[1]}",
                 "--z",
                 f"{self.relative_position[2]}",
+                "--roll",
+                f"{self.orientation[0]}",
+                "--pitch",
+                f"{self.orientation[1]}",
+                "--yaw",
+                f"{self.orientation[2]}",
             ],
         )
 
@@ -510,22 +545,28 @@ class Platform:  # noqa: PLR0904
 class Camera(Platform):
     """Extension on Platform with camera specific functionalities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         platform: Literal["realsense", "zed"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: Arm | Vehicle | None = None,
+        parent_link: str = "",
     ):
         """Initialize the Camera platform.
 
         Args:
             platform (Literal["realsense", "zed"]): The platform type.
             position (list): The position of the camera.
+            orientation (list | None): The initial orientation of the camera.
             namespace (str | None): The namespace of the camera.
             parent (Arm | Vehicle | None): The parent platform.
+            parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
-        super().__init__(platform, position, namespace, parent)
+        super().__init__(
+            platform, position, orientation, namespace, parent, parent_link
+        )
 
         if parent:
             parent.camera = self
@@ -575,22 +616,28 @@ class Camera(Platform):
 class Lidar(Platform):
     """Extension on Platform with lidar specific functionalities."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         platform: Literal["velodyne"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: Vehicle | None = None,
+        parent_link: str = "",
     ):
         """Initialize the Lidar platform.
 
         Args:
             platform (Literal["velodyne"]): The platform type.
             position (list): The position of the lidar.
+            orientation (list | None): The initial orientation of the lidar.
             namespace (str | None): The namespace of the lidar.
             parent (Vehicle | None): The parent platform.
+            parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
-        super().__init__(platform, position, namespace, parent)
+        super().__init__(
+            platform, position, orientation, namespace, parent, parent_link
+        )
 
         if parent:
             parent.lidar = self
@@ -640,8 +687,10 @@ class Arm(Platform):
         self,
         platform: Literal["franka"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: Platform | None = None,
+        parent_link: str = "",
         moveit: bool = False,
         gripper: bool = False,
         ip_address: str = "",
@@ -651,13 +700,17 @@ class Arm(Platform):
         Args:
             platform (Literal["franka"]): The platform type.
             position (list): The position of the arm.
+            orientation (list | None): The initial orientation of the arm.
             namespace (str | None): The namespace of the arm.
             parent (Platform | None): The parent platform.
+            parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
             moveit (bool): Whether to use MoveIt for the arm.
             gripper (bool): Whether to add a start the gripper services.
             ip_address (str): The IP address of the arm.
         """
-        super().__init__(platform, position, namespace, parent)
+        super().__init__(
+            platform, position, orientation, namespace, parent, parent_link
+        )
         self.platform = platform
         self.moveit = moveit
         self.gripper = gripper
@@ -755,8 +808,10 @@ class Vehicle(Platform):
         self,
         platform: Literal["panther"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: Platform | None = None,
+        parent_link: str = "",
         navigation: bool = False,
         slam: bool = False,
         collision_monitor: bool = False,
@@ -766,13 +821,17 @@ class Vehicle(Platform):
         Args:
             platform (Literal["panther"]): The platform type.
             position (list): The position of the vehicle.
+            orientation (list | None): The initial orientation of the vehicle.
             namespace (str | None): The namespace of the vehicle.
             parent (Platform | None): The parent platform.
+            parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
             navigation (bool): Whether to start navigation for the vehicle.
             slam (bool): Whether to start SLAM for the vehicle.
             collision_monitor (bool): Whether to start the collision monitor for the vehicle.
         """
-        super().__init__(platform, position, namespace, parent)
+        super().__init__(
+            platform, position, orientation, namespace, parent, parent_link
+        )
         self.platform = platform
         self.namespace = self.namespace
         self.navigation = navigation

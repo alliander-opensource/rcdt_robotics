@@ -14,13 +14,16 @@ from rcdt_utilities.register import Register
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
 world_arg = LaunchArgument("world", "walls.sdf")
-robots_arg = LaunchArgument("robots", "")
+platforms_arg = LaunchArgument("platforms", "")
 positions_arg = LaunchArgument("positions", "")
+orientations_arg = LaunchArgument("orientations", "")
+parents_arg = LaunchArgument("parents", "")
+parent_links_arg = LaunchArgument("parent_links", "")
 bridge_topics_arg = LaunchArgument("bridge_topics", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    """Setup the launch description for the Gazebo simulation with robots.
+    """Setup the launch description for the Gazebo simulation with platforms.
 
     Args:
         context (LaunchContext): The launch context.
@@ -33,8 +36,11 @@ def launch_setup(context: LaunchContext) -> list:
     """
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     world = world_arg.string_value(context)
-    robots = robots_arg.string_value(context).split()
-    positions = positions_arg.string_value(context).split()
+    platforms = platforms_arg.string_value(context)
+    positions = positions_arg.string_value(context)
+    orientations = orientations_arg.string_value(context)
+    parents = parents_arg.string_value(context)
+    parent_links = parent_links_arg.string_value(context)
     bridge_topics = bridge_topics_arg.string_value(context).split()
 
     sdf_file = get_file_path("rcdt_gazebo", ["worlds"], world)
@@ -60,28 +66,20 @@ def launch_setup(context: LaunchContext) -> list:
         arguments=bridge_topics,
     )
 
-    spawn_robots: list[Node] = []
-    for robot, position in zip(robots, positions, strict=False):
-        namespace = "" if not robot else f"/{robot}"
-        x, y, z = position.split(",")
-        spawn_robot = Node(
-            package="ros_gz_sim",
-            executable="create",
-            arguments=[
-                "-topic",
-                f"{namespace}/robot_description",
-                "-name",
-                robot,
-                "-x",
-                str(x),
-                "-y",
-                str(y),
-                "-z",
-                str(z),
-            ],
-            output="screen",
-        )
-        spawn_robots.append(spawn_robot)
+    spawn_platforms = Node(
+        package="rcdt_gazebo",
+        executable="spawn_platforms.py",
+        parameters=[
+            {
+                "platforms": platforms,
+                "positions": positions,
+                "orientations": orientations,
+                "parents": parents,
+                "parent_links": parent_links,
+            },
+        ],
+        output="screen",
+    )
 
     unpause_sim = ExecuteProcess(
         cmd=[
@@ -108,13 +106,13 @@ def launch_setup(context: LaunchContext) -> list:
             "Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)]",
             context,
         ),
-        *[Register.on_exit(spawn_robot, context) for spawn_robot in spawn_robots],
+        Register.on_log(spawn_platforms, "All platforms spawned!", context),
         Register.on_start(unpause_sim, context),
     ]
 
 
 def generate_launch_description() -> LaunchDescription:
-    """Generate the launch description for the Gazebo simulation with robots.
+    """Generate the launch description for the Gazebo simulation with platforms.
 
     Returns:
         LaunchDescription: The launch description containing the actions to be executed.
@@ -123,7 +121,7 @@ def generate_launch_description() -> LaunchDescription:
         [
             load_gazebo_ui_arg.declaration,
             world_arg.declaration,
-            robots_arg.declaration,
+            platforms_arg.declaration,
             positions_arg.declaration,
             bridge_topics_arg.declaration,
             OpaqueFunction(function=launch_setup),
