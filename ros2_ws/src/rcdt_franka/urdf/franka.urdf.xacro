@@ -40,8 +40,13 @@ SPDX-License-Identifier: Apache-2.0
     parent="$(arg parent)"
   />
 
-  <!-- Create detachable joints between base_link and childs: -->
+  <!-- Preserve joint so that child link can be used for detachable joints: -->
+  <gazebo reference="fr3_hand_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- Create detachable joints with given childs: -->
   <xacro:include filename="$(find rcdt_utilities)/urdf/detachable_joints.urdf.xacro" />
-  <xacro:detachable_joints parent_link="fr3_link0" childs="${$(arg childs)}" />
+  <xacro:detachable_joints childs="${$(arg childs)}" />
 
 </robot>
