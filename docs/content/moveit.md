@@ -31,11 +31,7 @@ If more complexity is required, one can also use the C++ API of Moveit. This ski
 
 ## How do we use Moveit?
 
-As mentioned before, we make use of the MoveGroup interface. One can start the `move_group` as a ros node of the `moveit_ros_move_group` package. However, the node requires many parameters to start and function correctly. Therefore, we always start the node using the launch file `moveit.launch.py`, located in our package `rcdt_moveit`, where we can easily pass the configuration parameters. Moveit configurations are defined in a separate package, which can be created for a desired robot arm using the [Moveit setup assistant](https://moveit.picknik.ai/main/doc/examples/setup_assistant/setup_assistant_tutorial.html). For example, for the Franka robot arm, we created the `rcdt_franka_moveit_config` package. The move_group also requires information about the robot, like joint states. Therefore, the move_group can only be launched correctly while also launching the robot with some required functionalities. One can for example launch a simulation of our Franka robot using, which will by default start a robot simulation and Moveit:
-
-```bash
-ros2 launch rcdt_franka franka.launch.py
-```
+As mentioned before, we make use of the MoveGroup interface. One can start the `move_group` as a ros node of the `moveit_ros_move_group` package. However, the node requires many parameters to start and function correctly. Therefore, we always start the node using the launch file `moveit.launch.py`, located in our package `rcdt_moveit`, where we can easily pass the configuration parameters. Moveit configurations are defined in a separate package, which can be created for a desired robot arm using the [Moveit setup assistant](https://moveit.picknik.ai/main/doc/examples/setup_assistant/setup_assistant_tutorial.html). For example, for the Franka robot arm, we created the `rcdt_franka_moveit_config` package.
 
 ## Control in Rviz
 
