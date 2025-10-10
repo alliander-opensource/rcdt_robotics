@@ -14,7 +14,8 @@ apt install -y \
     git-lfs \
     htop \
     nano \
-    python3-pip
+    python3-pip \
+    zstd
 
 apt install -y \
     ros-$ROS_DISTRO-launch-pytest \

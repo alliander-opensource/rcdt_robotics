@@ -104,6 +104,18 @@ A Realsense camera can be launched in simulation by creating a configuration wit
 
 One can use a Realsense by connecting it with the host device using USB.
 
+## ZED
+
+![ZED](../img/zed/ZED.png)
+
+### Simulation Zed
+
+A ZED camera can be launched in simulation by creating a configuration with an *Camera* of type *zed*.
+
+### Hardware Zed
+
+A ZED camera can be used by connecting it to the host device via USB. To allow non-root users to access the camera, UDEV rules must be installed on the host machine. The required script can be found [here](https://gist.github.com/adujardin/2d5ce8f000fc6a7bd40bee2709749ff8).
+
 ## Velodyne
 
 ![Velodyne](../img/velodyne/velodyne.png)
