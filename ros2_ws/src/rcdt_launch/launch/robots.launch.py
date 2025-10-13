@@ -20,12 +20,15 @@ configuration_arg = LaunchArgument(
     "",
     [
         "",
+        "axis",
         "lidar",
         "realsense",
         "franka",
+        "franka_axis",
         "franka_double",
         "franka_realsense",
         "panther",
+        "panther_axis",
         "panther_realsense",
         "panther_lidar",
         "mm",
@@ -34,7 +37,7 @@ configuration_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
+def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     """Setup the launch description for the Panther robot.
 
     Args:
@@ -59,6 +62,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     use_joystick = True
 
     match configuration:
+        case "axis":
+            Platform("axis", [0, 0, 0])
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
         case "realsense":
@@ -67,6 +72,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             if not use_sim:
                 Rviz.load_motion_planning_plugin = True
             Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
+        case "franka_axis":
+            franka = Arm("franka", [0, 0, 0], [0, 0, 20])
+            Platform(
+                "axis", [0, 0, 0.1], [0, 20, 0], parent=franka, parent_link="fr3_hand"
+            )
         case "franka_double":
             use_joystick = False
             Rviz.load_motion_planning_plugin = True
@@ -83,6 +93,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             )
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
+        case "panther_axis":
+            vehicle = Vehicle("panther", [0, 0, 0.2], orientation=[0, 0, 90])
+            Platform(
+                "axis", [0, 0, 0.2], [20, 0, 0], parent=vehicle, parent_link="base_link"
+            )
         case "panther_realsense":
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("realsense", [0, 0, 0.2], parent=panther, parent_link="base_link")

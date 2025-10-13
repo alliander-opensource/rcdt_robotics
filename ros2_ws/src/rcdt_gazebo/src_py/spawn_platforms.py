@@ -5,10 +5,11 @@
 
 import re
 import subprocess
-from operator import add, sub
 
+import numpy as np
 import rclpy
 from rclpy.node import Node
+from scipy.spatial.transform import RigidTransform, Rotation
 
 
 class SpawnPlatform(Node):
@@ -66,27 +67,43 @@ class SpawnPlatform(Node):
         """
         for n in range(len(platforms)):
             platform = platforms[n]
-            position = list(map(float, positions[n].split(",")))
-            orientation = list(map(float, orientations[n].split(",")))
+            position = np.array(list(map(float, positions[n].split(","))))
+            orientation = np.array(list(map(float, orientations[n].split(","))))
             parent = parents[n]
             parent_link = parent_links[n]
 
             if parent != "none":
-                pose = get_link_pose(parent, parent_link)
-                position = list(map(add, pose["position"], position))
-                orientation = list(map(sub, pose["orientation"], orientation))
+                # First define the transform from world to model:
+                model_pose = get_pose(parent)
+                model_tf = RigidTransform.from_components(
+                    model_pose["position"],
+                    Rotation.from_euler("xyz", model_pose["orientation"]),
+                )
+
+                # Next define the transform from model to link:
+                link_pose = get_pose(parent, parent_link)
+                link_tf = RigidTransform.from_components(
+                    link_pose["position"],
+                    Rotation.from_euler("xyz", link_pose["orientation"]),
+                )
+
+                # Finally, combine the transforms and apply the given position and orientation:
+                tf = model_tf * link_tf
+                position = tf.apply(position)
+                rotation = tf.rotation * Rotation.from_euler("xyz", orientation)
+                orientation = rotation.as_euler("xyz")
 
             self.spawn_platform(platform, position, orientation)
 
     def spawn_platform(
-        self, namespace: str, position: list[float], orientation: list[float]
+        self, namespace: str, position: np.ndarray, orientation: np.ndarray
     ) -> None:
         """Spawn a platform in the Gazebo simulation with a specified position and orientation.
 
         Args:
             namespace (str): The namespace of the platform.
-            position (list[float]): The position [x, y, z] of the platform.
-            orientation (list[float]): The orientation [roll, pitch, yaw] of the platform.
+            position (np.ndarray): The position [x, y, z] of the platform.
+            orientation (np.ndarray): The orientation [roll, pitch, yaw] of the platform.
         """
         self.get_logger().info(f"Spawn: {namespace} {position} {orientation}")
         x, y, z = position
@@ -118,12 +135,12 @@ class SpawnPlatform(Node):
         )
 
 
-def get_link_pose(model: str, link: str) -> dict:
-    """Get the pose of a link in a model from Gazebo.
+def get_pose(model: str, link: str | None = None) -> dict:
+    """Get the pose of a model or a specific link of a model in the Gazebo simulation.
 
     Args:
         model (str): The name of the model.
-        link (str): The name of the link.
+        link (str | None): The name of the link.
 
     Returns:
         dict: A dictionary with the position and orientation of the link.
@@ -131,10 +148,12 @@ def get_link_pose(model: str, link: str) -> dict:
     Raises:
         RuntimeError: If the link info could not be retrieved or parsed.
     """
-    message = subprocess.check_output(
-        ["gz", "model", "-m", model, "-l", link],
-        stderr=subprocess.DEVNULL,
-    ).decode("utf-8")
+    command = ["gz", "model", "-m", model]
+    if link:
+        command.extend(["-l", link])
+    message = subprocess.check_output(command, stderr=subprocess.DEVNULL).decode(
+        "utf-8"
+    )
 
     lines = message.splitlines()
     line_of_interest = None
@@ -153,14 +172,14 @@ def get_link_pose(model: str, link: str) -> dict:
     }
 
 
-def process_string(info_string: str) -> list[float]:
+def process_string(info_string: str) -> np.ndarray:
     """Process the info string to extract the position or orientation values.
 
     Args:
         info_string (str): The info string.
 
     Returns:
-        list[float]: A list of float values extracted from the info string.
+        np.ndarray: An array of float values extracted from the info string.
 
     Raises:
         RuntimeError: If the info string is not in the expected format.
@@ -171,7 +190,7 @@ def process_string(info_string: str) -> list[float]:
         raise RuntimeError("Could not parse message.")
 
     group = values_string.group(1)
-    return list(map(float, group.split()))
+    return np.array(list(map(float, group.split())))
 
 
 def main(args: list | None = None) -> None:

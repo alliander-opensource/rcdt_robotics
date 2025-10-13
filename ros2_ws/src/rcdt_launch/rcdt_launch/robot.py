@@ -87,8 +87,16 @@ class Platform:  # noqa: PLR0904
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
         When launching a vehicle with Nav2, lidar sensor output is required.
         Therefore we load a lidar before a vehicle.
+
+        Raises:
+            ValueError: If an unknown platform is encountered.
         """
-        order = ["panther", "franka", "velodyne", "realsense"]
+        order = ["panther", "franka", "velodyne", "realsense", "axis"]
+
+        for platform in Platform.platforms:
+            if platform.platform not in order:
+                raise ValueError(f"Unknown platform to order: {platform.platform}")
+
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
@@ -284,7 +292,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(  # noqa: PLR0913
         self,
-        platform: Literal["panther", "franka", "velodyne", "realsense"],
+        platform: Literal["panther", "franka", "velodyne", "realsense", "axis"],
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
@@ -294,7 +302,7 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "realsense"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "realsense", "axis"]): The platform type of the robot.
             position (list): The initial position of the robot.
             orientation (list | None): The initial orientation of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
@@ -309,6 +317,7 @@ class Platform:  # noqa: PLR0904
 
         Rviz.add_robot_model(self.namespace)
 
+        self.position = position
         self.orientation = (
             list(map(math.radians, orientation)) if orientation else [0, 0, 0]
         )
@@ -316,14 +325,9 @@ class Platform:  # noqa: PLR0904
         if parent is None:
             self.is_child = False
             self.parent_link = "none"
-            self.position = position
         else:
             self.is_child = True
             self.parent_link = parent_link if parent_link else parent.base_link
-            self.relative_position = position
-            self.position = [
-                sum(x) for x in zip(parent.position, position, strict=False)
-            ]
             parent.add_child(self)
 
     @property
@@ -393,8 +397,10 @@ class Platform:  # noqa: PLR0904
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
                 )
+            case "axis":
+                return get_file_path("rcdt_sensors", ["urdf"], "rcdt_axis.urdf.xacro")
             case _:
-                raise ValueError("Unknown platform.")
+                raise ValueError("Can't load xacro: unknown platform.")
 
     @property
     def base_link(self) -> str:
@@ -414,6 +420,8 @@ class Platform:  # noqa: PLR0904
             case "velodyne":
                 return "base_link"
             case "realsense":
+                return "base_link"
+            case "axis":
                 return "base_link"
             case _:
                 raise ValueError("Unable to provide base_link: Unknown platform.")
@@ -458,11 +466,11 @@ class Platform:  # noqa: PLR0904
                 "--child-frame-id",
                 f"/{self.namespace}/{self.base_link}",
                 "--x",
-                f"{self.relative_position[0]}",
+                f"{self.position[0]}",
                 "--y",
-                f"{self.relative_position[1]}",
+                f"{self.position[1]}",
                 "--z",
-                f"{self.relative_position[2]}",
+                f"{self.position[2]}",
                 "--roll",
                 f"{self.orientation[0]}",
                 "--pitch",
@@ -514,6 +522,12 @@ class Platform:  # noqa: PLR0904
                 f"{self.position[1]}",
                 "--z",
                 f"{self.position[2]}",
+                "--roll",
+                f"{self.orientation[0]}",
+                "--pitch",
+                f"{self.orientation[1]}",
+                "--yaw",
+                f"{self.orientation[2]}",
             ],
         )
 
