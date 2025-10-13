@@ -33,6 +33,7 @@ configuration_arg = LaunchArgument(
         "panther_lidar",
         "mm",
         "mm_lidar",
+        "panther_and_franka",
     ],
 )
 
@@ -118,6 +119,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
+        case "panther_and_franka":
+            Vehicle("panther", [0, -0.5, 0.2])
+            Arm("franka", [0, 0.5, 0])
 
     if Platform.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
