@@ -17,6 +17,8 @@ services:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
       - "${HOME}/.vscode-server:/home/rcdt/.vscode-server"
       - "../:/home/rcdt/rcdt_robotics/"
+      - ../.cache/zed/resources:/usr/local/zed/resources
+      - ../.cache/zed/settings:/usr/local/zed/settings
       - "../.personal.bashrc:/home/rcdt/.personal.bashrc"
       - "../.env:/home/rcdt/.env"
       - "../pyproject.toml:/home/rcdt/pyproject.toml"

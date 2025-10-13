@@ -86,8 +86,16 @@ class Platform:  # noqa: PLR0904
         Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
         When launching a vehicle with Nav2, lidar sensor output is required.
         Therefore we load a lidar before a vehicle.
+
+        Raises:
+            ValueError: If an unknown platform is encountered.
         """
-        order = ["franka", "velodyne", "realsense", "panther"]
+        order = ["franka", "velodyne", "realsense", "zed", "panther"]
+
+        for platform in Platform.platforms:
+            if platform.platform not in order:
+                raise ValueError(f"Unknown platform to order: {platform.platform}")
+
         Platform.platforms = sorted(
             Platform.platforms, key=lambda platform: order.index(platform.platform)
         )
@@ -265,7 +273,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(
         self,
-        platform: Literal["panther", "franka", "velodyne", "realsense"],
+        platform: Literal["panther", "franka", "velodyne", "realsense", "zed"],
         position: list,
         namespace: str | None = None,
         parent: "Platform" | None = None,
@@ -273,12 +281,14 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "realsense"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "realsense", "zed"]): The platform type of the robot.
             position (list): The initial position of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
             parent (Platform | None): The parent robot, if any.
         """
-        self.platform: Literal["panther", "franka", "velodyne", "realsense"] = platform
+        self.platform: Literal["panther", "franka", "velodyne", "realsense", "zed"] = (
+            platform
+        )
         self.parent = parent
         self.childs = []
         Platform.add(self)
@@ -364,6 +374,8 @@ class Platform:  # noqa: PLR0904
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
                 )
+            case "zed":
+                return get_file_path("rcdt_sensors", ["urdf"], "rcdt_zed2i.urdf.xacro")
             case _:
                 raise ValueError("Unknown platform.")
 
@@ -385,6 +397,8 @@ class Platform:  # noqa: PLR0904
             case "velodyne":
                 return "base_link"
             case "realsense":
+                return "base_link"
+            case "zed":
                 return "base_link"
             case _:
                 raise ValueError("Unable to provide base_link: Unknown platform.")
@@ -555,7 +569,23 @@ class Camera(Platform):
         launch_descriptions = []
         if self.platform == "realsense":
             launch_descriptions.append(self.create_realsense_launch())
+        if self.platform == "zed":
+            launch_descriptions.append(self.create_zed_launch())
         return launch_descriptions
+
+    def create_zed_launch(self) -> RegisteredLaunchDescription:
+        """Create the Zed launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the Zed.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "zed.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+            },
+        )
 
     def create_realsense_launch(self) -> RegisteredLaunchDescription:
         """Create the Realsense launch description.
