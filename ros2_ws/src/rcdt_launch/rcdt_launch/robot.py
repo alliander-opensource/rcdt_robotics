@@ -81,12 +81,11 @@ class Platform:  # noqa: PLR0904
 
     @staticmethod
     def order_platforms() -> None:
-        """Order the platforms list.
+        """Order the platforms in a specific order.
 
-        For some reason, the ros control plugin in Gazebo does not load for Franka robots when another platform is loaded before.
-        Therefore we can load all Franka robots before other platforms by rearranging the list using this method.
-        When launching a vehicle with Nav2, lidar sensor output is required.
-        Therefore we load a lidar before a vehicle.
+        This is required, since a child platform can only be spawned after its parent platform is spawned.
+        Currently the order is hardcoded as [vehicles -> arms -> sensors] to fullfill this requirement.
+        This method possibly requires more logic when other platforms are added in the future.
 
         Raises:
             ValueError: If an unknown platform is encountered.
@@ -198,11 +197,15 @@ class Platform:  # noqa: PLR0904
     def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
         """Create launch descriptions for all platforms.
 
+        Note that the launch descriptions for the platforms are launched in reversed order.
+        This is done so that the nodes required for sensors (childs) are launched first.
+        Next we launch nodes required for the parent platforms (like Nav2), which depend on the sensors.
+
         Returns:
             list[RegisteredLaunchDescription]: A list of all launch descriptions.
         """
         launch_descriptions = []
-        for robot in Platform.platforms:
+        for robot in reversed(Platform.platforms):
             launch_description = robot.create_launch_description()
             if launch_description != []:
                 launch_descriptions.extend(launch_description)
@@ -327,7 +330,9 @@ class Platform:  # noqa: PLR0904
             self.parent_link = "none"
         else:
             self.is_child = True
-            self.parent_link = parent_link if parent_link else parent.base_link
+            self.parent_link = (
+                parent_link if parent_link else parent.default_connect_link
+            )
             parent.add_child(self)
 
     @property
@@ -425,6 +430,26 @@ class Platform:  # noqa: PLR0904
                 return "base_link"
             case _:
                 raise ValueError("Unable to provide base_link: Unknown platform.")
+
+    @property
+    def default_connect_link(self) -> str:
+        """Return the default link to which child platforms should connect.
+
+        Returns:
+            str: The default connection link for the platform.
+
+        Raises:
+            ValueError: If the platform is unknown.
+        """
+        match self.platform:
+            case "panther":
+                return "base_link"
+            case "franka":
+                return "fr3_hand"
+            case _:
+                raise ValueError(
+                    "Unable to provide default connection link: Unknown platform."
+                )
 
     def add_child(self, child: "Platform") -> None:
         """Add a child robot to this robot.

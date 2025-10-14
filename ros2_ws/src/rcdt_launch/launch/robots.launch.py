@@ -75,9 +75,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
         case "franka_axis":
             franka = Arm("franka", [0, 0, 0], [0, 0, 20])
-            Platform(
-                "axis", [0, 0, 0.1], [0, 20, 0], parent=franka, parent_link="fr3_hand"
-            )
+            Platform("axis", [0, 0, 0.1], [0, 20, 0], parent=franka)
         case "franka_double":
             use_joystick = False
             Rviz.load_motion_planning_plugin = True
@@ -85,36 +83,21 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
         case "franka_realsense":
             arm = Arm("franka", [0, 0, 0], moveit=True)
-            Camera(
-                "realsense",
-                [0.05, 0, 0],
-                [0, -90, 180],
-                parent=arm,
-                parent_link="fr3_hand",
-            )
+            Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
         case "panther_axis":
             vehicle = Vehicle("panther", [0, 0, 0.2], orientation=[0, 0, 90])
-            Platform(
-                "axis", [0, 0, 0.2], [20, 0, 0], parent=vehicle, parent_link="base_link"
-            )
+            Platform("axis", [0, 0, 0.2], [20, 0, 0], parent=vehicle)
         case "panther_realsense":
             panther = Vehicle("panther", [0, 0, 0.2])
-            Camera("realsense", [0, 0, 0.2], parent=panther, parent_link="base_link")
+            Camera("realsense", [0, 0, 0.2], parent=panther)
         case "panther_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
-            Arm(
-                "franka",
-                [0, 0, 0.14],
-                gripper=True,
-                parent=panther,
-                parent_link="base_link",
-                moveit=True,
-            )
+            Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
         case "mm_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
