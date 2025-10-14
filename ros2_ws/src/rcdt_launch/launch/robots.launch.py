@@ -5,7 +5,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
-from rcdt_launch.robot import Arm, Camera, Lidar, Platform, Vehicle
+from rcdt_launch.robot import GPS, Arm, Camera, Lidar, Platform, Vehicle
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
@@ -21,15 +21,19 @@ configuration_arg = LaunchArgument(
     [
         "",
         "axis",
+        "gps",
         "lidar",
         "realsense",
+        "zed",
         "franka",
         "franka_axis",
         "franka_double",
         "franka_realsense",
         "panther",
         "panther_axis",
+        "panther_gps",
         "panther_realsense",
+        "panther_zed",
         "panther_lidar",
         "mm",
         "mm_lidar",
@@ -65,10 +69,14 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     match configuration:
         case "axis":
             Platform("axis", [0, 0, 0])
+        case "gps":
+            GPS("nmea", [0, 0, 0.5], ip_address="10.15.20.202")
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
         case "realsense":
             Camera("realsense", [0, 0, 0.5])
+        case "zed":
+            Camera("zed", [0, 0, 0.5], namespace="zed")
         case "franka":
             if not use_sim:
                 Rviz.load_motion_planning_plugin = True
@@ -92,6 +100,12 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         case "panther_realsense":
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("realsense", [0, 0, 0.2], parent=panther)
+        case "panther_gps":
+            panther = Vehicle("panther", [0, 0, 0.2])
+            GPS("nmea", [0, 0, 0.2], parent=panther)
+        case "panther_zed":
+            panther = Vehicle("panther", [0, 0, 0.2])
+            Camera("zed", [0, 0, 0.5], parent=panther)
         case "panther_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
