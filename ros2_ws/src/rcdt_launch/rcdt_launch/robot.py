@@ -295,7 +295,9 @@ class Platform:  # noqa: PLR0904
 
     def __init__(  # noqa: PLR0913
         self,
-        platform: Literal["panther", "franka", "velodyne", "realsense", "zed", "nmea", "axis"],
+        platform: Literal[
+            "panther", "franka", "velodyne", "realsense", "zed", "nmea", "axis"
+        ],
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
@@ -380,7 +382,7 @@ class Platform:  # noqa: PLR0904
         return get_file_path(package, ["launch"], "controllers.launch.py")
 
     @property
-    def xacro_path(self) -> str:
+    def xacro_path(self) -> str:  # noqa: PLR0911
         """Return the xacro file path for the robot.
 
         Returns:
@@ -414,7 +416,7 @@ class Platform:  # noqa: PLR0904
                 raise ValueError("Cannot provide xacro path: unknown platform.")
 
     @property
-    def base_link(self) -> str:
+    def base_link(self) -> str:  # noqa: PLR0911
         """Return the base link for the robot based on its platform.
 
         Returns:
