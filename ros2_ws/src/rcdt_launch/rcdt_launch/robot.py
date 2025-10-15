@@ -1009,6 +1009,7 @@ class GPS(Platform):
         self,
         platform: Literal["nmea"],
         position: list,
+        orientation: list | None = None,
         namespace: str | None = None,
         parent: Platform | None = None,
         ip_address: str = "",
@@ -1017,12 +1018,13 @@ class GPS(Platform):
 
         Args:
             platform (Literal["nmea"]): The platform type.
-            position (list): The position of the vehicle.
-            namespace (str | None): The namespace of the vehicle.
+            position (list): The position of the platform.
+            orientation (list | None): The orientation of the platform.
+            namespace (str | None): The namespace of the platform.
             parent (Platform | None): The parent platform.
-            ip_address (str): The IP address of the GPS.
+            ip_address (str): The IP address of the platform.
         """
-        super().__init__(platform, position, namespace, parent)
+        super().__init__(platform, position, orientation, namespace, parent)
         self.platform = platform
         self.namespace = self.namespace
         self.ip_address = ip_address
