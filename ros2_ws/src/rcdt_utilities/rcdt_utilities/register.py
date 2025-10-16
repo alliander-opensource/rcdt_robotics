@@ -110,7 +110,9 @@ class Register:
                 return LaunchDescription([])
             item = Register.register.pop(1)
         log_progress(item.action)
-        return LaunchDescription([item.action])
+        if item.action:
+            return LaunchDescription([item.action])
+        return LaunchDescription([])
 
     @staticmethod
     def group(
