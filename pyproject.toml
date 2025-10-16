@@ -45,6 +45,8 @@ dependencies = [
     "transforms3d>=0.4.2",
     "waitress>=3.0.2",
     "xmltodict>=1.0.2",
+    "pandas>=2.2.0",
+    "trimesh>=4.8.2",
 ]
 
 [dependency-groups]
@@ -54,7 +56,12 @@ dev = [
     "ruff>=0.11.12",
     "ty>=0.0.1a7",
 ]
+graspnet = [
+    "graspnetpy",
+    ]
 
+[tool.uv.sources]
+graspnetpy = { git = "https://github.com/alliander-opensource/graspnet-baseline" }
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
