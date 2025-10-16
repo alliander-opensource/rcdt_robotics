@@ -214,18 +214,10 @@ class Rviz:
         """
         Rviz.displays.append(
             {
-                "Class": "rviz_default_plugins/MarkerArray",
                 "Enabled": True,
-                "Name": "MarkerArray",
-                "Namespaces": {},  # RViz fills this dynamically
-                "Topic": {
-                    "Depth": 5,
-                    "Durability Policy": "Volatile",
-                    "History Policy": "Keep Last",
-                    "Reliability Policy": "Reliable",
-                    "Value": topic,
-                },
-                "Value": True,
+                "Class": "rviz_default_plugins/MarkerArray",
+                "Name": topic,
+                "Topic": {"Value": topic},
             }
         )
 
