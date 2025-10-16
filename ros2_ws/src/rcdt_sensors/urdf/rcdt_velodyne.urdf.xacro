@@ -75,14 +75,12 @@ Based on:
     </link>
 
     <!-- Gazebo requires a joint to a link called "world" for statically mounted robots -->
-    <xacro:if value="${parent != ''}">
-      <xacro:if value="${parent == 'world'}">
-        <link name="${parent}" />
-        <joint name="${parent}_joint" type="fixed">
-          <parent link="${parent}" />
-          <child link="base_link" />
-        </joint>
-      </xacro:if>
+    <xacro:if value="${parent == 'world'}">
+      <link name="${parent}" />
+      <joint name="${parent}_joint" type="fixed">
+        <parent link="${parent}" />
+        <child link="base_link" />
+      </joint>
     </xacro:if>
 
     <gazebo reference="${name}">

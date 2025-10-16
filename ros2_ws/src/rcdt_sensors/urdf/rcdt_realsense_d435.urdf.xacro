@@ -15,14 +15,12 @@ SPDX-License-Identifier: Apache-2.0
     ">
 
     <!-- Gazebo requires a joint to a link called "world" for statically mounted robots -->
-    <xacro:if value="${parent != ''}">
-      <xacro:if value="${parent == 'world'}">
-        <link name="${parent}" />
-        <joint name="${parent}_joint" type="fixed">
-          <parent link="${parent}" />
-          <child link="base_link" />
-        </joint>
-      </xacro:if>
+    <xacro:if value="${parent == 'world'}">
+      <link name="${parent}" />
+      <joint name="${parent}_joint" type="fixed">
+        <parent link="${parent}" />
+        <child link="base_link" />
+      </joint>
     </xacro:if>
 
     <!-- Include realsense xacro: -->
@@ -88,5 +86,5 @@ SPDX-License-Identifier: Apache-2.0
   </xacro:macro>
   <xacro:arg name="namespace" default="realsense" />
   <xacro:arg name="parent" default="" />
-  <xacro:rcdt_realsense_d435 namespace="$(arg namespace)" parent="$(arg parent)"/>
+  <xacro:rcdt_realsense_d435 namespace="$(arg namespace)" parent="$(arg parent)" />
 </robot>
