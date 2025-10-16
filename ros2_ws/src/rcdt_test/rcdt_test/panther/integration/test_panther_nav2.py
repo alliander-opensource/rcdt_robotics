@@ -81,13 +81,18 @@ def test_joint_states_published(timeout: int) -> None:
 
 
 @pytest.mark.launch(fixture=panther_launch)
-def test_e_stop_request(test_node: Node, timeout: int) -> None:
-    """Test that the E-Stop request service can be called.
+def test_e_stop_request_reset(
+    request: SubRequest, test_node: Node, timeout: int
+) -> None:
+    """Test that the E-Stop request service can be called to unlock the Panther.
 
     Args:
+        request (SubRequest): The pytest request object, used to access command line options
         test_node (Node): The ROS 2 node to use for the test.
-        timeout (int): The timeout in seconds to wait for the service to be called.
+        timeout (int): The timeout in seconds to wait before failing the test.
     """
+    if request.config.getoption("simulation"):
+        pytest.skip("E-Stop is not available.")  # ty: ignore[call-non-callable]
     assert (
         call_trigger_service(
             node=test_node,

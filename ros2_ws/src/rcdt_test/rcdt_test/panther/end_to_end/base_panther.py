@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import pytest
+from _pytest.fixtures import SubRequest
 from geometry_msgs.msg import Pose
 from rcdt_utilities.launch_utils import assert_for_message
 from rcdt_utilities.test_utils import (
@@ -45,14 +47,19 @@ def get_tests(namespace: str) -> dict:
         """
         assert_for_message(JointState, f"/{namespace}/joint_states", timeout=timeout)
 
-    def test_e_stop_request_reset(_self: object, test_node: Node, timeout: int) -> None:
+    def test_e_stop_request_reset(
+        _self: object, request: SubRequest, test_node: Node, timeout: int
+    ) -> None:
         """Test that the E-Stop request service can be called to unlock the Panther.
 
         Args:
             _self (object): The test class instance.
+            request (SubRequest): The pytest request object, used to access command line options
             test_node (Node): The ROS 2 node to use for the test.
             timeout (int): The timeout in seconds to wait before failing the test.
         """
+        if request.config.getoption("simulation"):
+            pytest.skip("E-Stop is not available.")  # ty: ignore[call-non-callable]
         assert (
             call_trigger_service(
                 node=test_node,
@@ -130,15 +137,18 @@ def get_tests(namespace: str) -> dict:
         )
 
     def test_e_stop_request_trigger(
-        _self: object, test_node: Node, timeout: int
+        _self: object, request: SubRequest, test_node: Node, timeout: int
     ) -> None:
         """Test that the E-Stop request service can be called to lock the panther.
 
         Args:
             _self (object): The test class instance.
+            request (SubRequest): The pytest request object, used to access command line options
             test_node (Node): The ROS 2 node to use for the test.
             timeout (int): The timeout in seconds to wait before failing the test.
         """
+        if request.config.getoption("simulation"):
+            pytest.skip("E-Stop is not available.")  # ty: ignore[call-non-callable]
         assert (
             call_trigger_service(
                 node=test_node,
@@ -147,7 +157,6 @@ def get_tests(namespace: str) -> dict:
             )
             is True
         )
-        # Collect all test methods defined above
 
     tests = {
         name: obj

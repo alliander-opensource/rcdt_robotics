@@ -19,13 +19,13 @@ namespace = "zed"
 
 @launch_pytest.fixture(scope="module")
 def launch(request: SubRequest) -> LaunchDescription:
-    """Fixture to create launch file for the realsense test.
+    """Fixture to create launch file for the test.
 
     Args:
         request (SubRequest): The pytest request object, used to access command line options
 
     Returns:
-        LaunchDescription: The launch description for the realsense test.
+        LaunchDescription: The launch description for the test.
     """
     Camera(platform="zed", position=[0, 0, 0.5], namespace=namespace)
     launch = RegisteredLaunchDescription(

@@ -21,7 +21,7 @@ SPDX-License-Identifier: Apache-2.0
     battery_config_file=""
     namespace="$(arg namespace)" />
 
-  <!-- Create detachable joints between base_link and childs: -->
+  <!-- Create detachable joints with given childs: -->
   <xacro:include filename="$(find rcdt_utilities)/urdf/detachable_joints.urdf.xacro" />
-  <xacro:detachable_joints parent_link="base_link" childs="${$(arg childs)}" />
+  <xacro:detachable_joints childs="${$(arg childs)}" />
 </robot>
