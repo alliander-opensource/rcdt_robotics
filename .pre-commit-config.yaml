@@ -51,6 +51,13 @@ repos:
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
+  - repo: local
+    hooks:
+      - id: doxygen
+        name: doxygen linting 
+        entry: ./doxygen-lint.sh
+        language: system
+        pass_filenames: false
   - repo: https://github.com/fsfe/reuse-tool
     rev: v5.0.2
     hooks:

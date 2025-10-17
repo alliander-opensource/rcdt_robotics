@@ -3,6 +3,7 @@
 // # SPDX-License-Identifier: Apache-2.0
 
 #include "moveit_manager.hpp"
+
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
 #include <rclcpp/logging.hpp>
@@ -21,7 +22,6 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               node->get_namespace())),
       moveit_visual_tools(node, "base", "/rviz_markers") {
-
   moveit_visual_tools.loadMarkerPub(false);
   move_group.setEndEffectorLink("fr3_hand");
   joint_model_group = move_group.getRobotModel()->getJointModelGroup("fr3_arm");

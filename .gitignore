@@ -25,3 +25,9 @@ build/
 !.devcontainer/.env
 .cache
 .venv
+
+# for LSP in neovim
+**/compile_commands.json
+
+# without generating anything, doxygen gives unnecessary warnings
+rtf/

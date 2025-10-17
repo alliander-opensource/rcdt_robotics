@@ -29,14 +29,26 @@ typedef std_srvs::srv::Trigger Trigger;
 typedef geometry_msgs::msg::PoseStamped PoseStamped;
 typedef rcdt_messages::srv::ExpressPoseInOtherFrame ExpressPoseInOtherFrame;
 
+/**
+ * Action to perform with the arm.
+ * @todo this looks unused, can it be removed?
+ */
 struct Action {
-  std::string name;
-  std::string argument = "";
-  float value = 0.0;
+  std::string name;          /**< Name of action to perform */
+  std::string argument = ""; /**< Argument for action to perform */
+  float value = 0.0;         /**< Target value for action */
 };
 
+/**
+ * Class to interact with the Moveit framework.
+ */
 class MoveitManager {
 public:
+  /**
+   * constructor for the MoveitManager class.
+   * @param node The ROS2 node to attach to.
+   * @return An instance of MoveitManager.
+   */
   MoveitManager(rclcpp::Node::SharedPtr node);
 
 private:
