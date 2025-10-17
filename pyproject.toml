@@ -47,6 +47,7 @@ dependencies = [
     "xmltodict>=1.0.2",
     "pandas>=2.2.0",
     "trimesh>=4.8.2",
+    "nicegui>=3.0.4",
 ]
 
 [dependency-groups]

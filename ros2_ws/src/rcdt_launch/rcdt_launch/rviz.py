@@ -206,6 +206,22 @@ class Rviz:
         )
 
     @staticmethod
+    def add_markers(topic: str = "/rviz_markers") -> None:
+        """Add a MarkerArray display (e.g., for MoveItVisualTools).
+
+        Args:
+            topic (str): The topic of the MarkerArray.
+        """
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "rviz_default_plugins/MarkerArray",
+                "Name": topic,
+                "Topic": {"Value": topic},
+            }
+        )
+
+    @staticmethod
     def create_rviz_file() -> None:
         """Create the RViz configuration file."""
         with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:

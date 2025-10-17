@@ -139,7 +139,7 @@ def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
 
     future = client.call_async(Trigger.Request())
     rclpy.spin_until_future_complete(node, future=future, timeout_sec=timeout)
-    return future.result() is not None
+    return future.result().success
 
 
 def create_ready_action_client(
