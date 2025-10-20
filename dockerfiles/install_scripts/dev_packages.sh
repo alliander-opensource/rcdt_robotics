@@ -9,6 +9,6 @@ source /home/$UNAME/.bashrc
 apt update
 
 apt install -y \
-    clang
-    doxygen
+    clang \
+    doxygen \
     ros-$ROS_DISTRO-nmea-navsat-driver
