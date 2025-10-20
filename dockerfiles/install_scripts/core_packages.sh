@@ -24,6 +24,7 @@ apt install -y \
     ros-$ROS_DISTRO-moveit-visual-tools \
     ros-$ROS_DISTRO-navigation2 \
     ros-$ROS_DISTRO-nav2-bringup \
+    ros-$ROS_DISTRO-pcl-ros \
     ros-$ROS_DISTRO-plotjuggler-ros \
     ros-$ROS_DISTRO-realsense2-camera \
     ros-$ROS_DISTRO-realsense2-description \
@@ -32,6 +33,7 @@ apt install -y \
     ros-$ROS_DISTRO-ros2-controllers \
     ros-$ROS_DISTRO-rqt-tf-tree \
     ros-$ROS_DISTRO-slam-toolbox \
+    ros-$ROS_DISTRO-tf2-eigen \
     ros-$ROS_DISTRO-pointcloud-to-laserscan
 
 pip install uv --break-system-packages
