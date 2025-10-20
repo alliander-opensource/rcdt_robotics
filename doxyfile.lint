@@ -18,8 +18,6 @@ GENERATE_LATEX = NO
 GENERATE_HTML = NO
 GENERATE_RTF = YES
 
-EXCLUDE_PATTERNS = */__pycache__/*
 FILE_PATTERNS = *.cpp \
 		*.h \
-		*.hpp \
-		# *.py
+		*.hpp
