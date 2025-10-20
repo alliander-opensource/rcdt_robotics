@@ -17,9 +17,6 @@ RUN ./zed_sdk.sh
 COPY ./install_scripts/zed_wrapper.sh .
 RUN ./zed_wrapper.sh
 
-COPY ./install_scripts/ouster_wrapper.sh .
-RUN ./ouster_wrapper.sh
-
 COPY ./install_scripts/franka_ros2.sh .
 RUN ./franka_ros2.sh
 
