@@ -16,7 +16,9 @@
 #include <rcdt_messages/srv/move_to_configuration.hpp>
 #include <rcdt_messages/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
+#include <rviz_visual_tools/rviz_visual_tools.hpp>
 #include <std_srvs/srv/trigger.hpp>
+#include <string>
 
 typedef rcdt_messages::srv::AddObject AddObject;
 typedef rcdt_messages::srv::AddMarker AddMarker;
@@ -37,14 +39,19 @@ struct Action {
 
 class MoveitManager {
 public:
-  MoveitManager(rclcpp::Node::SharedPtr node);
+  MoveitManager(rclcpp::Node::SharedPtr node, std::string group_arm,
+                std::string group_hand);
 
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::Node::SharedPtr client_node;
   moveit::planning_interface::MoveGroupInterface move_group;
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
-  const moveit::core::JointModelGroup *joint_model_group;
+  const moveit::core::JointModelGroup *joint_model_group_arm;
+  const moveit::core::JointModelGroup *joint_model_group_hand;
+  std::string base_frame = "map";
+  std::string marker_topic = "/rviz_markers";
+  rviz_visual_tools::RvizVisualTools rviz_visual_tools;
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
   PoseStamped goal_pose;
 
@@ -86,6 +93,10 @@ private:
   rclcpp::Service<AddMarker>::SharedPtr add_marker_service;
   void add_marker(const std::shared_ptr<AddMarker::Request> request,
                   std::shared_ptr<AddMarker::Response> response);
+
+  rclcpp::Service<Trigger>::SharedPtr visualize_gripper_pose_service;
+  void visualize_gripper_pose(const std::shared_ptr<Trigger::Request> request,
+                              std::shared_ptr<Trigger::Response> response);
 
   rclcpp::Service<Trigger>::SharedPtr clear_markers_service;
   void clear_markers(const std::shared_ptr<Trigger::Request> request,

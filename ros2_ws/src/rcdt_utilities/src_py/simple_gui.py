@@ -12,12 +12,13 @@ import rclpy
 from nicegui import app, ui
 from PIL import Image as PIL
 from rcdt_messages.msg import Grasp
-from rcdt_messages.srv import GenerateGraspnetGrasp
+from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import CameraInfo, Image
+from std_srvs.srv import Trigger
 
 TIMEOUT = 3
 
@@ -70,8 +71,8 @@ class Message:
         return message
 
 
-class ManipulatePose(Node):
-    """Node to manipulate poses in different frames and apply transformations."""
+class UI(Node):
+    """Node of the UI."""
 
     def __init__(self):
         """Initialize the node."""
@@ -84,6 +85,18 @@ class ManipulatePose(Node):
             GenerateGraspnetGrasp, "/graspnet/generate"
         )
 
+        self.clear_objects_client = self.create_client(
+            Trigger, "/franka1/moveit_manager/clear_objects"
+        )
+
+        self.add_object_client = self.create_client(
+            AddObject, "/franka1/moveit_manager/add_object"
+        )
+
+        self.visualize_gripper_pose_service = self.create_client(
+            Trigger, "/franka1/moveit_manager/visualize_gripper_pose"
+        )
+
         self.setup_gui()
 
     def setup_gui(self) -> None:
@@ -91,6 +104,10 @@ class ManipulatePose(Node):
 
         @ui.page("/")
         def page():
+            with ui.row():
+                ui.button("Add Object", on_click=self.add_object)
+                ui.button("Clear Objects", on_click=self.clear_objects)
+                ui.button("Publish Robot State", on_click=self.visualize_gripper_pose)
             with ui.row():
                 color_image = ui.image(self.camera_view.color).classes("w-32")
                 depth_image = ui.image(self.camera_view.depth).classes("w-32")
@@ -110,6 +127,34 @@ class ManipulatePose(Node):
                 )
             grasp = ui.label("No grasp generated.").classes("m-2")
             ui.button("Generate Grasp", on_click=lambda: self.generate_grasp(grasp))
+
+    def visualize_gripper_pose(self) -> None:
+        """Visualize the gripper pose in Rviz."""
+        if self.visualize_gripper_pose_service.call(Trigger.Request(), TIMEOUT) is None:
+            self.get_logger().error("Failed to call visualize gripper pose service.")
+        else:
+            self.get_logger().info(
+                "Successfully called visualize gripper pose service."
+            )
+
+    def clear_objects(self) -> None:
+        """Clear objects from the planning scene."""
+        if self.clear_objects_client.call(Trigger.Request(), TIMEOUT) is None:
+            self.get_logger().error("Failed to call clear objects service.")
+        else:
+            self.get_logger().info("Successfully called clear objects service.")
+
+    def add_object(self) -> None:
+        """Add an object to the planning scene."""
+        request = AddObject.Request()
+        request.shape = "SPHERE"
+        request.pose.header.frame_id = "franka1/fr3_link0"
+        request.d1 = 0.1  # radius
+
+        if self.add_object_client.call(request, TIMEOUT) is None:
+            self.get_logger().error("Failed to call add object service.")
+        else:
+            self.get_logger().info("Successfully called add object service.")
 
     def update_image(self, ui: ui.image, image_type: str) -> None:
         match image_type:
@@ -158,7 +203,7 @@ def ros_main(args: list | None = None) -> None:
         args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
-    node = ManipulatePose()
+    node = UI()
     spin_node(node)
 
 

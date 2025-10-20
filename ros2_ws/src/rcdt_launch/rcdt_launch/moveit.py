@@ -96,6 +96,8 @@ def add_prefix_in_robot_description_semantic(description: dict, prefix: str) -> 
         prefix (str): The prefix to add to each link.
     """
     xml_dict = xmltodict.parse(description["robot_description_semantic"])
+    ee_parent_link = xml_dict["robot"]["end_effector"]["@parent_link"]
+    xml_dict["robot"]["end_effector"]["@parent_link"] = f"{prefix}/{ee_parent_link}"
     for disable_collision in xml_dict["robot"]["disable_collisions"]:
         link1 = disable_collision["@link1"]
         link2 = disable_collision["@link2"]

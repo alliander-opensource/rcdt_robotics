@@ -8,24 +8,30 @@
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node_options.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <vector>
 
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
+MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_,
+                             std::string group_arm, std::string group_hand)
     : node(node_),
       move_group(
           node,
           moveit::planning_interface::MoveGroupInterface::Options(
-              "fr3_arm",
+              group_arm,
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               node->get_namespace())),
-      moveit_visual_tools(node, "franka/fr3_link0", "/rviz_markers") {
+      rviz_visual_tools(base_frame, marker_topic, node),
+      moveit_visual_tools(node, base_frame, marker_topic) {
+
+  joint_model_group_arm =
+      move_group.getRobotModel()->getJointModelGroup(group_arm);
+  joint_model_group_hand =
+      move_group.getRobotModel()->getJointModelGroup(group_hand);
 
   moveit_visual_tools.loadMarkerPub(false);
-  move_group.setEndEffectorLink("franka/fr3_hand_tcp");
-  joint_model_group =
-      move_group.getRobotModel()->getJointModelGroup("franka/fr3_arm");
+  moveit_visual_tools.loadRobotStatePub("display_robot_state");
 
   initialize_clients();
   initialize_services();
@@ -65,6 +71,10 @@ void MoveitManager::initialize_services() {
   add_marker_service = node->create_service<AddMarker>(
       "~/add_marker", std::bind(&MoveitManager::add_marker, this, _1, _2));
 
+  visualize_gripper_pose_service = node->create_service<Trigger>(
+      "~/visualize_gripper_pose",
+      std::bind(&MoveitManager::visualize_gripper_pose, this, _1, _2));
+
   clear_markers_service = node->create_service<Trigger>(
       "~/clear_markers",
       std::bind(&MoveitManager::clear_markers, this, _1, _2));
@@ -85,12 +95,14 @@ void MoveitManager::add_object(
     return;
   }
 
+  std::vector<moveit_msgs::msg::CollisionObject> collision_objects;
   solid_primitive.dimensions = {request->d1, request->d2, request->d3};
   collision_object.primitives.push_back(solid_primitive);
   collision_object.primitive_poses.push_back(request->pose.pose);
   collision_object.operation = collision_object.ADD;
   collision_object.id = "object";
-  planning_scene_interface.applyCollisionObject(collision_object);
+  collision_objects.push_back(collision_object);
+  planning_scene_interface.addCollisionObjects(collision_objects);
   response->success = true;
 };
 
@@ -156,7 +168,8 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
 
   moveit_visual_tools.deleteAllMarkers("Path");
   moveit_visual_tools.deleteAllMarkers("Sphere");
-  moveit_visual_tools.publishTrajectoryLine(plan.trajectory, joint_model_group);
+  moveit_visual_tools.publishTrajectoryLine(plan.trajectory,
+                                            joint_model_group_arm);
   moveit_visual_tools.trigger();
 
   error_code = move_group.execute(plan);
@@ -170,7 +183,7 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
 PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
-  request->target_frame = "franka/fr3_link0";
+  request->target_frame = base_frame;
   auto future = express_pose_in_other_frame_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
   auto response = future.get();
@@ -186,6 +199,21 @@ void MoveitManager::add_marker(
   response->success = true;
 };
 
+void MoveitManager::visualize_gripper_pose(
+    const std::shared_ptr<Trigger::Request> request,
+    std::shared_ptr<Trigger::Response> response) {
+
+  PoseStamped pose_hand;
+  pose_hand.header.frame_id =
+      joint_model_group_hand->getEndEffectorParentGroup().second;
+  auto pose_map = change_frame_to_base(pose_hand);
+
+  std::vector<double> positions = {0.04};
+  moveit_visual_tools.publishEEMarkers(pose_map.pose, joint_model_group_hand,
+                                       positions, rviz_visual_tools::ORANGE);
+  response->success = true;
+}
+
 void MoveitManager::clear_markers(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
@@ -199,7 +227,7 @@ int main(int argc, char **argv) {
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
   auto node = std::make_shared<rclcpp::Node>("moveit_manager", node_options);
-  auto moveit_manager = MoveitManager(node);
+  auto moveit_manager = MoveitManager(node, "fr3_arm", "franka_hand");
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(node);
   executor.spin();
