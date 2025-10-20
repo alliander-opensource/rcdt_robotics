@@ -3,8 +3,20 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 # 
 # SPDX-License-Identifier: Apache-2.0
-OUTPUT=$(doxygen doxyfile.lint /dev/null 2>&1)
-NUM_WARNINGS=$(($(echo "$OUTPUT" | wc -l) - 1))
+FILENAME=doxyfile.lint
+
+if ! command -v doxygen > /dev/null 2>&1 ; then
+  echo "Doxygen not found, exiting."
+  exit 1
+fi
+
+if [ ! -f $FILENAME ]; then
+  echo "Doxyfile '$FILENAME' not found, exiting."
+  exit 1
+fi
+
+OUTPUT=$(doxygen $FILENAME /dev/null 2>&1)
+NUM_WARNINGS=$(echo "$OUTPUT" | grep -i "warning:" | wc -l)
 
 if [ "$NUM_WARNINGS" -gt 0 ]; then
   echo "$OUTPUT"

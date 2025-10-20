@@ -47,7 +47,6 @@ public:
   /**
    * constructor for the MoveitManager class.
    * @param node The ROS2 node to attach to.
-   * @return An instance of MoveitManager.
    */
   MoveitManager(rclcpp::Node::SharedPtr node);
 

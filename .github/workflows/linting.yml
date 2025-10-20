@@ -37,8 +37,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt install -y clang-format
+      - run: sudo apt update && sudo apt install -y clang-format
       - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run --Werror
+
+  doxygen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt update && sudo apt install -y doxygen
+      - run: ./doxygen-lint.sh 
 
   reuse:
     runs-on: ubuntu-latest
