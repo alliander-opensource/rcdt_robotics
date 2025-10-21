@@ -13,22 +13,20 @@
 using std::placeholders::_1;
 using std::placeholders::_2;
 
-MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_,
-                             std::string group_arm, std::string group_hand)
-    : node(node_),
+MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
+    : node(node_), tf_broadcaster(node_),
       move_group(
           node,
           moveit::planning_interface::MoveGroupInterface::Options(
-              group_arm,
+              "arm",
               moveit::planning_interface::MoveGroupInterface::ROBOT_DESCRIPTION,
               node->get_namespace())),
       rviz_visual_tools(base_frame, marker_topic, node),
       moveit_visual_tools(node, base_frame, marker_topic) {
 
-  joint_model_group_arm =
-      move_group.getRobotModel()->getJointModelGroup(group_arm);
-  joint_model_group_hand =
-      move_group.getRobotModel()->getJointModelGroup(group_hand);
+  jmg_arm = move_group.getRobotModel()->getJointModelGroup("arm");
+  jmg_hand = move_group.getRobotModel()->getJointModelGroup("hand");
+  jmg_tcp = move_group.getRobotModel()->getJointModelGroup("tcp");
 
   moveit_visual_tools.loadMarkerPub(false);
   moveit_visual_tools.loadRobotStatePub("display_robot_state");
@@ -71,9 +69,9 @@ void MoveitManager::initialize_services() {
   add_marker_service = node->create_service<AddMarker>(
       "~/add_marker", std::bind(&MoveitManager::add_marker, this, _1, _2));
 
-  visualize_gripper_pose_service = node->create_service<Trigger>(
-      "~/visualize_gripper_pose",
-      std::bind(&MoveitManager::visualize_gripper_pose, this, _1, _2));
+  visualize_grasp_pose_service = node->create_service<VisualizeGraspPose>(
+      "~/visualize_grasp_pose",
+      std::bind(&MoveitManager::visualize_grasp_pose, this, _1, _2));
 
   clear_markers_service = node->create_service<Trigger>(
       "~/clear_markers",
@@ -116,7 +114,7 @@ void MoveitManager::clear_objects(
 void MoveitManager::define_goal_pose(
     const std::shared_ptr<DefineGoalPose::Request> request,
     std::shared_ptr<DefineGoalPose::Response> response) {
-  auto pose = change_frame_to_base(request->pose);
+  auto pose = change_frame(request->pose);
   goal_pose = pose;
   response->success = true;
 };
@@ -168,8 +166,7 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
 
   moveit_visual_tools.deleteAllMarkers("Path");
   moveit_visual_tools.deleteAllMarkers("Sphere");
-  moveit_visual_tools.publishTrajectoryLine(plan.trajectory,
-                                            joint_model_group_arm);
+  moveit_visual_tools.publishTrajectoryLine(plan.trajectory, jmg_arm);
   moveit_visual_tools.trigger();
 
   error_code = move_group.execute(plan);
@@ -180,10 +177,14 @@ bool MoveitManager::plan_and_execute(std::string planning_type) {
   return true;
 };
 
-PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
+PoseStamped MoveitManager::change_frame(PoseStamped pose,
+                                        std::string target_frame) {
+  if (target_frame == "") {
+    target_frame = base_frame;
+  }
   auto request = std::make_shared<ExpressPoseInOtherFrame::Request>();
   request->pose = pose;
-  request->target_frame = base_frame;
+  request->target_frame = target_frame;
   auto future = express_pose_in_other_frame_client->async_send_request(request);
   rclcpp::spin_until_future_complete(client_node, future);
   auto response = future.get();
@@ -193,23 +194,44 @@ PoseStamped MoveitManager::change_frame_to_base(PoseStamped pose) {
 void MoveitManager::add_marker(
     const std::shared_ptr<AddMarker::Request> request,
     std::shared_ptr<AddMarker::Response> response) {
-  auto pose = change_frame_to_base(request->marker_pose);
+  auto pose = change_frame(request->marker_pose);
   moveit_visual_tools.publishAxis(pose.pose);
   moveit_visual_tools.trigger();
   response->success = true;
 };
 
-void MoveitManager::visualize_gripper_pose(
-    const std::shared_ptr<Trigger::Request> request,
-    std::shared_ptr<Trigger::Response> response) {
+void MoveitManager::visualize_grasp_pose(
+    const std::shared_ptr<VisualizeGraspPose::Request> request,
+    std::shared_ptr<VisualizeGraspPose::Response> response) {
 
-  PoseStamped pose_hand;
-  pose_hand.header.frame_id =
-      joint_model_group_hand->getEndEffectorParentGroup().second;
-  auto pose_map = change_frame_to_base(pose_hand);
+  // Broadcast a tf frame at the desired Tool Center Point location:
+  TransformStamped tf;
+  tf.header = request->pose.header;
+  tf.header.stamp = node->now();
+  tf.transform.translation.x = request->pose.pose.position.x;
+  tf.transform.translation.y = request->pose.pose.position.y;
+  tf.transform.translation.z = request->pose.pose.position.z;
+  tf.transform.rotation = request->pose.pose.orientation;
+  tf.child_frame_id = "desired_tcp";
+  tf_broadcaster.sendTransform(tf);
 
+  // Define the arm_end_link in the tcp_frame:
+  // TODO: Do only once at initialization, since it does not change.
+  auto link_arm_end = jmg_arm->getLinkModelNames().back();
+  auto link_tcp = jmg_tcp->getLinkModelNames().back();
+  PoseStamped arm_end_in_arm_frame;
+  arm_end_in_arm_frame.header.frame_id = link_arm_end;
+  auto arm_end_in_tcp_frame = change_frame(arm_end_in_arm_frame, link_tcp);
+
+  // Define the arm_end_link in the desired_tcp_frame and convert to base:
+  PoseStamped arm_end_in_desired_tcp_frame;
+  arm_end_in_desired_tcp_frame.header.frame_id = "desired_tcp";
+  arm_end_in_desired_tcp_frame.pose = arm_end_in_tcp_frame.pose;
+  auto arm_end_in_base_frame = change_frame(arm_end_in_desired_tcp_frame);
+
+  // Publish the End Effector marker:
   std::vector<double> positions = {0.04};
-  moveit_visual_tools.publishEEMarkers(pose_map.pose, joint_model_group_hand,
+  moveit_visual_tools.publishEEMarkers(arm_end_in_base_frame.pose, jmg_hand,
                                        positions, rviz_visual_tools::ORANGE);
   response->success = true;
 }
@@ -227,7 +249,7 @@ int main(int argc, char **argv) {
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
   auto node = std::make_shared<rclcpp::Node>("moveit_manager", node_options);
-  auto moveit_manager = MoveitManager(node, "fr3_arm", "franka_hand");
+  auto moveit_manager = MoveitManager(node);
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(node);
   executor.spin();

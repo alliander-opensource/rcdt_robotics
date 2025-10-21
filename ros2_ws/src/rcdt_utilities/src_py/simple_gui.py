@@ -9,10 +9,11 @@ from dataclasses import dataclass
 
 import numpy as np
 import rclpy
+from geometry_msgs.msg import PoseStamped
 from nicegui import app, ui
 from PIL import Image as PIL
 from rcdt_messages.msg import Grasp
-from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp
+from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp, VisualizeGraspPose
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
@@ -80,6 +81,7 @@ class UI(Node):
 
         self.image_placeholder = np.ones((480, 640), dtype=np.uint8) * 150
         self.camera_view = CameraView()
+        self.grasp_pose = PoseStamped()
 
         self.generate_grasp_client = self.create_client(
             GenerateGraspnetGrasp, "/graspnet/generate"
@@ -93,8 +95,8 @@ class UI(Node):
             AddObject, "/franka1/moveit_manager/add_object"
         )
 
-        self.visualize_gripper_pose_service = self.create_client(
-            Trigger, "/franka1/moveit_manager/visualize_gripper_pose"
+        self.visualize_grasp_pose_service = self.create_client(
+            VisualizeGraspPose, "/franka1/moveit_manager/visualize_grasp_pose"
         )
 
         self.setup_gui()
@@ -107,7 +109,6 @@ class UI(Node):
             with ui.row():
                 ui.button("Add Object", on_click=self.add_object)
                 ui.button("Clear Objects", on_click=self.clear_objects)
-                ui.button("Publish Robot State", on_click=self.visualize_gripper_pose)
             with ui.row():
                 color_image = ui.image(self.camera_view.color).classes("w-32")
                 depth_image = ui.image(self.camera_view.depth).classes("w-32")
@@ -126,11 +127,15 @@ class UI(Node):
                     on_click=lambda: self.update_camera_info(camera_info),
                 )
             grasp = ui.label("No grasp generated.").classes("m-2")
-            ui.button("Generate Grasp", on_click=lambda: self.generate_grasp(grasp))
+            with ui.row():
+                ui.button("Generate Grasp", on_click=lambda: self.generate_grasp(grasp))
+                ui.button("Visualize Grasp", on_click=self.visualize_grasp_pose)
 
-    def visualize_gripper_pose(self) -> None:
-        """Visualize the gripper pose in Rviz."""
-        if self.visualize_gripper_pose_service.call(Trigger.Request(), TIMEOUT) is None:
+    def visualize_grasp_pose(self) -> None:
+        """Visualize the grasp pose in Rviz."""
+        request = VisualizeGraspPose.Request()
+        request.pose = self.grasp_pose
+        if self.visualize_grasp_pose_service.call(request, TIMEOUT) is None:
             self.get_logger().error("Failed to call visualize gripper pose service.")
         else:
             self.get_logger().info(
@@ -184,6 +189,7 @@ class UI(Node):
         request = GenerateGraspnetGrasp.Request()
         request.color = self.camera_view.color_ros
         request.depth = cv2_image_to_ros_image(self.camera_view.depth_cv / 1000)
+        request.depth.header = self.camera_view.depth_ros.header
         request.camera_info = self.camera_view.camera_info
 
         if not self.generate_grasp_client.wait_for_service(TIMEOUT):
@@ -193,7 +199,10 @@ class UI(Node):
             request, 10
         )
         grasp: Grasp = response.grasps[0]
-        ui.text = str(grasp.pose.pose.position)
+        self.grasp_pose = grasp.pose
+        ui.text = (
+            f"Frame: {grasp.pose.header.frame_id}, position: {grasp.pose.pose.position}"
+        )
 
 
 def ros_main(args: list | None = None) -> None:
