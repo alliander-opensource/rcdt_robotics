@@ -85,6 +85,9 @@ void MoveitManager::initialize_services() {
       "~/visualize_plan",
       std::bind(&MoveitManager::visualize_plan, this, _1, _2));
 
+  execute_plan_service = node->create_service<Trigger>(
+      "~/execute_plan", std::bind(&MoveitManager::execute_plan, this, _1, _2));
+
   clear_markers_service = node->create_service<Trigger>(
       "~/clear_markers",
       std::bind(&MoveitManager::clear_markers, this, _1, _2));
@@ -273,6 +276,16 @@ void MoveitManager::visualize_plan(
   moveit::core::RobotState state(move_group.getRobotModel());
   moveit_visual_tools.publishTrajectoryPath(plan.trajectory, state);
   response->success = true;
+}
+
+void MoveitManager::execute_plan(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+  auto error_code = move_group.execute(plan);
+  response->success = (error_code == moveit::core::MoveItErrorCode::SUCCESS);
+  if (!response->success) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to execute plan.");
+  }
 }
 
 void MoveitManager::clear_markers(

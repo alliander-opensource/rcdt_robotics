@@ -7,14 +7,20 @@
 import pickle
 import threading
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
+import PIL.Image as PILImage
 import rclpy
 from geometry_msgs.msg import PoseStamped
 from nicegui import app, ui
-from PIL import Image as PIL
 from rcdt_messages.msg import Grasp
-from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp, PoseStampedSrv
+from rcdt_messages.srv import (
+    AddObject,
+    GenerateGraspnetGrasp,
+    MoveToConfiguration,
+    PoseStampedSrv,
+)
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
@@ -27,23 +33,37 @@ TIMEOUT = 3
 
 @dataclass
 class Data:
+    """Class to hold the data for the UI.
+
+    Attributes:
+        color_ros (Image | None): The color image in ROS format.
+        color_cv (np.ndarray | None): The color image in OpenCV format.
+        color_pil (PILImage.Image | None): The color image in PIL format.
+        depth_ros (Image | None): The depth image in ROS format.
+        depth_cv (np.ndarray | None): The depth image in OpenCV format.
+        depth_pil (PILImage.Image | None): The depth image in PIL format.
+        camera_info (CameraInfo | None): The camera info.
+        grasp_pose (PoseStamped | None): The grasp pose.
+    """
+
     color_ros: Image | None = None
     color_cv: np.ndarray | None = None
-    color: PIL.Image | None = None
+    color_pil: PILImage.Image | None = None
     depth_ros: Image | None = None
     depth_cv: np.ndarray | None = None
-    depth: PIL.Image | None = None
+    depth_pil: PILImage.Image | None = None
     camera_info: CameraInfo | None = None
 
     grasp_pose: PoseStamped | None = None
 
     def update(self) -> None:
+        """Update the OpenCV and PIL images from the ROS images."""
         if self.color_ros is not None:
             self.color_cv = ros_image_to_cv2_image(self.color_ros)
-            self.color = PIL.fromarray(self.color_cv)
+            self.color_pil = PILImage.fromarray(self.color_cv)
         if self.depth_ros is not None:
             self.depth_cv = ros_image_to_cv2_image(self.depth_ros)
-            self.depth = PIL.fromarray(self.depth_cv)
+            self.depth_pil = PILImage.fromarray(self.depth_cv)
 
 
 @dataclass
@@ -58,14 +78,14 @@ class Message:
     topic: str
     message_type: type
 
-    def get_message(self, node: Node) -> object:
+    def get_message(self, node: Node) -> Any:
         """Get the message from the topic.
 
         Args:
             node (Node): The ROS 2 node to use.
 
         Returns:
-            object: The received message.
+            Any: The received message.
         """
         success, message = wait_for_message(
             self.message_type, node, self.topic, time_to_wait=TIMEOUT
@@ -90,16 +110,20 @@ class UI(Node):
         self.camera_info: ui.label
         self.grasp_info: ui.label
 
-        self.generate_grasp_client = self.create_client(
-            GenerateGraspnetGrasp, "/graspnet/generate"
-        )
-
         self.clear_objects_client = self.create_client(
             Trigger, "/franka1/moveit_manager/clear_objects"
         )
 
         self.add_object_client = self.create_client(
             AddObject, "/franka1/moveit_manager/add_object"
+        )
+
+        self.move_to_configuration_client = self.create_client(
+            MoveToConfiguration, "/franka1/moveit_manager/move_to_configuration"
+        )
+
+        self.generate_grasp_client = self.create_client(
+            GenerateGraspnetGrasp, "/graspnet/generate"
         )
 
         self.visualize_grasp_pose_client = self.create_client(
@@ -114,22 +138,28 @@ class UI(Node):
             Trigger, "/franka1/moveit_manager/visualize_plan"
         )
 
+        self.execute_plan_client = self.create_client(
+            Trigger, "/franka1/moveit_manager/execute_plan"
+        )
+
         self.setup_gui()
 
     def setup_gui(self) -> None:
         """Setup the GUI pages."""
 
         @ui.page("/")
-        def page():
+        def page() -> None:
+            """Setup the page of the GUI."""
             with ui.row():
                 ui.button("Load Data", on_click=self.load)
                 ui.button("Save Data", on_click=self.save)
+                ui.button("Move Home", on_click=self.move_to_home)
             with ui.row():
                 ui.button("Add Object", on_click=self.add_object)
                 ui.button("Clear Objects", on_click=self.clear_objects)
             with ui.row():
-                self.color_image = ui.image(self.data.color).classes("w-32")
-                self.depth_image = ui.image(self.data.depth).classes("w-32")
+                self.color_image = ui.image(self.data.color_pil).classes("w-32")
+                self.depth_image = ui.image(self.data.depth_pil).classes("w-32")
                 self.camera_info = ui.label("No camera info.")
             with ui.row():
                 ui.button("Update Image", on_click=lambda: self.update_image("color"))
@@ -141,11 +171,12 @@ class UI(Node):
                 ui.button("Visualize Grasp", on_click=self.visualize_grasp_pose)
                 ui.button("Create Plan", on_click=self.create_plan)
                 ui.button("Visualize Plan", on_click=self.visualize_plan)
+                ui.button("Execute Plan", on_click=self.execute_plan)
 
     def update_ui(self) -> None:
-        """Update the UI"""
-        self.color_image.source = self.data.color
-        self.depth_image.source = self.data.depth
+        """Update the UI."""
+        self.color_image.source = self.data.color_pil
+        self.depth_image.source = self.data.depth_pil
         self.camera_info.text = (
             self.data.camera_info.header.stamp.sec
             if self.data.camera_info
@@ -171,6 +202,22 @@ class UI(Node):
         with open("/tmp/data.pkl", "wb") as f:
             pickle.dump(self.data, f)
 
+    def move_to_home(self) -> None:
+        """Move the robot to the home configuration."""
+        request = MoveToConfiguration.Request()
+        request.configuration = "home"
+        if self.move_to_configuration_client.call(request, TIMEOUT) is None:
+            self.get_logger().error("Failed to call move to configuration service.")
+        else:
+            self.get_logger().info("Successfully called move to configuration service.")
+
+    def execute_plan(self) -> None:
+        """Execute the plan."""
+        if self.execute_plan_client.call(Trigger.Request(), TIMEOUT) is None:
+            self.get_logger().error("Failed to call execute plan service.")
+        else:
+            self.get_logger().info("Successfully called execute plan service.")
+
     def visualize_plan(self) -> None:
         """Visualize the plan in Rviz."""
         if self.visualize_plan_client.call(Trigger.Request(), TIMEOUT) is None:
@@ -189,6 +236,9 @@ class UI(Node):
 
     def visualize_grasp_pose(self) -> None:
         """Visualize the grasp pose in Rviz."""
+        if self.data.grasp_pose is None:
+            self.get_logger().error("No grasp pose to visualize.")
+            return
         request = PoseStampedSrv.Request()
         request.pose = self.data.grasp_pose
         if self.visualize_grasp_pose_client.call(request, TIMEOUT) is None:
@@ -218,6 +268,11 @@ class UI(Node):
             self.get_logger().info("Successfully called add object service.")
 
     def update_image(self, image_type: str) -> None:
+        """Update the image from the ROS topic.
+
+        Args:
+            image_type (str): The type of image to update ("color" or "depth").
+        """
         match image_type:
             case "color":
                 topic = "/realsense1/color/image_raw"
@@ -234,6 +289,7 @@ class UI(Node):
         self.update_ui()
 
     def update_camera_info(self) -> None:
+        """Update the camera info from the ROS topic."""
         camera_info: CameraInfo = Message(
             topic="/realsense1/depth/camera_info", message_type=CameraInfo
         ).get_message(self)
@@ -242,6 +298,7 @@ class UI(Node):
             self.update_ui()
 
     def generate_grasp(self) -> None:
+        """Generate a grasp using the Graspnet service."""
         request = GenerateGraspnetGrasp.Request()
         request.color = self.data.color_ros
         request.depth = cv2_image_to_ros_image(self.data.depth_cv / 1000)

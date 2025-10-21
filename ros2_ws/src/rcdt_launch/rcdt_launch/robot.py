@@ -21,6 +21,7 @@ class Platform:  # noqa: PLR0904
 
     Attributes:
         simulation (bool): Whether the platforms are in simulation mode or not.
+        world (str): The world file to be used in Gazebo.
         platforms (list[Platform]): A list of all the platforms.
         platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
         names (list[str]): A list of all robot names.
@@ -28,6 +29,7 @@ class Platform:  # noqa: PLR0904
     """
 
     simulation: bool = True
+    world: str = "walls.sdf"
     platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {}
     names: list[str] = []
@@ -132,6 +134,7 @@ class Platform:  # noqa: PLR0904
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
             launch_arguments={
                 "load_gazebo_ui": str(load_gazebo_ui),
+                "world": Platform.world,
                 "platforms": " ".join(platforms),
                 "positions": " ".join(positions),
                 "orientations": " ".join(orientations),

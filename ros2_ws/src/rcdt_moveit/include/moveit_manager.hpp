@@ -114,6 +114,10 @@ private:
   void visualize_plan(const std::shared_ptr<Trigger::Request> request,
                       std::shared_ptr<Trigger::Response> response);
 
+  rclcpp::Service<Trigger>::SharedPtr execute_plan_service;
+  void execute_plan(const std::shared_ptr<Trigger::Request> request,
+                    std::shared_ptr<Trigger::Response> response);
+
   rclcpp::Service<Trigger>::SharedPtr clear_markers_service;
   void clear_markers(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);

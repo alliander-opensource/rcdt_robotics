@@ -90,7 +90,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
             Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
         case "franka_realsense":
-            arm = Arm("franka", [0, 0, 0], moveit=True)
+            Platform.world = "table_with_1_brick.sdf"
+            Rviz.add_markers()
+            Rviz.load_robot_state = True
+            Rviz.load_trajectory = True
+            arm = Arm("franka", [0, 0, 0], moveit=True, graspnet=True)
             Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
