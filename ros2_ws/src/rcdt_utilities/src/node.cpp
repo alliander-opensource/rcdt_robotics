@@ -1,3 +1,7 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
 #include "rcdt_utilities/manipulate_pose.h"
 #include <rclcpp/executors/single_threaded_executor.hpp>
 
