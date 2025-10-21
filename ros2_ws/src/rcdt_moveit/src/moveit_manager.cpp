@@ -4,6 +4,7 @@
 
 #include "moveit_manager.hpp"
 #include <moveit/move_group_interface/move_group_interface.hpp>
+#include <moveit/robot_state/robot_state.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node_options.hpp>
@@ -30,6 +31,10 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
 
   moveit_visual_tools.loadMarkerPub(false);
   moveit_visual_tools.loadRobotStatePub("display_robot_state");
+  moveit_visual_tools.loadTrajectoryPub("display_planned_path_custom");
+
+  auto link_tcp = jmg_tcp->getLinkModelNames().back();
+  move_group.setEndEffectorLink(link_tcp);
 
   initialize_clients();
   initialize_services();
@@ -69,9 +74,16 @@ void MoveitManager::initialize_services() {
   add_marker_service = node->create_service<AddMarker>(
       "~/add_marker", std::bind(&MoveitManager::add_marker, this, _1, _2));
 
-  visualize_grasp_pose_service = node->create_service<VisualizeGraspPose>(
+  visualize_grasp_pose_service = node->create_service<PoseStampedSrv>(
       "~/visualize_grasp_pose",
       std::bind(&MoveitManager::visualize_grasp_pose, this, _1, _2));
+
+  create_plan_service = node->create_service<PoseStampedSrv>(
+      "~/create_plan", std::bind(&MoveitManager::create_plan, this, _1, _2));
+
+  visualize_plan_service = node->create_service<Trigger>(
+      "~/visualize_plan",
+      std::bind(&MoveitManager::visualize_plan, this, _1, _2));
 
   clear_markers_service = node->create_service<Trigger>(
       "~/clear_markers",
@@ -201,8 +213,8 @@ void MoveitManager::add_marker(
 };
 
 void MoveitManager::visualize_grasp_pose(
-    const std::shared_ptr<VisualizeGraspPose::Request> request,
-    std::shared_ptr<VisualizeGraspPose::Response> response) {
+    const std::shared_ptr<PoseStampedSrv::Request> request,
+    std::shared_ptr<PoseStampedSrv::Response> response) {
 
   // Broadcast a tf frame at the desired Tool Center Point location:
   TransformStamped tf;
@@ -232,7 +244,34 @@ void MoveitManager::visualize_grasp_pose(
   // Publish the End Effector marker:
   std::vector<double> positions = {0.04};
   moveit_visual_tools.publishEEMarkers(arm_end_in_base_frame.pose, jmg_hand,
-                                       positions, rviz_visual_tools::ORANGE);
+                                       positions, rviz_visual_tools::BLUE);
+  response->success = true;
+}
+
+void MoveitManager::create_plan(
+    const std::shared_ptr<PoseStampedSrv::Request> request,
+    std::shared_ptr<PoseStampedSrv::Response> response) {
+
+  move_group.setPoseTarget(request->pose);
+  auto error_code = move_group.plan(plan);
+  if (error_code != moveit::core::MoveItErrorCode::SUCCESS) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to generate plan.");
+  }
+
+  // Visualize the goal state in RViz:
+  auto goal_positions =
+      plan.trajectory.joint_trajectory.points.back().positions;
+  moveit::core::RobotState goal_state(move_group.getRobotModel());
+  goal_state.setJointGroupPositions(jmg_arm, goal_positions);
+  moveit_visual_tools.publishRobotState(goal_state, rviz_visual_tools::ORANGE);
+  response->success = true;
+}
+
+void MoveitManager::visualize_plan(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+  moveit::core::RobotState state(move_group.getRobotModel());
+  moveit_visual_tools.publishTrajectoryPath(plan.trajectory, state);
   response->success = true;
 }
 

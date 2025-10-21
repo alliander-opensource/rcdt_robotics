@@ -4,6 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import pickle
 import threading
 from dataclasses import dataclass
 
@@ -13,7 +14,7 @@ from geometry_msgs.msg import PoseStamped
 from nicegui import app, ui
 from PIL import Image as PIL
 from rcdt_messages.msg import Grasp
-from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp, VisualizeGraspPose
+from rcdt_messages.srv import AddObject, GenerateGraspnetGrasp, PoseStampedSrv
 from rcdt_utilities.cv_utils import cv2_image_to_ros_image, ros_image_to_cv2_image
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
@@ -25,7 +26,7 @@ TIMEOUT = 3
 
 
 @dataclass
-class CameraView:
+class Data:
     color_ros: Image | None = None
     color_cv: np.ndarray | None = None
     color: PIL.Image | None = None
@@ -33,6 +34,8 @@ class CameraView:
     depth_cv: np.ndarray | None = None
     depth: PIL.Image | None = None
     camera_info: CameraInfo | None = None
+
+    grasp_pose: PoseStamped | None = None
 
     def update(self) -> None:
         if self.color_ros is not None:
@@ -80,8 +83,12 @@ class UI(Node):
         super().__init__("simple_gui")
 
         self.image_placeholder = np.ones((480, 640), dtype=np.uint8) * 150
-        self.camera_view = CameraView()
-        self.grasp_pose = PoseStamped()
+        self.data = Data()
+
+        self.color_image: ui.image
+        self.depth_image: ui.image
+        self.camera_info: ui.label
+        self.grasp_info: ui.label
 
         self.generate_grasp_client = self.create_client(
             GenerateGraspnetGrasp, "/graspnet/generate"
@@ -95,8 +102,16 @@ class UI(Node):
             AddObject, "/franka1/moveit_manager/add_object"
         )
 
-        self.visualize_grasp_pose_service = self.create_client(
-            VisualizeGraspPose, "/franka1/moveit_manager/visualize_grasp_pose"
+        self.visualize_grasp_pose_client = self.create_client(
+            PoseStampedSrv, "/franka1/moveit_manager/visualize_grasp_pose"
+        )
+
+        self.create_plan_client = self.create_client(
+            PoseStampedSrv, "/franka1/moveit_manager/create_plan"
+        )
+
+        self.visualize_plan_client = self.create_client(
+            Trigger, "/franka1/moveit_manager/visualize_plan"
         )
 
         self.setup_gui()
@@ -107,35 +122,76 @@ class UI(Node):
         @ui.page("/")
         def page():
             with ui.row():
+                ui.button("Load Data", on_click=self.load)
+                ui.button("Save Data", on_click=self.save)
+            with ui.row():
                 ui.button("Add Object", on_click=self.add_object)
                 ui.button("Clear Objects", on_click=self.clear_objects)
             with ui.row():
-                color_image = ui.image(self.camera_view.color).classes("w-32")
-                depth_image = ui.image(self.camera_view.depth).classes("w-32")
-                camera_info = ui.label("No camera info.").classes("m-2")
+                self.color_image = ui.image(self.data.color).classes("w-32")
+                self.depth_image = ui.image(self.data.depth).classes("w-32")
+                self.camera_info = ui.label("No camera info.")
             with ui.row():
-                ui.button(
-                    "Update Image",
-                    on_click=lambda: self.update_image(color_image, "color"),
-                )
-                ui.button(
-                    "Update Image",
-                    on_click=lambda: self.update_image(depth_image, "depth"),
-                )
-                ui.button(
-                    "Update Camera Info",
-                    on_click=lambda: self.update_camera_info(camera_info),
-                )
-            grasp = ui.label("No grasp generated.").classes("m-2")
+                ui.button("Update Image", on_click=lambda: self.update_image("color"))
+                ui.button("Update Image", on_click=lambda: self.update_image("depth"))
+                ui.button("Update Camera Info", on_click=self.update_camera_info)
+            self.grasp_info = ui.label("No grasp generated.")
             with ui.row():
-                ui.button("Generate Grasp", on_click=lambda: self.generate_grasp(grasp))
+                ui.button("Generate Grasp", on_click=self.generate_grasp)
                 ui.button("Visualize Grasp", on_click=self.visualize_grasp_pose)
+                ui.button("Create Plan", on_click=self.create_plan)
+                ui.button("Visualize Plan", on_click=self.visualize_plan)
+
+    def update_ui(self) -> None:
+        """Update the UI"""
+        self.color_image.source = self.data.color
+        self.depth_image.source = self.data.depth
+        self.camera_info.text = (
+            self.data.camera_info.header.stamp.sec
+            if self.data.camera_info
+            else "No camera info."
+        )
+        self.grasp_info.text = (
+            str(self.data.grasp_pose.pose.position)
+            if self.data.grasp_pose
+            else "No grasp generated."
+        )
+
+    def load(self) -> None:
+        """Load the data from a file."""
+        try:
+            with open("/tmp/data.pkl", "rb") as f:
+                self.data = pickle.load(f)
+        except FileNotFoundError:
+            self.get_logger().error("No saved data found.")
+        self.update_ui()
+
+    def save(self) -> None:
+        """Save the data to a file."""
+        with open("/tmp/data.pkl", "wb") as f:
+            pickle.dump(self.data, f)
+
+    def visualize_plan(self) -> None:
+        """Visualize the plan in Rviz."""
+        if self.visualize_plan_client.call(Trigger.Request(), TIMEOUT) is None:
+            self.get_logger().error("Failed to call visualize plan service.")
+        else:
+            self.get_logger().info("Successfully called visualize plan service.")
+
+    def create_plan(self) -> None:
+        """Create a plan to reach the grasp pose."""
+        request = PoseStampedSrv.Request()
+        request.pose = self.data.grasp_pose
+        if self.create_plan_client.call(request, TIMEOUT) is None:
+            self.get_logger().error("Failed to call create plan service.")
+        else:
+            self.get_logger().info("Successfully called create plan service.")
 
     def visualize_grasp_pose(self) -> None:
         """Visualize the grasp pose in Rviz."""
-        request = VisualizeGraspPose.Request()
-        request.pose = self.grasp_pose
-        if self.visualize_grasp_pose_service.call(request, TIMEOUT) is None:
+        request = PoseStampedSrv.Request()
+        request.pose = self.data.grasp_pose
+        if self.visualize_grasp_pose_client.call(request, TIMEOUT) is None:
             self.get_logger().error("Failed to call visualize gripper pose service.")
         else:
             self.get_logger().info(
@@ -161,7 +217,7 @@ class UI(Node):
         else:
             self.get_logger().info("Successfully called add object service.")
 
-    def update_image(self, ui: ui.image, image_type: str) -> None:
+    def update_image(self, image_type: str) -> None:
         match image_type:
             case "color":
                 topic = "/realsense1/color/image_raw"
@@ -173,24 +229,24 @@ class UI(Node):
         image_ros: Image = Message(topic=topic, message_type=Image).get_message(self)
         if image_ros is None:
             return
-        setattr(self.camera_view, f"{image_type}_ros", image_ros)
-        self.camera_view.update()
-        ui.source = getattr(self.camera_view, image_type)
+        setattr(self.data, f"{image_type}_ros", image_ros)
+        self.data.update()
+        self.update_ui()
 
-    def update_camera_info(self, ui: ui.label) -> None:
+    def update_camera_info(self) -> None:
         camera_info: CameraInfo = Message(
             topic="/realsense1/depth/camera_info", message_type=CameraInfo
         ).get_message(self)
         if camera_info:
-            self.camera_view.camera_info = camera_info
-            ui.text = str(camera_info.header.stamp.sec)
+            self.data.camera_info = camera_info
+            self.update_ui()
 
-    def generate_grasp(self, ui: ui.label) -> None:
+    def generate_grasp(self) -> None:
         request = GenerateGraspnetGrasp.Request()
-        request.color = self.camera_view.color_ros
-        request.depth = cv2_image_to_ros_image(self.camera_view.depth_cv / 1000)
-        request.depth.header = self.camera_view.depth_ros.header
-        request.camera_info = self.camera_view.camera_info
+        request.color = self.data.color_ros
+        request.depth = cv2_image_to_ros_image(self.data.depth_cv / 1000)
+        request.depth.header = self.data.depth_ros.header
+        request.camera_info = self.data.camera_info
 
         if not self.generate_grasp_client.wait_for_service(TIMEOUT):
             self.get_logger().error("Generate Graspnet Grasp service not available.")
@@ -199,10 +255,8 @@ class UI(Node):
             request, 10
         )
         grasp: Grasp = response.grasps[0]
-        self.grasp_pose = grasp.pose
-        ui.text = (
-            f"Frame: {grasp.pose.header.frame_id}, position: {grasp.pose.pose.position}"
-        )
+        self.data.grasp_pose = grasp.pose
+        self.update_ui()
 
 
 def ros_main(args: list | None = None) -> None:

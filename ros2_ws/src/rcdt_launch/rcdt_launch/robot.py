@@ -794,8 +794,7 @@ class Arm(Platform):
             Rviz.add_motion_planning_plugin(self.namespace)
             Rviz.add_planning_scene(self.namespace)
             Rviz.add_robot_state(self.namespace)
-        if graspnet:
-            Rviz.add_markers()
+            Rviz.add_trajectory(self.namespace)
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for an arm.

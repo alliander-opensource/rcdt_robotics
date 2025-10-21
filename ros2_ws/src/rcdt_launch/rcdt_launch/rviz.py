@@ -15,6 +15,7 @@ class Rviz:
         load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
         load_planning_scene (bool): Whether to load the planning scene display.
         load_robot_state (bool): Whether to load the robot state display.
+        load_trajectory (bool): Whether to load the trajectory display.
         load_point_cloud (bool): Whether to load point cloud displays.
         moveit_namespaces (list[str]): A list of the namespaces where MoveIt is launched.
     """
@@ -24,6 +25,7 @@ class Rviz:
     load_motion_planning_plugin: bool = False
     load_planning_scene: bool = False
     load_robot_state: bool = False
+    load_trajectory: bool = False
     load_point_cloud: bool = False
     moveit_namespaces: list[str] = []
 
@@ -194,6 +196,26 @@ class Rviz:
                 "Robot State Topic": f"/{namespace}/display_robot_state",
                 "Name": f"{namespace}_robot_state",
                 "TF Prefix": namespace,
+            }
+        )
+
+    @staticmethod
+    def add_trajectory(namespace: str) -> None:
+        """Add the trajectory display to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        if not Rviz.load_trajectory:
+            return
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "moveit_rviz_plugin/Trajectory",
+                "Robot Description": f"{namespace}_robot_description",
+                "Name": f"{namespace}_trajectory",
+                "Trajectory Topic": f"/{namespace}/display_planned_path_custom",
+                "State Display Time": "0.5s",
             }
         )
 
