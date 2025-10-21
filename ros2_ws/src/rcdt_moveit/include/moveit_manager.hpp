@@ -2,6 +2,7 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
@@ -14,20 +15,26 @@
 #include <rcdt_messages/srv/express_pose_in_other_frame.hpp>
 #include <rcdt_messages/srv/move_hand_to_pose.hpp>
 #include <rcdt_messages/srv/move_to_configuration.hpp>
+#include <rcdt_messages/srv/pose_stamped_srv.hpp>
 #include <rcdt_messages/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
+#include <rviz_visual_tools/rviz_visual_tools.hpp>
 #include <std_srvs/srv/trigger.hpp>
+#include <string>
+#include <tf2_ros/transform_broadcaster.h>
 
 typedef rcdt_messages::srv::AddObject AddObject;
 typedef rcdt_messages::srv::AddMarker AddMarker;
 typedef rcdt_messages::srv::DefineGoalPose DefineGoalPose;
+typedef rcdt_messages::srv::ExpressPoseInOtherFrame ExpressPoseInOtherFrame;
 typedef rcdt_messages::srv::TransformGoalPose TransformGoalPose;
 typedef rcdt_messages::srv::MoveToConfiguration MoveToConf;
 typedef rcdt_messages::srv::MoveHandToPose MoveHandToPose;
+typedef rcdt_messages::srv::PoseStampedSrv PoseStampedSrv;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
 typedef geometry_msgs::msg::PoseStamped PoseStamped;
-typedef rcdt_messages::srv::ExpressPoseInOtherFrame ExpressPoseInOtherFrame;
+typedef geometry_msgs::msg::TransformStamped TransformStamped;
 
 struct Action {
   std::string name;
@@ -42,9 +49,16 @@ public:
 private:
   rclcpp::Node::SharedPtr node;
   rclcpp::Node::SharedPtr client_node;
+  tf2_ros::TransformBroadcaster tf_broadcaster;
   moveit::planning_interface::MoveGroupInterface move_group;
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
-  const moveit::core::JointModelGroup *joint_model_group;
+  const moveit::core::JointModelGroup *jmg_arm;
+  const moveit::core::JointModelGroup *jmg_hand;
+  const moveit::core::JointModelGroup *jmg_tcp;
+  std::string base_frame = "map";
+  std::string marker_topic = "/rviz_markers";
+  moveit::planning_interface::MoveGroupInterface::Plan plan;
+  rviz_visual_tools::RvizVisualTools rviz_visual_tools;
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
   PoseStamped goal_pose;
 
@@ -87,6 +101,23 @@ private:
   void add_marker(const std::shared_ptr<AddMarker::Request> request,
                   std::shared_ptr<AddMarker::Response> response);
 
+  rclcpp::Service<PoseStampedSrv>::SharedPtr visualize_grasp_pose_service;
+  void
+  visualize_grasp_pose(const std::shared_ptr<PoseStampedSrv::Request> request,
+                       std::shared_ptr<PoseStampedSrv::Response> response);
+
+  rclcpp::Service<PoseStampedSrv>::SharedPtr create_plan_service;
+  void create_plan(const std::shared_ptr<PoseStampedSrv::Request> request,
+                   std::shared_ptr<PoseStampedSrv::Response> response);
+
+  rclcpp::Service<Trigger>::SharedPtr visualize_plan_service;
+  void visualize_plan(const std::shared_ptr<Trigger::Request> request,
+                      std::shared_ptr<Trigger::Response> response);
+
+  rclcpp::Service<Trigger>::SharedPtr execute_plan_service;
+  void execute_plan(const std::shared_ptr<Trigger::Request> request,
+                    std::shared_ptr<Trigger::Response> response);
+
   rclcpp::Service<Trigger>::SharedPtr clear_markers_service;
   void clear_markers(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);
@@ -94,6 +125,6 @@ private:
   //   Methods:
   void initialize_clients();
   void initialize_services();
-  PoseStamped change_frame_to_world(PoseStamped pose);
+  PoseStamped change_frame(PoseStamped pose, std::string target_frame = "");
   bool plan_and_execute(std::string planning_type = "");
 };

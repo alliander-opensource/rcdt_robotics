@@ -13,6 +13,9 @@ class Rviz:
         yaml (dict): The default RViz configuration.
         displays (list): The list of displays in the RViz configuration.
         load_motion_planning_plugin (bool): Whether to load the motion planning plugin.
+        load_planning_scene (bool): Whether to load the planning scene display.
+        load_robot_state (bool): Whether to load the robot state display.
+        load_trajectory (bool): Whether to load the trajectory display.
         load_point_cloud (bool): Whether to load point cloud displays.
         moveit_namespaces (list[str]): A list of the namespaces where MoveIt is launched.
     """
@@ -20,6 +23,9 @@ class Rviz:
     yaml: dict = get_yaml(get_file_path("rcdt_utilities", ["rviz"], "default.rviz"))
     displays: list = yaml["Visualization Manager"]["Displays"]
     load_motion_planning_plugin: bool = False
+    load_planning_scene: bool = False
+    load_robot_state: bool = False
+    load_trajectory: bool = False
     load_point_cloud: bool = False
     moveit_namespaces: list[str] = []
 
@@ -142,7 +148,6 @@ class Rviz:
         """
         if not Rviz.load_motion_planning_plugin:
             return
-        Rviz.moveit_namespaces.append(namespace)
         Rviz.displays.append(
             {
                 "Enabled": True,
@@ -151,6 +156,66 @@ class Rviz:
                 "Robot Description": f"{namespace}_robot_description",
                 "Name": f"{namespace}_motion_planning",
                 "Planning Scene Topic": f"/{namespace}/monitored_planning_scene",
+            }
+        )
+
+    @staticmethod
+    def add_planning_scene(namespace: str) -> None:
+        """Add the planning scene display to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        if not Rviz.load_planning_scene:
+            return
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "moveit_rviz_plugin/PlanningScene",
+                "Move Group Namespace": namespace,
+                "Robot Description": f"{namespace}_robot_description",
+                "Name": f"{namespace}_planning_scene",
+                "Planning Scene Topic": f"/{namespace}/planning_scene",
+            }
+        )
+
+    @staticmethod
+    def add_robot_state(namespace: str) -> None:
+        """Add the robot state display to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        if not Rviz.load_robot_state:
+            return
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "moveit_rviz_plugin/RobotState",
+                "Robot Description": f"{namespace}_robot_description",
+                "Robot State Topic": f"/{namespace}/display_robot_state",
+                "Name": f"{namespace}_robot_state",
+                "TF Prefix": namespace,
+            }
+        )
+
+    @staticmethod
+    def add_trajectory(namespace: str) -> None:
+        """Add the trajectory display to the RViz configuration.
+
+        Args:
+            namespace (str): The namespace of the robot.
+        """
+        if not Rviz.load_trajectory:
+            return
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "moveit_rviz_plugin/Trajectory",
+                "Robot Description": f"{namespace}_robot_description",
+                "Name": f"{namespace}_trajectory",
+                "Trajectory Topic": f"/{namespace}/display_planned_path_custom",
+                "State Display Time": "0.5s",
             }
         )
 
@@ -202,6 +267,22 @@ class Rviz:
                 "Name": topic,
                 "Topic": {"Value": topic},
                 "Color": "25; 255; 0",
+            }
+        )
+
+    @staticmethod
+    def add_markers(topic: str = "/rviz_markers") -> None:
+        """Add a MarkerArray display (e.g., for MoveItVisualTools).
+
+        Args:
+            topic (str): The topic of the MarkerArray.
+        """
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "rviz_default_plugins/MarkerArray",
+                "Name": topic,
+                "Topic": {"Value": topic},
             }
         )
 

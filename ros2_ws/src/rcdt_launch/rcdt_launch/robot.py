@@ -21,6 +21,7 @@ class Platform:  # noqa: PLR0904
 
     Attributes:
         simulation (bool): Whether the platforms are in simulation mode or not.
+        world (str): The world file to be used in Gazebo.
         platforms (list[Platform]): A list of all the platforms.
         platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
         names (list[str]): A list of all robot names.
@@ -28,6 +29,7 @@ class Platform:  # noqa: PLR0904
     """
 
     simulation: bool = True
+    world: str = "walls.sdf"
     platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {}
     names: list[str] = []
@@ -132,6 +134,7 @@ class Platform:  # noqa: PLR0904
             get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
             launch_arguments={
                 "load_gazebo_ui": str(load_gazebo_ui),
+                "world": Platform.world,
                 "platforms": " ".join(platforms),
                 "positions": " ".join(positions),
                 "orientations": " ".join(orientations),
@@ -761,6 +764,7 @@ class Arm(Platform):
         moveit: bool = False,
         gripper: bool = False,
         ip_address: str = "",
+        graspnet: bool = False,
     ):
         """Initialize the Arm platform.
 
@@ -774,6 +778,7 @@ class Arm(Platform):
             moveit (bool): Whether to use MoveIt for the arm.
             gripper (bool): Whether to add a start the gripper services.
             ip_address (str): The IP address of the arm.
+            graspnet (bool): Whether to start the GraspNet node for the arm.
         """
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
@@ -782,12 +787,17 @@ class Arm(Platform):
         self.moveit = moveit
         self.gripper = gripper
         self.ip_address = ip_address
+        self.graspnet = graspnet
 
         self.camera: Camera | None = None
 
         if moveit:
             Moveit.add(self.namespace, self.robot_description, self.platform)
+            Rviz.moveit_namespaces.append(self.namespace)
             Rviz.add_motion_planning_plugin(self.namespace)
+            Rviz.add_planning_scene(self.namespace)
+            Rviz.add_robot_state(self.namespace)
+            Rviz.add_trajectory(self.namespace)
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for an arm.
@@ -800,6 +810,19 @@ class Arm(Platform):
             launch_descriptions.append(self.create_gripper_launch())
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
+        if self.graspnet:
+            launch_descriptions.append(
+                RegisteredLaunchDescription(
+                    get_file_path("rcdt_grasping", ["launch"], "grasping.launch.py"),
+                    launch_arguments={
+                        "namespace_arm": self.namespace,
+                        "namespace_camera": self.camera.namespace
+                        if self.camera
+                        else None,
+                    },
+                )
+            )
+
         return launch_descriptions
 
     def joystick_nodes(self) -> list[Node]:

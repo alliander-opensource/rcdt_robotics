@@ -123,6 +123,7 @@ def generate_launch_description() -> LaunchDescription:
             world_arg.declaration,
             platforms_arg.declaration,
             positions_arg.declaration,
+            orientations_arg.declaration,
             bridge_topics_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
