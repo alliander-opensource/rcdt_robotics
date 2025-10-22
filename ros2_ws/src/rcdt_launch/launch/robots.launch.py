@@ -23,6 +23,7 @@ configuration_arg = LaunchArgument(
         "axis",
         "gps",
         "lidar",
+        "ouster",
         "realsense",
         "zed",
         "franka",
@@ -35,8 +36,10 @@ configuration_arg = LaunchArgument(
         "panther_realsense",
         "panther_zed",
         "panther_lidar",
+        "panther_ouster",
         "mm",
         "mm_lidar",
+        "mm_ouster",
         "panther_and_franka",
     ],
 )
@@ -73,6 +76,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             GPS("nmea", [0, 0, 0.5], ip_address="10.15.20.202")
         case "lidar":
             Lidar("velodyne", [0, 0, 0.5])
+        case "ouster":
+            Lidar("ouster", [0, 0, 0.5])
         case "realsense":
             Camera("realsense", [0, 0, 0.5])
         case "zed":
@@ -109,6 +114,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         case "panther_lidar":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
+        case "panther_ouster":
+            panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
+            Lidar("ouster", [0.13, -0.13, 0.35], parent=panther)
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
@@ -116,6 +124,10 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
+        case "mm_ouster":
+            panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
+            Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
+            Lidar("ouster", [0.13, -0.13, 0.35], parent=panther)
         case "panther_and_franka":
             Vehicle("panther", [0, -0.5, 0.2])
             Arm("franka", [0, 0.5, 0])
