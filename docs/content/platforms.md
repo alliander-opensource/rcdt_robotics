@@ -122,7 +122,7 @@ A ZED camera can be used by connecting it to the host device via USB. To allow n
 
 ### Simulation Velodyne
 
-A Velodyne lidar can be launched in simulation by creating a configuration with an *Lidar* of type *velodyne*.
+A Velodyne lidar can be launched in simulation by creating a configuration with a *Lidar* of type *velodyne*.
 
 ### Hardware Velodyne
 
@@ -130,7 +130,18 @@ When using the Velodyne lidar, make sure that the IP-address of the host device 
 
 | ![Velodyne settings](../img/velodyne/velodyne_settings.png) | ![Teltonika settings](../img/teltonika/teltonika_settings.png) |
 |-------------------------------------------------------------|----------------------------------------------------------------|
-| velodyne settings                                           | teltonika settings                                             |
+
+## Ouster
+
+![Ouster](../img/ouster/ouster_os1.png)
+
+### Simulation Ouster
+
+An Ouster lidar can be launched in simulation by creating a configuration with a *Lidar* of type *Ouster*.
+
+### Hardware Ouster
+
+*TODO: update when sensor has arrived.*
 
 ## Teltonika GPS
 
