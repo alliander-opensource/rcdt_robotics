@@ -33,6 +33,7 @@ def launch_setup(context: LaunchContext) -> list:
     move_group_parameters.append(configuration.trajectory_execution)
     move_group_parameters.append(configuration.planning_pipelines)
     move_group_parameters.append(configuration.pilz_cartesian_limits)
+    move_group_parameters.append(configuration.sensors_3d)
 
     # Parameters required for moveit_manager:
     moveit_manager_parameters = []

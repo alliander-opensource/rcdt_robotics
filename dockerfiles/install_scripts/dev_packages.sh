@@ -9,4 +9,5 @@ source /home/$UNAME/.bashrc
 apt update
 
 apt install -y \
-    ros-$ROS_DISTRO-nmea-navsat-driver
+    ros-$ROS_DISTRO-nmea-navsat-driver \
+    ros-$ROS_DISTRO-moveit-ros-perception

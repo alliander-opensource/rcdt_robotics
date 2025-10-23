@@ -52,6 +52,9 @@ class Moveit:
         moveit_config_builder.moveit_cpp(
             get_file_path(package, ["config"], "planning_pipeline.yaml")
         )
+        moveit_config_builder.sensors_3d(
+            get_file_path(package, ["config"], "sensors_3d.yaml")
+        )
         moveit_config = moveit_config_builder.to_moveit_configs()
 
         # adapt robot_description with prefix:

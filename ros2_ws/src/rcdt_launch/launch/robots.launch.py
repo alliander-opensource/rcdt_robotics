@@ -94,7 +94,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             Rviz.add_markers()
             Rviz.load_robot_state = True
             Rviz.load_trajectory = True
-            arm = Arm("franka", [0, 0, 0], moveit=True, graspnet=True)
+            Rviz.load_planning_scene = True
+            arm = Arm("franka", [0, 0, 0], moveit=True, graspnet=False)
             Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
         case "panther":
             Vehicle("panther", [0, 0, 0.2], namespace="panther")
