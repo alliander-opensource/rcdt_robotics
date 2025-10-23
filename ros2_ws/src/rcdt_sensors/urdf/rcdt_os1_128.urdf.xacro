@@ -24,7 +24,7 @@ Based on:
     parent
     name:=ouster
     update_rate:=10 
-    lasers:=128 
+    lasers:=12 
     samples:=1024 
     min_range:=0.5
     max_range:=90.0

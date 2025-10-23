@@ -90,7 +90,16 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If an unknown platform is encountered.
         """
-        order = ["panther", "franka", "velodyne", "ouster", "realsense", "zed", "nmea", "axis"]
+        order = [
+            "panther",
+            "franka",
+            "velodyne",
+            "ouster",
+            "realsense",
+            "zed",
+            "nmea",
+            "axis",
+        ]
 
         for platform in Platform.platforms:
             if platform.platform not in order:
@@ -296,7 +305,14 @@ class Platform:  # noqa: PLR0904
     def __init__(  # noqa: PLR0913
         self,
         platform: Literal[
-            "panther", "franka", "velodyne", "ouster", "realsense", "zed", "nmea", "axis"
+            "panther",
+            "franka",
+            "velodyne",
+            "ouster",
+            "realsense",
+            "zed",
+            "nmea",
+            "axis",
         ],
         position: list,
         orientation: list | None = None,
@@ -766,15 +782,14 @@ class Lidar(Platform):
         else:
             target_frame = f"{self.namespace}/base_link"
 
-        # return RegisteredLaunchDescription(
-        #     get_file_path("rcdt_sensors", ["launch"], "ouster.launch.py"),
-        #     launch_arguments={
-        #         "simulation": str(Platform.simulation),
-        #         "namespace": self.namespace,
-        #         "target_frame": target_frame,
-        #     },
-        # )
-        pass  # TODO: create/adjust commented launch file
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "ouster.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+                "target_frame": target_frame,
+            },
+        )
 
 
 class Arm(Platform):
