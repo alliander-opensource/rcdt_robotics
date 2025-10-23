@@ -4,23 +4,28 @@
 
 #include "rcdt_messages/srv/express_pose_in_other_frame.hpp"
 #include "rcdt_messages/srv/transform_pose.hpp"
+#include <chrono>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <memory>
 #include <rcdt_messages/srv/express_pose_in_other_frame.hpp>
 #include <rcdt_messages/srv/transform_pose.hpp>
 #include <rclcpp/executors.hpp>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
+#include <rclcpp/executors/single_threaded_executor.hpp>
+#include <rclcpp/future_return_code.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <thread>
 
 class PackageTester : public rclcpp::Node {
 public:
   PackageTester() : Node("manipulate_pose_tester") {
     express_pose_in_other_frame_client_ =
         this->create_client<rcdt_messages::srv::ExpressPoseInOtherFrame>(
-            "~/express_pose_in_other_frame");
+            "pose_manipulator/express_pose_in_other_frame");
     transform_pose_client_ =
         this->create_client<rcdt_messages::srv::TransformPose>(
-            "~/transform_pose");
+            "pose_manipulator/transform_pose");
   }
 
   bool waitForServices(std::chrono::seconds timeout) {
@@ -41,6 +46,20 @@ public:
     }
 
     return true;
+  }
+
+  rclcpp::Client<rcdt_messages::srv::TransformPose>::FutureAndRequestId
+  sendTransformPoseRequest(
+      std::shared_ptr<rcdt_messages::srv::TransformPose::Request> req) {
+    return transform_pose_client_->async_send_request(req);
+  }
+
+  rclcpp::Client<
+      rcdt_messages::srv::ExpressPoseInOtherFrame>::FutureAndRequestId
+  sendExpressPoseInOtherFrameRequest(
+      std::shared_ptr<rcdt_messages::srv::ExpressPoseInOtherFrame::Request>
+          req) {
+    return express_pose_in_other_frame_client_->async_send_request(req);
   }
 
 private:
