@@ -6,7 +6,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils import LaunchArgument
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -15,7 +15,7 @@ target_frame_arg = LaunchArgument("target_frame", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    """Setup the launch description for the realsense camera.
+    """Setup the launch description for the Ouster lidar.
 
     Args:
         context (LaunchContext): The launch context.
@@ -23,15 +23,9 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed.
     """
-    use_sim = use_sim_arg.bool_value(context)
+    # Simulation-only setup
     namespace = namespace_arg.string_value(context)
     target_frame = target_frame_arg.string_value(context)
-
-    frame_prefix = namespace + "/" if namespace else ""
-
-    ouster_driver_node = None  # Insert Ouster driver node
-
-    ouster_transform_node = None  # Insert Ouster transform pointcloud node
 
     pointcloud_to_laserscan_node = Node(
         package="pointcloud_to_laserscan",
@@ -53,8 +47,6 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        # Register.on_start(ouster_driver_node, context) if not use_sim else SKIP,
-        # Register.on_start(ouster_transform_node, context) if not use_sim else SKIP,
         Register.on_start(pointcloud_to_laserscan_node, context),
     ]
 

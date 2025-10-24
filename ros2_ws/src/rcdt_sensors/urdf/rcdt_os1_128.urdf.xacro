@@ -7,8 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 
 <!-- 
 Based on:
-1....
-2....
+1. https://data.ouster.io/downloads/datasheets/datasheet-rev7p1-os1.pdf
 -->
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="OS1-128">
