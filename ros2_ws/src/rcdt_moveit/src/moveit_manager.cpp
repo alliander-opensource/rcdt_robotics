@@ -8,6 +8,7 @@
 #include <rclcpp/executors/multi_threaded_executor.hpp>
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node_options.hpp>
+#include <rclcpp/parameter_value.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <vector>
 
@@ -15,7 +16,7 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
-    : node(node_), tf_broadcaster(node_),
+    : node(node_), tf_broadcaster(node),
       move_group(
           node,
           moveit::planning_interface::MoveGroupInterface::Options(
@@ -24,6 +25,9 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               node->get_namespace())),
       rviz_visual_tools(base_frame, marker_topic, node),
       moveit_visual_tools(node, base_frame, marker_topic) {
+
+  namespace_arm = std::string(node->get_namespace()).erase(0, 1);
+  namespace_camera = node->get_parameter("namespace_camera").as_string();
 
   jmg_arm = move_group.getRobotModel()->getJointModelGroup("arm");
   jmg_hand = move_group.getRobotModel()->getJointModelGroup("hand");
@@ -54,6 +58,10 @@ void MoveitManager::initialize_services() {
   clear_objects_service = node->create_service<Trigger>(
       "~/clear_objects",
       std::bind(&MoveitManager::clear_objects, this, _1, _2));
+
+  toggle_octomap_scan_service = node->create_service<SetBool>(
+      "~/toggle_octomap_scan",
+      std::bind(&MoveitManager::toggle_octomap_scan, this, _1, _2));
 
   define_goal_pose_service = node->create_service<DefineGoalPose>(
       "~/define_goal_pose",
@@ -124,6 +132,45 @@ void MoveitManager::clear_objects(
     std::shared_ptr<Trigger::Response> response) {
   planning_scene_interface.removeCollisionObjects({"object"});
   response->success = true;
+};
+
+/**
+ * Toggle the octomap scan by running a launch file with topic_tools relay nodes
+ * as a boost process. These relay nodes pass the depth_image and
+ * camera_info to the topic where MoveIt octomap is subscribed. We use
+ * topic_tools relay for performance, since this does not perform serialization
+ * on the messages. We create a process group and terminate the whole group
+ * instead of the process, since terminating a single process may leave child
+ * processes running.
+ */
+void MoveitManager::toggle_octomap_scan(
+    const std::shared_ptr<SetBool::Request> request,
+    std::shared_ptr<SetBool::Response> response) {
+  if (namespace_camera.empty()) {
+    RCLCPP_ERROR(node->get_logger(),
+                 "Namespace of camera is not set. Cannot toggle octomap scan.");
+    return;
+  }
+  auto cmd = fmt::format("ros2 launch rcdt_moveit relay_octomap.launch.py "
+                         "namespace_arm:={} namespace_camera:={}",
+                         namespace_arm, namespace_camera);
+  if (request->data) {
+    if (process.running()) {
+      RCLCPP_WARN(node->get_logger(),
+                  "Cannot enable octomap scan: already active.");
+      return;
+    }
+    process = boost::process::child(cmd, process_group);
+    RCLCPP_INFO(node->get_logger(), "Octomap scan enabled.");
+  } else {
+    if (!process.running()) {
+      RCLCPP_WARN(node->get_logger(),
+                  "Cannot disable octomap scan: not active.");
+      return;
+    }
+    process_group.terminate();
+    RCLCPP_INFO(node->get_logger(), "Octomap scan disabled.");
+  }
 };
 
 void MoveitManager::define_goal_pose(

@@ -26,7 +26,7 @@ from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
 from rclpy.wait_for_message import wait_for_message
 from sensor_msgs.msg import CameraInfo, Image
-from std_srvs.srv import Trigger
+from std_srvs.srv import Empty, SetBool, Trigger
 
 TIMEOUT = 3
 
@@ -118,6 +118,12 @@ class UI(Node):
             AddObject, "/franka1/moveit_manager/add_object"
         )
 
+        self.toggle_octomap_scan_client = self.create_client(
+            SetBool, "/franka1/moveit_manager/toggle_octomap_scan"
+        )
+
+        self.clear_octomap_client = self.create_client(Empty, "/franka1/clear_octomap")
+
         self.move_to_configuration_client = self.create_client(
             MoveToConfiguration, "/franka1/moveit_manager/move_to_configuration"
         )
@@ -157,6 +163,15 @@ class UI(Node):
             with ui.row():
                 ui.button("Add Object", on_click=self.add_object)
                 ui.button("Clear Objects", on_click=self.clear_objects)
+                ui.button(
+                    "Enable Octomap Scan",
+                    on_click=lambda: self.toggle_octomap_scan(True),
+                )
+                ui.button(
+                    "Disable Octomap Scan",
+                    on_click=lambda: self.toggle_octomap_scan(False),
+                )
+                ui.button("Clear Octomap", on_click=self.clear_octomap)
             with ui.row():
                 self.color_image = ui.image(self.data.color_pil).classes("w-32")
                 self.depth_image = ui.image(self.data.depth_pil).classes("w-32")
@@ -254,6 +269,27 @@ class UI(Node):
             self.get_logger().error("Failed to call clear objects service.")
         else:
             self.get_logger().info("Successfully called clear objects service.")
+
+    def toggle_octomap_scan(self, enable: bool) -> None:
+        """Enable or disable octomap scanning.
+
+        Args:
+            enable (bool): True to enable scanning, False to disable.
+        """
+        request = SetBool.Request()
+        request.data = enable
+
+        if self.toggle_octomap_scan_client.call(request, TIMEOUT) is None:
+            self.get_logger().error("Failed to call toggle octomap scan service.")
+        else:
+            self.get_logger().info("Successfully called toggle octomap scan service.")
+
+    def clear_octomap(self) -> None:
+        """Clear the octomap."""
+        if self.clear_octomap_client.call(Empty.Request(), TIMEOUT) is None:
+            self.get_logger().error("Failed to call clear octomap service.")
+        else:
+            self.get_logger().info("Successfully called clear octomap service.")
 
     def add_object(self) -> None:
         """Add an object to the planning scene."""

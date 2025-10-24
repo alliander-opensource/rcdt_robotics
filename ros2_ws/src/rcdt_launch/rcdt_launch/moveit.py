@@ -57,6 +57,14 @@ class Moveit:
         )
         moveit_config = moveit_config_builder.to_moveit_configs()
 
+        # Define namespace dependent parameters:
+        moveit_config.sensors_3d["depth_image"]["image_topic"] = (
+            f"/{namespace}/octomap/depth_image"
+        )
+        moveit_config.sensors_3d["depth_image"]["filtered_cloud_topic"] = (
+            f"/{namespace}/octomap/filtered_points"
+        )
+
         # adapt robot_description with prefix:
         add_prefix_in_robot_description(robot_description, namespace)
         moveit_config.robot_description = robot_description

@@ -487,7 +487,11 @@ class Platform:  # noqa: PLR0904
             package="robot_state_publisher",
             executable="robot_state_publisher",
             namespace=self.namespace,
-            parameters=[self.robot_description, {"frame_prefix": self.frame_prefix}],
+            parameters=[
+                self.robot_description,
+                {"frame_prefix": self.frame_prefix},
+                {"publish_frequency": 1000.0},
+            ],
         )
 
     def create_parent_link(self) -> Node:
@@ -883,10 +887,8 @@ class Arm(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
             launch_arguments={
-                "robot_name": "fr3",
-                "moveit_package_name": "rcdt_franka_moveit_config",
-                "servo_params_package": "rcdt_franka",
-                "namespace": self.namespace,
+                "namespace_arm": self.namespace,
+                "namespace_camera": self.camera.namespace if self.camera else "",
             },
         )
 

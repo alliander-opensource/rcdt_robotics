@@ -175,7 +175,7 @@ class Rviz:
                 "Move Group Namespace": namespace,
                 "Robot Description": f"{namespace}_robot_description",
                 "Name": f"{namespace}_planning_scene",
-                "Planning Scene Topic": f"/{namespace}/planning_scene",
+                "Planning Scene Topic": f"/{namespace}/monitored_planning_scene",
             }
         )
 

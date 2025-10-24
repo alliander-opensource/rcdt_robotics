@@ -3,6 +3,8 @@
 // # SPDX-License-Identifier: Apache-2.0
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include <boost/process.hpp>
+#include <boost/process/group.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
@@ -19,6 +21,7 @@
 #include <rcdt_messages/srv/transform_goal_pose.hpp>
 #include <rclcpp/node.hpp>
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 #include <std_srvs/srv/trigger.hpp>
 #include <string>
 #include <tf2_ros/transform_broadcaster.h>
@@ -33,6 +36,7 @@ typedef rcdt_messages::srv::MoveHandToPose MoveHandToPose;
 typedef rcdt_messages::srv::PoseStampedSrv PoseStampedSrv;
 typedef moveit_msgs::srv::ServoCommandType ServoCommandType;
 typedef std_srvs::srv::Trigger Trigger;
+typedef std_srvs::srv::SetBool SetBool;
 typedef geometry_msgs::msg::PoseStamped PoseStamped;
 typedef geometry_msgs::msg::TransformStamped TransformStamped;
 
@@ -55,12 +59,16 @@ private:
   const moveit::core::JointModelGroup *jmg_arm;
   const moveit::core::JointModelGroup *jmg_hand;
   const moveit::core::JointModelGroup *jmg_tcp;
+  std::string namespace_arm;
+  std::string namespace_camera;
   std::string base_frame = "map";
   std::string marker_topic = "/rviz_markers";
   moveit::planning_interface::MoveGroupInterface::Plan plan;
   rviz_visual_tools::RvizVisualTools rviz_visual_tools;
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
   PoseStamped goal_pose;
+  boost::process::child process;
+  boost::process::group process_group;
 
   //   Definitions:
   std::map<std::string, int> shapes = {
@@ -79,6 +87,10 @@ private:
   rclcpp::Service<Trigger>::SharedPtr clear_objects_service;
   void clear_objects(const std::shared_ptr<Trigger::Request> request,
                      std::shared_ptr<Trigger::Response> response);
+
+  rclcpp::Service<SetBool>::SharedPtr toggle_octomap_scan_service;
+  void toggle_octomap_scan(const std::shared_ptr<SetBool::Request> request,
+                           std::shared_ptr<SetBool::Response> response);
 
   rclcpp::Service<DefineGoalPose>::SharedPtr define_goal_pose_service;
   void define_goal_pose(const std::shared_ptr<DefineGoalPose::Request> request,
