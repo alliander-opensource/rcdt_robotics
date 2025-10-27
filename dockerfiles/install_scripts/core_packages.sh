@@ -19,6 +19,7 @@ apt install -y \
 
 apt install -y \
     ros-$ROS_DISTRO-launch-pytest \
+    ros-$ROS_DISTRO-librealsense2 \
     ros-$ROS_DISTRO-moveit \
     ros-$ROS_DISTRO-moveit-servo \
     ros-$ROS_DISTRO-moveit-visual-tools \
@@ -26,8 +27,6 @@ apt install -y \
     ros-$ROS_DISTRO-nav2-bringup \
     ros-$ROS_DISTRO-ouster-ros \
     ros-$ROS_DISTRO-plotjuggler-ros \
-    ros-$ROS_DISTRO-realsense2-camera \
-    ros-$ROS_DISTRO-realsense2-description \
     ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
     ros-$ROS_DISTRO-ros-gz \
     ros-$ROS_DISTRO-ros2-controllers \
