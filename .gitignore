@@ -28,3 +28,4 @@ build/
 
 # for LSP in neovim
 .clangd/
+**/compile_commands.json
