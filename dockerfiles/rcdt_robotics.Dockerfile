@@ -2,11 +2,13 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
+ARG BASE_IMAGE=ubuntu:latest
+FROM $BASE_IMAGE 
 
-INCLUDE ./general/pre_install.dockerfile
-
-COPY ./install_scripts/ros2_jazzy.sh .
-RUN ./ros2_jazzy.sh
+ARG COLCON_BUILD_SEQUENTIAL
+ENV UNAME=rcdt
+ENV UID=1000
+ENV ROS_DISTRO=jazzy
 
 COPY ./install_scripts/core_packages.sh .
 RUN ./core_packages.sh
@@ -38,4 +40,9 @@ RUN ./franka_lock_unlock.sh
 COPY ./install_scripts/dev_packages.sh .
 RUN ./dev_packages.sh
 
-INCLUDE ./general/post_install.dockerfile
+RUN chown -R $UNAME /home/$UNAME
+USER $UNAME
+WORKDIR /home/$UNAME
+
+#Set entrypoint to bash:
+ENTRYPOINT ["/bin/bash"]

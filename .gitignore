@@ -25,3 +25,6 @@ build/
 !.devcontainer/.env
 .cache
 .venv
+
+
+**/compile_commands.json

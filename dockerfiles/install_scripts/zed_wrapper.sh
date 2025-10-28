@@ -16,6 +16,7 @@ git clone -b jazzy https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ro
 sudo apt update
 rosdep update
 rosdep install --from-paths src --rosdistro $ROS_DISTRO -y -r
+source /opt/ros/$ROS_DISTRO/setup.bash
 colcon build --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
 
 echo "source /home/$UNAME/zed_ws/install/setup.bash" >>/home/$UNAME/.bashrc
