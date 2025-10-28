@@ -15,7 +15,7 @@ target_frame_arg = LaunchArgument("target_frame", "")
 
 
 def launch_setup(context: LaunchContext) -> list:
-    """Setup the launch description for the realsense camera.
+    """Setup the launch description for the Velodyne lidar.
 
     Args:
         context (LaunchContext): The launch context.
