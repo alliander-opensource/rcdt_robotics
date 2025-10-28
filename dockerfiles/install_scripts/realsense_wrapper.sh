@@ -11,7 +11,7 @@ apt update
 cd /home/$UNAME
 mkdir realsense_ws
 cd /home/$UNAME/realsense_ws
-git clone -b 4.57.3 git@github.com:IntelRealSense/realsense-ros.git
+git clone -b 4.57.3 https://github.com/IntelRealSense/realsense-ros.git
 
 sudo apt update
 rosdep update
