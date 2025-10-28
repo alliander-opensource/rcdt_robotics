@@ -116,6 +116,18 @@ A ZED camera can be launched in simulation by creating a configuration with an *
 
 A ZED camera can be used by connecting it to the host device via USB. To allow non-root users to access the camera, UDEV rules must be installed on the host machine. The required script can be found [here](https://gist.github.com/adujardin/2d5ce8f000fc6a7bd40bee2709749ff8).
 
+## Ouster
+
+![Ouster](../img/ouster/ouster_os1.png)
+
+### Simulation Ouster
+
+An Ouster lidar can be launched in simulation by creating a configuration with a *Lidar* of type *Ouster*.
+
+### Hardware Ouster
+
+*TODO: update when sensor has arrived.*
+
 ## Velodyne
 
 ![Velodyne](../img/velodyne/velodyne.png)
@@ -130,18 +142,6 @@ When using the Velodyne lidar, make sure that the IP-address of the host device 
 
 | ![Velodyne settings](../img/velodyne/velodyne_settings.png) | ![Teltonika settings](../img/teltonika/teltonika_settings.png) |
 |-------------------------------------------------------------|----------------------------------------------------------------|
-
-## Ouster
-
-![Ouster](../img/ouster/ouster_os1.png)
-
-### Simulation Ouster
-
-An Ouster lidar can be launched in simulation by creating a configuration with a *Lidar* of type *Ouster*.
-
-### Hardware Ouster
-
-*TODO: update when sensor has arrived.*
 
 ## Teltonika GPS
 
