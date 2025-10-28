@@ -18,6 +18,9 @@ fi
 OUTPUT=$(doxygen $FILENAME /dev/null 2>&1)
 NUM_WARNINGS=$(echo "$OUTPUT" | grep -i "warning:" | wc -l)
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+rm -rf $SCRIPT_DIR/rtf/
+
 if [ "$NUM_WARNINGS" -gt 0 ]; then
   echo "$OUTPUT"
   echo "Doxygen found $NUM_WARNINGS documentation warnings."

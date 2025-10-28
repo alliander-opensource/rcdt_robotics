@@ -12,6 +12,8 @@ WARN_IF_UNDOCUMENTED = YES
 WARN_IF_DOC_ERROR = YES
 WARN_NO_PARAMDOC = YES
 
+EXTRACT_PRIVATE = YES
+
 # If no output is generated, Doxygen seems to not fully parse documentation.
 # This can lead to erroneous warnings that are not present if any type of output is generated. 
 GENERATE_LATEX = NO
