@@ -29,7 +29,14 @@ def launch_setup(context: LaunchContext) -> list:
     if os.path.isfile(file_name):
         arguments.extend(["--display-config", file_name])
 
-    if Rviz.load_motion_planning_plugin:
+    if any(
+        [
+            Rviz.load_motion_planning_plugin,
+            Rviz.load_planning_scene,
+            Rviz.load_robot_state,
+            Rviz.load_trajectory,
+        ]
+    ):
         for namespace in Rviz.moveit_namespaces:
             configuration = Moveit.configurations[namespace]
 
