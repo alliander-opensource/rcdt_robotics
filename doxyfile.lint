@@ -8,11 +8,14 @@ RECURSIVE = YES
 QUIET = YES
 
 WARNINGS = YES
-WARN_IF_UNDOCUMENTED = YES
-WARN_IF_DOC_ERROR = YES
 WARN_NO_PARAMDOC = YES
+WARN_IF_UNDOC_ENUM_VAL = YES
 
 EXTRACT_PRIVATE = YES
+EXTRACT_PRIV_VIRTUAL = YES
+EXTRACT_PACKAGE = YES
+EXTRACT_STATIC = YES
+EXTRACT_LOCAL_CLASSES = YES
 
 # If no output is generated, Doxygen seems to not fully parse documentation.
 # This can lead to erroneous warnings that are not present if any type of output is generated. 

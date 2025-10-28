@@ -1,0 +1,10 @@
+Language: Cpp
+BasedOnStyle: LLVM
+
+SeparateDefinitionBlocks: Always
+SortIncludes: true
+IncludeBlocks: Regroup
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false

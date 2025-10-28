@@ -27,4 +27,4 @@ build/
 .venv
 
 # for LSP in neovim
-**/compile_commands.json
+.clangd/
