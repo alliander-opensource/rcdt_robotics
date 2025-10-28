@@ -12,7 +12,6 @@ from nicegui import app, ui
 from rcdt_messages.srv import MoveToConfiguration, PoseStampedSrv
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
-from rclpy.parameter import ParameterType
 from std_srvs.srv import Empty, SetBool, Trigger
 
 TIMEOUT = 3
