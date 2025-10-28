@@ -12,6 +12,7 @@ from nicegui import app, ui
 from rcdt_messages.srv import MoveToConfiguration, PoseStampedSrv
 from rcdt_utilities.launch_utils import spin_node
 from rclpy.node import Node
+from rclpy.parameter import ParameterType
 from std_srvs.srv import Empty, SetBool, Trigger
 
 TIMEOUT = 3
@@ -30,30 +31,39 @@ class UI(Node):
     def __init__(self):
         """Initialize the node."""
         super().__init__("simple_gui")
+        self.declare_parameter("namespace", "")
+        self.namespace = (
+            self.get_parameter("namespace").get_parameter_value().string_value
+        )
+        if not self.namespace:
+            self.get_logger().error("Namespace parameter is not set.")
+            return
         self.create_clients()
         self.setup_gui()
 
     def create_clients(self) -> None:
         """Create the service clients."""
         self.move_to_configuration_client = self.create_client(
-            MoveToConfiguration, "/franka1/moveit_manager/move_to_configuration"
+            MoveToConfiguration,
+            f"/{self.namespace}/moveit_manager/move_to_configuration",
         )
-
         self.toggle_octomap_scan_client = self.create_client(
-            SetBool, "/franka1/moveit_manager/toggle_octomap_scan"
+            SetBool, f"/{self.namespace}/moveit_manager/toggle_octomap_scan"
         )
-        self.clear_octomap_client = self.create_client(Empty, "/franka1/clear_octomap")
+        self.clear_octomap_client = self.create_client(
+            Empty, f"/{self.namespace}/clear_octomap"
+        )
         self.visualize_grasp_pose_client = self.create_client(
-            PoseStampedSrv, "/franka1/moveit_manager/visualize_grasp_pose"
+            PoseStampedSrv, f"/{self.namespace}/moveit_manager/visualize_grasp_pose"
         )
         self.create_plan_client = self.create_client(
-            PoseStampedSrv, "/franka1/moveit_manager/create_plan"
+            PoseStampedSrv, f"/{self.namespace}/moveit_manager/create_plan"
         )
         self.visualize_plan_client = self.create_client(
-            Trigger, "/franka1/moveit_manager/visualize_plan"
+            Trigger, f"/{self.namespace}/moveit_manager/visualize_plan"
         )
         self.execute_plan_client = self.create_client(
-            Trigger, "/franka1/moveit_manager/execute_plan"
+            Trigger, f"/{self.namespace}/moveit_manager/execute_plan"
         )
 
     def setup_gui(self) -> None:
@@ -71,8 +81,12 @@ class UI(Node):
                 with ui.card().classes("items-center full-width"):
                     ui.label("Octomap Scan").classes("text-lg")
                     with ui.row():
-                        ui.button("Start", on_click=lambda: self.toggle_octomap_scan(True))
-                        ui.button("Stop", on_click=lambda: self.toggle_octomap_scan(False))
+                        ui.button(
+                            "Start", on_click=lambda: self.toggle_octomap_scan(True)
+                        )
+                        ui.button(
+                            "Stop", on_click=lambda: self.toggle_octomap_scan(False)
+                        )
                         ui.button("Clear", on_click=self.clear_octomap)
                 with ui.card().classes("items-center full-width"):
                     ui.label("Grasp Pose").classes("text-lg")
