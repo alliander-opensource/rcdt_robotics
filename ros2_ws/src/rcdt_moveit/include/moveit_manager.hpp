@@ -2,12 +2,13 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
+#include <moveit_visual_tools/moveit_visual_tools.h>
+
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <moveit/move_group_interface/move_group_interface.hpp>
 #include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/robot_model/joint_model_group.hpp>
 #include <moveit_msgs/srv/servo_command_type.hpp>
-#include <moveit_visual_tools/moveit_visual_tools.h>
 #include <rcdt_messages/srv/add_marker.hpp>
 #include <rcdt_messages/srv/add_object.hpp>
 #include <rcdt_messages/srv/define_goal_pose.hpp>
@@ -33,14 +34,14 @@ typedef rcdt_messages::srv::ExpressPoseInOtherFrame ExpressPoseInOtherFrame;
  * Class to interact with the Moveit framework.
  */
 class MoveitManager {
-public:
+ public:
   /**
    * @brief constructor for the MoveitManager class.
    * @param node The ROS2 node to attach to.
    */
   MoveitManager(rclcpp::Node::SharedPtr node);
 
-private:
+ private:
   rclcpp::Node::SharedPtr node; /**< ROS2 node with MoveIt Services */
   rclcpp::Node::SharedPtr
       client_node; /**< ROS2 node with ExpressPoseInOtherFrame Client */
@@ -48,8 +49,8 @@ private:
       move_group; /**< Interface for setting joint/pose goals */
   moveit::planning_interface::PlanningSceneInterface
       planning_scene_interface; /**< Interface for adding collision objects */
-  const moveit::core::JointModelGroup
-      *joint_model_group; /**< Joint models for planning trajectories */
+  const moveit::core::JointModelGroup*
+      joint_model_group; /**< Joint models for planning trajectories */
   moveit_visual_tools::MoveItVisualTools
       moveit_visual_tools; /**< Visualization tools */
   PoseStamped goal_pose;   /**< Goal pose to move end-effector to */
@@ -93,8 +94,8 @@ private:
                      std::shared_ptr<Trigger::Response> response);
 
   rclcpp::Service<DefineGoalPose>::SharedPtr
-      define_goal_pose_service; /**< Service to define goal pose for arm to move
-                                   to */
+      define_goal_pose_service; /**< Service to define goal
+                                   pose for arm to move to */
 
   /**
    * @brief Callback to define goal pose for arm to move to.
@@ -115,9 +116,9 @@ private:
    * translation.
    * @param response Response indicating whether the service call succeeded.
    */
-  void
-  transform_goal_pose(const std::shared_ptr<TransformGoalPose::Request> request,
-                      std::shared_ptr<TransformGoalPose::Response> response);
+  void transform_goal_pose(
+      const std::shared_ptr<TransformGoalPose::Request> request,
+      std::shared_ptr<TransformGoalPose::Response> response);
 
   rclcpp::Service<MoveToConf>::SharedPtr
       move_to_configuration_service; /**< Service to move to a specified
@@ -132,8 +133,8 @@ private:
                              std::shared_ptr<MoveToConf::Response> response);
 
   rclcpp::Service<MoveHandToPose>::SharedPtr
-      move_hand_to_pose_service; /**< Service to move hand to a specified goal
-                                    Pose */
+      move_hand_to_pose_service; /**< Service to move hand to
+                                    a specified goal Pose */
 
   /**
    * @brief Callback to move arm to a specified goal Pose.
@@ -145,8 +146,8 @@ private:
                          std::shared_ptr<MoveHandToPose::Response> response);
 
   rclcpp::Service<AddMarker>::SharedPtr
-      add_marker_service; /**< Service to add a visual marker at a specified
-                             Pose */
+      add_marker_service; /**< Service to add a visual marker at a
+                             specified Pose */
 
   /**
    * @brief Callback to add a visual marker at a specified location.
@@ -169,9 +170,16 @@ private:
                      std::shared_ptr<Trigger::Response> response);
 
   //   Methods:
-  void initialize_clients();  /**< Initializes the ExpressPoseInOtherFrame
-                                 service client Node and Client */
-  void initialize_services(); /**< Initializes all MoveIt Services */
+  /**
+   * @brief Initializes the ExpressPoseInOtherFrame service client Node and
+   * Client.
+   */
+  void initialize_clients();
+
+  /**
+   * @brief Initializes all MoveIt Services
+   */
+  void initialize_services();
 
   /**
    * @brief Method to change a specified Pose to a world-fixed frame.

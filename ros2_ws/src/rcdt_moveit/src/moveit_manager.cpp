@@ -193,7 +193,7 @@ void MoveitManager::clear_markers(
   response->success = true;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   rclcpp::NodeOptions node_options;
   node_options.automatically_declare_parameters_from_overrides(true);
