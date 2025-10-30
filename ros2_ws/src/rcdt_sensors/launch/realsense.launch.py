@@ -56,7 +56,15 @@ def launch_setup(context: LaunchContext) -> list:
                     "enable_rgbd": True,
                     "enable_sync": True,
                     "align_depth.enable": True,
+                    "tf_prefix": namespace + "/",
+                    "rgb_camera.color_profile": "1280,720,6",
+                    "depth_module.depth_profile": "1280,720,6",
                 }
+            ],
+            remappings=[
+                (f"/{namespace}/camera/color/image_raw", f"/{namespace}/color/image_raw"),
+                (f"/{namespace}/camera/depth/camera_info", f"/{namespace}/depth/camera_info"),
+                (f"/{namespace}/camera/aligned_depth_to_color/image_raw", f"/{namespace}/depth/image_rect_raw"),
             ],
         )
         realsense = LaunchDescription(
