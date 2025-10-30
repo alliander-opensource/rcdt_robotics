@@ -73,8 +73,7 @@ void PoseManipulator::expressPoseInOtherFrame(
   }
 
   try {
-    resp->pose = req->pose;
-    tf_buffer_->transform(resp->pose, target_frame);
+    tf2::doTransform(req->pose, resp->pose, tf);
   } catch (const tf2::TransformException& e) {
     RCLCPP_ERROR(this->get_logger(),
                  "Could not transform pose to frame %s: %s.",

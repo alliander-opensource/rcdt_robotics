@@ -230,7 +230,7 @@ def assert_joy_topic_switch(
 def call_express_pose_in_other_frame(
     node: Node, pose: PoseStamped, target_frame: str, timeout: int
 ) -> ExpressPoseInOtherFrame.Response:
-    """Calls the /express_pose_in_other_frame service.
+    """Calls the /pose_manipulator/express_pose_in_other_frame service.
 
     Args:
         node (Node): An active rclpy Node.
@@ -247,7 +247,7 @@ def call_express_pose_in_other_frame(
     client = create_ready_service_client(
         node,
         ExpressPoseInOtherFrame,
-        "/express_pose_in_other_frame",
+        "/pose_manipulator/express_pose_in_other_frame",
         timeout_sec=timeout,
     )
 
