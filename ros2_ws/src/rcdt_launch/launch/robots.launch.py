@@ -35,10 +35,10 @@ configuration_arg = LaunchArgument(
         "panther_gps",
         "panther_realsense",
         "panther_zed",
-        "panther_lidar",
+        "panther_velodyne",
         "panther_ouster",
         "mm",
-        "mm_lidar",
+        "mm_velodyne",
         "mm_ouster",
         "panther_and_franka",
     ],
@@ -111,7 +111,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         case "panther_zed":
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("zed", [0, 0, 0.5], parent=panther)
-        case "panther_lidar":
+        case "panther_velodyne":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
         case "panther_ouster":
@@ -120,7 +120,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         case "mm":
             panther = Vehicle("panther", [0, 0, 0.2])
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
-        case "mm_lidar":
+        case "mm_velodyne":
             panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
             Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
