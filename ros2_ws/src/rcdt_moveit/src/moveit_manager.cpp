@@ -49,7 +49,7 @@ void MoveitManager::initialize_clients() {
   client_node = std::make_shared<rclcpp::Node>("moveit_manager_client");
   express_pose_in_other_frame_client =
       client_node->create_client<ExpressPoseInOtherFrame>(
-          "/express_pose_in_other_frame");
+          "/pose_manipulator/express_pose_in_other_frame");
 };
 
 void MoveitManager::initialize_services() {
