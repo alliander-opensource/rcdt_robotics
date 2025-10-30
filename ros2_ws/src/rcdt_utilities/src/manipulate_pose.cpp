@@ -2,7 +2,7 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include "rcdt_utilities/manipulate_pose.h"
+#include "rcdt_utilities/manipulate_pose.hpp"
 
 #include <memory>
 #include <tf2/convert.hpp>

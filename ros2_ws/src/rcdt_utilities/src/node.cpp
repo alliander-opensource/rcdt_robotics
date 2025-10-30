@@ -4,7 +4,7 @@
 
 #include <rclcpp/executors/single_threaded_executor.hpp>
 
-#include "rcdt_utilities/manipulate_pose.h"
+#include "rcdt_utilities/manipulate_pose.hpp"
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);

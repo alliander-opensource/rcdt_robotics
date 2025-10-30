@@ -8,12 +8,9 @@
 
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/transform.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rcdt_messages/srv/express_pose_in_other_frame.hpp"
 #include "rcdt_messages/srv/transform_pose.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "tf2/exceptions.h"
-#include "tf2_ros/buffer.h"
+#include "tf2_ros/buffer.hpp"
 
 /**
  * Class to manipulate poses using TF2.

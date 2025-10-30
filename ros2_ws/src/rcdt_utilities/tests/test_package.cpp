@@ -14,7 +14,7 @@
 
 #include "geometry_msgs/msg/transform.hpp"
 #include "rcdt_messages/srv/transform_pose.hpp"
-#include "rcdt_utilities/manipulate_pose.h"
+#include "rcdt_utilities/manipulate_pose.hpp"
 
 #define PI 3.14159265
 
