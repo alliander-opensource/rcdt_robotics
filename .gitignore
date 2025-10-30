@@ -20,6 +20,7 @@ ignore/
 .vscode-server
 
 build/
+clangd/
 
 .env
 !.devcontainer/.env
@@ -27,5 +28,5 @@ build/
 .venv
 
 # for LSP in neovim
-.clangd/
+.clangd-build/
 **/compile_commands.json
