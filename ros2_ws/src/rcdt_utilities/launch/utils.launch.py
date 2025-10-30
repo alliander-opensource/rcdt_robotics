@@ -17,7 +17,7 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed in the launch description.
     """
-    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose.py")
+    manipulate_pose = Node(package="rcdt_utilities", executable="manipulate_pose")
 
     return [
         Register.on_start(manipulate_pose, context),

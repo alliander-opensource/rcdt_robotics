@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 -m pip install clang-format
+      - run: python3 -m pip install clang-format==21.1.2
       - run: find ros2_ws/src -iname '*.h' -o -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format --dry-run --Werror --style=file
 
   doxygen:
