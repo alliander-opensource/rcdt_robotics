@@ -57,8 +57,8 @@ def launch_setup(context: LaunchContext) -> list:
                     "enable_sync": True,
                     "align_depth.enable": True,
                     "tf_prefix": namespace + "/",
-                    "rgb_camera.color_profile": "1280,720,6",
-                    "depth_module.depth_profile": "1280,720,6",
+                    "rgb_camera.color_profile": "640,480,60",
+                    "depth_module.depth_profile": "640,480,60",
                 }
             ],
             remappings=[
