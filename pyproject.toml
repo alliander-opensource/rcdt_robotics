@@ -28,7 +28,6 @@ dependencies = [
     "psutil>=7.0.0",
     "pydoclint>=0.6.6",
     "pymongo>=4.14.1",
-    "pyrealsense2>=2.56.5.9235",
     "pytest<8.4.0",
     "pytest-timeout>=2.4.0",
     "scipy>=1.16.2",
@@ -45,6 +44,11 @@ dependencies = [
     "transforms3d>=0.4.2",
     "waitress>=3.0.2",
     "xmltodict>=1.0.2",
+]
+
+[project.optional-dependencies]
+realsense = [
+    "pyrealsense2; platform_machine == 'x86_64'"
 ]
 
 [dependency-groups]

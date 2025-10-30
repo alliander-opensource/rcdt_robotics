@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARCH=$1
-PACKAGE=core
-BASE_PACKAGE=base
+PACKAGE=vision
+BASE_PACKAGE=core
 
 ./build.sh $ARCH $PACKAGE $BASE_PACKAGE
