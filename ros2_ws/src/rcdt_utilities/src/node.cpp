@@ -2,8 +2,9 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include "rcdt_utilities/manipulate_pose.h"
 #include <rclcpp/executors/single_threaded_executor.hpp>
+
+#include "rcdt_utilities/manipulate_pose.h"
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);

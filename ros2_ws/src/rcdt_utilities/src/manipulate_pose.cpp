@@ -3,15 +3,17 @@
 // # SPDX-License-Identifier: Apache-2.0
 
 #include "rcdt_utilities/manipulate_pose.h"
-#include "geometry_msgs/msg/pose_stamped.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rcdt_messages/srv/express_pose_in_other_frame.hpp"
-#include "rcdt_messages/srv/transform_pose.hpp"
+
 #include <memory>
 #include <tf2/convert.hpp>
 #include <tf2/exceptions.hpp>
 #include <tf2/time.hpp>
 #include <tf2_ros/transform_listener.hpp>
+
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rcdt_messages/srv/express_pose_in_other_frame.hpp"
+#include "rcdt_messages/srv/transform_pose.hpp"
 
 PoseManipulator::PoseManipulator() : rclcpp::Node("pose_manipulator") {
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
@@ -105,9 +107,9 @@ void PoseManipulator::transformPoseRelative(
   resp->success = true;
 }
 
-geometry_msgs::msg::PoseStamped
-PoseManipulator::doTransform(const geometry_msgs::msg::PoseStamped pose_in,
-                             const geometry_msgs::msg::Transform tf) {
+geometry_msgs::msg::PoseStamped PoseManipulator::doTransform(
+    const geometry_msgs::msg::PoseStamped pose_in,
+    const geometry_msgs::msg::Transform tf) {
   geometry_msgs::msg::PoseStamped pose_out;
   return pose_out;
 }

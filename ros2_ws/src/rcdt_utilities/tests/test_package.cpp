@@ -3,15 +3,18 @@
 // # SPDX-License-Identifier: Apache-2.0
 
 #include "tests/test_package.hpp"
-#include "geometry_msgs/msg/transform.hpp"
-#include "rcdt_messages/srv/transform_pose.hpp"
-#include "rcdt_utilities/manipulate_pose.h"
+
+#include <gtest/gtest.h>
+
 #include <chrono>
 #include <future>
-#include <gtest/gtest.h>
 #include <memory>
 #include <rclcpp/duration.hpp>
 #include <rclcpp/future_return_code.hpp>
+
+#include "geometry_msgs/msg/transform.hpp"
+#include "rcdt_messages/srv/transform_pose.hpp"
+#include "rcdt_utilities/manipulate_pose.h"
 
 #define PI 3.14159265
 
@@ -21,7 +24,10 @@
  * making sure the PackageTester has access to all the right data.
  */
 class PackageTesterFixture : public testing::Test {
-public:
+ public:
+  /**
+   * @brief Sets up the test suite.
+   */
   static void SetUpTestSuite() {
     if (!rclcpp::ok()) {
       rclcpp::init(0, nullptr);
@@ -30,12 +36,18 @@ public:
     executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   }
 
+  /**
+   * @brief Tears down the test suite.
+   */
   static void TearDownTestSuite() {
     executor_.reset();
     rclcpp::shutdown();
   }
 
-protected:
+ protected:
+  /**
+   * @brief Sets up each test.
+   */
   void SetUp() override {
     pose_manipulator_node_ = std::make_shared<PoseManipulator>();
     tester_node_ = std::make_shared<PackageTester>();
@@ -44,6 +56,9 @@ protected:
     executor_->add_node(tester_node_);
   }
 
+  /**
+   * @brief Tears down each test.
+   */
   void TearDown() override {
     executor_->remove_node(pose_manipulator_node_);
     executor_->remove_node(tester_node_);
@@ -52,9 +67,11 @@ protected:
     tester_node_.reset();
   }
 
-  std::shared_ptr<PoseManipulator> pose_manipulator_node_;
-  std::shared_ptr<PackageTester> tester_node_;
-  static std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
+  std::shared_ptr<PoseManipulator>
+      pose_manipulator_node_;                  /**< Node to manipulate poses */
+  std::shared_ptr<PackageTester> tester_node_; /**< Node to test the package */
+  static std::shared_ptr<rclcpp::executors::MultiThreadedExecutor>
+      executor_; /**< Executor to spin nodes */
 };
 
 std::shared_ptr<rclcpp::executors::MultiThreadedExecutor>
@@ -122,11 +139,11 @@ TEST_F(PackageTesterFixture, TestTransformPoseRotation) {
 }
 
 // MAIN
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
 
   int _argc = 0;
-  const char **_argv = nullptr;
+  const char** _argv = nullptr;
 
   rclcpp::init(_argc, _argv);
 
