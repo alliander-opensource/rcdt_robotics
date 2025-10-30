@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+PROJECT_NAME = "RCDT Robotics"
+
+INPUT = ros2_ws/src
+RECURSIVE = YES
+QUIET = YES
+
+WARNINGS = YES
+WARN_NO_PARAMDOC = YES
+WARN_IF_UNDOC_ENUM_VAL = YES
+
+EXTRACT_PRIVATE = YES
+EXTRACT_PRIV_VIRTUAL = YES
+EXTRACT_PACKAGE = YES
+EXTRACT_STATIC = YES
+EXTRACT_LOCAL_CLASSES = YES
+
+# If no output is generated, Doxygen seems to not fully parse documentation.
+# This can lead to erroneous warnings that are not present if any type of output is generated. 
+GENERATE_LATEX = NO
+GENERATE_HTML = NO
+GENERATE_RTF = YES
+
+FILE_PATTERNS = *.cpp \
+		*.h \
+		*.hpp

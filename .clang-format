@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+Language: Cpp
+BasedOnStyle: Google 
+
+InsertNewlineAtEOF: true
+SeparateDefinitionBlocks: Always
+SortIncludes: true
+IncludeBlocks: Regroup
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false

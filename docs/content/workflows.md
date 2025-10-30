@@ -27,6 +27,9 @@ Checks all files in this repository on usage of copyright terms.
 - **Ty**:\
 Runs static type checks on our Python code using [Ty](https://github.com/astral-sh/ty).  
 
+- **doxygen**:\
+Runs code documentation checks for .cpp, .hpp, and .h files, using the rules specified in *doxyfile.lint*. In the future, other filetypes may be added as well.
+
 ### Local Development
 
 You can run these checks locally before committing by using the [`pre-commit`](https://pre-commit.com/) framework:
