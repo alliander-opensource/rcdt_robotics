@@ -19,7 +19,6 @@ apt install -y \
 
 apt install -y \
     ros-$ROS_DISTRO-launch-pytest \
-    ros-$ROS_DISTRO-librealsense2 \
     ros-$ROS_DISTRO-moveit \
     ros-$ROS_DISTRO-moveit-servo \
     ros-$ROS_DISTRO-moveit-visual-tools \
