@@ -24,6 +24,7 @@ apt install -y \
     ros-$ROS_DISTRO-moveit-visual-tools \
     ros-$ROS_DISTRO-navigation2 \
     ros-$ROS_DISTRO-nav2-bringup \
+    ros-$ROS_DISTRO-ouster-ros \
     ros-$ROS_DISTRO-plotjuggler-ros \
     ros-$ROS_DISTRO-realsense2-camera \
     ros-$ROS_DISTRO-realsense2-description \

@@ -90,7 +90,16 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If an unknown platform is encountered.
         """
-        order = ["panther", "franka", "velodyne", "realsense", "zed", "nmea", "axis"]
+        order = [
+            "panther",
+            "franka",
+            "velodyne",
+            "ouster",
+            "realsense",
+            "zed",
+            "nmea",
+            "axis",
+        ]
 
         for platform in Platform.platforms:
             if platform.platform not in order:
@@ -296,7 +305,14 @@ class Platform:  # noqa: PLR0904
     def __init__(  # noqa: PLR0913
         self,
         platform: Literal[
-            "panther", "franka", "velodyne", "realsense", "zed", "nmea", "axis"
+            "panther",
+            "franka",
+            "velodyne",
+            "ouster",
+            "realsense",
+            "zed",
+            "nmea",
+            "axis",
         ],
         position: list,
         orientation: list | None = None,
@@ -307,7 +323,7 @@ class Platform:  # noqa: PLR0904
         """Initialize a robot instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "realsense", "zed", "nmea", "axis"]): The platform type of the robot.
+            platform (Literal["panther", "franka", "velodyne", "ouster", "realsense", "zed", "nmea", "axis"]): The platform type of the robot.
             position (list): The initial position of the robot.
             orientation (list | None): The initial orientation of the robot.
             namespace (str | None): The namespace of the robot. If None, a unique namespace will be generated.
@@ -400,6 +416,10 @@ class Platform:  # noqa: PLR0904
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
                 )
+            case "ouster":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_os1_128.urdf.xacro"
+                )
             case "realsense":
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
@@ -431,6 +451,8 @@ class Platform:  # noqa: PLR0904
             case "franka":
                 return "fr3_link0"
             case "velodyne":
+                return "base_link"
+            case "ouster":
                 return "base_link"
             case "realsense":
                 return "base_link"
@@ -685,7 +707,7 @@ class Lidar(Platform):
 
     def __init__(  # noqa: PLR0913
         self,
-        platform: Literal["velodyne"],
+        platform: Literal["velodyne", "ouster"],
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
@@ -695,7 +717,7 @@ class Lidar(Platform):
         """Initialize the Lidar platform.
 
         Args:
-            platform (Literal["velodyne"]): The platform type.
+            platform (Literal["velodyne", "ouster"]): The platform type.
             position (list): The position of the lidar.
             orientation (list | None): The initial orientation of the lidar.
             namespace (str | None): The namespace of the lidar.
@@ -723,7 +745,10 @@ class Lidar(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        launch_descriptions.append(self.create_velodyne_launch())
+        if self.platform == "velodyne":
+            launch_descriptions.append(self.create_velodyne_launch())
+        if self.platform == "ouster":
+            launch_descriptions.append(self.create_ouster_launch())
         return launch_descriptions
 
     def create_velodyne_launch(self) -> RegisteredLaunchDescription:
@@ -739,6 +764,26 @@ class Lidar(Platform):
 
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
+            launch_arguments={
+                "simulation": str(Platform.simulation),
+                "namespace": self.namespace,
+                "target_frame": target_frame,
+            },
+        )
+
+    def create_ouster_launch(self) -> RegisteredLaunchDescription:
+        """Create the Ouster launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for Ouster.
+        """
+        if self.parent:
+            target_frame = f"{self.parent.namespace}/{self.parent.base_link}"
+        else:
+            target_frame = f"{self.namespace}/base_link"
+
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_sensors", ["launch"], "ouster.launch.py"),
             launch_arguments={
                 "simulation": str(Platform.simulation),
                 "namespace": self.namespace,
