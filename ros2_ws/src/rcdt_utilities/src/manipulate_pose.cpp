@@ -57,7 +57,7 @@ void PoseManipulator::expressPoseInOtherFrame(
   try {
     tf = tf_buffer_->lookupTransform(target_frame, source_frame,
                                      rclcpp::Time(0));
-  } catch (const tf2::TransformException &e) {
+  } catch (const tf2::TransformException& e) {
     RCLCPP_WARN(this->get_logger(),
                 "Could not transform from frame %s to frame %s: %s",
                 source_frame.c_str(), target_frame.c_str(), e.what());
@@ -75,7 +75,7 @@ void PoseManipulator::expressPoseInOtherFrame(
   try {
     resp->pose = req->pose;
     tf_buffer_->transform(resp->pose, target_frame);
-  } catch (const tf2::TransformException &e) {
+  } catch (const tf2::TransformException& e) {
     RCLCPP_ERROR(this->get_logger(),
                  "Could not transform pose to frame %s: %s.",
                  target_frame.c_str(), e.what());
