@@ -22,6 +22,12 @@ find_package(rcdt_messages REQUIRED)
 # Python package:
 ament_python_install_package(${PROJECT_NAME})
 
+# Python executables:
+install(
+  DIRECTORY src_py/
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # C++ executables:
 include_directories(include)
 
