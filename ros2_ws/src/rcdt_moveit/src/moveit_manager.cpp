@@ -27,6 +27,8 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
               node->get_namespace())),
       rviz_visual_tools(base_frame, marker_topic, node),
       moveit_visual_tools(node, base_frame, marker_topic) {
+  initialize_clients();
+
   namespace_arm = std::string(node->get_namespace()).erase(0, 1);
   namespace_camera = node->get_parameter("namespace_camera").as_string();
 
@@ -41,7 +43,11 @@ MoveitManager::MoveitManager(rclcpp::Node::SharedPtr node_)
   auto link_tcp = jmg_tcp->getLinkModelNames().back();
   move_group.setEndEffectorLink(link_tcp);
 
-  initialize_clients();
+  auto link_arm_end = jmg_arm->getLinkModelNames().back();
+  PoseStamped arm_end_in_arm_frame;
+  arm_end_in_arm_frame.header.frame_id = link_arm_end;
+  arm_end_in_tcp_frame = change_frame(arm_end_in_arm_frame, link_tcp);
+
   initialize_services();
 };
 
@@ -277,14 +283,6 @@ void MoveitManager::visualize_grasp_pose(
   tf.transform.rotation = request->pose.pose.orientation;
   tf.child_frame_id = "desired_tcp";
   tf_broadcaster.sendTransform(tf);
-
-  // Define the arm_end_link in the tcp_frame:
-  // TODO: Do only once at initialization, since it does not change.
-  auto link_arm_end = jmg_arm->getLinkModelNames().back();
-  auto link_tcp = jmg_tcp->getLinkModelNames().back();
-  PoseStamped arm_end_in_arm_frame;
-  arm_end_in_arm_frame.header.frame_id = link_arm_end;
-  auto arm_end_in_tcp_frame = change_frame(arm_end_in_arm_frame, link_tcp);
 
   // Define the arm_end_link in the desired_tcp_frame and convert to base:
   PoseStamped arm_end_in_desired_tcp_frame;

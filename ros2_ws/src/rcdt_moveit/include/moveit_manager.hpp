@@ -84,6 +84,8 @@ class MoveitManager {
   moveit_visual_tools::MoveItVisualTools moveit_visual_tools;
   /// The goal pose for the end effector
   PoseStamped goal_pose;
+  /// The arm-end pose in the TCP frame, used to publish EE markers.
+  PoseStamped arm_end_in_tcp_frame;
   /// A handle to run a subprocess
   boost::process::child process;
   /// A group to manage multiple subprocesses
