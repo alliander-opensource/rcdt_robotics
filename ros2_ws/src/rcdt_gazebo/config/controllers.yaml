@@ -21,6 +21,9 @@
       drive_controller:
         type: diff_drive_controller/DiffDriveController
 
+      imu_broadcaster:
+        type: imu_sensor_broadcaster/IMUSensorBroadcaster
+
   fr3_arm_controller:
     ros__parameters:
       allow_nonzero_velocity_at_trajectory_end: true
@@ -47,6 +50,21 @@
       max_effort: 0.0
       stall_timeout: 1.0
       stall_velocity_threshold: 0.001
+
+  # IMU specification: https://www.phidgets.com/?tier=3&catid=10&pcid=8&prodid=1025#Tab_Specifications
+  imu_broadcaster:
+    ros__parameters:
+      sensor_name: panther1/imu
+      frame_id: panther1/imu_link
+      # orientation_stddev: 4.3e-2 rad determined experimentally
+      static_covariance_orientation:
+        [1.8e-3, 0.0, 0.0, 0.0, 1.8e-3, 0.0, 0.0, 0.0, 1.8e-3]
+      # angular_velocity_stdev: 0.59 deg/s (0.01 rad/s) gyroscope white noise sigma, according to the manual
+      static_covariance_angular_velocity:
+        [1.0e-4, 0.0, 0.0, 0.0, 1.0e-4, 0.0, 0.0, 0.0, 1.0e-4]
+      # linear_acceleration_stdev: 2.8 mg (0.0275 m/s^2) accelerometer white noise sigma, according to the manual
+      static_covariance_linear_acceleration:
+        [7.6e-4, 0.0, 0.0, 0.0, 7.6e-4, 0.0, 0.0, 0.0, 7.6e-4]
 
   drive_controller:
     ros__parameters:

@@ -565,7 +565,7 @@ class Platform:  # noqa: PLR0904
             Node | None: A static_transform_publisher node that links the platform with the world or None if not applicable.
         """
         if isinstance(self, Vehicle):
-            if self.navigation or self.slam:
+            if self.navigation or self.slam or self.gps:
                 return None
             child_frame = f"{self.namespace}/odom"
         elif self.platform == "franka" and not Platform.simulation:
@@ -934,6 +934,7 @@ class Vehicle(Platform):
         parent: Platform | None = None,
         parent_link: str = "",
         navigation: bool = False,
+        gps: bool = False,
         slam: bool = False,
         collision_monitor: bool = False,
     ):
@@ -947,6 +948,7 @@ class Vehicle(Platform):
             parent (Platform | None): The parent platform.
             parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
             navigation (bool): Whether to start navigation for the vehicle.
+            gps (bool): Whether to start GPS for the vehicle.
             slam (bool): Whether to start SLAM for the vehicle.
             collision_monitor (bool): Whether to start the collision monitor for the vehicle.
         """
@@ -956,6 +958,7 @@ class Vehicle(Platform):
         self.platform = platform
         self.namespace = self.namespace
         self.navigation = navigation
+        self.gps = gps
         self.slam = slam
         self.collision_monitor = collision_monitor
 

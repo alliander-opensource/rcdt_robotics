@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import itertools
+
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
@@ -11,6 +13,9 @@ from rcdt_utilities.register import Register
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 namespace_arg = LaunchArgument("namespace", default_value="")
 ip_address_arg = LaunchArgument("ip_address", "")
+
+T = True
+F = False
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -47,8 +52,57 @@ def launch_setup(context: LaunchContext) -> list:
         ],
     )
 
+    navsat_transform_node = Node(
+        package="robot_localization",
+        executable="navsat_transform_node",
+        namespace=namepace,
+        remappings=[("imu", "/panther1/imu/data")],
+    )
+
+    ekf_node = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        namespace=namepace,
+        parameters=[
+            {
+                "two_d_mode": True,
+                "publish_tf": True,
+                "odom_frame": "panther1/odom",
+                "base_link_frame": "panther1/base_link",
+                "world_frame": "map",
+                "map_frame": "map",
+                "odom0": "/panther1/odometry/wheels",
+                "odom0_config": list(
+                    itertools.chain.from_iterable(
+                        [
+                            [F, F, F],  # [x_pos, y_pos, z_pos]
+                            [F, F, F],  # [roll, pitch, yaw]
+                            [T, T, T],  # [x_vel, y_vel, z_vel]
+                            [F, F, T],  # [roll_rate, pitch_rate, yaw_rate]
+                            [F, F, F],  # [x_accel, y_accel, z_accel]
+                        ]
+                    )
+                ),
+                "odom1": "/nmea1/odometry/gps",
+                "odom1_config": list(
+                    itertools.chain.from_iterable(
+                        [
+                            [T, T, F],  # [x_pos, y_pos, z_pos]
+                            [F, F, F],  # [roll, pitch, yaw]
+                            [F, F, F],  # [x_vel, y_vel, z_vel]
+                            [F, F, F],  # [roll_rate, pitch_rate, yaw_rate]
+                            [F, F, F],  # [x_accel, y_accel, z_accel]
+                        ]
+                    )
+                ),
+            }
+        ],
+    )
+
     return [
         Register.on_start(nmea_driver, context) if not use_sim else SKIP,
+        Register.on_start(navsat_transform_node, context),
+        Register.on_start(ekf_node, context),
     ]
 
 
