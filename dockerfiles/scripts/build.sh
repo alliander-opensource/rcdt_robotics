@@ -15,6 +15,7 @@
 ARCH=$1
 PACKAGE=$2
 BASE_PACKAGE=$3
+NO_CACHE=$4
 export DOCKER_BUILDKIT=1
 
 # Set Docker image tag
@@ -46,6 +47,7 @@ echo $BASE_IMAGE
   docker build -f rcdt_$PACKAGE.Dockerfile \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
   --platform $PLATFORM \
+  $NO_CACHE \
   -t "rcdt/robotics:$IMAGE_TAG-$ARCH" \
   .
   )
