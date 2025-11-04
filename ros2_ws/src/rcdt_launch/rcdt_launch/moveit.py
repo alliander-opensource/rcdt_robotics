@@ -52,7 +52,18 @@ class Moveit:
         moveit_config_builder.moveit_cpp(
             get_file_path(package, ["config"], "planning_pipeline.yaml")
         )
+        moveit_config_builder.sensors_3d(
+            get_file_path(package, ["config"], "sensors_3d.yaml")
+        )
         moveit_config = moveit_config_builder.to_moveit_configs()
+
+        # Define namespace dependent parameters:
+        moveit_config.sensors_3d["depth_image"]["image_topic"] = (
+            f"/{namespace}/octomap/depth_image"
+        )
+        moveit_config.sensors_3d["depth_image"]["filtered_cloud_topic"] = (
+            f"/{namespace}/octomap/filtered_points"
+        )
 
         # adapt robot_description with prefix:
         add_prefix_in_robot_description(robot_description, namespace)
@@ -96,6 +107,11 @@ def add_prefix_in_robot_description_semantic(description: dict, prefix: str) -> 
         prefix (str): The prefix to add to each link.
     """
     xml_dict = xmltodict.parse(description["robot_description_semantic"])
+    ee_parent_link = xml_dict["robot"]["end_effector"]["@parent_link"]
+    xml_dict["robot"]["end_effector"]["@parent_link"] = f"{prefix}/{ee_parent_link}"
+    for group in xml_dict["robot"]["group"]:
+        if "link" in group:
+            group["link"]["@name"] = f"{prefix}/{group['link']['@name']}"
     for disable_collision in xml_dict["robot"]["disable_collisions"]:
         link1 = disable_collision["@link1"]
         link2 = disable_collision["@link2"]

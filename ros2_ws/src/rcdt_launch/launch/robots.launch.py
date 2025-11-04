@@ -29,6 +29,7 @@ configuration_arg = LaunchArgument(
         "franka",
         "franka_axis",
         "franka_double",
+        "franka_planning",
         "franka_realsense",
         "panther",
         "panther_axis",
@@ -86,6 +87,14 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             if not use_sim:
                 Rviz.load_motion_planning_plugin = True
             Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
+        case "franka_planning":
+            Platform.world = "table_with_1_brick.sdf"
+            Rviz.add_markers()
+            Rviz.load_robot_state = True
+            Rviz.load_trajectory = True
+            Rviz.load_planning_scene = True
+            arm = Arm("franka", [0, 0, 0], moveit=True)
+            Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
         case "franka_axis":
             franka = Arm("franka", [0, 0, 0], [0, 0, 20])
             Platform("axis", [0, 0, 0.1], [0, 20, 0], parent=franka)

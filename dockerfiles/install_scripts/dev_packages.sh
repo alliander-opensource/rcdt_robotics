@@ -11,4 +11,7 @@ apt update
 apt install -y \
     clang \
     doxygen \
-    ros-$ROS_DISTRO-nmea-navsat-driver
+    xvfb \
+    ros-$ROS_DISTRO-nmea-navsat-driver \
+    ros-$ROS_DISTRO-moveit-ros-perception \
+    ros-$ROS_DISTRO-topic-tools
