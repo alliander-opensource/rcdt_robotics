@@ -6,8 +6,7 @@
 
 set -e
 source /home/$UNAME/.bashrc
-# apt update
-apt-get update  # && apt-get upgrade -y && apt-get dist-upgrade -y
+apt-get update
 
 # Core packages
 apt-get install -y \
