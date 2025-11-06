@@ -115,7 +115,10 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             panther = Vehicle("panther", [0, 0, 0.2])
             Camera("realsense", [0, 0, 0.2], parent=panther)
         case "panther_gps":
-            panther = Vehicle("panther", [0, 0, 0.2], gps=True)
+            Platform.world = "empty_camera.sdf"
+            use_vizanti = True
+            panther = Vehicle("panther", [0, 0, 0.2], navigation=True, gps=True)
+            Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
             GPS("nmea", [0, 0, 0.2], parent=panther)
         case "panther_zed":
             panther = Vehicle("panther", [0, 0, 0.2])

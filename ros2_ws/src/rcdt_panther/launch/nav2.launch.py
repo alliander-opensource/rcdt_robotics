@@ -16,6 +16,7 @@ namespace_vehicle_arg = LaunchArgument("namespace_vehicle", "")
 namespace_lidar_arg = LaunchArgument("namespace_lidar", "")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
+use_gps_arg = LaunchArgument("use_gps", False, [True, False])
 controller_arg = LaunchArgument(
     "controller",
     "vector_pursuit",
@@ -49,6 +50,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     namespace_lidar = namespace_lidar_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
+    use_gps = use_gps_arg.bool_value(context)
     controller = controller_arg.string_value(context)
     global_map = global_map_arg.string_value(context)
 
@@ -61,7 +63,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         lifecycle_nodes.append("slam_toolbox")
     elif use_navigation:
         lifecycle_nodes.append("map_server")
-        lifecycle_nodes.append("amcl")
+        if not use_gps:
+            lifecycle_nodes.append("amcl")
 
     if use_navigation:
         lifecycle_nodes.extend(
@@ -268,6 +271,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
         namespace=namespace_vehicle,
+        remappings=[("/fromLL", "/nmea1/fromLL")],
     )
 
     waypoint_follower_controller = Node(
@@ -286,7 +290,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         SetRemap(src="/cmd_vel", dst=pub_topic),
         Register.on_start(slam, context) if use_slam else SKIP,
         Register.on_start(map_server, context) if not use_slam else SKIP,
-        Register.on_start(amcl, context) if not use_slam else SKIP,
+        Register.on_start(amcl, context) if not use_gps and not use_slam else SKIP,
         Register.on_start(controller_server, context) if use_navigation else SKIP,
         Register.on_start(planner_server, context) if use_navigation else SKIP,
         Register.on_start(behavior_server, context) if use_navigation else SKIP,
@@ -318,6 +322,8 @@ def generate_launch_description() -> LaunchDescription:
             use_slam_arg.declaration,
             namespace_vehicle_arg.declaration,
             namespace_lidar_arg.declaration,
+            use_navigation_arg.declaration,
+            use_gps_arg.declaration,
             controller_arg.declaration,
             global_map_arg.declaration,
             OpaqueFunction(function=launch_setup),

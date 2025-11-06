@@ -17,6 +17,8 @@ ip_address_arg = LaunchArgument("ip_address", "")
 T = True
 F = False
 
+# Parameters based on https://github.com/ros-navigation/navigation2_tutorials/blob/rolling/nav2_gps_waypoint_follower_demo/config/dual_ekf_navsat_params.yaml
+
 
 def launch_setup(context: LaunchContext) -> list:
     """Launch the nmea_socket_driver node from the nmea_navsat_driver package.
@@ -56,10 +58,15 @@ def launch_setup(context: LaunchContext) -> list:
         package="robot_localization",
         executable="navsat_transform_node",
         namespace=namepace,
+        parameters=[
+            {
+                "publish_filtered_gps": False,
+            }
+        ],
         remappings=[("imu", "/panther1/imu/data")],
     )
 
-    ekf_node = Node(
+    ekf_local = Node(
         package="robot_localization",
         executable="ekf_node",
         namespace=namepace,
@@ -67,10 +74,38 @@ def launch_setup(context: LaunchContext) -> list:
             {
                 "two_d_mode": True,
                 "publish_tf": True,
+                "world_frame": "panther1/odom",
+                "map_frame": "map",
                 "odom_frame": "panther1/odom",
                 "base_link_frame": "panther1/base_link",
+                "odom0": "/panther1/odometry/wheels",
+                "odom0_config": list(
+                    itertools.chain.from_iterable(
+                        [
+                            [F, F, F],  # [x_pos, y_pos, z_pos]
+                            [F, F, F],  # [roll, pitch, yaw]
+                            [T, T, T],  # [x_vel, y_vel, z_vel]
+                            [F, F, T],  # [roll_rate, pitch_rate, yaw_rate]
+                            [F, F, F],  # [x_accel, y_accel, z_accel]
+                        ]
+                    )
+                ),
+            }
+        ],
+    )
+
+    ekf_global = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        namespace=namepace,
+        parameters=[
+            {
+                "two_d_mode": True,
+                "publish_tf": True,
                 "world_frame": "map",
                 "map_frame": "map",
+                "odom_frame": "panther1/odom",
+                "base_link_frame": "panther1/base_footprint",
                 "odom0": "/panther1/odometry/wheels",
                 "odom0_config": list(
                     itertools.chain.from_iterable(
@@ -95,6 +130,18 @@ def launch_setup(context: LaunchContext) -> list:
                         ]
                     )
                 ),
+                "imu0": "/panther1/imu/data",
+                "imu0_config": list(
+                    itertools.chain.from_iterable(
+                        [
+                            [F, F, F],  # [x_pos, y_pos, z_pos]
+                            [F, F, T],  # [roll, pitch, yaw]
+                            [F, F, F],  # [x_vel, y_vel, z_vel]
+                            [F, F, F],  # [roll_rate, pitch_rate, yaw_rate]
+                            [F, F, F],  # [x_accel, y_accel, z_accel]
+                        ]
+                    )
+                ),
             }
         ],
     )
@@ -102,7 +149,8 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         Register.on_start(nmea_driver, context) if not use_sim else SKIP,
         Register.on_start(navsat_transform_node, context),
-        Register.on_start(ekf_node, context),
+        Register.on_start(ekf_local, context),
+        Register.on_start(ekf_global, context),
     ]
 
 

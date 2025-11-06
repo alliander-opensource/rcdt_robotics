@@ -1055,6 +1055,7 @@ class Vehicle(Platform):
                 "navigation": str(self.navigation),
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
+                "use_gps": str(self.gps),
             },
         )
 
