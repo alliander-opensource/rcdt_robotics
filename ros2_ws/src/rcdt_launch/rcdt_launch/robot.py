@@ -1091,6 +1091,9 @@ class GPS(Platform):
             f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
 
+        Rviz.add_satellite(f"/{self.namespace}/gps/filtered")
+        Vizanti.add_satellite(f"/{self.namespace}/gps/filtered")
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a camera.
 

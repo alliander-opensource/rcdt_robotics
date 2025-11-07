@@ -60,43 +60,17 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=namepace,
         parameters=[
             {
-                "publish_filtered_gps": False,
+                "publish_filtered_gps": True,
             }
         ],
         remappings=[("imu", "/panther1/imu/data")],
     )
 
-    ekf_local = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        namespace=namepace,
-        parameters=[
-            {
-                "two_d_mode": True,
-                "publish_tf": True,
-                "world_frame": "panther1/odom",
-                "map_frame": "map",
-                "odom_frame": "panther1/odom",
-                "base_link_frame": "panther1/base_link",
-                "odom0": "/panther1/odometry/wheels",
-                "odom0_config": list(
-                    itertools.chain.from_iterable(
-                        [
-                            [F, F, F],  # [x_pos, y_pos, z_pos]
-                            [F, F, F],  # [roll, pitch, yaw]
-                            [T, T, T],  # [x_vel, y_vel, z_vel]
-                            [F, F, T],  # [roll_rate, pitch_rate, yaw_rate]
-                            [F, F, F],  # [x_accel, y_accel, z_accel]
-                        ]
-                    )
-                ),
-            }
-        ],
-    )
-
+    # Define EKF node that creates the tf between odom and map:
     ekf_global = Node(
         package="robot_localization",
         executable="ekf_node",
+        name="ekf_global",
         namespace=namepace,
         parameters=[
             {
@@ -149,7 +123,6 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         Register.on_start(nmea_driver, context) if not use_sim else SKIP,
         Register.on_start(navsat_transform_node, context),
-        Register.on_start(ekf_local, context),
         Register.on_start(ekf_global, context),
     ]
 

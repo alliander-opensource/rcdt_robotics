@@ -288,6 +288,27 @@ class Rviz:
         )
 
     @staticmethod
+    def add_satellite(topic: str) -> None:
+        """Add a satellite display.
+
+        Args:
+            topic (str): The topic of the gps data.
+        """
+        Rviz.displays.append(
+            {
+                "Enabled": True,
+                "Class": "rviz_satellite/AerialMap",
+                "Name": topic,
+                "Object URI": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                "Topic": {
+                    "Value": topic,
+                },
+                "Value": True,
+                "Zoom": 19,
+            }
+        )
+
+    @staticmethod
     def create_rviz_file() -> None:
         """Create the RViz configuration file."""
         with open("/tmp/rviz.rviz", "w", encoding="utf-8") as outfile:
