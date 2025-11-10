@@ -27,7 +27,7 @@ configuration_arg = LaunchArgument(
 )
 
 
-def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
+def launch_setup(context: LaunchContext) -> list:
     """Setup the launch description for the Panther robot.
 
     Args:
