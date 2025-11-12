@@ -12,3 +12,4 @@ mkdir -p /home/$UNAME/osm2world
 cd /home/$UNAME/osm2world
 wget https://osm2world.org/download/files/latest/OSM2World-latest-bin.zip
 unzip OSM2World-latest-bin.zip
+rm OSM2World-latest-bin.zip
