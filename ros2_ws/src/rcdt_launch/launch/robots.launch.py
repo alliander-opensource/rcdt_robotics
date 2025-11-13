@@ -14,7 +14,7 @@ from rcdt_launch.platform_configurations import (
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
-from rcdt_utilities.launch_utils_platform import (
+from rcdt_utilities.launch_utils_env_configuration import (
     create_controllers,
     create_gazebo_launch,
     create_hardware_interfaces,

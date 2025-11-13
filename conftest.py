@@ -10,7 +10,7 @@ import pytest
 import rclpy
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
-from rcdt_utilities.launch_utils_platform import reset
+from rcdt_utilities.launch_utils_env_configuration import reset
 from rclpy.node import Node
 
 
