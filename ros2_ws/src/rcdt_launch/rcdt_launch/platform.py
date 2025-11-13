@@ -15,30 +15,6 @@ from rcdt_launch.environment_config import EnvironmentConfig
 from rcdt_launch.rviz import Rviz
 
 
-def add(platform: "Platform") -> None:
-    """Add a platform instance to the general list.
-
-    Args:
-        platform (Platform): The platform instance to add.
-    """
-    EnvironmentConfig.platforms.append(platform)
-    current_value = EnvironmentConfig.platform_indices.get(platform.platform, 0)
-    EnvironmentConfig.platform_indices[platform.platform] = current_value + 1
-
-
-def generate_namespace(platform: Platform) -> str:
-    """Generate an unique namespace for the given platform.
-
-    Args:
-        platform (Platform): The platform.
-
-    Returns:
-        str: The unique namespace for the platform.
-    """
-    index = EnvironmentConfig.platform_indices.get(platform.platform, 0)
-    return f"{platform.platform}{index}"
-
-
 class Platform:  # noqa: PLR0904
     """A class used to dynamically create all the required nodes for a platform."""
 
@@ -73,8 +49,8 @@ class Platform:  # noqa: PLR0904
         self.platform = platform
         self.parent = parent
         self.childs = []
-        add(self)
-        self.namespace = namespace if namespace else generate_namespace(self)
+        self.add_to_env()
+        self.namespace = namespace if namespace else self.generate_namespace()
 
         Rviz.add_robot_model(self.namespace)
 
@@ -230,6 +206,24 @@ class Platform:  # noqa: PLR0904
             child (Platform): The child robot to add.
         """
         self.childs.append([child.parent_link, child.namespace, child.base_link])
+
+    def add_to_env(self) -> None:
+        """Add a platform instance to the general list."""
+        EnvironmentConfig.platforms.append(self)
+        current_value = EnvironmentConfig.platform_indices.get(self.platform, 0)
+        EnvironmentConfig.platform_indices[self.platform] = current_value + 1
+
+    def generate_namespace(self) -> str:
+        """Generate an unique namespace for the given platform.
+
+        Args:
+            platform (Platform): The platform.
+
+        Returns:
+            str: The unique namespace for the platform.
+        """
+        index = EnvironmentConfig.platform_indices.get(self.platform, 0)
+        return f"{self.platform}{index}"
 
     def create_state_publisher(self) -> Node | None:
         """Create a state publisher node for the robot.
