@@ -1,0 +1,257 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+from launch_ros.actions import Node
+from rcdt_launch.arm import Arm
+from rcdt_launch.environment_config import EnvironmentConfig
+from rcdt_launch.vehicle import Vehicle
+
+from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.register import RegisteredLaunchDescription
+
+
+def reset() -> None:
+    """Reset the platform class to its initial state."""
+    EnvironmentConfig.platforms = []
+    EnvironmentConfig.platform_indices = {}
+    EnvironmentConfig.names = []
+    EnvironmentConfig.bridge_topics = []
+
+
+def create_state_publishers() -> list[Node]:
+    """Create state publisher nodes for all platforms.
+
+    Returns:
+        list[Node]: A list of all state publisher nodes.
+    """
+    nodes = []
+    for robot in EnvironmentConfig.platforms:
+        node = robot.create_state_publisher()
+        if isinstance(node, Node):
+            nodes.append(node)
+    return nodes
+
+
+def order_platforms() -> None:
+    """Order the platforms in a specific order.
+
+    This is required, since a child platform can only be spawned after its parent platform is spawned.
+    Currently the order is hardcoded as [vehicles -> arms -> sensors] to fullfill this requirement.
+    This method possibly requires more logic when other platforms are added in the future.
+
+    Raises:
+        ValueError: If an unknown platform is encountered.
+    """
+    order = [
+        "panther",
+        "franka",
+        "velodyne",
+        "ouster",
+        "realsense",
+        "zed",
+        "nmea",
+        "axis",
+    ]
+
+    for platform in EnvironmentConfig.platforms:
+        if platform.platform not in order:
+            raise ValueError(f"Unknown platform to order: {platform.platform}")
+
+    EnvironmentConfig.platforms = sorted(
+        EnvironmentConfig.platforms, key=lambda platform: order.index(platform.platform)
+    )
+
+
+def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
+    """Create the Gazebo launch description.
+
+    Args:
+        load_gazebo_ui (bool): Whether to load the Gazebo UI or not.
+
+    Returns:
+        RegisteredLaunchDescription: The Gazebo launch description.
+    """
+    platforms = []
+    positions = []
+    orientations = []
+    parents = []
+    parent_links = []
+
+    for platform in EnvironmentConfig.platforms:
+        platforms.append(platform.namespace)
+        positions.append(",".join(map(str, platform.position)))
+        orientations.append(",".join(map(str, platform.orientation)))
+        parent = platform.parent
+        if parent is not None:
+            parents.append(parent.namespace)
+            parent_links.append(platform.parent_link)
+        else:
+            parents.append("none")
+            parent_links.append("none")
+
+    return RegisteredLaunchDescription(
+        get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
+        launch_arguments={
+            "load_gazebo_ui": str(load_gazebo_ui),
+            "world": EnvironmentConfig.world,
+            "platforms": " ".join(platforms),
+            "positions": " ".join(positions),
+            "orientations": " ".join(orientations),
+            "parents": " ".join(parents),
+            "parent_links": " ".join(parent_links),
+            "bridge_topics": " ".join(EnvironmentConfig.bridge_topics),
+        },
+    )
+
+
+def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
+    """Create hardware interface launch descriptions for the platforms.
+
+    Returns:
+        list[RegisteredLaunchDescription]: A list of all hardware interface launch descriptions.
+    """
+    hardware_interfaces = []
+    if EnvironmentConfig.simulation:
+        return hardware_interfaces
+
+    for robot in EnvironmentConfig.platforms:
+        if robot.platform == "franka":  # isinstance(robot, Arm) and
+            hardware_interfaces.append(
+                RegisteredLaunchDescription(
+                    get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
+                    launch_arguments={
+                        "namespace": robot.namespace,
+                        "ip_address": robot.ip_address,
+                    },
+                )
+            )
+    return hardware_interfaces
+
+
+def create_parent_links() -> list[Node]:
+    """Create a list of nodes that link all the platforms to their parent.
+
+    Returns:
+        list[Node]: A list of all the required static_transform_publisher nodes.
+    """
+    nodes = []
+    for robot in EnvironmentConfig.platforms:
+        if robot.parent is not None:
+            nodes.append(robot.create_parent_link())
+    return nodes
+
+
+def create_controllers() -> list[RegisteredLaunchDescription]:
+    """Create controllers for all robots.
+
+    Returns:
+        list[RegisteredLaunchDescription]: A list of all controller launch descriptions.
+    """
+    controllers = []
+    for robot in EnvironmentConfig.platforms:
+        if not EnvironmentConfig.simulation and robot.platform == "panther":
+            continue
+        if robot.controller_path is not None:
+            controllers.append(robot.create_controller())
+    return controllers
+
+
+def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
+    """Create launch descriptions for all platforms.
+
+    Note that the launch descriptions for the platforms are launched in reversed order.
+    This is done so that the nodes required for sensors (childs) are launched first.
+    Next we launch nodes required for the parent platforms (like Nav2), which depend on the sensors.
+
+    Returns:
+        list[RegisteredLaunchDescription]: A list of all launch descriptions.
+    """
+    launch_descriptions = []
+    for robot in reversed(EnvironmentConfig.platforms):
+        launch_description = robot.create_launch_description()
+        if launch_description != []:
+            launch_descriptions.extend(launch_description)
+    return launch_descriptions
+
+
+def create_joystick_nodes() -> list[Node]:
+    """Create joystick nodes for all robots.
+
+    Returns:
+        list[Node]: A list of all joystick nodes.
+
+    Raises:
+        ValueError: If more than one vehicle or arm is linked to the joystick.
+    """
+    nodes = []
+
+    # At the moment, we only support one vehicle and one arm being linked to the joystick.
+    # The vehicle (base) is linked to the B button and the arm to the A button.
+    # The X button is always available to stop joystick control of all platforms.
+    buttons = [2]  # X button (to stop)
+    services = [False]
+    topics = [""]
+    vehicle_linked = False
+    arm_linked = False
+    for robot in EnvironmentConfig.platforms:
+        button = None
+        if isinstance(robot, Vehicle):
+            if vehicle_linked:
+                raise ValueError("Only one vehicle can be linked to the joystick.")
+            button = 1  # B button (for base)
+            vehicle_linked = True
+        elif isinstance(robot, Arm):
+            if arm_linked:
+                raise ValueError("Only one arm can be linked to the joystick.")
+            button = 0  # A button (for arm)
+            arm_linked = True
+        if button is not None:
+            buttons.append(button)
+            services.append(False)
+            topics.append(f"/{robot.namespace}/joy")
+            nodes.extend(robot.joystick_nodes())
+
+    # If none of the platforms require joystick nodes, return:
+    if len(nodes) == 0:
+        return nodes
+
+    # Add the general joystick node:
+    nodes.append(
+        Node(
+            package="joy",
+            executable="game_controller_node",
+            parameters=[
+                {"sticky_buttons": True},
+            ],
+        )
+    )
+
+    # Add the joy topic manager node:
+    nodes.append(
+        Node(
+            package="rcdt_joystick",
+            executable="joy_topic_manager.py",
+            parameters=[
+                {"buttons": buttons},
+                {"services": services},
+                {"topics": topics},
+            ],
+        )
+    )
+    return nodes
+
+
+def create_map_links() -> list[Node]:
+    """Create a list of nodes that link all the platforms to the 'map' frame.
+
+    Returns:
+        list[Node]: A list of all the static_transform_publisher nodes linking the platforms to the 'map' frame.
+    """
+    nodes = []
+    for robot in EnvironmentConfig.platforms:
+        if robot.parent is None:
+            node = robot.create_map_link()
+            if isinstance(node, Node):
+                nodes.append(node)
+    return nodes

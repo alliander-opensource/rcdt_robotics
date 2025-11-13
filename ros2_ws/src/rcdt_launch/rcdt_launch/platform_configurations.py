@@ -5,8 +5,14 @@
 from dataclasses import dataclass
 from typing import Callable, Dict
 
-from rcdt_launch.robot import GPS, Arm, Camera, Lidar, Platform, Vehicle
+from rcdt_launch.arm import Arm
+from rcdt_launch.camera import Camera
+from rcdt_launch.environment_config import EnvironmentConfig
+from rcdt_launch.gps import GPS
+from rcdt_launch.lidar import Lidar
+from rcdt_launch.platform import Platform
 from rcdt_launch.rviz import Rviz
+from rcdt_launch.vehicle import Vehicle
 
 
 @dataclass
@@ -47,6 +53,11 @@ def register_configuration(
         return fn
 
     return wrapper
+
+
+@register_configuration("")
+def config_empty(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+    return ctx
 
 
 @register_configuration("axis")
@@ -95,7 +106,7 @@ def config_franka(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D
 
 @register_configuration("franka_axis")
 def config_franka_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
-    Platform.world = "table_with_1_brick.sdf"
+    EnvironmentConfig.world = "table_with_1_brick.sdf"
     Rviz.add_markers()
     Rviz.load_robot_state = True
     Rviz.load_trajectory = True

@@ -5,15 +5,26 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
+from rcdt_launch.environment_config import EnvironmentConfig
 from rcdt_launch.platform_configurations import (
     PLATFORM_CONFIGS,
     ConfigurationContext,
     configure_system,
 )
-from rcdt_launch.robot import Platform
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_utils_platform import (
+    create_controllers,
+    create_gazebo_launch,
+    create_hardware_interfaces,
+    create_joystick_nodes,
+    create_launch_descriptions,
+    create_map_links,
+    create_parent_links,
+    create_state_publishers,
+    order_platforms,
+)
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -23,7 +34,7 @@ use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "",
-    [""] + list(PLATFORM_CONFIGS.keys()),
+    list(PLATFORM_CONFIGS.keys()),
 )
 
 
@@ -39,6 +50,7 @@ def launch_setup(context: LaunchContext) -> list:
     Raises:
         RuntimeError: If no platforms are specified.
     """
+    print(f"Configuration name: {configuration_arg.string_value(context)}")
     platform_ctx: ConfigurationContext = ConfigurationContext(
         config_namespace=configuration_arg.string_value(context),
         use_joystick=True,
@@ -49,25 +61,25 @@ def launch_setup(context: LaunchContext) -> list:
     use_rviz = use_rviz_arg.bool_value(context)
     use_vizanti = use_vizanti_arg.bool_value(context)
 
-    Platform.simulation = platform_ctx.use_sim
+    EnvironmentConfig.simulation = platform_ctx.use_sim
     Rviz.load_motion_planning_plugin = False
     Rviz.load_point_cloud = False
 
     platform_ctx = configure_system(platform_ctx)
 
-    if Platform.platforms == []:
+    if EnvironmentConfig.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
-    Platform.order_platforms()
+    order_platforms()
 
-    state_publishers = Platform.create_state_publishers()
-    gazebo = Platform.create_gazebo_launch(load_gazebo_ui)
-    hardware_interfaces = Platform.create_hardware_interfaces()
-    map_links = Platform.create_map_links()
-    parent_links = Platform.create_parent_links()
-    controllers = Platform.create_controllers()
-    launch_descriptions = Platform.create_launch_descriptions()
+    state_publishers = create_state_publishers()
+    gazebo = create_gazebo_launch(load_gazebo_ui)
+    hardware_interfaces = create_hardware_interfaces()
+    map_links = create_map_links()
+    parent_links = create_parent_links()
+    controllers = create_controllers()
+    launch_descriptions = create_launch_descriptions()
     joystick_nodes = (
-        Platform.create_joystick_nodes() if platform_ctx.use_joystick else []
+        create_joystick_nodes() if platform_ctx.use_joystick else []
     )
 
     utilities = RegisteredLaunchDescription(
