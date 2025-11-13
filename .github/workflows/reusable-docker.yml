@@ -26,7 +26,7 @@ jobs:
         with:
           tool-cache: true
       - run: df -h /
-      - run: ./.github/actions/clear-disk-space
+      - uses: ./.github/actions/clear-disk-space
       - run: df -h /
       - uses: docker/login-action@v3
         with:
