@@ -80,7 +80,7 @@ class Camera(Platform):
             str: The xacro file path for the camera.
 
         Raises:
-            ValueError: If the platform is unknown.
+            ValueError: If the Camera platform is unknown.
         """
         match self.platform:
             case "realsense":

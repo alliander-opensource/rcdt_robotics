@@ -26,8 +26,8 @@ def create_state_publishers() -> list[Node]:
         list[Node]: A list of all state publisher nodes.
     """
     nodes = []
-    for robot in EnvironmentConfig.platforms:
-        node = robot.create_state_publisher()
+    for platform in EnvironmentConfig.platforms:
+        node = platform.create_state_publisher()
         if isinstance(node, Node):
             nodes.append(node)
     return nodes
@@ -115,14 +115,14 @@ def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
     if EnvironmentConfig.simulation:
         return hardware_interfaces
 
-    for robot in EnvironmentConfig.platforms:
-        if isinstance(robot, Arm) and robot.platform == "franka":
+    for platform in EnvironmentConfig.platforms:
+        if isinstance(platform, Arm) and platform.platform == "franka":
             hardware_interfaces.append(
                 RegisteredLaunchDescription(
                     get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
                     launch_arguments={
-                        "namespace": robot.namespace,
-                        "ip_address": robot.ip_address,
+                        "namespace": platform.namespace,
+                        "ip_address": platform.ip_address,
                     },
                 )
             )
@@ -136,24 +136,24 @@ def create_parent_links() -> list[Node]:
         list[Node]: A list of all the required static_transform_publisher nodes.
     """
     nodes = []
-    for robot in EnvironmentConfig.platforms:
-        if robot.parent is not None:
-            nodes.append(robot.create_parent_link())
+    for platform in EnvironmentConfig.platforms:
+        if platform.parent is not None:
+            nodes.append(platform.create_parent_link())
     return nodes
 
 
 def create_controllers() -> list[RegisteredLaunchDescription]:
-    """Create controllers for all robots.
+    """Create controllers for all platforms.
 
     Returns:
         list[RegisteredLaunchDescription]: A list of all controller launch descriptions.
     """
     controllers = []
-    for robot in EnvironmentConfig.platforms:
-        if not EnvironmentConfig.simulation and robot.platform == "panther":
+    for platform in EnvironmentConfig.platforms:
+        if not EnvironmentConfig.simulation and platform.platform == "panther":
             continue
-        if robot.controller_path is not None:
-            controllers.append(robot.create_controller())
+        if platform.controller_path is not None:
+            controllers.append(platform.create_controller())
     return controllers
 
 
@@ -168,15 +168,15 @@ def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
         list[RegisteredLaunchDescription]: A list of all launch descriptions.
     """
     launch_descriptions = []
-    for robot in reversed(EnvironmentConfig.platforms):
-        launch_description = robot.create_launch_description()
+    for platform in reversed(EnvironmentConfig.platforms):
+        launch_description = platform.create_launch_description()
         if launch_description != []:
             launch_descriptions.extend(launch_description)
     return launch_descriptions
 
 
 def create_joystick_nodes() -> list[Node]:
-    """Create joystick nodes for all robots.
+    """Create joystick nodes for all platforms.
 
     Returns:
         list[Node]: A list of all joystick nodes.
@@ -194,14 +194,14 @@ def create_joystick_nodes() -> list[Node]:
     topics = [""]
     vehicle_linked = False
     arm_linked = False
-    for robot in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfig.platforms:
         button = None
-        if isinstance(robot, Vehicle):
+        if isinstance(platform, Vehicle):
             if vehicle_linked:
                 raise ValueError("Only one vehicle can be linked to the joystick.")
             button = 1  # B button (for base)
             vehicle_linked = True
-        elif isinstance(robot, Arm):
+        elif isinstance(platform, Arm):
             if arm_linked:
                 raise ValueError("Only one arm can be linked to the joystick.")
             button = 0  # A button (for arm)
@@ -209,8 +209,8 @@ def create_joystick_nodes() -> list[Node]:
         if button is not None:
             buttons.append(button)
             services.append(False)
-            topics.append(f"/{robot.namespace}/joy")
-            nodes.extend(robot.joystick_nodes())
+            topics.append(f"/{platform.namespace}/joy")
+            nodes.extend(platform.joystick_nodes())
 
     # If none of the platforms require joystick nodes, return:
     if len(nodes) == 0:
@@ -249,9 +249,9 @@ def create_map_links() -> list[Node]:
         list[Node]: A list of all the static_transform_publisher nodes linking the platforms to the 'map' frame.
     """
     nodes = []
-    for robot in EnvironmentConfig.platforms:
-        if robot.parent is None:
-            node = robot.create_map_link()
+    for platform in EnvironmentConfig.platforms:
+        if platform.parent is None:
+            node = platform.create_map_link()
             if isinstance(node, Node):
                 nodes.append(node)
     return nodes

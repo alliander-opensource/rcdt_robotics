@@ -20,16 +20,7 @@ class Platform:  # noqa: PLR0904
 
     def __init__(  # noqa: PLR0913
         self,
-        platform: Literal[
-            "panther",
-            "franka",
-            "velodyne",
-            "ouster",
-            "realsense",
-            "zed",
-            "nmea",
-            "axis",
-        ],
+        platform: Literal["axis"],
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
@@ -39,7 +30,7 @@ class Platform:  # noqa: PLR0904
         """Initialize a platform instance.
 
         Args:
-            platform (Literal["panther", "franka", "velodyne", "ouster", "realsense", "zed", "nmea", "axis"]): The platform type of the platform.
+            platform (Literal["axis"]): The platform type of the platform.
             position (list): The initial position of the platform.
             orientation (list | None): The initial orientation of the platform.
             namespace (str | None): The namespace of the platform. If None, a unique namespace will be generated.
@@ -88,7 +79,7 @@ class Platform:  # noqa: PLR0904
 
     @property
     def controller_path(self) -> str | None:
-        """Return the controller launch file path for the robot."""
+        """Return the controller launch file path for the platform."""
         pass
 
     @property
@@ -102,10 +93,10 @@ class Platform:  # noqa: PLR0904
 
     @property
     def frame_prefix(self) -> str:
-        """Return the frame prefix for the robot based on its namespace.
+        """Return the frame prefix for the platform based on its namespace.
 
         Returns:
-            str: The frame prefix for the robot.
+            str: The frame prefix for the platform.
         """
         return self.namespace + "/" if self.namespace else ""
 
@@ -142,10 +133,10 @@ class Platform:  # noqa: PLR0904
                 raise ValueError("Cannot provide xacro path: unknown platform.")
 
     def add_child(self, child: "Platform") -> None:
-        """Add a child robot to this robot.
+        """Add a child platform to this platform.
 
         Args:
-            child (Platform): The child robot to add.
+            child (Platform): The child platform to add.
         """
         self.childs.append([child.parent_link, child.namespace, child.base_link])
 
@@ -165,10 +156,10 @@ class Platform:  # noqa: PLR0904
         return f"{self.platform}{index}"
 
     def create_state_publisher(self) -> Node | None:
-        """Create a state publisher node for the robot.
+        """Create a state publisher node for the platform.
 
         Returns:
-            Node | None: The state publisher node for the robot or None if not applicable.
+            Node | None: The state publisher node for the platform or None if not applicable.
         """
         return Node(
             package="robot_state_publisher",
@@ -252,10 +243,10 @@ class Platform:  # noqa: PLR0904
         )
 
     def create_controller(self) -> RegisteredLaunchDescription:
-        """Create a controller launch description for the robot.
+        """Create a controller launch description for the platform.
 
         Returns:
-            RegisteredLaunchDescription: The controller launch description for the robot.
+            RegisteredLaunchDescription: The controller launch description for the platform.
         """
         launch_arguments = {
             "simulation": str(EnvironmentConfig.simulation),

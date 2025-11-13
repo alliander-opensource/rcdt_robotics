@@ -24,7 +24,7 @@ def call_move_to_configuration_service(
 
     Args:
         node (Node): The ROS 2 node to use for the service call.
-        namespace (str): The namespace of the robot.
+        namespace (str): The namespace of the platform.
         configuration (str): The configuration to move to.
         timeout (int): The timeout in seconds for the service call.
 

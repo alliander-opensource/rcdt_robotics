@@ -39,7 +39,7 @@ def launch(request: SubRequest) -> LaunchDescription:
 
 @pytest.mark.launch(fixture=launch)
 def test_wait_for_register(timeout: int) -> None:
-    """Test that the robot is registered in the system to start the tests.
+    """Test that the platform is registered in the system to start the tests.
 
     Args:
         timeout (int): The timeout in seconds before stopping the test.

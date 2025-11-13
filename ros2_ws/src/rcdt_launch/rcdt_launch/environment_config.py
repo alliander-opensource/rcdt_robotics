@@ -15,7 +15,7 @@ class EnvironmentConfig:
         world (str): The world file to be used in Gazebo.
         platforms (list[Platform]): A list of all the platforms.
         platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
-        names (list[str]): A list of all robot names.
+        names (list[str]): A list of all platform names.
         bridge_topics (list[str]): A list of all topics that should be bridged between Gazebo and ROS.
     """
 
