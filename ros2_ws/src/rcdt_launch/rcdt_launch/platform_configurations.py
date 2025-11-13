@@ -155,14 +155,14 @@ def config_panther_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # n
 @register_configuration("panther_gps")
 def config_panther_gps(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
-    Camera("realsense", [0, 0, 0.2], parent=panther)
+    GPS("nmea", [0, 0, 0.2], parent=panther)
     return ctx
 
 
 @register_configuration("panther_realsense")
 def config_panther_realsense(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
-    GPS("nmea", [0, 0, 0.2], parent=panther)
+    Camera("realsense", [0, 0, 0.2], parent=panther)
     return ctx
 
 

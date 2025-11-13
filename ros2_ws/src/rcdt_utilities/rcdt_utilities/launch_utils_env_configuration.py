@@ -116,7 +116,7 @@ def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
         return hardware_interfaces
 
     for robot in EnvironmentConfig.platforms:
-        if robot.platform == "franka":  # isinstance(robot, Arm) and
+        if isinstance(robot, Arm) and robot.platform == "franka":
             hardware_interfaces.append(
                 RegisteredLaunchDescription(
                     get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),

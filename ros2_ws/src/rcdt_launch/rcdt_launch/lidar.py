@@ -54,6 +54,37 @@ class Lidar(Platform):
             f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
         )
 
+    @property
+    def base_link(self) -> str:  # noqa: PLR0911
+        """Return the base link for the LiDAR sensor.
+
+        Returns:
+            str: The base link for the LiDAR sensor.
+        """
+        return "base_link"
+
+    @property
+    def xacro_path(self) -> str:  # noqa: PLR0911
+        """Return the xacro file path for the LiDAR sensor.
+
+        Returns:
+            str: The xacro file path for the LiDAR sensor.
+
+        Raises:
+            ValueError: If the platform is unknown.
+        """
+        match self.platform:
+            case "velodyne":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
+                )
+            case "ouster":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_os1_128.urdf.xacro"
+                )
+            case _:
+                raise ValueError("Cannot provide xacro path: unknown LiDAR platform.")
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a lidar.
 

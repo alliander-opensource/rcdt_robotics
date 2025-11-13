@@ -64,6 +64,51 @@ class Arm(Platform):
             Rviz.add_trajectory(self.namespace)
 
     @property
+    def base_link(self) -> str:  # noqa: PLR0911
+        """Return the base link for the robot.
+
+        Returns:
+            str: The base link for the robot.
+        """
+        return "fr3_link0"
+
+    @property
+    def controller_path(self) -> str | None:
+        """Return the controller launch file path for the robot.
+
+        Returns:
+            str | None: The controller launch file path or None if not applicable.
+
+        Raises:
+            ValueError: If an unknown Arm platform is specified.
+        """
+        match self.platform:
+            case "franka":
+                package = "rcdt_franka"
+            case _:
+                raise ValueError(f"Unknown Arm platform: {self.platform}")
+
+        return get_file_path(package, ["launch"], "controllers.launch.py")
+
+    @property
+    def default_connect_link(self) -> str:
+        """Return the default link to which child platforms should connect.
+
+        Returns:
+            str: The default connection link for the arm.
+
+        Raises:
+            ValueError: If the Arm platform is unknown.
+        """
+        match self.platform:
+            case "franka":
+                return "fr3_hand"
+            case _:
+                raise ValueError(
+                    "Unable to provide default connection link: Unknown Arm platform."
+                )
+
+    @property
     def robot_description(self) -> dict:
         """Return the robot description for the robot.
 
@@ -81,6 +126,51 @@ class Arm(Platform):
 
         return get_robot_description(self.xacro_path, xacro_arguments)
 
+    @property
+    def xacro_path(self) -> str:  # noqa: PLR0911
+        """Return the xacro file path for the robot.
+
+        Returns:
+            str: The xacro file path for the robot.
+
+        Raises:
+            ValueError: If the platform is unknown.
+        """
+        match self.platform:
+            case "franka":
+                return get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
+            case _:
+                raise ValueError("Cannot provide xacro path: unknown Arm platform.")
+
+    def create_controller(self) -> RegisteredLaunchDescription:
+        """Create a controller launch description for the robot.
+
+        Returns:
+            RegisteredLaunchDescription: The controller launch description for the robot.
+        """
+        launch_arguments = {
+            "simulation": str(EnvironmentConfig.simulation),
+            "namespace": self.namespace,
+            "ip_address": self.ip_address,
+        }
+        return RegisteredLaunchDescription(
+            self.controller_path, launch_arguments=launch_arguments
+        )
+
+    def create_gripper_launch(self) -> RegisteredLaunchDescription | None:
+        """Create the gripper services launch description.
+
+        Returns:
+            RegisteredLaunchDescription | None: The launch description for the gripper services.
+        """
+        if self.platform == "franka":
+            return RegisteredLaunchDescription(
+                get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py"),
+                launch_arguments={"namespace": self.namespace},
+            )
+
+        return None
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for an arm.
 
@@ -93,6 +183,55 @@ class Arm(Platform):
         if self.moveit:
             launch_descriptions.append(self.create_moveit_launch())
         return launch_descriptions
+
+    def create_map_link(self) -> Node | None:  # TODO: naar classen zelf opsplitsen!
+        """Create a static_transform_publisher node that links the platform to the map.
+
+        Returns:
+            Node | None: A static_transform_publisher node that links the platform with the world or None if not applicable.
+        """
+        if not EnvironmentConfig.simulation:
+            child_frame = f"{self.namespace}/base"
+        else:
+            child_frame = f"{self.namespace}/world"
+
+        return Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            name="static_tf_world",
+            arguments=[
+                "--frame-id",
+                "map",
+                "--child-frame-id",
+                child_frame,
+                "--x",
+                f"{self.position[0]}",
+                "--y",
+                f"{self.position[1]}",
+                "--z",
+                f"{self.position[2]}",
+                "--roll",
+                f"{self.orientation[0]}",
+                "--pitch",
+                f"{self.orientation[1]}",
+                "--yaw",
+                f"{self.orientation[2]}",
+            ],
+        )
+
+    def create_moveit_launch(self) -> RegisteredLaunchDescription:
+        """Create the MoveIt launch description.
+
+        Returns:
+            RegisteredLaunchDescription: The launch description for the MoveIt.
+        """
+        return RegisteredLaunchDescription(
+            get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
+            launch_arguments={
+                "namespace_arm": self.namespace,
+                "namespace_camera": self.camera.namespace if self.camera else "",
+            },
+        )
 
     def joystick_nodes(self) -> list[Node]:
         """Return the required nodes to control the platform with a joystick.
@@ -128,31 +267,3 @@ class Arm(Platform):
             )
 
         return nodes
-
-    def create_gripper_launch(self) -> RegisteredLaunchDescription | None:
-        """Create the gripper services launch description.
-
-        Returns:
-            RegisteredLaunchDescription | None: The launch description for the gripper services.
-        """
-        if self.platform == "franka":
-            return RegisteredLaunchDescription(
-                get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py"),
-                launch_arguments={"namespace": self.namespace},
-            )
-
-        return None
-
-    def create_moveit_launch(self) -> RegisteredLaunchDescription:
-        """Create the MoveIt launch description.
-
-        Returns:
-            RegisteredLaunchDescription: The launch description for the MoveIt.
-        """
-        return RegisteredLaunchDescription(
-            get_file_path("rcdt_moveit", ["launch"], "moveit.launch.py"),
-            launch_arguments={
-                "namespace_arm": self.namespace,
-                "namespace_camera": self.camera.namespace if self.camera else "",
-            },
-        )

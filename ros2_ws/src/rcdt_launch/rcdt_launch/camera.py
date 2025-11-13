@@ -63,6 +63,35 @@ class Camera(Platform):
             ]
         )
 
+    @property
+    def base_link(self) -> str:  # noqa: PLR0911
+        """Return the base link for the camera.
+
+        Returns:
+            str: The base link for the camera.
+        """
+        return "base_link"
+
+    @property
+    def xacro_path(self) -> str:  # noqa: PLR0911
+        """Return the xacro file path for the camera.
+
+        Returns:
+            str: The xacro file path for the camera.
+
+        Raises:
+            ValueError: If the platform is unknown.
+        """
+        match self.platform:
+            case "realsense":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
+                )
+            case "zed":
+                return get_file_path("rcdt_sensors", ["urdf"], "rcdt_zed2i.urdf.xacro")
+            case _:
+                raise ValueError("Cannot provide xacro path: unknown Camera platform.")
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a camera.
 

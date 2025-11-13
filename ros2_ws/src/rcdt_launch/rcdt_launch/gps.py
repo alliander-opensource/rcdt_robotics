@@ -44,6 +44,33 @@ class GPS(Platform):
             f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
 
+    @property
+    def base_link(self) -> str:  # noqa: PLR0911
+        """Return the base link for the GPS sensor.
+
+        Returns:
+            str: The base link for the GPS sensor.
+        """
+        return "base_link"
+
+    @property
+    def xacro_path(self) -> str:  # noqa: PLR0911
+        """Return the xacro file path for the GPS sensor.
+
+        Returns:
+            str: The xacro file path for the GPS sensor.
+
+        Raises:
+            ValueError: If the platform is unknown.
+        """
+        match self.platform:
+            case "nmea":
+                return get_file_path(
+                    "rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro"
+                )
+            case _:
+                raise ValueError("Cannot provide xacro path: unknown GPS platform.")
+
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a camera.
 
