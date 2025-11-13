@@ -5,6 +5,7 @@
 #Set user and workdir:
 RUN echo "Disk Space:" && df -h / 
 RUN chown -R $UNAME /home/$UNAME
+RUN echo "Disk Space:" && df -h / 
 USER $UNAME
 WORKDIR /home/$UNAME
 
