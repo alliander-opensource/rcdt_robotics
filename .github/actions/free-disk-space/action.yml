@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Copied from https://github.com/jlumbroso/free-disk-space/blob/v1.3.1/action.yml, since Alliander does not support this action.
+
 name: "Free Disk Space (Ubuntu)"
 description: "A configurable GitHub Action to free up disk space on an Ubuntu GitHub Actions runner."
 

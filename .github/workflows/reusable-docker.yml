@@ -25,9 +25,7 @@ jobs:
       - uses: ./.github/actions/clean-image-for-docker
         with:
           tool-cache: true
-      - run: df -h /
       - uses: ./.github/actions/clear-disk-space
-      - run: df -h /
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
