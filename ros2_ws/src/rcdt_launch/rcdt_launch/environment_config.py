@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rcdt_launch.platform import Platform
 
 
 class EnvironmentConfig:
@@ -17,7 +21,7 @@ class EnvironmentConfig:
 
     simulation: bool = True
     world: str = "walls.sdf"
-    platforms: list = []
+    platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {}
     names: list[str] = []
     bridge_topics: list[str] = []

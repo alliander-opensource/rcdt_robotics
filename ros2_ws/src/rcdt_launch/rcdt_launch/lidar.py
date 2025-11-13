@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
@@ -13,6 +13,9 @@ from rcdt_launch.environment_config import EnvironmentConfig
 from rcdt_launch.platform import Platform
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
+
+if TYPE_CHECKING:
+    from rcdt_launch.vehicle import Vehicle
 
 
 class Lidar(Platform):
@@ -24,7 +27,7 @@ class Lidar(Platform):
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
-        parent: Platform | None = None,
+        parent: Vehicle | None = None,
         parent_link: str = "",
     ):
         """Initialize the Lidar platform.
@@ -34,7 +37,7 @@ class Lidar(Platform):
             position (list): The position of the lidar.
             orientation (list | None): The initial orientation of the lidar.
             namespace (str | None): The namespace of the lidar.
-            parent (Platform | None): The parent platform.
+            parent (Vehicle | None): The parent platform.
             parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
         super().__init__(

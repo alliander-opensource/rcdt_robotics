@@ -78,9 +78,7 @@ def launch_setup(context: LaunchContext) -> list:
     parent_links = create_parent_links()
     controllers = create_controllers()
     launch_descriptions = create_launch_descriptions()
-    joystick_nodes = (
-        create_joystick_nodes() if platform_ctx.use_joystick else []
-    )
+    joystick_nodes = create_joystick_nodes() if platform_ctx.use_joystick else []
 
     utilities = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")

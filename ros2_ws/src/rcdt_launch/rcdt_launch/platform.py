@@ -51,6 +51,7 @@ class Platform:  # noqa: PLR0904
         self.childs = []
         self.add_to_env()
         self.namespace = namespace if namespace else self.generate_namespace()
+        self.ip_address = None  # TODO: only added because of linting error (regarding unresolved-attribute ros2_ws/src/rcdt_utilities/rcdt_utilities/launch_utils_env_configuration.py:125:39)
 
         Rviz.add_robot_model(self.namespace)
 
@@ -208,16 +209,13 @@ class Platform:  # noqa: PLR0904
         self.childs.append([child.parent_link, child.namespace, child.base_link])
 
     def add_to_env(self) -> None:
-        """Add a platform instance to the general list."""
+        """Add a platform instance to the general environment configuration list."""
         EnvironmentConfig.platforms.append(self)
         current_value = EnvironmentConfig.platform_indices.get(self.platform, 0)
         EnvironmentConfig.platform_indices[self.platform] = current_value + 1
 
     def generate_namespace(self) -> str:
         """Generate an unique namespace for the given platform.
-
-        Args:
-            platform (Platform): The platform.
 
         Returns:
             str: The unique namespace for the platform.
