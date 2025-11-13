@@ -21,3 +21,5 @@ RUN apt update
 # Create bashrc file:
 RUN echo "if test -f ~/.personal.bashrc; then\nsource ~/.personal.bashrc\nfi" >> /home/$UNAME/.bashrc
 RUN echo "if test -f ~/.env; then\nset -a && source ~/.env && set +a\nfi" >> /home/$UNAME/.bashrc
+
+# Trigger workflow
