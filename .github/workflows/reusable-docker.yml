@@ -37,3 +37,4 @@ jobs:
             type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }}
             type=registry,ref=rcdt/robotics:build-cache-latest
           cache-to: type=registry,ref=rcdt/robotics:${{ inputs.cache-tag }},mode=max
+      - run: df -h /
