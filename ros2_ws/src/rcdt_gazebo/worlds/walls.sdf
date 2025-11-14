@@ -4,10 +4,6 @@ SPDX-FileCopyrightText: Alliander N. V.
 
 SPDX-License-Identifier: Apache-2.0
 -->
-<!DOCTYPE foods [
-  <!ENTITY thickness "1.0">
-  <!-- .... -->
-]>
 <sdf version="1.6">
   <world name="walls">
     <physics name="1ms" type="ignored">
@@ -213,15 +209,6 @@ SPDX-License-Identifier: Apache-2.0
         </collision>
       </link>
     </model>
-
-    <spherical_coordinates>
-      <surface_model>EARTH_WGS84</surface_model>
-      <world_frame_orientation>ENU</world_frame_orientation>
-      <latitude_deg>51.966600</latitude_deg>
-      <longitude_deg>5.941000</longitude_deg>
-      <elevation>0</elevation>
-      <heading_deg>0</heading_deg>
-    </spherical_coordinates>
 
   </world>
 </sdf>

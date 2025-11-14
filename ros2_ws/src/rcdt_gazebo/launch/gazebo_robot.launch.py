@@ -14,7 +14,7 @@ from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
 from rcdt_utilities.register import Register
 
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
-world_arg = LaunchArgument("world", "walls.sdf")
+world_arg = LaunchArgument("world", "empty.sdf")
 platforms_arg = LaunchArgument("platforms", "")
 positions_arg = LaunchArgument("positions", "")
 orientations_arg = LaunchArgument("orientations", "")

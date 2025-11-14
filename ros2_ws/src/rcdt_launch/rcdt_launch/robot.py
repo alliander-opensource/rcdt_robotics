@@ -29,7 +29,7 @@ class Platform:  # noqa: PLR0904
     """
 
     simulation: bool = True
-    world: str = "walls.sdf"
+    world: str = "empty.sdf"
     platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {}
     names: list[str] = []
