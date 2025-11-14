@@ -330,11 +330,14 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         namespace=namespace_vehicle,
     )
 
+    remappings = []
+    if use_gps:
+        remappings.append(("/gps/fix", f"/{namespace_gps}/fix"))
     waypoint_follower = Node(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
         namespace=namespace_vehicle,
-        remappings=[("/fromLL", f"/{namespace_gps}/fromLL")],
+        remappings=remappings,
     )
 
     waypoint_follower_controller = Node(
