@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import shutil
 import subprocess
 
 import xmltodict
@@ -57,26 +58,28 @@ def download_map(lon: float, lat: float) -> None:
         "/tmp/map.osm",
         f"https://api.openstreetmap.org/api/0.6/map?bbox={min_lon},{min_lat},{max_lon},{max_lat}",
     ]
-    subprocess.run(
-        cmd_download, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    subprocess.run(cmd_download, check=False, stderr=subprocess.DEVNULL)
 
 
 def convert_map() -> None:
     """Convert the downloaded OSM map data to glb format."""
     logger.info(colored("Converting map data to glb format...", "dark_grey"))
+    shutil.copy(
+        get_file_path("rcdt_gazebo", ["config"], "osm2world.properties"),
+        "/home/rcdt/osm2world/osm2world.properties",
+    )
     cmd_convert = [
         "bash",
         "/home/rcdt/osm2world/osm2world.sh",
         "convert",
+        "--config",
+        "/home/rcdt/osm2world/osm2world.properties",
         "-i",
         "/tmp/map.osm",
         "-o",
         "/tmp/map.glb",
     ]
-    subprocess.run(
-        cmd_convert, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    subprocess.run(cmd_convert, check=False)
 
 
 def create_sfd(lon: float, lat: float) -> None:
