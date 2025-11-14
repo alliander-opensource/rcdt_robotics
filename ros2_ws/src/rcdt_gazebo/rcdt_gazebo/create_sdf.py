@@ -7,7 +7,10 @@ import subprocess
 import xmltodict
 from pyproj import Geod
 from rcdt_utilities.launch_utils import get_file_path
+from rclpy.logging import get_logger
 from termcolor import colored
+
+logger = get_logger("create_sdf")
 
 
 def create_map_world(lon: float, lat: float) -> None:
@@ -29,7 +32,7 @@ def download_map(lon: float, lat: float) -> None:
         lon (float): The longitude of the map center.
         lat (float): The latitude of the map center.
     """
-    print(colored("Downloading map data from OpenStreetMap...", "yellow"))
+    logger.info(colored("Downloading map data from OpenStreetMap...", "dark_grey"))
     geo = Geod(ellps="WGS84")
     distance = 100  # meters
 
@@ -61,7 +64,7 @@ def download_map(lon: float, lat: float) -> None:
 
 def convert_map() -> None:
     """Convert the downloaded OSM map data to glb format."""
-    print(colored("Converting map data to glb format...", "yellow"))
+    logger.info(colored("Converting map data to glb format...", "dark_grey"))
     cmd_convert = [
         "bash",
         "/home/rcdt/osm2world/osm2world.sh",
@@ -83,7 +86,7 @@ def create_sfd(lon: float, lat: float) -> None:
         lon (float): The longitude of the map center.
         lat (float): The latitude of the map center.
     """
-    print(colored("Creating SDF file from glb object...", "yellow"))
+    logger.info(colored("Creating SDF file from glb object...", "dark_grey"))
     file_path = get_file_path("rcdt_gazebo", ["worlds"], "world.sdf")
     with open(file_path, encoding="utf-8") as fd:
         sdf_string = fd.read()
