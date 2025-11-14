@@ -29,7 +29,7 @@ class Platform:  # noqa: PLR0904
     """
 
     simulation: bool = True
-    world: str = "walls.sdf"
+    world: str = "empty.sdf"
     platforms: list["Platform"] = []
     platform_indices: dict[str, int] = {}
     names: list[str] = []
@@ -565,7 +565,7 @@ class Platform:  # noqa: PLR0904
             Node | None: A static_transform_publisher node that links the platform with the world or None if not applicable.
         """
         if isinstance(self, Vehicle):
-            if self.navigation or self.slam:
+            if self.navigation or self.slam or self.use_gps:
                 return None
             child_frame = f"{self.namespace}/odom"
         elif self.platform == "franka" and not Platform.simulation:
@@ -936,8 +936,10 @@ class Vehicle(Platform):
         parent: Platform | None = None,
         parent_link: str = "",
         navigation: bool = False,
+        use_gps: bool = False,
         slam: bool = False,
         collision_monitor: bool = False,
+        window_size: int = 10,
     ):
         """Initialize the Vehicle platform.
 
@@ -949,8 +951,10 @@ class Vehicle(Platform):
             parent (Platform | None): The parent platform.
             parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
             navigation (bool): Whether to start navigation for the vehicle.
+            use_gps (bool): Whether to use GPS to navigate the vehicle.
             slam (bool): Whether to start SLAM for the vehicle.
             collision_monitor (bool): Whether to start the collision monitor for the vehicle.
+            window_size (int): The window size for navigation.
         """
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
@@ -958,11 +962,14 @@ class Vehicle(Platform):
         self.platform = platform
         self.namespace = self.namespace
         self.navigation = navigation
+        self.use_gps = use_gps
         self.slam = slam
         self.collision_monitor = collision_monitor
+        self.window_size = window_size
 
         self.lidar: Lidar | None = None
         self.camera: Camera | None = None
+        self.gps: GPS | None = None
 
         if platform == "panther":
             Vizanti.add_robot_model(self.namespace)
@@ -974,7 +981,7 @@ class Vehicle(Platform):
                 "std_msgs/msg/Bool",
             )
 
-        if self.navigation or self.slam:
+        if (self.navigation or self.slam) and not self.use_gps:
             Rviz.add_map(f"/{self.namespace}/map")
 
         if self.navigation:
@@ -990,6 +997,10 @@ class Vehicle(Platform):
                 "global_costmap", f"/{self.namespace}/global_costmap/costmap"
             )
             Vizanti.add_path(f"/{self.namespace}/plan")
+
+        if self.use_gps:
+            Rviz.set_grid_size(self.window_size)
+            Rviz.set_grid_frame(f"/{self.namespace}/base_footprint")
 
         if self.collision_monitor:
             Rviz.add_polygon(f"/{self.namespace}/polygon_slower")
@@ -1054,6 +1065,9 @@ class Vehicle(Platform):
                 "navigation": str(self.navigation),
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
+                "namespace_gps": self.gps.namespace if self.gps else "",
+                "use_gps": str(self.use_gps),
+                "window_size": str(self.window_size),
             },
         )
 
@@ -1067,7 +1081,7 @@ class GPS(Platform):
         position: list,
         orientation: list | None = None,
         namespace: str | None = None,
-        parent: Platform | None = None,
+        parent: Vehicle | None = None,
         ip_address: str = "",
     ):
         """Initialize the GPS platform.
@@ -1077,17 +1091,21 @@ class GPS(Platform):
             position (list): The position of the platform.
             orientation (list | None): The orientation of the platform.
             namespace (str | None): The namespace of the platform.
-            parent (Platform | None): The parent platform.
+            parent (Vehicle | None): The parent platform.
             ip_address (str): The IP address of the platform.
         """
         super().__init__(platform, position, orientation, namespace, parent)
-        self.platform = platform
-        self.namespace = self.namespace
         self.ip_address = ip_address
+
+        if parent:
+            parent.gps = self
 
         Platform.bridge_topics.append(
             f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
+
+        Rviz.add_satellite(f"/{self.namespace}/gps/filtered")
+        Vizanti.add_satellite(f"/{self.namespace}/gps/filtered")
 
     def create_launch_description(self) -> list[RegisteredLaunchDescription]:
         """Create the launch description with specific elements for a camera.
@@ -1110,7 +1128,8 @@ class GPS(Platform):
             get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py"),
             launch_arguments={
                 "simulation": str(Platform.simulation),
-                "namespace": self.namespace,
+                "namespace_vehicle": self.parent.namespace if self.parent else "",
+                "namespace_gps": self.namespace,
                 "ip_address": self.ip_address,
             },
         )
