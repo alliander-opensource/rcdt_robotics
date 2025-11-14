@@ -37,7 +37,7 @@ class Platform:  # noqa: PLR0904
             parent (Platform | None): The parent platform, if any.
             parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
-        self.platform = platform
+        self.platform = platform  # TODO: find a better name for "platform" (like component/subsystem/model/etc.)
         self.parent = parent
         self.childs = []
         self.add_to_env()
