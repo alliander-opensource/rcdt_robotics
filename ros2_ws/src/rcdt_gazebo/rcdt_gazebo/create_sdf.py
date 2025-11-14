@@ -60,8 +60,8 @@ def download_map(lon: float, lat: float) -> None:
 
 
 def convert_map() -> None:
-    """Convert the downloaded OSM map data to glTF format."""
-    print(colored("Converting map data to glTF format...", "yellow"))
+    """Convert the downloaded OSM map data to glb format."""
+    print(colored("Converting map data to glb format...", "yellow"))
     cmd_convert = [
         "bash",
         "/home/rcdt/osm2world/osm2world.sh",
@@ -69,7 +69,7 @@ def convert_map() -> None:
         "-i",
         "/tmp/map.osm",
         "-o",
-        "/tmp/map.gltf",
+        "/tmp/map.glb",
     ]
     subprocess.run(
         cmd_convert, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
@@ -77,13 +77,13 @@ def convert_map() -> None:
 
 
 def create_sfd(lon: float, lat: float) -> None:
-    """Create an SDF world file from the glTF map object.
+    """Create an SDF world file from the glb map object.
 
     Args:
         lon (float): The longitude of the map center.
         lat (float): The latitude of the map center.
     """
-    print(colored("Creating SDF file from glTF object...", "yellow"))
+    print(colored("Creating SDF file from glb object...", "yellow"))
     file_path = get_file_path("rcdt_gazebo", ["worlds"], "world.sdf")
     with open(file_path, encoding="utf-8") as fd:
         sdf_string = fd.read()

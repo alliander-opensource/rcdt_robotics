@@ -937,6 +937,7 @@ class Vehicle(Platform):
         gps: bool = False,
         slam: bool = False,
         collision_monitor: bool = False,
+        window_size: int = 10,
     ):
         """Initialize the Vehicle platform.
 
@@ -951,6 +952,7 @@ class Vehicle(Platform):
             gps (bool): Whether to start GPS for the vehicle.
             slam (bool): Whether to start SLAM for the vehicle.
             collision_monitor (bool): Whether to start the collision monitor for the vehicle.
+            window_size (int): The window size for navigation.
         """
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
@@ -961,6 +963,7 @@ class Vehicle(Platform):
         self.gps = gps
         self.slam = slam
         self.collision_monitor = collision_monitor
+        self.window_size = window_size
 
         self.lidar: Lidar | None = None
         self.camera: Camera | None = None
@@ -975,7 +978,7 @@ class Vehicle(Platform):
                 "std_msgs/msg/Bool",
             )
 
-        if self.navigation or self.slam:
+        if (self.navigation or self.slam) and not self.gps:
             Rviz.add_map(f"/{self.namespace}/map")
 
         if self.navigation:
@@ -991,6 +994,10 @@ class Vehicle(Platform):
                 "global_costmap", f"/{self.namespace}/global_costmap/costmap"
             )
             Vizanti.add_path(f"/{self.namespace}/plan")
+
+        if self.gps:
+            Rviz.set_grid_size(self.window_size)
+            Rviz.set_grid_frame(f"/{self.namespace}/base_footprint")
 
         if self.collision_monitor:
             Rviz.add_polygon(f"/{self.namespace}/polygon_slower")
@@ -1056,6 +1063,7 @@ class Vehicle(Platform):
                 "namespace_vehicle": self.namespace,
                 "namespace_lidar": self.lidar.namespace,
                 "use_gps": str(self.gps),
+                "window_size": str(self.window_size),
             },
         )
 

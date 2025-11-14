@@ -48,6 +48,24 @@ class Rviz:
         Rviz.displays[0]["Offset"]["Z"] = height
 
     @staticmethod
+    def set_grid_size(size: int) -> None:
+        """Set the grid size.
+
+        Args:
+            size (int): The grid size to set in meters.
+        """
+        Rviz.displays[0]["Plane Cell Count"] = size
+
+    @staticmethod
+    def set_grid_frame(frame: str) -> None:
+        """Set the grid frame.
+
+        Args:
+            frame (str): The grid frame to set.
+        """
+        Rviz.displays[0]["Reference Frame"] = frame
+
+    @staticmethod
     def add_robot_model(namespace: str) -> None:
         """Add a robot model to the RViz configuration.
 

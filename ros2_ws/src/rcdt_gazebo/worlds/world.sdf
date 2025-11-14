@@ -41,14 +41,14 @@ SPDX-License-Identifier: Apache-2.0
         <visual name="visual">
           <geometry>
             <mesh>
-              <uri>/tmp/map.gltf</uri>
+              <uri>/tmp/map.glb</uri>
             </mesh>
           </geometry>
         </visual>
         <collision name="collision">
           <geometry>
             <mesh>
-              <uri>/tmp/map.gltf</uri>
+              <uri>/tmp/map.glb</uri>
             </mesh>
           </geometry>
         </collision>
