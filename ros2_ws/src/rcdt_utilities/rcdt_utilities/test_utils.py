@@ -10,8 +10,10 @@ import pytest
 import rclpy
 from geometry_msgs.msg import Pose, PoseStamped
 from launch_testing_ros.wait_for_topics import WaitForTopics
+from rcdt_messages.action import Trigger as TriggerAction
 from rcdt_messages.srv import ExpressPoseInOtherFrame
 from rclpy.action import ActionClient
+from rclpy.action.client import ClientGoalHandle
 from rclpy.client import Client
 from rclpy.logging import get_logger
 from rclpy.node import Node
@@ -133,13 +135,49 @@ def call_trigger_service(node: Node, service_name: str, timeout: int) -> bool:
     Returns:
         bool: True if the service call was successful, False otherwise.
     """
-    client = create_ready_service_client(
-        node, Trigger, service_name, timeout_sec=timeout
-    )
+    client = create_ready_service_client(node, Trigger, service_name, timeout)
 
     future = client.call_async(Trigger.Request())
     rclpy.spin_until_future_complete(node, future=future, timeout_sec=timeout)
     return future.result() is not None
+
+
+def call_trigger_action(node: Node, action_name: str, timeout: int) -> bool:
+    """Call a trigger action and return True if the action was called successfully.
+
+    Args:
+        node (Node): The rclpy node used to create the action client.
+        action_name (str): The fully qualified name of the action.
+        timeout (int): Timeout in seconds to wait for the action server.
+
+    Returns:
+        bool: True if the action call was successful, False otherwise.
+    """
+    client = create_ready_action_client(node, TriggerAction, action_name, timeout)
+
+    future_goal_handle = client.send_goal_async(TriggerAction.Goal())
+    start_time = time.time()
+    while not future_goal_handle.done():
+        if time.time() > (start_time + timeout):
+            node.get_logger().error("Failed to obtain goal_handle. Timeout.")
+            return False
+        rclpy.spin_once(node, timeout_sec=0)
+
+    client_goal_handle: ClientGoalHandle = future_goal_handle.result()
+    if not client_goal_handle.accepted:
+        node.get_logger().error("Goal was rejected by the action server.")
+        return False
+
+    future_result: Future = client_goal_handle.get_result_async()
+    start_time = time.time()
+    while not future_result.done():
+        if time.time() > (start_time + timeout):
+            node.get_logger().error("Failed to obtain result. Timeout.")
+            return False
+        rclpy.spin_once(node, timeout_sec=0)
+
+    result: TriggerAction.Impl.GetResultService.Response = future_result.result()
+    return result.result.success
 
 
 def create_ready_action_client(
@@ -163,6 +201,44 @@ def create_ready_action_client(
     if not client.wait_for_server(timeout_sec=timeout):
         raise RuntimeError(f"Action server {action_name} not available")
     return client
+
+
+def call_express_pose_in_other_frame(
+    node: Node, pose: PoseStamped, target_frame: str, timeout: int
+) -> ExpressPoseInOtherFrame.Response:
+    """Calls the /pose_manipulator/express_pose_in_other_frame service.
+
+    Args:
+        node (Node): An active rclpy Node.
+        pose (PoseStamped): The pose to transform.
+        target_frame (str): The frame to express the pose in.
+        timeout (int): Timeout for waiting on service and result.
+
+    Raises:
+        RuntimeError: If the service call fails or times out.
+
+    Returns:
+        ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
+    """
+    client = create_ready_service_client(
+        node,
+        ExpressPoseInOtherFrame,
+        "/pose_manipulator/express_pose_in_other_frame",
+        timeout_sec=timeout,
+    )
+
+    request = ExpressPoseInOtherFrame.Request()
+    request.pose = pose
+    request.target_frame = target_frame
+
+    future: Future = client.call_async(request)
+    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
+
+    response = future.result()
+    if response is None:
+        raise RuntimeError("Service call failed or timed out")
+
+    return response
 
 
 def assert_joy_topic_switch(
@@ -225,44 +301,6 @@ def assert_joy_topic_switch(
     assert result.get("state") == expected_topic, (
         f"Expected state '{expected_topic}', but got '{result.get('state')}'"
     )
-
-
-def call_express_pose_in_other_frame(
-    node: Node, pose: PoseStamped, target_frame: str, timeout: int
-) -> ExpressPoseInOtherFrame.Response:
-    """Calls the /pose_manipulator/express_pose_in_other_frame service.
-
-    Args:
-        node (Node): An active rclpy Node.
-        pose (PoseStamped): The pose to transform.
-        target_frame (str): The frame to express the pose in.
-        timeout (int): Timeout for waiting on service and result.
-
-    Raises:
-        RuntimeError: If the service call fails or times out.
-
-    Returns:
-        ExpressPoseInOtherFrame.Response: The response containing the transformed pose.
-    """
-    client = create_ready_service_client(
-        node,
-        ExpressPoseInOtherFrame,
-        "/pose_manipulator/express_pose_in_other_frame",
-        timeout_sec=timeout,
-    )
-
-    request = ExpressPoseInOtherFrame.Request()
-    request.pose = pose
-    request.target_frame = target_frame
-
-    future: Future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout)
-
-    response = future.result()
-    if response is None:
-        raise RuntimeError("Service call failed or timed out")
-
-    return response
 
 
 def assert_movements_with_joy(  # noqa: PLR0913
