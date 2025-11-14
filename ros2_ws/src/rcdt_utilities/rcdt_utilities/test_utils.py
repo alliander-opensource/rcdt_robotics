@@ -84,7 +84,7 @@ def get_joint_position(namespace: str, joint: str, timeout: int) -> float:
     """Get the position of a joint from the joint states topic.
 
     Args:
-        namespace (str): The name space of the robot.
+        namespace (str): The name space of the platform.
         joint (str): The name of the joint.
         timeout (int): Timeout in seconds to wait for the joint states topic.
 
@@ -321,7 +321,7 @@ def assert_movements_with_joy(  # noqa: PLR0913
         compare_fn (Callable[[Pose, Pose], float]): Function to compare poses.
         threshold (float): Minimum change in pose to assert movement.
         description (str): Description of the pose change being tested.
-        frame_base (str): Base frame of the robot.
+        frame_base (str): Base frame of the platform.
         frame_target (str): Target frame to express the pose in.
         timeout (int): Max time to wait for the result.
     """
@@ -362,7 +362,7 @@ def wait_until_reached_joint(
     """Wait until a joint reaches the expected value within a tolerance.
 
     Args:
-        namespace (str): Namespace of the robot (e.g., 'franka').
+        namespace (str): Namespace of the platform (e.g., 'franka').
         joint (str): Name of the joint to check.
         expected_value (float): Target joint value in radians.
         timeout_sec (int): Timeout duration in seconds.

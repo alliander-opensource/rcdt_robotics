@@ -48,7 +48,7 @@ class Rviz:
         Rviz.displays[0]["Offset"]["Z"] = height
 
     @staticmethod
-    def add_robot_model(namespace: str) -> None:
+    def add_platform_model(namespace: str) -> None:
         """Add a robot model to the RViz configuration.
 
         Args:
