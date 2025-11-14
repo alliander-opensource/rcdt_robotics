@@ -11,7 +11,7 @@ import rclpy
 from _pytest.fixtures import SubRequest
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
-from rcdt_launch.robot import Lidar, Vehicle
+from rcdt_launch.robot import Lidar, Platform, Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (
@@ -35,6 +35,7 @@ def panther_launch(request: SubRequest) -> LaunchDescription:
     Returns:
         LaunchDescription: The launch description for the panther robot.
     """
+    Platform.world = "walls.sdf"
     vehicle = Vehicle(
         platform="panther",
         position=[4.0, 0, 0.2],
