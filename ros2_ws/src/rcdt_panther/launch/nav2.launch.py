@@ -16,6 +16,7 @@ use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
 use_slam_arg = LaunchArgument("slam", False, [True, False])
 namespace_vehicle_arg = LaunchArgument("namespace_vehicle", "")
 namespace_lidar_arg = LaunchArgument("namespace_lidar", "")
+namespace_gps_arg = LaunchArgument("namespace_gps", "")
 use_collision_monitor_arg = LaunchArgument("collision_monitor", False, [True, False])
 use_navigation_arg = LaunchArgument("navigation", False, [True, False])
 use_gps_arg = LaunchArgument("use_gps", False, [True, False])
@@ -73,6 +74,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     Args:
         context (LaunchContext): The launch context.
 
+    Raises:
+        ValueError: If GPS is enabled but no namespace is provided.
+
     Returns:
         list: A list of actions to be executed in the launch description.
     """
@@ -81,6 +85,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     use_slam = use_slam_arg.bool_value(context)
     namespace_vehicle = namespace_vehicle_arg.string_value(context)
     namespace_lidar = namespace_lidar_arg.string_value(context)
+    namespace_gps = namespace_gps_arg.string_value(context)
     use_collision_monitor = use_collision_monitor_arg.bool_value(context)
     use_navigation = use_navigation_arg.bool_value(context)
     use_gps = use_gps_arg.bool_value(context)
@@ -95,7 +100,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     use_map_localization = False
 
     if use_gps:
-        pass
+        if not namespace_gps:
+            raise ValueError("Namespace for GPS must be provided when using GPS.")
     elif use_slam:
         lifecycle_nodes.append("slam_toolbox")
     elif use_navigation:
@@ -328,7 +334,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
         namespace=namespace_vehicle,
-        remappings=[("/fromLL", "/nmea1/fromLL")],
+        remappings=[("/fromLL", f"/{namespace_gps}/fromLL")],
     )
 
     waypoint_follower_controller = Node(
@@ -379,6 +385,7 @@ def generate_launch_description() -> LaunchDescription:
             use_slam_arg.declaration,
             namespace_vehicle_arg.declaration,
             namespace_lidar_arg.declaration,
+            namespace_gps_arg.declaration,
             use_navigation_arg.declaration,
             use_gps_arg.declaration,
             window_size_arg.declaration,

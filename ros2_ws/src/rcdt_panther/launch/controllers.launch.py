@@ -39,6 +39,10 @@ def launch_setup(context: LaunchContext) -> list:
         arguments=[
             "imu_broadcaster",
             "--controller-ros-args",
+            f"--ros-args -p sensor_name:={namespace}/imu",
+            "--controller-ros-args",
+            f"--ros-args -p frame_id:={namespace}/imu_link",
+            "--controller-ros-args",
             "--remap imu_broadcaster/imu:=imu/data",
             "--controller-ros-args",
             "--remap imu_broadcaster/transition_event:=imu_broadcaster/_transition_event",

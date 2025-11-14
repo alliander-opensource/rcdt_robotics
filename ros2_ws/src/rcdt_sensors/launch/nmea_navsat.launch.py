@@ -11,7 +11,8 @@ from rcdt_utilities.launch_utils import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
-namespace_arg = LaunchArgument("namespace", default_value="")
+namespace_vehicle_arg = LaunchArgument("namespace_vehicle", "")
+namespace_gps_arg = LaunchArgument("namespace_gps", "")
 ip_address_arg = LaunchArgument("ip_address", "")
 
 T = True
@@ -30,20 +31,21 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     use_sim = use_sim_arg.bool_value(context)
-    namepace = namespace_arg.string_value(context)
+    namespace_vehicle = namespace_vehicle_arg.string_value(context)
+    namespace_gps = namespace_gps_arg.string_value(context)
     ip_address = ip_address_arg.string_value(context)
 
     nmea_driver = Node(
         package="nmea_navsat_driver",
         executable="nmea_socket_driver",
         name="gps",
-        namespace=namepace,
+        namespace=namespace_gps,
         parameters=[
             {
                 "ip": ip_address,
                 "port": 5000,
                 "frame_id": "gps",
-                "tf_prefix": namepace,
+                "tf_prefix": namespace_gps,
             },
         ],
         remappings=[
@@ -57,13 +59,13 @@ def launch_setup(context: LaunchContext) -> list:
     navsat_transform_node = Node(
         package="robot_localization",
         executable="navsat_transform_node",
-        namespace=namepace,
+        namespace=namespace_gps,
         parameters=[
             {
                 "publish_filtered_gps": True,
             }
         ],
-        remappings=[("imu", "/panther1/imu/data")],
+        remappings=[("imu", f"/{namespace_vehicle}/imu/data")],
     )
 
     # Define EKF node that creates the tf between odom and map:
@@ -71,16 +73,16 @@ def launch_setup(context: LaunchContext) -> list:
         package="robot_localization",
         executable="ekf_node",
         name="ekf_global",
-        namespace=namepace,
+        namespace=namespace_gps,
         parameters=[
             {
                 "two_d_mode": True,
                 "publish_tf": True,
                 "world_frame": "map",
                 "map_frame": "map",
-                "odom_frame": "panther1/odom",
-                "base_link_frame": "panther1/base_footprint",
-                "odom0": "/panther1/odometry/wheels",
+                "odom_frame": f"{namespace_vehicle}/odom",
+                "base_link_frame": f"{namespace_vehicle}/base_footprint",
+                "odom0": f"/{namespace_vehicle}/odometry/wheels",
                 "odom0_config": list(
                     itertools.chain.from_iterable(
                         [
@@ -92,7 +94,7 @@ def launch_setup(context: LaunchContext) -> list:
                         ]
                     )
                 ),
-                "odom1": "/nmea1/odometry/gps",
+                "odom1": f"/{namespace_gps}/odometry/gps",
                 "odom1_config": list(
                     itertools.chain.from_iterable(
                         [
@@ -104,7 +106,7 @@ def launch_setup(context: LaunchContext) -> list:
                         ]
                     )
                 ),
-                "imu0": "/panther1/imu/data",
+                "imu0": f"/{namespace_vehicle}/imu/data",
                 "imu0_config": list(
                     itertools.chain.from_iterable(
                         [
@@ -123,7 +125,7 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         Register.on_start(nmea_driver, context) if not use_sim else SKIP,
         Register.on_start(navsat_transform_node, context),
-        Register.on_start(ekf_global, context),
+        Register.on_start(ekf_global, context) if namespace_vehicle else SKIP,
     ]
 
 
@@ -135,7 +137,9 @@ def generate_launch_description() -> LaunchDescription:
     """
     return LaunchDescription(
         [
-            namespace_arg.declaration,
+            use_sim_arg.declaration,
+            namespace_vehicle_arg.declaration,
+            namespace_gps_arg.declaration,
             ip_address_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]

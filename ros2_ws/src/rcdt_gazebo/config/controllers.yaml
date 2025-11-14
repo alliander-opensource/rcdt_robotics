@@ -2,7 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# Based on: https://github.com/husarion/panther_ros/blob/ros2/panther_controller/config/WH01_controller.yaml
+# Based on: 
+# https://github.com/husarion/husarion_ugv_ros/blob/ros2/husarion_ugv_controller/config/WH01_controller.yaml
+# https://github.com/frankarobotics/franka_ros2/blob/humble/franka_fr3_moveit_config/config/fr3_ros_controllers.yaml
 
 /**:
   controller_manager:
@@ -54,8 +56,8 @@
   # IMU specification: https://www.phidgets.com/?tier=3&catid=10&pcid=8&prodid=1025#Tab_Specifications
   imu_broadcaster:
     ros__parameters:
-      sensor_name: panther1/imu
-      frame_id: panther1/imu_link
+      sensor_name: substitute_me
+      frame_id: substitute_me
       # orientation_stddev: 4.3e-2 rad determined experimentally
       static_covariance_orientation:
         [1.8e-3, 0.0, 0.0, 0.0, 1.8e-3, 0.0, 0.0, 0.0, 1.8e-3]

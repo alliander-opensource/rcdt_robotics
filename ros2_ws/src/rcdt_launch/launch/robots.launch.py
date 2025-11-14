@@ -118,7 +118,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             Platform.world = "map_5.940906_51.966960"
             use_vizanti = True
             panther = Vehicle(
-                "panther", [0, 0, 0.2], navigation=True, gps=True, window_size=50
+                "panther", [0, 0, 0.2], navigation=True, use_gps=True, window_size=50
             )
             Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
             GPS("nmea", [0, 0, 0.2], parent=panther)
