@@ -9,6 +9,16 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV ROS_DISTRO=jazzy
 
+# Install ROS dependencies 
+RUN apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-moveit \
+    ros-$ROS_DISTRO-moveit-servo \
+    ros-$ROS_DISTRO-moveit-visual-tools \
+    ros-$ROS_DISTRO-ros2-controllers \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
 # Franka ROS2 library
 RUN apt-get update \
   && mkdir -p /home/$UNAME/franka_ws/src \

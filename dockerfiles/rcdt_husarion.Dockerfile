@@ -9,6 +9,31 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV ROS_DISTRO=jazzy
 
+# Install ROS dependencies 
+RUN apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-navigation2 \
+    ros-$ROS_DISTRO-nav2-bringup \
+    ros-$ROS_DISTRO-slam-toolbox \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
+# Install nav2 plugins
+RUN mkdir -p /home/$UNAME/nav2_plugins_ws/src \
+  && cd /home/$UNAME/nav2_plugins_ws/src \
+  && git clone -b jazzy-devel https://github.com/blackcoffeerobotics/vector_pursuit_controller.git \
+  && cd /home/$UNAME/nav2_plugins_ws \
+  && rosdep update --rosdistro $ROS_DISTRO \
+  && rosdep install --from-paths src -y -i
+
+WORKDIR /home/$UNAME/nav2_plugins_ws
+RUN . /opt/ros/$ROS_DISTRO/setup.sh \
+  && colcon build \
+  --symlink-install \
+  --cmake-args -DCMAKE_BUILD_TYPE=Release \ 
+  --event-handlers console_direct+ \
+  && echo "source /home/$UNAME/nav2_plugins_ws/install/setup.bash" >>/home/$UNAME/.bashrc
+
 RUN apt-get update \
   && mkdir -p /home/$UNAME/husarion_ws/src \
   && cd /home/$UNAME/husarion_ws

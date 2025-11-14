@@ -16,6 +16,14 @@ ENV CUDA_MINOR=9
 ENV ZED_SDK_MAJOR=5
 ENV ZED_SDK_MINOR=0             
 
+# Install ROS dependencies 
+RUN apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-realsense2-camera \
+    ros-$ROS_DISTRO-realsense2-description \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
 # Exit early if arm64 -- support for ZED SDK in arm64 is not added here yet
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         echo "ZED SDK is not available (yet) for Ubuntu 24.04 on arm64. Please run again with amd64 base image."; \

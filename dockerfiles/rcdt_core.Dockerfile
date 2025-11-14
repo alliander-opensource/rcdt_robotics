@@ -20,23 +20,12 @@ RUN apt-get update \
     python3-pip \
     zstd
 
-# Install ROS dependencies @TODO some of these can be moved to other files
+# Install ROS dependencies 
 RUN apt-get install -y --no-install-recommends \
     ros-$ROS_DISTRO-launch-pytest \
-    ros-$ROS_DISTRO-moveit \
-    ros-$ROS_DISTRO-moveit-servo \
-    ros-$ROS_DISTRO-moveit-visual-tools \
-    ros-$ROS_DISTRO-navigation2 \
-    ros-$ROS_DISTRO-nav2-bringup \
     ros-$ROS_DISTRO-plotjuggler-ros \
-    ros-$ROS_DISTRO-realsense2-camera \
-    ros-$ROS_DISTRO-realsense2-description \
     ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
-    ros-$ROS_DISTRO-ros-gz \
-    ros-$ROS_DISTRO-ros2-controllers \
     ros-$ROS_DISTRO-rqt-tf-tree \
-    ros-$ROS_DISTRO-slam-toolbox \
-    ros-$ROS_DISTRO-pointcloud-to-laserscan \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \
   && apt clean
@@ -47,22 +36,6 @@ RUN echo "export PYTHONPATH=\"/home/$UNAME/rcdt_robotics/.venv/lib/python3.12/si
   >> /home/$UNAME/.bashrc \
   && echo "export PATH=\"/home/$UNAME/rcdt_robotics/.venv/bin:\$PATH\"" \
   >> /home/$UNAME/.bashrc
-
-# Install nav2 plugins
-RUN mkdir -p /home/$UNAME/nav2_plugins_ws/src \
-  && cd /home/$UNAME/nav2_plugins_ws/src \
-  && git clone -b jazzy-devel https://github.com/blackcoffeerobotics/vector_pursuit_controller.git \
-  && cd /home/$UNAME/nav2_plugins_ws \
-  && rosdep update --rosdistro $ROS_DISTRO \
-  && rosdep install --from-paths src -y -i
-
-WORKDIR /home/$UNAME/nav2_plugins_ws
-RUN . /opt/ros/$ROS_DISTRO/setup.sh \
-  && colcon build \
-  --symlink-install \
-  --cmake-args -DCMAKE_BUILD_TYPE=Release \ 
-  --event-handlers console_direct+ \
-  && echo "source /home/$UNAME/nav2_plugins_ws/install/setup.bash" >>/home/$UNAME/.bashrc
 
 # Install vizanti
 RUN apt-get update \

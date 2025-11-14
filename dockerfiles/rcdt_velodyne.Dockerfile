@@ -9,6 +9,13 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV UNAME=rcdt
 ENV ROS_DISTRO=jazzy
 
+# Install ROS dependencies 
+RUN apt-get install -y --no-install-recommends \
+    ros-$ROS_DISTRO-pointcloud-to-laserscan \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
   libpcap-dev \
