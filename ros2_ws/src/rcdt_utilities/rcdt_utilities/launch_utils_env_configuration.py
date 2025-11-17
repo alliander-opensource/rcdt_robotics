@@ -59,7 +59,8 @@ def order_platforms() -> None:
             raise ValueError(f"Unknown platform to order: {platform.platform_type}")
 
     EnvironmentConfig.platforms = sorted(
-        EnvironmentConfig.platforms, key=lambda platform: order.index(platform.platform_type)
+        EnvironmentConfig.platforms,
+        key=lambda platform: order.index(platform.platform_type),
     )
 
 
