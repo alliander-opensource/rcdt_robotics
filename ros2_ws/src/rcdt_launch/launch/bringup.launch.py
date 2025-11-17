@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rcdt_utilities.launch_utils_env_configuration as utils_conf
+import rcdt_utilities.launch_utils_env_configuration as utils_config
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
@@ -49,17 +49,17 @@ def launch_setup(context: LaunchContext) -> list:
 
     if EnvironmentConfig.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
-    utils_conf.order_platforms()
+    utils_config.order_platforms()
 
-    state_publishers = utils_conf.create_state_publishers()
-    gazebo = utils_conf.create_gazebo_launch(load_gazebo_ui)
-    hardware_interfaces = utils_conf.create_hardware_interfaces()
-    map_links = utils_conf.create_map_links()
-    parent_links = utils_conf.create_parent_links()
-    controllers = utils_conf.create_controllers()
-    launch_descriptions = utils_conf.create_launch_descriptions()
+    state_publishers = utils_config.create_state_publishers()
+    gazebo = utils_config.create_gazebo_launch(load_gazebo_ui)
+    hardware_interfaces = utils_config.create_hardware_interfaces()
+    map_links = utils_config.create_map_links()
+    parent_links = utils_config.create_parent_links()
+    controllers = utils_config.create_controllers()
+    launch_descriptions = utils_config.create_launch_descriptions()
     joystick_nodes = (
-        utils_conf.create_joystick_nodes() if EnvironmentConfig.use_joystick else []
+        utils_config.create_joystick_nodes() if EnvironmentConfig.use_joystick else []
     )
 
     utilities = RegisteredLaunchDescription(
