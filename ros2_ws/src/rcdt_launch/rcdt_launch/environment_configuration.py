@@ -4,10 +4,10 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from rcdt_launch.platform import Platform
+    from rcdt_launch.platforms.platform import Platform
 
 
-class EnvironmentConfig:
+class EnvironmentConfiguration:
     """A class used to dynamically create all the required nodes for a platform.
 
     Attributes:

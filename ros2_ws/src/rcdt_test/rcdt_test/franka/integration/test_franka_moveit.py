@@ -7,7 +7,7 @@ import launch_pytest
 import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
-from rcdt_launch.arm import Arm
+from rcdt_launch.platforms.arm import Arm
 from rcdt_test.franka.utils import call_move_to_configuration_service
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription

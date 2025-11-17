@@ -11,7 +11,7 @@ from launch_ros.actions import Node
 from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
 
-from rcdt_launch.environment_config import EnvironmentConfig
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.rviz import Rviz
 
 
@@ -108,7 +108,7 @@ class Platform:  # noqa: PLR0904
             dict: The robot description for the robot.
         """
         xacro_arguments = {
-            "simulation": str(EnvironmentConfig.simulation),
+            "simulation": str(EnvironmentConfiguration.simulation),
             "namespace": self.namespace,
         }
         xacro_arguments["childs"] = str(self.childs)
@@ -142,9 +142,9 @@ class Platform:  # noqa: PLR0904
 
     def add_to_env(self) -> None:
         """Add a platform instance to the general environment configuration list."""
-        EnvironmentConfig.platforms.append(self)
-        current_value = EnvironmentConfig.platform_indices.get(self.platform_type, 0)
-        EnvironmentConfig.platform_indices[self.platform_type] = current_value + 1
+        EnvironmentConfiguration.platforms.append(self)
+        current_value = EnvironmentConfiguration.platform_indices.get(self.platform_type, 0)
+        EnvironmentConfiguration.platform_indices[self.platform_type] = current_value + 1
 
     def generate_namespace(self) -> str:
         """Generate an unique namespace for the given platform.
@@ -152,7 +152,7 @@ class Platform:  # noqa: PLR0904
         Returns:
             str: The unique namespace for the platform.
         """
-        index = EnvironmentConfig.platform_indices.get(self.platform_type, 0)
+        index = EnvironmentConfiguration.platform_indices.get(self.platform_type, 0)
         return f"{self.platform_type}{index}"
 
     def create_state_publisher(self) -> Node | None:
@@ -249,7 +249,7 @@ class Platform:  # noqa: PLR0904
             RegisteredLaunchDescription: The controller launch description for the platform.
         """
         launch_arguments = {
-            "simulation": str(EnvironmentConfig.simulation),
+            "simulation": str(EnvironmentConfiguration.simulation),
             "namespace": self.namespace,
         }
         return RegisteredLaunchDescription(

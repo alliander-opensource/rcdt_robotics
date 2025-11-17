@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch_ros.actions import Node
-from rcdt_launch.arm import Arm
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.vehicle import Vehicle
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.arm import Arm
+from rcdt_launch.platforms.vehicle import Vehicle
 
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
@@ -13,10 +13,10 @@ from rcdt_utilities.register import RegisteredLaunchDescription
 
 def reset() -> None:
     """Reset the platform class to its initial state."""
-    EnvironmentConfig.platforms = []
-    EnvironmentConfig.platform_indices = {}
-    EnvironmentConfig.names = []
-    EnvironmentConfig.bridge_topics = []
+    EnvironmentConfiguration.platforms = []
+    EnvironmentConfiguration.platform_indices = {}
+    EnvironmentConfiguration.names = []
+    EnvironmentConfiguration.bridge_topics = []
 
 
 def create_state_publishers() -> list[Node]:
@@ -26,7 +26,7 @@ def create_state_publishers() -> list[Node]:
         list[Node]: A list of all state publisher nodes.
     """
     nodes = []
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         node = platform.create_state_publisher()
         if isinstance(node, Node):
             nodes.append(node)
@@ -54,12 +54,12 @@ def order_platforms() -> None:
         "axis",
     ]
 
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         if platform.platform_type not in order:
             raise ValueError(f"Unknown platform to order: {platform.platform_type}")
 
-    EnvironmentConfig.platforms = sorted(
-        EnvironmentConfig.platforms,
+    EnvironmentConfiguration.platforms = sorted(
+        EnvironmentConfiguration.platforms,
         key=lambda platform: order.index(platform.platform_type),
     )
 
@@ -79,7 +79,7 @@ def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
     parents = []
     parent_links = []
 
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         platforms.append(platform.namespace)
         positions.append(",".join(map(str, platform.position)))
         orientations.append(",".join(map(str, platform.orientation)))
@@ -95,13 +95,13 @@ def create_gazebo_launch(load_gazebo_ui: bool) -> RegisteredLaunchDescription:
         get_file_path("rcdt_gazebo", ["launch"], "gazebo_robot.launch.py"),
         launch_arguments={
             "load_gazebo_ui": str(load_gazebo_ui),
-            "world": EnvironmentConfig.world,
+            "world": EnvironmentConfiguration.world,
             "platforms": " ".join(platforms),
             "positions": " ".join(positions),
             "orientations": " ".join(orientations),
             "parents": " ".join(parents),
             "parent_links": " ".join(parent_links),
-            "bridge_topics": " ".join(EnvironmentConfig.bridge_topics),
+            "bridge_topics": " ".join(EnvironmentConfiguration.bridge_topics),
         },
     )
 
@@ -113,10 +113,10 @@ def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
         list[RegisteredLaunchDescription]: A list of all hardware interface launch descriptions.
     """
     hardware_interfaces = []
-    if EnvironmentConfig.simulation:
+    if EnvironmentConfiguration.simulation:
         return hardware_interfaces
 
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         if isinstance(platform, Arm) and platform.platform_type == "franka":
             hardware_interfaces.append(
                 RegisteredLaunchDescription(
@@ -137,7 +137,7 @@ def create_parent_links() -> list[Node]:
         list[Node]: A list of all the required static_transform_publisher nodes.
     """
     nodes = []
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         if platform.parent is not None:
             nodes.append(platform.create_parent_link())
     return nodes
@@ -150,8 +150,8 @@ def create_controllers() -> list[RegisteredLaunchDescription]:
         list[RegisteredLaunchDescription]: A list of all controller launch descriptions.
     """
     controllers = []
-    for platform in EnvironmentConfig.platforms:
-        if not EnvironmentConfig.simulation and platform.platform_type == "panther":
+    for platform in EnvironmentConfiguration.platforms:
+        if not EnvironmentConfiguration.simulation and platform.platform_type == "panther":
             continue
         if platform.controller_path is not None:
             controllers.append(platform.create_controller())
@@ -169,7 +169,7 @@ def create_launch_descriptions() -> list[RegisteredLaunchDescription]:
         list[RegisteredLaunchDescription]: A list of all launch descriptions.
     """
     launch_descriptions = []
-    for platform in reversed(EnvironmentConfig.platforms):
+    for platform in reversed(EnvironmentConfiguration.platforms):
         launch_description = platform.create_launch_description()
         if launch_description != []:
             launch_descriptions.extend(launch_description)
@@ -195,7 +195,7 @@ def create_joystick_nodes() -> list[Node]:
     topics = [""]
     vehicle_linked = False
     arm_linked = False
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         button = None
         if isinstance(platform, Vehicle):
             if vehicle_linked:
@@ -250,7 +250,7 @@ def create_map_links() -> list[Node]:
         list[Node]: A list of all the static_transform_publisher nodes linking the platforms to the 'map' frame.
     """
     nodes = []
-    for platform in EnvironmentConfig.platforms:
+    for platform in EnvironmentConfiguration.platforms:
         if platform.parent is None:
             node = platform.create_map_link()
             if isinstance(node, Node):

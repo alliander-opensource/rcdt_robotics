@@ -6,16 +6,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.platform import Platform
+from rcdt_launch.rviz import Rviz
+from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
 
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.platform import Platform
-from rcdt_launch.rviz import Rviz
-from rcdt_launch.vizanti import Vizanti
-
 if TYPE_CHECKING:
-    from rcdt_launch.vehicle import Vehicle
+    from rcdt_launch.platforms.vehicle import Vehicle
 
 
 class Lidar(Platform):
@@ -50,7 +49,7 @@ class Lidar(Platform):
         Rviz.add_point_cloud(self.namespace)
         Rviz.add_laser_scan(self.namespace)
         Vizanti.add_laser_scan(self.namespace)
-        EnvironmentConfig.bridge_topics.append(
+        EnvironmentConfiguration.bridge_topics.append(
             f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
         )
 
@@ -112,7 +111,7 @@ class Lidar(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "velodyne.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "namespace": self.namespace,
                 "target_frame": target_frame,
             },
@@ -132,7 +131,7 @@ class Lidar(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "ouster.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "namespace": self.namespace,
                 "target_frame": target_frame,
             },

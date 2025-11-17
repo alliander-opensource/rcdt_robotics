@@ -6,11 +6,10 @@ from __future__ import annotations
 
 from typing import Literal
 
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.platform import Platform
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
-
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.platform import Platform
 
 
 class GPS(Platform):
@@ -40,7 +39,7 @@ class GPS(Platform):
         self.namespace = self.namespace
         self.ip_address = ip_address
 
-        EnvironmentConfig.bridge_topics.append(
+        EnvironmentConfiguration.bridge_topics.append(
             f"/{self.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
         )
 
@@ -91,7 +90,7 @@ class GPS(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "nmea_navsat.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "namespace": self.namespace,
                 "ip_address": self.ip_address,
             },

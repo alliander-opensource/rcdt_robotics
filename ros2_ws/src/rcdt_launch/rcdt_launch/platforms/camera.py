@@ -6,16 +6,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.platform import Platform
+from rcdt_launch.rviz import Rviz
 from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
 
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.platform import Platform
-from rcdt_launch.rviz import Rviz
-
 if TYPE_CHECKING:
-    from rcdt_launch.arm import Arm
-    from rcdt_launch.vehicle import Vehicle
+    from rcdt_launch.platforms.arm import Arm
+    from rcdt_launch.platforms.vehicle import Vehicle
 
 
 class Camera(Platform):
@@ -54,7 +53,7 @@ class Camera(Platform):
             f"/{self.namespace}/depth/image_rect_raw",
         )
 
-        EnvironmentConfig.bridge_topics.extend(
+        EnvironmentConfiguration.bridge_topics.extend(
             [
                 f"/{self.namespace}/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
                 f"/{self.namespace}/color/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
@@ -114,7 +113,7 @@ class Camera(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "zed.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "namespace": self.namespace,
             },
         )
@@ -128,7 +127,7 @@ class Camera(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_sensors", ["launch"], "realsense.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "namespace": self.namespace,
             },
         )

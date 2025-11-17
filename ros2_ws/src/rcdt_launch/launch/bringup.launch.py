@@ -6,8 +6,8 @@ import rcdt_utilities.launch_utils_env_configuration as utils_config
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch import predefined_configurations
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.predefined_configurations import PredefinedConfigurations
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
@@ -20,7 +20,7 @@ use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "",
-    list(predefined_configurations.PLATFORM_CONFIGS.keys()),
+    PredefinedConfigurations.get_names(),
 )
 
 
@@ -41,13 +41,13 @@ def launch_setup(context: LaunchContext) -> list:
     use_rviz = use_rviz_arg.bool_value(context)
     use_vizanti = use_vizanti_arg.bool_value(context)
 
-    EnvironmentConfig.simulation = use_sim_arg.bool_value(context)
+    EnvironmentConfiguration.simulation = use_sim_arg.bool_value(context)
     Rviz.load_motion_planning_plugin = False
     Rviz.load_point_cloud = False
 
-    predefined_configurations.apply_configuration(config_name)
+    PredefinedConfigurations.apply_configuration(config_name)
 
-    if EnvironmentConfig.platforms == []:
+    if EnvironmentConfiguration.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
     utils_config.order_platforms()
 
@@ -59,7 +59,7 @@ def launch_setup(context: LaunchContext) -> list:
     controllers = utils_config.create_controllers()
     launch_descriptions = utils_config.create_launch_descriptions()
     joystick_nodes = (
-        utils_config.create_joystick_nodes() if EnvironmentConfig.use_joystick else []
+        utils_config.create_joystick_nodes() if EnvironmentConfiguration.use_joystick else []
     )
 
     utilities = RegisteredLaunchDescription(
@@ -78,10 +78,10 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
-        SetParameter(name="use_sim_time", value=EnvironmentConfig.simulation),
+        SetParameter(name="use_sim_time", value=EnvironmentConfiguration.simulation),
         Register.group(rviz, context) if use_rviz else SKIP,
         *[Register.on_start(node, context) for node in state_publishers],
-        Register.group(gazebo, context) if EnvironmentConfig.simulation else SKIP,
+        Register.group(gazebo, context) if EnvironmentConfiguration.simulation else SKIP,
         *[Register.group(group, context) for group in hardware_interfaces],
         *[Register.on_start(node, context) for node in map_links],
         *[Register.on_start(node, context) for node in parent_links],

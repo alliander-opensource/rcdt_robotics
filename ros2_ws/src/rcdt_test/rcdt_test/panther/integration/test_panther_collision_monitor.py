@@ -11,8 +11,8 @@ import rclpy
 from _pytest.fixtures import SubRequest
 from geometry_msgs.msg import TwistStamped
 from launch import LaunchDescription
-from rcdt_launch.lidar import Lidar
-from rcdt_launch.vehicle import Vehicle
+from rcdt_launch.platforms.lidar import Lidar
+from rcdt_launch.platforms.vehicle import Vehicle
 from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.test_utils import (

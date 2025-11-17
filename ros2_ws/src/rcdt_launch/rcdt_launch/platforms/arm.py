@@ -7,14 +7,13 @@ from __future__ import annotations
 from typing import Literal
 
 from launch_ros.actions import Node
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.moveit import Moveit
+from rcdt_launch.platforms.camera import Camera
+from rcdt_launch.platforms.platform import Platform
+from rcdt_launch.rviz import Rviz
 from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
-
-from rcdt_launch.camera import Camera
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.moveit import Moveit
-from rcdt_launch.platform import Platform
-from rcdt_launch.rviz import Rviz
 
 
 class Arm(Platform):
@@ -116,7 +115,7 @@ class Arm(Platform):
             dict: The robot description for the robot.
         """
         xacro_arguments = {
-            "simulation": str(EnvironmentConfig.simulation),
+            "simulation": str(EnvironmentConfiguration.simulation),
             "namespace": self.namespace,
         }
         xacro_arguments["childs"] = str(self.childs)
@@ -149,7 +148,7 @@ class Arm(Platform):
             RegisteredLaunchDescription: The controller launch description for the robot.
         """
         launch_arguments = {
-            "simulation": str(EnvironmentConfig.simulation),
+            "simulation": str(EnvironmentConfiguration.simulation),
             "namespace": self.namespace,
             "ip_address": self.ip_address,
         }
@@ -190,7 +189,7 @@ class Arm(Platform):
         Returns:
             Node | None: A static_transform_publisher node that links the platform with the world or None if not applicable.
         """
-        if not EnvironmentConfig.simulation:
+        if not EnvironmentConfiguration.simulation:
             child_frame = f"{self.namespace}/base"
         else:
             child_frame = f"{self.namespace}/world"

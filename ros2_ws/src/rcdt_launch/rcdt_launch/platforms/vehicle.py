@@ -7,15 +7,14 @@ from __future__ import annotations
 from typing import Literal
 
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import get_file_path
-from rcdt_utilities.register import RegisteredLaunchDescription
-
-from rcdt_launch.camera import Camera
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.lidar import Lidar
-from rcdt_launch.platform import Platform
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.camera import Camera
+from rcdt_launch.platforms.lidar import Lidar
+from rcdt_launch.platforms.platform import Platform
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
+from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.register import RegisteredLaunchDescription
 
 
 class Vehicle(Platform):
@@ -214,7 +213,7 @@ class Vehicle(Platform):
         return RegisteredLaunchDescription(
             get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
             launch_arguments={
-                "simulation": str(EnvironmentConfig.simulation),
+                "simulation": str(EnvironmentConfiguration.simulation),
                 "slam": str(self.slam),
                 "collision_monitor": str(self.collision_monitor),
                 "navigation": str(self.navigation),
@@ -229,7 +228,7 @@ class Vehicle(Platform):
         Returns:
             Node | None: The state publisher node for the robot or None if not applicable.
         """
-        if not EnvironmentConfig.simulation:
+        if not EnvironmentConfiguration.simulation:
             return None
 
         return Node(

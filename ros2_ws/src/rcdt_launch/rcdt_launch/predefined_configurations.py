@@ -4,18 +4,46 @@
 
 from typing import Callable, Dict
 
-from rcdt_launch.arm import Arm
-from rcdt_launch.camera import Camera
-from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.gps import GPS
-from rcdt_launch.lidar import Lidar
-from rcdt_launch.platform import Platform
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.arm import Arm
+from rcdt_launch.platforms.camera import Camera
+from rcdt_launch.platforms.gps import GPS
+from rcdt_launch.platforms.lidar import Lidar
+from rcdt_launch.platforms.platform import Platform
+from rcdt_launch.platforms.vehicle import Vehicle
 from rcdt_launch.rviz import Rviz
-from rcdt_launch.vehicle import Vehicle
 
 ConfigurationFunction = Callable[[], None]
 
 PLATFORM_CONFIGS: Dict[str, ConfigurationFunction] = {}
+
+
+class PredefinedConfigurations:
+    """TODO."""
+
+    @staticmethod
+    def apply_configuration(config_name: str) -> None:
+        """Instantiates the provided platform configuration.
+
+        Args:
+            config_name (str): Name of the platform configuration.
+
+        Raises:
+            ValueError: If the provided configuration is not a valid option.
+        """
+        if config_name not in PLATFORM_CONFIGS:
+            raise ValueError(f"Unknown configuration: {config_name}")
+
+        PLATFORM_CONFIGS[config_name]()
+
+    @staticmethod
+    def get_names() -> None:
+        """TODO.
+
+        Returns:
+            list: List of all platform configuration options.
+        """
+        return list(PLATFORM_CONFIGS.keys())
 
 
 def register_configuration(
@@ -75,14 +103,14 @@ def config_zed() -> None:  # noqa: D103
 
 @register_configuration("franka")
 def config_franka() -> None:  # noqa: D103
-    if not EnvironmentConfig.simulation:
+    if not EnvironmentConfiguration.simulation:
         Rviz.load_motion_planning_plugin = True
     Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
 
 
 @register_configuration("franka_axis")
 def config_franka_axis() -> None:  # noqa: D103
-    EnvironmentConfig.world = "table_with_1_brick.sdf"
+    EnvironmentConfiguration.world = "table_with_1_brick.sdf"
     Rviz.add_markers()
     Rviz.load_robot_state = True
     Rviz.load_trajectory = True
@@ -99,7 +127,7 @@ def config_franka_double() -> None:  # noqa: D103
 
 @register_configuration("franka_planning")
 def config_franka_planning() -> None:  # noqa: D103
-    EnvironmentConfig.use_joystick = False
+    EnvironmentConfiguration.use_joystick = False
     Rviz.load_motion_planning_plugin = True
     Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
     Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
@@ -176,18 +204,3 @@ def config_mm_ouster() -> None:  # noqa: D103
 def config_panther_and_franka() -> None:  # noqa: D103
     Vehicle("panther", [0, -0.5, 0.2])
     Arm("franka", [0, 0.5, 0])
-
-
-def apply_configuration(config_name: str) -> None:
-    """Instantiates the provided platform configuration.
-
-    Args:
-        config_name (str): Name of the platform configuration.
-
-    Raises:
-        ValueError: If the provided configuration is not a valid option.
-    """
-    if config_name not in PLATFORM_CONFIGS:
-        raise ValueError(f"Unknown configuration: {config_name}")
-
-    PLATFORM_CONFIGS[config_name]()
