@@ -10,8 +10,8 @@ import pytest
 import rclpy
 from geometry_msgs.msg import Pose, PoseStamped
 from launch_testing_ros.wait_for_topics import WaitForTopics
-from rcdt_messages.action import Trigger as TriggerAction
-from rcdt_messages.srv import ExpressPoseInOtherFrame
+from rcdt_interfaces.action import Trigger as TriggerAction
+from rcdt_interfaces.srv import ExpressPoseInOtherFrame
 from rclpy.action import ActionClient
 from rclpy.action.client import ClientGoalHandle
 from rclpy.client import Client

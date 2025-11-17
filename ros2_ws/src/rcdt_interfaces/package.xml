@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <package format="3">
-  <name>rcdt_messages</name>
+  <name>rcdt_interfaces</name>
   <version>0.1.0</version>
   <description>Contains the RCDT ros2 messages.</description>
   <maintainer email="researchcenter@alliander.com">RCDT</maintainer>
