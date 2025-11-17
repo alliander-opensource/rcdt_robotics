@@ -8,14 +8,15 @@ PoseManipulator::PoseManipulator() : rclcpp::Node("pose_manipulator") {
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
-  express_pose_in_other_frame_service_ = this->create_service<
-      rcdt_interfaces::srv::ExpressPoseInOtherFrame>(
-      "~/express_pose_in_other_frame",
-      [this](
-          std::shared_ptr<rcdt_interfaces::srv::ExpressPoseInOtherFrame::Request>
-              req,
-          std::shared_ptr<rcdt_interfaces::srv::ExpressPoseInOtherFrame::Response>
-              resp) { this->expressPoseInOtherFrame(req, resp); });
+  express_pose_in_other_frame_service_ =
+      this->create_service<rcdt_interfaces::srv::ExpressPoseInOtherFrame>(
+          "~/express_pose_in_other_frame",
+          [this](std::shared_ptr<
+                     rcdt_interfaces::srv::ExpressPoseInOtherFrame::Request>
+                     req,
+                 std::shared_ptr<
+                     rcdt_interfaces::srv::ExpressPoseInOtherFrame::Response>
+                     resp) { this->expressPoseInOtherFrame(req, resp); });
 
   transform_pose_service_ =
       this->create_service<rcdt_interfaces::srv::TransformPose>(
@@ -35,7 +36,8 @@ PoseManipulator::PoseManipulator() : rclcpp::Node("pose_manipulator") {
 }
 
 void PoseManipulator::expressPoseInOtherFrame(
-    const std::shared_ptr<rcdt_interfaces::srv::ExpressPoseInOtherFrame::Request>
+    const std::shared_ptr<
+        rcdt_interfaces::srv::ExpressPoseInOtherFrame::Request>
         req,
     std::shared_ptr<rcdt_interfaces::srv::ExpressPoseInOtherFrame::Response>
         resp) {

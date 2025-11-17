@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import rcdt_utilities.launch_utils_env_configuration as utils_conf
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
@@ -14,17 +15,6 @@ from rcdt_launch.platform_configurations import (
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
-from rcdt_utilities.launch_utils_env_configuration import (
-    create_controllers,
-    create_gazebo_launch,
-    create_hardware_interfaces,
-    create_joystick_nodes,
-    create_launch_descriptions,
-    create_map_links,
-    create_parent_links,
-    create_state_publishers,
-    order_platforms,
-)
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -50,9 +40,8 @@ def launch_setup(context: LaunchContext) -> list:
     Raises:
         RuntimeError: If no platforms are specified.
     """
-    print(f"Configuration name: {configuration_arg.string_value(context)}")
-    platform_ctx: ConfigurationContext = ConfigurationContext(
-        config_namespace=configuration_arg.string_value(context),
+    platform_ctx = ConfigurationContext(
+        config_name=configuration_arg.string_value(context),
         use_joystick=True,
         use_sim=use_sim_arg.bool_value(context),
     )
@@ -69,16 +58,18 @@ def launch_setup(context: LaunchContext) -> list:
 
     if EnvironmentConfig.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
-    order_platforms()
+    utils_conf.order_platforms()
 
-    state_publishers = create_state_publishers()
-    gazebo = create_gazebo_launch(load_gazebo_ui)
-    hardware_interfaces = create_hardware_interfaces()
-    map_links = create_map_links()
-    parent_links = create_parent_links()
-    controllers = create_controllers()
-    launch_descriptions = create_launch_descriptions()
-    joystick_nodes = create_joystick_nodes() if platform_ctx.use_joystick else []
+    state_publishers = utils_conf.create_state_publishers()
+    gazebo = utils_conf.create_gazebo_launch(load_gazebo_ui)
+    hardware_interfaces = utils_conf.create_hardware_interfaces()
+    map_links = utils_conf.create_map_links()
+    parent_links = utils_conf.create_parent_links()
+    controllers = utils_conf.create_controllers()
+    launch_descriptions = utils_conf.create_launch_descriptions()
+    joystick_nodes = (
+        utils_conf.create_joystick_nodes() if platform_ctx.use_joystick else []
+    )
 
     utilities = RegisteredLaunchDescription(
         get_file_path("rcdt_utilities", ["launch"], "utils.launch.py")

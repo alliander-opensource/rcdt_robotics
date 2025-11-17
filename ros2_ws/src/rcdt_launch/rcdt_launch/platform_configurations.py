@@ -20,12 +20,12 @@ class ConfigurationContext:
     """Shared parameters passed to configuration functions.
 
     Attributes:
-        config_namespace (str): The name of the selected configuration.
+        config_name (str): The name of the selected configuration.
         use_joystick (bool): Whether to enable joystick input.
         use_sim (bool): Whether to launch the system in simulation mode.
     """
 
-    config_namespace: str
+    config_name: str
     use_joystick: bool
     use_sim: bool
 
@@ -217,7 +217,7 @@ def config_panther_and_franka(ctx: ConfigurationContext) -> ConfigurationContext
     return ctx
 
 
-def configure_system(config_ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def configure_system(config_ctx: ConfigurationContext) -> ConfigurationContext:
     """Instantiates the provided platform configuration.
 
     Args:
@@ -230,9 +230,9 @@ def configure_system(config_ctx: ConfigurationContext) -> ConfigurationContext: 
     Raises:
         ValueError: If the provided configuration is not a valid option.
     """
-    namespace = config_ctx.config_namespace
-    if namespace not in PLATFORM_CONFIGS:
-        raise ValueError(f"Unknown configuration: {namespace}")
+    platform_configuration = config_ctx.config_name
+    if platform_configuration not in PLATFORM_CONFIGS:
+        raise ValueError(f"Unknown configuration: {platform_configuration}")
 
-    updated_ctx = PLATFORM_CONFIGS[namespace](config_ctx)
+    updated_ctx = PLATFORM_CONFIGS[platform_configuration](config_ctx)
     return updated_ctx
