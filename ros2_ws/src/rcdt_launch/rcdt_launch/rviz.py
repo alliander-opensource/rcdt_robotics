@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import yaml
-from rcdt_utilities.launch_utils import get_file_path, get_yaml
+from rcdt_utilities.ros_utils import get_file_path, get_yaml
 
 
 class Rviz:

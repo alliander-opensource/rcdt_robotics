@@ -8,11 +8,10 @@ import math
 from typing import Literal
 
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import get_file_path, get_robot_description
-from rcdt_utilities.register import RegisteredLaunchDescription
-
 from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.rviz import Rviz
+from rcdt_utilities.register import RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path, get_robot_description
 
 
 class Platform:  # noqa: PLR0904
@@ -42,7 +41,7 @@ class Platform:  # noqa: PLR0904
         self.childs = []
         self.add_to_env()
         self.namespace = namespace if namespace else self.generate_namespace()
-        self.ip_address = None  # TODO: only added because of linting error (regarding unresolved-attribute ros2_ws/src/rcdt_utilities/rcdt_utilities/launch_utils_env_configuration.py:125:39)
+        self.ip_address = None  # TODO: only added because of linting error (regarding unresolved-attribute ros2_ws/src/rcdt_utilities/rcdt_utilities/launch_utils.py:125:39)
 
         Rviz.add_platform_model(self.namespace)
 

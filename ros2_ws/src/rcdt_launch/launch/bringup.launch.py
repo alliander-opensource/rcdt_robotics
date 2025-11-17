@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import rcdt_utilities.launch_utils_env_configuration as utils_config
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
@@ -10,8 +9,10 @@ from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.predefined_configurations import PredefinedConfigurations
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities import launch_utils
+from rcdt_utilities.launch_argument import SKIP, LaunchArgument
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 load_gazebo_ui_arg = LaunchArgument("load_gazebo_ui", False, [True, False])
@@ -49,17 +50,17 @@ def launch_setup(context: LaunchContext) -> list:
 
     if EnvironmentConfiguration.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")
-    utils_config.order_platforms()
+    launch_utils.order_platforms()
 
-    state_publishers = utils_config.create_state_publishers()
-    gazebo = utils_config.create_gazebo_launch(load_gazebo_ui)
-    hardware_interfaces = utils_config.create_hardware_interfaces()
-    map_links = utils_config.create_map_links()
-    parent_links = utils_config.create_parent_links()
-    controllers = utils_config.create_controllers()
-    launch_descriptions = utils_config.create_launch_descriptions()
+    state_publishers = launch_utils.create_state_publishers()
+    gazebo = launch_utils.create_gazebo_launch(load_gazebo_ui)
+    hardware_interfaces = launch_utils.create_hardware_interfaces()
+    map_links = launch_utils.create_map_links()
+    parent_links = launch_utils.create_parent_links()
+    controllers = launch_utils.create_controllers()
+    launch_descriptions = launch_utils.create_launch_descriptions()
     joystick_nodes = (
-        utils_config.create_joystick_nodes() if EnvironmentConfiguration.use_joystick else []
+        launch_utils.create_joystick_nodes() if EnvironmentConfiguration.use_joystick else []
     )
 
     utilities = RegisteredLaunchDescription(

@@ -6,8 +6,9 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetRemap
 from nav2_common.launch import RewrittenYaml
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_argument import SKIP, LaunchArgument
 from rcdt_utilities.register import Register
+from rcdt_utilities.ros_utils import get_file_path
 
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])

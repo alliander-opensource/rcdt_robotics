@@ -12,8 +12,8 @@ from rcdt_launch.moveit import Moveit
 from rcdt_launch.platforms.camera import Camera
 from rcdt_launch.platforms.platform import Platform
 from rcdt_launch.rviz import Rviz
-from rcdt_utilities.launch_utils import get_file_path, get_robot_description
 from rcdt_utilities.register import RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path, get_robot_description
 
 
 class Arm(Platform):

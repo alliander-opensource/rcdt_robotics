@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, Literal
 from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.platforms.platform import Platform
 from rcdt_launch.rviz import Rviz
-from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path
 
 if TYPE_CHECKING:
     from rcdt_launch.platforms.arm import Arm

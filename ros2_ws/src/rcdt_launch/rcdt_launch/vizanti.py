@@ -4,7 +4,7 @@
 
 import json
 
-from rcdt_utilities.launch_utils import get_file_path
+from rcdt_utilities.ros_utils import get_file_path
 
 
 class Vizanti:

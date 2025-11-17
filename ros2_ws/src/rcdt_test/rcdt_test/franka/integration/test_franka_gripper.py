@@ -8,9 +8,10 @@ import pytest
 from _pytest.fixtures import SubRequest
 from launch import LaunchDescription
 from rcdt_launch.platforms.arm import Arm
-from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path
 from rcdt_utilities.test_utils import (
+    assert_for_message,
     call_trigger_action,
     wait_for_register,
     wait_until_reached_joint,

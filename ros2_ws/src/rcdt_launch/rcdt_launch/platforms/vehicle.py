@@ -13,8 +13,8 @@ from rcdt_launch.platforms.lidar import Lidar
 from rcdt_launch.platforms.platform import Platform
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
-from rcdt_utilities.launch_utils import get_file_path
 from rcdt_utilities.register import RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path
 
 
 class Vehicle(Platform):

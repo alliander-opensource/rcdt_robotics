@@ -241,6 +241,22 @@ def call_express_pose_in_other_frame(
     return response
 
 
+def assert_for_message(message_type: type, topic: str, timeout: int) -> None:
+    """Assert that a message of a specific type is received on a given topic within a timeout period.
+
+    Args:
+        message_type (type): The type of the message to wait for.
+        topic (str): The topic to listen to.
+        timeout (int): The maximum time in seconds to wait for the message.
+    """
+    wait_for_topics = WaitForTopics([(topic, message_type)], timeout)
+    received = wait_for_topics.wait()
+    wait_for_topics.shutdown()
+    assert received, (
+        f"No message received of type {message_type.__name__} on topic {topic} within {timeout} seconds."
+    )
+
+
 def assert_joy_topic_switch(
     node: Node,
     expected_topic: str,

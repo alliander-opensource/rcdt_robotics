@@ -14,9 +14,10 @@ from launch import LaunchDescription
 from nav2_msgs.action import NavigateToPose
 from rcdt_launch.platforms.lidar import Lidar
 from rcdt_launch.platforms.vehicle import Vehicle
-from rcdt_utilities.launch_utils import assert_for_message, get_file_path
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
+from rcdt_utilities.ros_utils import get_file_path
 from rcdt_utilities.test_utils import (
+    assert_for_message,
     call_trigger_service,
     create_ready_action_client,
     wait_for_register,
