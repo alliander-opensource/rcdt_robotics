@@ -183,7 +183,7 @@ class Arm(Platform):
             launch_descriptions.append(self.create_moveit_launch())
         return launch_descriptions
 
-    def create_map_link(self) -> Node | None:  # TODO: naar classen zelf opsplitsen!
+    def create_map_link(self) -> Node | None:
         """Create a static_transform_publisher node that links the platform to the map.
 
         Returns:

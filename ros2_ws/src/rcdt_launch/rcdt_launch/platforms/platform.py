@@ -41,7 +41,7 @@ class Platform:  # noqa: PLR0904
         self.childs = []
         self.add_to_env()
         self.namespace = namespace if namespace else self.generate_namespace()
-        self.ip_address = None  # TODO: only added because of linting error (regarding unresolved-attribute ros2_ws/src/rcdt_utilities/rcdt_utilities/launch_utils.py:125:39)
+        self.ip_address = None
 
         Rviz.add_platform_model(self.namespace)
 
@@ -142,8 +142,12 @@ class Platform:  # noqa: PLR0904
     def add_to_env(self) -> None:
         """Add a platform instance to the general environment configuration list."""
         EnvironmentConfiguration.platforms.append(self)
-        current_value = EnvironmentConfiguration.platform_indices.get(self.platform_type, 0)
-        EnvironmentConfiguration.platform_indices[self.platform_type] = current_value + 1
+        current_value = EnvironmentConfiguration.platform_indices.get(
+            self.platform_type, 0
+        )
+        EnvironmentConfiguration.platform_indices[self.platform_type] = (
+            current_value + 1
+        )
 
     def generate_namespace(self) -> str:
         """Generate an unique namespace for the given platform.
@@ -209,7 +213,7 @@ class Platform:  # noqa: PLR0904
         """
         return []
 
-    def create_map_link(self) -> Node | None:  # TODO: naar classen zelf opsplitsen!
+    def create_map_link(self) -> Node | None:
         """Create a static_transform_publisher node that links the platform to the map.
 
         Returns:

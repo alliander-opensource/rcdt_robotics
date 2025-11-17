@@ -7,7 +7,8 @@ import os
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction, Shutdown
 from launch_ros.actions import Node
-from rcdt_utilities.launch_argument import SKIP, LaunchArgument
+from rcdt_utilities.launch_argument import LaunchArgument
+from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
 from rcdt_utilities.ros_utils import get_file_path
 

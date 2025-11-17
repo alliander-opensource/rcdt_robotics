@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
-
+from launch import LaunchDescriptionEntity
 from launch_ros.actions import Node
 from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.platforms.arm import Arm
@@ -9,6 +9,8 @@ from rcdt_launch.platforms.vehicle import Vehicle
 
 from rcdt_utilities.register import RegisteredLaunchDescription
 from rcdt_utilities.ros_utils import get_file_path
+
+SKIP = LaunchDescriptionEntity()
 
 
 def reset() -> None:
@@ -151,7 +153,10 @@ def create_controllers() -> list[RegisteredLaunchDescription]:
     """
     controllers = []
     for platform in EnvironmentConfiguration.platforms:
-        if not EnvironmentConfiguration.simulation and platform.platform_type == "panther":
+        if (
+            not EnvironmentConfiguration.simulation
+            and platform.platform_type == "panther"
+        ):
             continue
         if platform.controller_path is not None:
             controllers.append(platform.create_controller())

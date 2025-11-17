@@ -10,7 +10,7 @@ from rcdt_launch.predefined_configurations import PredefinedConfigurations
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities import launch_utils
-from rcdt_utilities.launch_argument import SKIP, LaunchArgument
+from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.ros_utils import get_file_path
 
@@ -60,7 +60,9 @@ def launch_setup(context: LaunchContext) -> list:
     controllers = launch_utils.create_controllers()
     launch_descriptions = launch_utils.create_launch_descriptions()
     joystick_nodes = (
-        launch_utils.create_joystick_nodes() if EnvironmentConfiguration.use_joystick else []
+        launch_utils.create_joystick_nodes()
+        if EnvironmentConfiguration.use_joystick
+        else []
     )
 
     utilities = RegisteredLaunchDescription(
@@ -80,9 +82,11 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetParameter(name="use_sim_time", value=EnvironmentConfiguration.simulation),
-        Register.group(rviz, context) if use_rviz else SKIP,
+        Register.group(rviz, context) if use_rviz else launch_utils.SKIP,
         *[Register.on_start(node, context) for node in state_publishers],
-        Register.group(gazebo, context) if EnvironmentConfiguration.simulation else SKIP,
+        Register.group(gazebo, context)
+        if EnvironmentConfiguration.simulation
+        else launch_utils.SKIP,
         *[Register.group(group, context) for group in hardware_interfaces],
         *[Register.on_start(node, context) for node in map_links],
         *[Register.on_start(node, context) for node in parent_links],
@@ -90,7 +94,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.group(utilities, context),
         *[Register.on_start(node, context) for node in joystick_nodes],
         *[Register.group(group, context) for group in launch_descriptions],
-        Register.group(vizanti, context) if use_vizanti else SKIP,
+        Register.group(vizanti, context) if use_vizanti else launch_utils.SKIP,
     ]
 
 

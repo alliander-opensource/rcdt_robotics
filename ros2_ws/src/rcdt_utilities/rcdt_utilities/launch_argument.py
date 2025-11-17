@@ -2,11 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from launch import LaunchContext, LaunchDescriptionEntity
+from launch import LaunchContext
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-
-SKIP = LaunchDescriptionEntity()
 
 
 class LaunchArgument:

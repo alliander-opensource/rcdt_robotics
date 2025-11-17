@@ -19,7 +19,7 @@ PLATFORM_CONFIGS: Dict[str, ConfigurationFunction] = {}
 
 
 class PredefinedConfigurations:
-    """TODO."""
+    """Provides access to a collection of predefined platform configurations."""
 
     @staticmethod
     def apply_configuration(config_name: str) -> None:
@@ -37,8 +37,8 @@ class PredefinedConfigurations:
         PLATFORM_CONFIGS[config_name]()
 
     @staticmethod
-    def get_names() -> None:
-        """TODO.
+    def get_names() -> list:
+        """Get a list of all registered platform configuration names.
 
         Returns:
             list: List of all platform configuration options.
