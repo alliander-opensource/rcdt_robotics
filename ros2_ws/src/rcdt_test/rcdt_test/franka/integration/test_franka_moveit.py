@@ -31,7 +31,7 @@ def franka_and_moveit_launch(request: SubRequest) -> LaunchDescription:
     """
     Arm(platform="franka", position=[0, 0, 0], namespace=namespace, moveit=True)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
             "rviz": "False",
             "simulation": request.config.getoption("simulation"),

@@ -38,7 +38,7 @@ def franka(request: SubRequest) -> LaunchDescription:
         moveit=True,
     )
     franka_launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
             "rviz": "False",
             "simulation": request.config.getoption("simulation"),

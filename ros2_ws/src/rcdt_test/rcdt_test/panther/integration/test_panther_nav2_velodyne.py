@@ -49,7 +49,7 @@ def panther_launch(request: SubRequest) -> LaunchDescription:
     )
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=vehicle, namespace=namespace_lidar)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
             "rviz": "False",
             "simulation": request.config.getoption("simulation"),

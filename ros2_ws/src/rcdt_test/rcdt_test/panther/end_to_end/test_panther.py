@@ -28,7 +28,7 @@ def panther_launch(request: SubRequest) -> LaunchDescription:
     """
     Vehicle(platform="panther", position=[0, 0, 0.2], namespace=namespace)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
             "rviz": "False",
             "simulation": request.config.getoption("simulation"),

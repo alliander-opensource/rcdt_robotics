@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from dataclasses import dataclass
 from typing import Callable, Dict
 
 from rcdt_launch.arm import Arm
@@ -14,23 +13,7 @@ from rcdt_launch.platform import Platform
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vehicle import Vehicle
 
-
-@dataclass
-class ConfigurationContext:
-    """Shared parameters passed to configuration functions.
-
-    Attributes:
-        config_name (str): The name of the selected configuration.
-        use_joystick (bool): Whether to enable joystick input.
-        use_sim (bool): Whether to launch the system in simulation mode.
-    """
-
-    config_name: str
-    use_joystick: bool
-    use_sim: bool
-
-
-ConfigurationFunction = Callable[[ConfigurationContext], ConfigurationContext]
+ConfigurationFunction = Callable[[], None]
 
 PLATFORM_CONFIGS: Dict[str, ConfigurationFunction] = {}
 
@@ -56,56 +39,49 @@ def register_configuration(
 
 
 @register_configuration("")
-def config_empty(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
-    return ctx
+def config_empty() -> None:  # noqa: D103
+    pass
 
 
 @register_configuration("axis")
-def config_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_axis() -> None:  # noqa: D103
     Platform("axis", [0, 0, 0])
-    return ctx
 
 
 @register_configuration("gps")
-def config_gps(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_gps() -> None:  # noqa: D103
     GPS("nmea", [0, 0, 0.5], ip_address="10.15.20.202")
-    return ctx
 
 
 @register_configuration("ouster")
-def config_ouster(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_ouster() -> None:  # noqa: D103
     Lidar("ouster", [0, 0, 0.5])
-    return ctx
 
 
 @register_configuration("velodyne")
-def config_velodyne(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_velodyne() -> None:  # noqa: D103
     Lidar("velodyne", [0, 0, 0.5])
-    return ctx
 
 
 @register_configuration("realsense")
-def config_realsense(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_realsense() -> None:  # noqa: D103
     Camera("realsense", [0, 0, 0.5])
-    return ctx
 
 
 @register_configuration("zed")
-def config_zed(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_zed() -> None:  # noqa: D103
     Camera("zed", [0, 0, 0.5], namespace="zed")
-    return ctx
 
 
 @register_configuration("franka")
-def config_franka(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
-    if not ctx.use_sim:
+def config_franka() -> None:  # noqa: D103
+    if not EnvironmentConfig.simulation:
         Rviz.load_motion_planning_plugin = True
     Arm("franka", [0, 0, 0], gripper=True, moveit=True, ip_address="172.16.0.2")
-    return ctx
 
 
 @register_configuration("franka_axis")
-def config_franka_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_franka_axis() -> None:  # noqa: D103
     EnvironmentConfig.world = "table_with_1_brick.sdf"
     Rviz.add_markers()
     Rviz.load_robot_state = True
@@ -113,126 +89,103 @@ def config_franka_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # no
     Rviz.load_planning_scene = True
     arm = Arm("franka", [0, 0, 0], moveit=True)
     Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
-    return ctx
 
 
 @register_configuration("franka_double")
-def config_franka_double(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_franka_double() -> None:  # noqa: D103
     franka = Arm("franka", [0, 0, 0], [0, 0, 20])
     Platform("axis", [0, 0, 0.1], [0, 20, 0], parent=franka)
-    return ctx
 
 
 @register_configuration("franka_planning")
-def config_franka_planning(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
-    ctx.use_joystick = False
+def config_franka_planning() -> None:  # noqa: D103
+    EnvironmentConfig.use_joystick = False
     Rviz.load_motion_planning_plugin = True
     Arm("franka", [1.0, 0, 0], gripper=True, moveit=True)
     Arm("franka", [-1.0, 0, 0], gripper=True, moveit=True)
-    return ctx
 
 
 @register_configuration("franka_realsense")
-def config_franka_realsense(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_franka_realsense() -> None:  # noqa: D103
     arm = Arm("franka", [0, 0, 0], moveit=True)
     Camera("realsense", [0.05, 0, 0], [0, -90, 180], parent=arm)
-    return ctx
 
 
 @register_configuration("panther")
-def config_panther(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther() -> None:  # noqa: D103
     Vehicle("panther", [0, 0, 0.2], namespace="panther")
-    return ctx
 
 
 @register_configuration("panther_axis")
-def config_panther_axis(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_axis() -> None:  # noqa: D103
     vehicle = Vehicle("panther", [0, 0, 0.2], orientation=[0, 0, 90])
     Platform("axis", [0, 0, 0.2], [20, 0, 0], parent=vehicle)
-    return ctx
 
 
 @register_configuration("panther_gps")
-def config_panther_gps(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_gps() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
     GPS("nmea", [0, 0, 0.2], parent=panther)
-    return ctx
 
 
 @register_configuration("panther_realsense")
-def config_panther_realsense(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_realsense() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
     Camera("realsense", [0, 0, 0.2], parent=panther)
-    return ctx
 
 
 @register_configuration("panther_zed")
-def config_panther_zed(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_zed() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
     Camera("zed", [0, 0, 0.5], parent=panther)
-    return ctx
 
 
 @register_configuration("panther_velodyne")
-def config_panther_velodyne(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_velodyne() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
-    return ctx
 
 
 @register_configuration("panther_ouster")
-def config_panther_ouster(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_ouster() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Lidar("ouster", [0.13, -0.13, 0.35], parent=panther)
-    return ctx
 
 
 @register_configuration("mm")
-def config_mm(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_mm() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
     Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
-    return ctx
 
 
 @register_configuration("mm_velodyne")
-def config_mm_velodyne(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_mm_velodyne() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
-    return ctx
 
 
 @register_configuration("mm_ouster")
-def config_mm_ouster(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_mm_ouster() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
     Lidar("ouster", [0.13, -0.13, 0.35], parent=panther)
-    return ctx
 
 
 @register_configuration("panther_and_franka")
-def config_panther_and_franka(ctx: ConfigurationContext) -> ConfigurationContext:  # noqa: D103
+def config_panther_and_franka() -> None:  # noqa: D103
     Vehicle("panther", [0, -0.5, 0.2])
     Arm("franka", [0, 0.5, 0])
-    return ctx
 
 
-def configure_system(config_ctx: ConfigurationContext) -> ConfigurationContext:
+def configure_system() -> None:
     """Instantiates the provided platform configuration.
-
-    Args:
-        config_ctx (ConfigurationContext): Configuration context that indicates what platform
-            configuration is desired.
-
-    Returns:
-        ConfigurationContext: Updated version of the configuration context.
 
     Raises:
         ValueError: If the provided configuration is not a valid option.
     """
-    platform_configuration = config_ctx.config_name
+    platform_configuration = EnvironmentConfig.config_name
     if platform_configuration not in PLATFORM_CONFIGS:
         raise ValueError(f"Unknown configuration: {platform_configuration}")
 
-    updated_ctx = PLATFORM_CONFIGS[platform_configuration](config_ctx)
-    return updated_ctx
+    PLATFORM_CONFIGS[platform_configuration]()

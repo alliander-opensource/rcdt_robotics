@@ -28,7 +28,7 @@ def launch(request: SubRequest) -> LaunchDescription:
     """
     Lidar(platform="ouster", position=[0, 0, 0.5], namespace=namespace)
     launch = RegisteredLaunchDescription(
-        get_file_path("rcdt_launch", ["launch"], "robots.launch.py"),
+        get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
             "rviz": "False",
             "simulation": request.config.getoption("simulation"),
