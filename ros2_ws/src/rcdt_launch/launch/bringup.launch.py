@@ -7,7 +7,7 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import SetParameter
 from rcdt_launch.environment_config import EnvironmentConfig
-from rcdt_launch.platform_configurations import PLATFORM_CONFIGS, configure_system
+from rcdt_launch import predefined_configurations
 from rcdt_launch.rviz import Rviz
 from rcdt_launch.vizanti import Vizanti
 from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
@@ -20,7 +20,7 @@ use_vizanti_arg = LaunchArgument("vizanti", False, [True, False])
 configuration_arg = LaunchArgument(
     "configuration",
     "",
-    list(PLATFORM_CONFIGS.keys()),
+    list(predefined_configurations.PLATFORM_CONFIGS.keys()),
 )
 
 
@@ -36,16 +36,16 @@ def launch_setup(context: LaunchContext) -> list:
     Raises:
         RuntimeError: If no platforms are specified.
     """
+    config_name = configuration_arg.string_value(context)
     load_gazebo_ui = load_gazebo_ui_arg.bool_value(context)
     use_rviz = use_rviz_arg.bool_value(context)
     use_vizanti = use_vizanti_arg.bool_value(context)
 
-    EnvironmentConfig.config_name = configuration_arg.string_value(context)
     EnvironmentConfig.simulation = use_sim_arg.bool_value(context)
     Rviz.load_motion_planning_plugin = False
     Rviz.load_point_cloud = False
 
-    configure_system()
+    predefined_configurations.apply_configuration(config_name)
 
     if EnvironmentConfig.platforms == []:
         raise RuntimeError("No platforms specified. Please specify a platform.")

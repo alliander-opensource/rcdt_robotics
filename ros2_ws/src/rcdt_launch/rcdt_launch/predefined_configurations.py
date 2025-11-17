@@ -178,14 +178,16 @@ def config_panther_and_franka() -> None:  # noqa: D103
     Arm("franka", [0, 0.5, 0])
 
 
-def configure_system() -> None:
+def apply_configuration(config_name: str) -> None:
     """Instantiates the provided platform configuration.
+
+    Args:
+        config_name (str): Name of the platform configuration.
 
     Raises:
         ValueError: If the provided configuration is not a valid option.
     """
-    platform_configuration = EnvironmentConfig.config_name
-    if platform_configuration not in PLATFORM_CONFIGS:
-        raise ValueError(f"Unknown configuration: {platform_configuration}")
+    if config_name not in PLATFORM_CONFIGS:
+        raise ValueError(f"Unknown configuration: {config_name}")
 
-    PLATFORM_CONFIGS[platform_configuration]()
+    PLATFORM_CONFIGS[config_name]()

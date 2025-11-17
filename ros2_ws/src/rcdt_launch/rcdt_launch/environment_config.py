@@ -12,7 +12,6 @@ class EnvironmentConfig:
 
     Attributes:
         bridge_topics (list[str]): A list of all topics that should be bridged between Gazebo and ROS.
-        config_name (str): The name of the selected configuration.
         platform_indices (dict[str, int]): A collections of the different platforms and the number of occurrences.
         platforms (list[Platform]): A list of all the platforms.
         names (list[str]): A list of all platform names.
@@ -22,7 +21,6 @@ class EnvironmentConfig:
     """
 
     bridge_topics: list[str] = []
-    config_name: str = ""
     platform_indices: dict[str, int] = {}
     platforms: list["Platform"] = []
     names: list[str] = []
