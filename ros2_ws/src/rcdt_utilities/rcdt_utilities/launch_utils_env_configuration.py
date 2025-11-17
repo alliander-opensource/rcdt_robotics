@@ -55,11 +55,11 @@ def order_platforms() -> None:
     ]
 
     for platform in EnvironmentConfig.platforms:
-        if platform.platform not in order:
-            raise ValueError(f"Unknown platform to order: {platform.platform}")
+        if platform.platform_type not in order:
+            raise ValueError(f"Unknown platform to order: {platform.platform_type}")
 
     EnvironmentConfig.platforms = sorted(
-        EnvironmentConfig.platforms, key=lambda platform: order.index(platform.platform)
+        EnvironmentConfig.platforms, key=lambda platform: order.index(platform.platform_type)
     )
 
 
@@ -116,7 +116,7 @@ def create_hardware_interfaces() -> list[RegisteredLaunchDescription]:
         return hardware_interfaces
 
     for platform in EnvironmentConfig.platforms:
-        if isinstance(platform, Arm) and platform.platform == "franka":
+        if isinstance(platform, Arm) and platform.platform_type == "franka":
             hardware_interfaces.append(
                 RegisteredLaunchDescription(
                     get_file_path("rcdt_franka", ["launch"], "robot.launch.py"),
@@ -150,7 +150,7 @@ def create_controllers() -> list[RegisteredLaunchDescription]:
     """
     controllers = []
     for platform in EnvironmentConfig.platforms:
-        if not EnvironmentConfig.simulation and platform.platform == "panther":
+        if not EnvironmentConfig.simulation and platform.platform_type == "panther":
             continue
         if platform.controller_path is not None:
             controllers.append(platform.create_controller())

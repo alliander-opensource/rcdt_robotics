@@ -82,7 +82,7 @@ class Camera(Platform):
         Raises:
             ValueError: If the Camera platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "realsense":
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_realsense_d435.urdf.xacro"
@@ -99,9 +99,9 @@ class Camera(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        if self.platform == "realsense":
+        if self.platform_type == "realsense":
             launch_descriptions.append(self.create_realsense_launch())
-        if self.platform == "zed":
+        if self.platform_type == "zed":
             launch_descriptions.append(self.create_zed_launch())
         return launch_descriptions
 

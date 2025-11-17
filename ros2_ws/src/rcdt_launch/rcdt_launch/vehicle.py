@@ -49,7 +49,7 @@ class Vehicle(Platform):
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
         )
-        self.platform = platform
+        self.platform_type = platform
         self.namespace = self.namespace
         self.navigation = navigation
         self.slam = slam
@@ -108,11 +108,11 @@ class Vehicle(Platform):
         Raises:
             ValueError: If an unknown Vehicle platform is specified.
         """
-        match self.platform:
+        match self.platform_type:
             case "panther":
                 package = "rcdt_panther"
             case _:
-                raise ValueError(f"Unknown Vehicle platform: {self.platform}")
+                raise ValueError(f"Unknown Vehicle platform: {self.platform_type}")
 
         return get_file_path(package, ["launch"], "controllers.launch.py")
 
@@ -126,7 +126,7 @@ class Vehicle(Platform):
         Raises:
             ValueError: If the Vehicle platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "panther":
                 return "base_link"
             case _:
@@ -144,7 +144,7 @@ class Vehicle(Platform):
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "panther":
                 return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
             case _:
@@ -254,7 +254,7 @@ class Vehicle(Platform):
         pub_topic = f"/{self.namespace}/cmd_vel"
         if self.collision_monitor:
             pub_topic += "_raw"
-        if self.platform == "panther":
+        if self.platform_type == "panther":
             nodes.append(
                 Node(
                     package="rcdt_joystick",

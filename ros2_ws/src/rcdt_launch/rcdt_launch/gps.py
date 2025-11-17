@@ -36,7 +36,7 @@ class GPS(Platform):
             ip_address (str): The IP address of the platform.
         """
         super().__init__(platform, position, orientation, namespace, parent)
-        self.platform = platform
+        self.platform_type = platform
         self.namespace = self.namespace
         self.ip_address = ip_address
 
@@ -63,7 +63,7 @@ class GPS(Platform):
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "nmea":
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_nmea_navsat.urdf.xacro"
@@ -78,7 +78,7 @@ class GPS(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        if self.platform == "nmea":
+        if self.platform_type == "nmea":
             launch_descriptions.append(self.create_nmea_launch())
         return launch_descriptions
 

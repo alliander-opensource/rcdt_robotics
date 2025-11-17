@@ -48,7 +48,7 @@ class Arm(Platform):
         super().__init__(
             platform, position, orientation, namespace, parent, parent_link
         )
-        self.platform = platform
+        self.platform_type = platform
         self.moveit = moveit
         self.gripper = gripper
         self.ip_address = ip_address
@@ -56,7 +56,7 @@ class Arm(Platform):
         self.camera: Camera | None = None
 
         if moveit:
-            Moveit.add(self.namespace, self.robot_description, self.platform)
+            Moveit.add(self.namespace, self.robot_description, self.platform_type)
             Rviz.moveit_namespaces.append(self.namespace)
             Rviz.add_motion_planning_plugin(self.namespace)
             Rviz.add_planning_scene(self.namespace)
@@ -82,11 +82,11 @@ class Arm(Platform):
         Raises:
             ValueError: If an unknown Arm platform is specified.
         """
-        match self.platform:
+        match self.platform_type:
             case "franka":
                 package = "rcdt_franka"
             case _:
-                raise ValueError(f"Unknown Arm platform: {self.platform}")
+                raise ValueError(f"Unknown Arm platform: {self.platform_type}")
 
         return get_file_path(package, ["launch"], "controllers.launch.py")
 
@@ -100,7 +100,7 @@ class Arm(Platform):
         Raises:
             ValueError: If the Arm platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "franka":
                 return "fr3_hand"
             case _:
@@ -121,7 +121,7 @@ class Arm(Platform):
         }
         xacro_arguments["childs"] = str(self.childs)
         xacro_arguments["parent"] = "" if self.is_child else "world"
-        if self.platform == "franka":
+        if self.platform_type == "franka":
             xacro_arguments["ip_address"] = self.ip_address
 
         return get_robot_description(self.xacro_path, xacro_arguments)
@@ -136,7 +136,7 @@ class Arm(Platform):
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "franka":
                 return get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
             case _:
@@ -163,7 +163,7 @@ class Arm(Platform):
         Returns:
             RegisteredLaunchDescription | None: The launch description for the gripper services.
         """
-        if self.platform == "franka":
+        if self.platform_type == "franka":
             return RegisteredLaunchDescription(
                 get_file_path("rcdt_franka", ["launch"], "gripper_services.launch.py"),
                 launch_arguments={"namespace": self.namespace},
@@ -241,7 +241,7 @@ class Arm(Platform):
         """
         nodes: list[Node] = []
 
-        if self.platform == "franka":
+        if self.platform_type == "franka":
             nodes.append(
                 Node(
                     package="rcdt_joystick",

@@ -37,7 +37,7 @@ class Platform:  # noqa: PLR0904
             parent (Platform | None): The parent platform, if any.
             parent_link (str): The link of the parent to which the platform is attached. If empty, the base_link of the parent is used.
         """
-        self.platform = platform  # TODO: find a better name for "platform" (like component/subsystem/model/etc.)
+        self.platform_type = platform
         self.parent = parent
         self.childs = []
         self.add_to_env()
@@ -71,7 +71,7 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "axis":
                 return "base_link"
             case _:
@@ -126,7 +126,7 @@ class Platform:  # noqa: PLR0904
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "axis":
                 return get_file_path("rcdt_sensors", ["urdf"], "rcdt_axis.urdf.xacro")
             case _:
@@ -143,8 +143,8 @@ class Platform:  # noqa: PLR0904
     def add_to_env(self) -> None:
         """Add a platform instance to the general environment configuration list."""
         EnvironmentConfig.platforms.append(self)
-        current_value = EnvironmentConfig.platform_indices.get(self.platform, 0)
-        EnvironmentConfig.platform_indices[self.platform] = current_value + 1
+        current_value = EnvironmentConfig.platform_indices.get(self.platform_type, 0)
+        EnvironmentConfig.platform_indices[self.platform_type] = current_value + 1
 
     def generate_namespace(self) -> str:
         """Generate an unique namespace for the given platform.
@@ -152,8 +152,8 @@ class Platform:  # noqa: PLR0904
         Returns:
             str: The unique namespace for the platform.
         """
-        index = EnvironmentConfig.platform_indices.get(self.platform, 0)
-        return f"{self.platform}{index}"
+        index = EnvironmentConfig.platform_indices.get(self.platform_type, 0)
+        return f"{self.platform_type}{index}"
 
     def create_state_publisher(self) -> Node | None:
         """Create a state publisher node for the platform.

@@ -73,7 +73,7 @@ class Lidar(Platform):
         Raises:
             ValueError: If the platform is unknown.
         """
-        match self.platform:
+        match self.platform_type:
             case "velodyne":
                 return get_file_path(
                     "rcdt_sensors", ["urdf"], "rcdt_velodyne.urdf.xacro"
@@ -92,9 +92,9 @@ class Lidar(Platform):
             list[RegisteredLaunchDescription]: The launch description for the platform.
         """
         launch_descriptions = []
-        if self.platform == "velodyne":
+        if self.platform_type == "velodyne":
             launch_descriptions.append(self.create_velodyne_launch())
-        if self.platform == "ouster":
+        if self.platform_type == "ouster":
             launch_descriptions.append(self.create_ouster_launch())
         return launch_descriptions
 
