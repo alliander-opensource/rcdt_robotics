@@ -5,8 +5,10 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import SKIP, LaunchArgument, get_file_path
+from rcdt_utilities.launch_argument import LaunchArgument
+from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
+from rcdt_utilities.ros_utils import get_file_path
 
 namespace_arg = LaunchArgument("namespace", "franka")
 simulation_arg = LaunchArgument("simulation", True, [True, False])
@@ -45,7 +47,7 @@ def launch_setup(context: LaunchContext) -> list:
     if simulation:
         fr3_gripper = Node(
             package="rcdt_franka",
-            executable="franka_gripper_simulation.py",
+            executable="fr3_gripper_simulation",
             output="screen",
             namespace=namespace,
         )
@@ -75,9 +77,11 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_exit(joint_state_broadcaster_spawner, context),
         Register.on_exit(fr3_arm_controller_spawner, context),
         Register.on_start(fr3_gripper, context),
-        Register.on_exit(gripper_action_controller_spawner, context)
-        if simulation
-        else SKIP,
+        (
+            Register.on_exit(gripper_action_controller_spawner, context)
+            if simulation
+            else SKIP
+        ),
     ]
 
 

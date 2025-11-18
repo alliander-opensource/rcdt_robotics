@@ -4,18 +4,6 @@
 
 #include "tests/test_package.hpp"
 
-#include <gtest/gtest.h>
-
-#include <chrono>
-#include <future>
-#include <memory>
-#include <rclcpp/duration.hpp>
-#include <rclcpp/future_return_code.hpp>
-
-#include "geometry_msgs/msg/transform.hpp"
-#include "rcdt_messages/srv/transform_pose.hpp"
-#include "rcdt_utilities/manipulate_pose.hpp"
-
 #define PI 3.14159265
 
 /**
@@ -96,7 +84,7 @@ TEST_F(PackageTesterFixture, TestTransformPoseTranslation) {
   tf.translation.y = 5;
   tf.translation.z = 5;
 
-  auto req = std::make_shared<rcdt_messages::srv::TransformPose::Request>();
+  auto req = std::make_shared<rcdt_interfaces::srv::TransformPose::Request>();
   req->pose = pose_in;
   req->transform = tf;
 
@@ -122,7 +110,7 @@ TEST_F(PackageTesterFixture, TestTransformPoseRotation) {
   tf.rotation.w = 0.7071068;
   tf.rotation.z = 0.7071068;
 
-  auto req = std::make_shared<rcdt_messages::srv::TransformPose::Request>();
+  auto req = std::make_shared<rcdt_interfaces::srv::TransformPose::Request>();
   req->pose = pose_in;
   req->transform = tf;
 

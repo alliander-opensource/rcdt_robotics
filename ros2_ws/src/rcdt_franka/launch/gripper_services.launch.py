@@ -5,7 +5,7 @@
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
-from rcdt_utilities.launch_utils import LaunchArgument
+from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.register import Register
 
 namespace_arg = LaunchArgument("namespace", "")
@@ -22,20 +22,10 @@ def launch_setup(context: LaunchContext) -> list:
     """
     namespace = namespace_arg.string_value(context)
 
-    open_gripper = Node(
-        package="rcdt_franka",
-        executable="open_gripper.py",
-        namespace=namespace,
-    )
-    close_gripper = Node(
-        package="rcdt_franka",
-        executable="close_gripper.py",
-        namespace=namespace,
-    )
+    gripper = Node(package="rcdt_franka", executable="gripper", namespace=namespace)
 
     return [
-        Register.on_start(open_gripper, context),
-        Register.on_start(close_gripper, context),
+        Register.on_start(gripper, context),
     ]
 
 

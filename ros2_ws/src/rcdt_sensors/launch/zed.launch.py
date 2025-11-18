@@ -6,8 +6,9 @@ from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
-from rcdt_utilities.launch_utils import LaunchArgument, get_file_path
+from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.register import Register
+from rcdt_utilities.ros_utils import get_file_path
 
 namespace_arg = LaunchArgument("namespace", "zed")
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -49,18 +50,12 @@ def launch_setup(context: LaunchContext) -> list:
     if use_sim:
         convert_32FC1_to_16UC1_node = Node(  # noqa: N806
             package="rcdt_sensors",
-            executable="convert_32FC1_to_16UC1.py",
-            namespace=namespace,
-        )
-        combine_camera_topics_node = Node(
-            package="rcdt_sensors",
-            executable="combine_camera_topics.py",
+            executable="convert_32FC1_to_16UC1",
             namespace=namespace,
         )
         zed = LaunchDescription(
             [
                 Register.on_start(convert_32FC1_to_16UC1_node, context),
-                Register.on_start(combine_camera_topics_node, context),
             ]
         )
     else:
