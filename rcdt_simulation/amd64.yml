@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 services:
-  rcdt_husarion:
-    image: rcdt/robotics:husarion-amd64-321-split-docker-image-structure
-    container_name: rcdt_husarion
+  rcdt_simulation:
+    image: rcdt/robotics:simulation-amd64-${IMAGE_TAG}
+    container_name: rcdt_simulation
     runtime: nvidia
     network_mode: host
     privileged: true
