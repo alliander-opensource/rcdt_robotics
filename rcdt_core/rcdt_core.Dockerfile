@@ -67,27 +67,34 @@ RUN apt update \
 
 # Python dependencies
 RUN pip install uv --break-system-packages
-RUN echo "export PYTHONPATH=\"/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages:\$PYTHONPATH\"" \
+RUN echo "export PYTHONPATH=\"/rcdt/.venv/lib/python3.12/site-packages:\$PYTHONPATH\"" \
   >> /root/.bashrc \
-  && echo "export PATH=\"/rcdt/rcdt_robotics/.venv/bin:\$PATH\"" \
+  && echo "export PATH=\"/rcdt/.venv/bin:\$PATH\"" \
   >> /root/.bashrc
 
-# Install vizanti
+# Copy custom packages & dependency list
+RUN mkdir -p /rcdt/ros/
+COPY rcdt_core/src/ /rcdt/ros/src
+COPY pyproject.toml /rcdt/pyproject.toml
+
+# Get vizanti and install its dependencies
 RUN apt update \
-  && mkdir -p /rcdt/vizanti_ws/src \
-  && cd /rcdt/vizanti_ws/src \
+  && cd /rcdt/ros/src \
   && git clone -b ros2 https://github.com/MoffKalast/vizanti.git \
   && git clone -b jazzy https://github.com/alliander-opensource/rws.git \
-  && cd /rcdt/vizanti_ws \
+  && cd /rcdt/ros \
   && rosdep update --rosdistro $ROS_DISTRO \
   && rosdep install --from-paths src -y -i
-
-WORKDIR /rcdt/vizanti_ws
-RUN . /opt/ros/$ROS_DISTRO/setup.sh \
+  
+RUN cd /rcdt/ros \
+  && uv sync \
+  && . /opt/ros/$ROS_DISTRO/setup.sh \ 
   && colcon build --symlink-install \
-  && echo "source /rcdt/vizanti_ws/install/setup.bash" >> /root/.bashrc
+  --cmake-args -DCMAKE_BUILD_TYPE=Release \ 
+  --event-handlers console_direct+ \
+  && echo "source /rcdt/ros/install/setup.bash" >> /root/.bashrc
 
-COPY entrypoint.sh /rcdt/entrypoint.sh
+COPY rcdt_core/entrypoint.sh /rcdt/entrypoint.sh
 
 WORKDIR /rcdt
 ENTRYPOINT ["/rcdt/entrypoint.sh"]

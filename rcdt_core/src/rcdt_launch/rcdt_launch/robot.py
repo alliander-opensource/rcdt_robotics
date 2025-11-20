@@ -392,7 +392,7 @@ class Platform:  # noqa: PLR0904
         """
         match self.platform:
             case "panther":
-                package = "rcdt_panther"
+                package = "rcdt_husarion"
             case "franka":
                 package = "rcdt_franka"
             case _:
@@ -412,7 +412,7 @@ class Platform:  # noqa: PLR0904
         """
         match self.platform:
             case "panther":
-                return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
+                return get_file_path("rcdt_husarion", ["urdf"], "panther.urdf.xacro")
             case "franka":
                 return get_file_path("rcdt_franka", ["urdf"], "franka.urdf.xacro")
             case "velodyne":
@@ -1025,7 +1025,7 @@ class Vehicle(Platform):
                     parameters=[
                         {"sub_topic": f"/{self.namespace}/joy"},
                         {"pub_topic": pub_topic},
-                        {"config_pkg": "rcdt_panther"},
+                        {"config_pkg": "rcdt_husarion"},
                     ],
                     namespace=self.namespace,
                 )
@@ -1046,7 +1046,7 @@ class Vehicle(Platform):
             raise ValueError("A lidar is required for use of nav2.")
 
         return RegisteredLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
+            get_file_path("rcdt_husarion", ["launch"], "nav2.launch.py"),
             launch_arguments={
                 "simulation": str(Platform.simulation),
                 "slam": str(self.slam),

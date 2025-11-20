@@ -1,3 +1,0 @@
-Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch -- -j16 -l16
-Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch -- -j16 -l16
-Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch

@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/ament_cmake_environment_hooks/local_setup.bash

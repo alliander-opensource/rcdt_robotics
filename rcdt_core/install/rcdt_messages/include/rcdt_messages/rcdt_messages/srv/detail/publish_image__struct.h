@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_generator_c/rcdt_messages/srv/detail/publish_image__struct.h

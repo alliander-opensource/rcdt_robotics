@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_generator_c/rcdt_messages/srv/publish_masks.h

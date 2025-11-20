@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_typesupport_fastrtps_cpp/rcdt_messages/srv/detail/publish_masks__rosidl_typesupport_fastrtps_cpp.hpp

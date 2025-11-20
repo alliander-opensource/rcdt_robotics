@@ -30,12 +30,12 @@ fi
 source ./checks.sh $ARCH
 
 # Check if base image with specific branch tag exists, otherwise use latest
-if [ -n "$(docker images | grep rcdt/robotics | grep $BASE_PACKAGE-$GIT_BRANCH-$ARCH)" ] ; then
-  echo "Using base image with tag $BASE_PACKAGE-$GIT_BRANCH-$ARCH."
-  BASE_IMAGE_GIT_TAG=$BASE_PACKAGE-$GIT_BRANCH-$ARCH
+if [ -n "$(docker images | grep rcdt/robotics | grep $BASE_PACKAGE-$ARCH-$GIT_BRANCH)" ] ; then
+  echo "Using base image with tag $BASE_PACKAGE-$ARCH-$GIT_BRANCH."
+  BASE_IMAGE_GIT_TAG=$BASE_PACKAGE-$ARCH-$GIT_BRANCH
 else
   BASE_IMAGE_GIT_TAG=$BASE_PACKAGE-$ARCH
-  echo "Base image with tag $BASE_PACKAGE-$GIT_BRANCH-$ARCH not found. Using latest."
+  echo "Base image with tag $BASE_PACKAGE-$ARCH-$GIT_BRANCH not found. Using $BASE_PACKAGE-$ARCH."
 fi
 echo $BASE_IMAGE_GIT_TAG
 BASE_IMAGE=rcdt/robotics:$BASE_IMAGE_GIT_TAG
@@ -44,7 +44,7 @@ echo $BASE_IMAGE
 # Build the Docker image
 (
   cd "$SCRIPT_DIR"/.. && \
-  docker build -f dockerfiles/rcdt_$PACKAGE.Dockerfile \
+  docker build -f rcdt_$PACKAGE/rcdt_$PACKAGE.Dockerfile \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
   --platform $PLATFORM \
   $NO_CACHE \

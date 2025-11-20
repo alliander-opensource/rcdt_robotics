@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_typesupport_fastrtps_c/rcdt_messages/srv/detail/move_hand_to_pose__rosidl_typesupport_fastrtps_c.h

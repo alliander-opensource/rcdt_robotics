@@ -166,7 +166,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
 
     Vizanti.create_config_file()
     vizanti = RegisteredLaunchDescription(
-        get_file_path("rcdt_panther", ["launch"], "vizanti.launch.py")
+        get_file_path("rcdt_husarion", ["launch"], "vizanti.launch.py")
     )
 
     return [

@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_typesupport_introspection_cpp/rcdt_messages/srv/detail/move_to_configuration__rosidl_typesupport_introspection_cpp.hpp

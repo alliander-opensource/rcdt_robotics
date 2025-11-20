@@ -1,7 +1,0 @@
-[0.005s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_launch -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch
-[0.010s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
-[0.112s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
-[0.161s] -- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
-[0.211s] -- Configuring done (0.2s)
-[0.212s] -- Generating done (0.0s)
-[0.213s] -- Build files have been written to: /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch

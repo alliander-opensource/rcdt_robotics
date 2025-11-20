@@ -7,4 +7,5 @@ ARCH=$1
 PACKAGE=husarion
 BASE_PACKAGE=core
 
-./build.sh $ARCH $PACKAGE $BASE_PACKAGE
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+cd $SCRIPT_DIR/../common/ && ./build.sh $ARCH $PACKAGE $BASE_PACKAGE && cd $SCRIPT_DIR

@@ -22,7 +22,8 @@ source $SCRIPT_DIR/../common/checks.sh $ARCH
 # Build the Docker image
 BASE_IMAGE=nvidia/cuda:12.9.1-cudnn-devel-ubuntu24.04-$ARCH
 (
-  docker build -f rcdt_$PACKAGE.Dockerfile \
+  cd $SCRIPT_DIR/.. && \
+  docker build -f rcdt_$PACKAGE/rcdt_$PACKAGE.Dockerfile \
   --build-arg BASE_IMAGE=$BASE_IMAGE \
   --platform $PLATFORM \
   -t $IMAGE_TAG \

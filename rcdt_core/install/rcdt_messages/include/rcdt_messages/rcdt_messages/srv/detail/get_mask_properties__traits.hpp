@@ -1,1 +1,0 @@
-/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_generator_cpp/rcdt_messages/srv/detail/get_mask_properties__traits.hpp
