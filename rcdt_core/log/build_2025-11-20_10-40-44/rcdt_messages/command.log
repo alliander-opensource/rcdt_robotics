@@ -1,0 +1,1 @@
+Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_messages -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages

@@ -1,0 +1,45 @@
+Built target ament_cmake_python_symlink_rcdt_launch
+running egg_info
+creating rcdt_launch.egg-info
+writing rcdt_launch.egg-info/PKG-INFO
+writing dependency_links to rcdt_launch.egg-info/dependency_links.txt
+writing top-level names to rcdt_launch.egg-info/top_level.txt
+writing manifest file 'rcdt_launch.egg-info/SOURCES.txt'
+reading manifest file 'rcdt_launch.egg-info/SOURCES.txt'
+writing manifest file 'rcdt_launch.egg-info/SOURCES.txt'
+Built target ament_cmake_python_build_rcdt_launch_egg
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/pythonpath.sh
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/pythonpath.dsv
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/PKG-INFO
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/SOURCES.txt
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/dependency_links.txt
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/top_level.txt
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/__init__.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/moveit.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/robot.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/rviz.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/vizanti.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/launch/robots.launch.py
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/package_run_dependencies/rcdt_launch
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/parent_prefix_path/rcdt_launch
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/ament_prefix_path.sh
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/ament_prefix_path.dsv
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/path.sh
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/path.dsv
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.bash
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.sh
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.zsh
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.dsv
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/package.dsv
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/packages/rcdt_launch
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/cmake/rcdt_launchConfig.cmake
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/cmake/rcdt_launchConfig-version.cmake
+-- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/package.xml
+Listing '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch'...
+Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/__init__.py'...
+Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/moveit.py'...
+Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/robot.py'...
+Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/rviz.py'...
+Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/vizanti.py'...

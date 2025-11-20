@@ -1,0 +1,1 @@
+/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_typesupport_introspection_c/rcdt_messages/srv/detail/select_place_location__rosidl_typesupport_introspection_c.h

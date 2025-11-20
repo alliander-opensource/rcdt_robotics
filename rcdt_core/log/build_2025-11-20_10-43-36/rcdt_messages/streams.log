@@ -1,0 +1,46 @@
+[0.008s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_messages -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages
+[0.015s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.063s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.066s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.067s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.083s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.095s] -- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.096s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.109s] -- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[0.117s] -- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[0.134s] -- Found vision_msgs: 4.1.1 (/opt/ros/jazzy/share/vision_msgs/cmake)
+[0.376s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.484s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.630s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.631s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[0.967s] -- Found Python3: /rcdt/rcdt_robotics/.venv/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[1.009s] -- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.013s] -- Configuring done (1.0s)
+[1.047s] -- Generating done (0.0s)
+[1.053s] -- Build files have been written to: /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages
+[1.059s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_messages -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages
+[1.060s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages -- -j16 -l16
+[1.101s] [  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[1.106s] [  1%] Built target ament_cmake_python_symlink_rcdt_messages
+[1.122s] Traceback (most recent call last):
+[1.122s]   File "/opt/ros/jazzy/lib/rosidl_generator_type_description/rosidl_generator_type_description", line 21, in <module>
+[1.122s]     from rosidl_generator_type_description import generate_type_hash
+[1.122s]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_generator_type_description/__init__.py", line 24, in <module>
+[1.122s]     from rosidl_parser.parser import parse_idl_file
+[1.123s]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_parser/parser.py", line 20, in <module>
+[1.123s]     from lark import Lark
+[1.123s] ModuleNotFoundError: No module named 'lark'
+[1.125s] gmake[2]: *** [CMakeFiles/rcdt_messages__rosidl_generator_type_description.dir/build.make:111: rosidl_generator_type_description/rcdt_messages/srv/AddMarker.json] Error 1
+[1.125s] gmake[1]: *** [CMakeFiles/Makefile2:215: CMakeFiles/rcdt_messages__rosidl_generator_type_description.dir/all] Error 2
+[1.125s] gmake[1]: *** Waiting for unfinished jobs....
+[1.189s] running egg_info
+[1.193s] creating rcdt_messages.egg-info
+[1.193s] writing rcdt_messages.egg-info/PKG-INFO
+[1.194s] writing dependency_links to rcdt_messages.egg-info/dependency_links.txt
+[1.194s] writing top-level names to rcdt_messages.egg-info/top_level.txt
+[1.194s] writing manifest file 'rcdt_messages.egg-info/SOURCES.txt'
+[1.207s] reading manifest file 'rcdt_messages.egg-info/SOURCES.txt'
+[1.207s] writing manifest file 'rcdt_messages.egg-info/SOURCES.txt'
+[1.225s] [  1%] Built target ament_cmake_python_build_rcdt_messages_egg
+[1.226s] gmake: *** [Makefile:146: all] Error 2
+[1.228s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages -- -j16 -l16

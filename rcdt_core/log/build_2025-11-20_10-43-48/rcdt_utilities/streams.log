@@ -1,0 +1,112 @@
+[0.006s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_utilities -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities
+[0.035s] -- The C compiler identification is GNU 13.3.0
+[0.065s] -- The CXX compiler identification is GNU 13.3.0
+[0.073s] -- Detecting C compiler ABI info
+[0.119s] -- Detecting C compiler ABI info - done
+[0.123s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.124s] -- Detecting C compile features
+[0.124s] -- Detecting C compile features - done
+[0.128s] -- Detecting CXX compiler ABI info
+[0.177s] -- Detecting CXX compiler ABI info - done
+[0.181s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.181s] -- Detecting CXX compile features
+[0.182s] -- Detecting CXX compile features - done
+[0.183s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.250s] -- Found Python3: /rcdt/rcdt_robotics/.venv/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.288s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.306s] -- Found rclcpp: 28.1.13 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.325s] -- Found rosidl_generator_c: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.332s] -- Found rosidl_generator_cpp: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.340s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.349s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.389s] -- Found rmw_implementation_cmake: 7.3.2 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.391s] -- Found rmw_cyclonedds_cpp: 2.2.3 (/opt/ros/jazzy/share/rmw_cyclonedds_cpp/cmake)
+[0.405s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[0.441s] -- Found rclpy: 7.1.6 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.442s] -- Found tf2: 0.36.16 (/opt/ros/jazzy/share/tf2/cmake)
+[0.463s] -- Found tf2_geometry_msgs: 0.36.16 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+[0.472s] -- Found eigen3_cmake_module: 0.3.0 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[0.473s] -- Found Eigen3: TRUE (found version "3.4.0") 
+[0.473s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[0.545s] -- Found rcdt_messages: 0.1.0 (/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/share/rcdt_messages/cmake)
+[0.658s] -- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.659s] -- Found ament_cmake_gtest: 2.5.4 (/opt/ros/jazzy/share/ament_cmake_gtest/cmake)
+[0.706s] -- Found gtest sources under '/opt/ros/jazzy/src/gtest_vendor': C++ tests using 'Google Test' will be built
+[0.708s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.759s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[0.760s] -- Found Threads: TRUE  
+[0.764s] -- Configuring done (0.8s)
+[0.777s] -- Generating done (0.0s)
+[0.780s] -- Build files have been written to: /rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities
+[0.787s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities' returned '0': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_utilities -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities
+[0.787s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities -- -j16 -l16
+[0.818s] [ 10%] [32mBuilding CXX object gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o[0m
+[0.819s] [ 30%] [32mBuilding CXX object CMakeFiles/manipulate_pose.dir/src/manipulate_pose.cpp.o[0m
+[0.819s] [ 30%] [32mBuilding CXX object gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o[0m
+[0.819s] [ 40%] [32mBuilding CXX object CMakeFiles/manipulate_pose.dir/src/node.cpp.o[0m
+[0.821s] [ 40%] Built target ament_cmake_python_symlink_rcdt_utilities
+[0.913s] running egg_info
+[0.918s] creating rcdt_utilities.egg-info
+[0.918s] writing rcdt_utilities.egg-info/PKG-INFO
+[0.918s] writing dependency_links to rcdt_utilities.egg-info/dependency_links.txt
+[0.918s] writing top-level names to rcdt_utilities.egg-info/top_level.txt
+[0.918s] writing manifest file 'rcdt_utilities.egg-info/SOURCES.txt'
+[0.932s] reading manifest file 'rcdt_utilities.egg-info/SOURCES.txt'
+[0.932s] writing manifest file 'rcdt_utilities.egg-info/SOURCES.txt'
+[0.956s] [ 40%] Built target ament_cmake_python_build_rcdt_utilities_egg
+[1.217s] [ 50%] [32m[1mLinking CXX static library libgtest_main.a[0m
+[1.281s] [ 50%] Built target gtest_main
+[2.736s] [ 60%] [32m[1mLinking CXX static library libgtest.a[0m
+[2.766s] [ 60%] Built target gtest
+[2.777s] [ 70%] [32mBuilding CXX object CMakeFiles/manipulate_pose_test.dir/tests/test_package.cpp.o[0m
+[2.777s] [ 80%] [32mBuilding CXX object CMakeFiles/manipulate_pose_test.dir/src/manipulate_pose.cpp.o[0m
+[3.628s] [ 90%] [32m[1mLinking CXX executable manipulate_pose[0m
+[3.759s] [ 90%] Built target manipulate_pose
+[5.502s] [100%] [32m[1mLinking CXX executable manipulate_pose_test[0m
+[5.695s] [100%] Built target manipulate_pose_test
+[5.702s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities' returned '0': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities -- -j16 -l16
+[5.703s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake --install /rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities
+[5.707s] -- Install configuration: ""
+[5.707s] -- Execute custom install script
+[5.707s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/pythonpath.sh
+[5.712s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/pythonpath.dsv
+[5.717s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities-0.1.0-py3.12.egg-info/PKG-INFO
+[5.721s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities-0.1.0-py3.12.egg-info/SOURCES.txt
+[5.724s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities-0.1.0-py3.12.egg-info/dependency_links.txt
+[5.728s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities-0.1.0-py3.12.egg-info/top_level.txt
+[5.734s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/__init__.py
+[5.738s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/cv_utils.py
+[5.741s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/geometry.py
+[5.745s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/launch_utils.py
+[5.750s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/register.py
+[5.755s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/test_utils.py
+[5.759s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/rcdt_utilities/simple_gui.py
+[5.764s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/rcdt_utilities/manipulate_pose
+[5.770s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/launch/rviz.launch.py
+[5.774s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/launch/utils.launch.py
+[5.779s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/rviz/default.rviz
+[5.784s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/urdf/detachable_joints.urdf.xacro
+[5.788s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/rcdt_utilities/manipulate_pose_test
+[5.793s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/ament_index/resource_index/package_run_dependencies/rcdt_utilities
+[5.798s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/ament_index/resource_index/parent_prefix_path/rcdt_utilities
+[5.802s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/ament_prefix_path.sh
+[5.805s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/ament_prefix_path.dsv
+[5.810s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/path.sh
+[5.816s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/environment/path.dsv
+[5.821s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/local_setup.bash
+[5.826s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/local_setup.sh
+[5.831s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/local_setup.zsh
+[5.835s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/local_setup.dsv
+[5.840s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/package.dsv
+[5.845s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/ament_index/resource_index/packages/rcdt_utilities
+[5.850s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/cmake/rcdt_utilitiesConfig.cmake
+[5.854s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/cmake/rcdt_utilitiesConfig-version.cmake
+[5.858s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/share/rcdt_utilities/package.xml
+[5.884s] Listing '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/__init__.py'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/cv_utils.py'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/geometry.py'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/launch_utils.py'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/register.py'...
+[5.884s] Compiling '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_utilities/lib/python3.12/site-packages/rcdt_utilities/test_utils.py'...
+[5.889s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities' returned '0': AMENT_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages:/rcdt/vizanti_ws/install/vizanti:/rcdt/vizanti_ws/install/vizanti_server:/rcdt/vizanti_ws/install/vizanti_demos:/rcdt/vizanti_ws/install/vizanti_msgs:/rcdt/vizanti_ws/install/vizanti_cpp:/rcdt/vizanti_ws/install/rws:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy LD_LIBRARY_PATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib:${LD_LIBRARY_PATH} PYTHONPATH=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages/lib/python3.12/site-packages:/rcdt/vizanti_ws/install/vizanti_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/rcdt/rcdt_robotics/.venv/lib/python3.12/site-packages /usr/bin/cmake --install /rcdt/rcdt_robotics/rcdt_core/build/rcdt_utilities

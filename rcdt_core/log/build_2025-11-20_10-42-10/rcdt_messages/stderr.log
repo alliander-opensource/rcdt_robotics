@@ -1,0 +1,34 @@
+[31mCMake Error at /opt/ros/jazzy/share/rosidl_adapter/cmake/rosidl_adapt_interfaces.cmake:57 (message):
+  execute_process(/rcdt/rcdt_robotics/.venv/bin/python3 -m rosidl_adapter
+  --package-name rcdt_messages --arguments-file
+  /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_adapter__arguments__rcdt_messages.json
+  --output-dir
+  /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_adapter/rcdt_messages
+  --output-file
+  /rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_adapter/rcdt_messages.idls)
+  returned error code 1:
+
+  Traceback (most recent call last):
+
+    File "<frozen runpy>", line 198, in _run_module_as_main
+    File "<frozen runpy>", line 88, in _run_code
+    File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/__main__.py", line 19, in <module>
+      sys.exit(main())
+               ^^^^^^
+    File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/main.py", line 53, in main
+      abs_idl_file = convert_to_idl(
+                     ^^^^^^^^^^^^^^^
+    File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/__init__.py", line 23, in convert_to_idl
+      from rosidl_adapter.srv import convert_srv_to_idl
+    File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/srv/__init__.py", line 16, in <module>
+      from rosidl_adapter.resource import expand_template
+    File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/resource/__init__.py", line 19, in <module>
+      import em
+
+  ModuleNotFoundError: No module named 'em'
+
+Call Stack (most recent call first):
+  /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:132 (rosidl_adapt_interfaces)
+  CMakeLists.txt:36 (rosidl_generate_interfaces)
+
+[0m

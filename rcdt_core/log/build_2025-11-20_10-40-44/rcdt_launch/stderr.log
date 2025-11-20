@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py", line 22, in <module>
+    from catkin_pkg.package import parse_package_string
+ModuleNotFoundError: No module named 'catkin_pkg'
+[31mCMake Error at /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:95 (message):
+  execute_process(/rcdt/rcdt_robotics/.venv/bin/python3
+  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/package_xml_2_cmake.py
+  /rcdt/rcdt_robotics/rcdt_core/src/rcdt_launch/package.xml
+  /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch/ament_cmake_core/package.cmake)
+  returned error code 1
+Call Stack (most recent call first):
+  /opt/ros/jazzy/share/ament_cmake_core/cmake/core/ament_package_xml.cmake:49 (_ament_package_xml)
+  /opt/ros/jazzy/share/ament_cmake_python/cmake/ament_python_install_package.cmake:60 (ament_package_xml)
+  /opt/ros/jazzy/share/ament_cmake_python/cmake/ament_python_install_package.cmake:39 (_ament_cmake_python_install_package)
+  CMakeLists.txt:13 (ament_python_install_package)
+
+[0m

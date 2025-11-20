@@ -1,0 +1,1 @@
+/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages/rosidl_typesupport_fastrtps_cpp/rcdt_messages/srv/detail/segment_image__rosidl_typesupport_fastrtps_cpp.hpp

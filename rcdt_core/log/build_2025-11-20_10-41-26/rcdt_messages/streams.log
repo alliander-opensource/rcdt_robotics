@@ -1,0 +1,29 @@
+[0.008s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_messages -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages
+[0.015s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.107s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.111s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.112s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.127s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.139s] -- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.140s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.152s] -- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[0.160s] -- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[0.183s] [31mCMake Error at CMakeLists.txt:15 (find_package):
+[0.183s]   By not providing "Findvision_msgs.cmake" in CMAKE_MODULE_PATH this project
+[0.183s]   has asked CMake to find a package configuration file provided by
+[0.183s]   "vision_msgs", but CMake did not find one.
+[0.183s] 
+[0.183s]   Could not find a package configuration file provided by "vision_msgs" with
+[0.183s]   any of the following names:
+[0.183s] 
+[0.183s]     vision_msgsConfig.cmake
+[0.183s]     vision_msgs-config.cmake
+[0.183s] 
+[0.183s]   Add the installation prefix of "vision_msgs" to CMAKE_PREFIX_PATH or set
+[0.183s]   "vision_msgs_DIR" to a directory containing one of the above files.  If
+[0.183s]   "vision_msgs" provides a separate development package or SDK, be sure it
+[0.183s]   has been installed.
+[0.183s] 
+[0.183s] [0m
+[0.183s] -- Configuring incomplete, errors occurred!
+[0.186s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_messages' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /rcdt/rcdt_robotics/rcdt_core/src/rcdt_messages -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/rcdt/rcdt_robotics/rcdt_core/install/rcdt_messages

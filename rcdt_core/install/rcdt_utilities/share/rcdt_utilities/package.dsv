@@ -1,0 +1,11 @@
+source;share/rcdt_utilities/hook/cmake_prefix_path.ps1
+source;share/rcdt_utilities/hook/cmake_prefix_path.dsv
+source;share/rcdt_utilities/hook/cmake_prefix_path.sh
+source;share/rcdt_utilities/hook/pythonpath.ps1
+source;share/rcdt_utilities/hook/pythonpath.dsv
+source;share/rcdt_utilities/hook/pythonpath.sh
+source;share/rcdt_utilities/local_setup.bash
+source;share/rcdt_utilities/local_setup.dsv
+source;share/rcdt_utilities/local_setup.ps1
+source;share/rcdt_utilities/local_setup.sh
+source;share/rcdt_utilities/local_setup.zsh

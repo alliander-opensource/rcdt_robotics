@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+services:
+  rcdt_simulation:
+    image: rcdt/robotics:simulation-${IMAGE_TAG}
+    container_name: rcdt_simulation
+    runtime: nvidia
+    network_mode: host
+    privileged: true
+    mem_limit: 6gb
+    tty: true
+    group_add:
+      - "video" # Allows camera access on all platforms, no matter the allocated user rights
+    env_file:
+      - .env
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+      - "${HOME}/.vscode-server:/rcdt/.vscode-server"
+      - "../../:/rcdt/rcdt_robotics/"
+      - "../../.personal.bashrc:/rcdt/.personal.bashrc"
+      - "../../.env:/rcdt/.env"
+      - "../../pyproject.toml:/rcdt/pyproject.toml"
+      - "../../.config:/rcdt/.config"
+      - "../../clangd:/rcdt/clangd" # Allows to mount a newer clangd version, can be used in VSCode.
+      - "/dev:/dev"
+      - "${HOME}/.nix-profile/bin/nvim:/usr/bin/nvim"
+      - "/nix/store:/nix/store"
+    environment:
+      - "DISPLAY"
+      - "RCUTILS_COLORIZED_OUTPUT=1"
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json

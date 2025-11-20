@@ -1,0 +1,42 @@
+[0.006s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch -- -j16 -l16
+[0.033s] Built target ament_cmake_python_symlink_rcdt_launch
+[0.117s] running egg_info
+[0.122s] writing rcdt_launch.egg-info/PKG-INFO
+[0.122s] writing dependency_links to rcdt_launch.egg-info/dependency_links.txt
+[0.122s] writing top-level names to rcdt_launch.egg-info/top_level.txt
+[0.134s] reading manifest file 'rcdt_launch.egg-info/SOURCES.txt'
+[0.134s] writing manifest file 'rcdt_launch.egg-info/SOURCES.txt'
+[0.153s] Built target ament_cmake_python_build_rcdt_launch_egg
+[0.159s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch -- -j16 -l16
+[0.165s] Invoking command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch
+[0.169s] -- Install configuration: ""
+[0.170s] -- Execute custom install script
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/pythonpath.sh
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/pythonpath.dsv
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/PKG-INFO
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/SOURCES.txt
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/dependency_links.txt
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch-0.1.0-py3.12.egg-info/top_level.txt
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/__init__.py
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/moveit.py
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/robot.py
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/rviz.py
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch/vizanti.py
+[0.170s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/launch/robots.launch.py
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/package_run_dependencies/rcdt_launch
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/parent_prefix_path/rcdt_launch
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/ament_prefix_path.sh
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/ament_prefix_path.dsv
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/path.sh
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/environment/path.dsv
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.bash
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.sh
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.zsh
+[0.171s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/local_setup.dsv
+[0.171s] -- Symlinking: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/package.dsv
+[0.177s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/ament_index/resource_index/packages/rcdt_launch
+[0.177s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/cmake/rcdt_launchConfig.cmake
+[0.177s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/cmake/rcdt_launchConfig-version.cmake
+[0.177s] -- Up-to-date symlink: /rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/share/rcdt_launch/package.xml
+[0.195s] Listing '/rcdt/rcdt_robotics/rcdt_core/install/rcdt_launch/lib/python3.12/site-packages/rcdt_launch'...
+[0.200s] Invoked command in '/rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /rcdt/rcdt_robotics/rcdt_core/build/rcdt_launch
