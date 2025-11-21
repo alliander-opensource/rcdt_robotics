@@ -2,11 +2,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node
+from launch_ros.actions import LifecycleNode, Node
 from rcdt_utilities.launch_argument import LaunchArgument
+from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
 
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
@@ -23,9 +23,35 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: A list of actions to be executed.
     """
-    # Simulation-only setup
+    use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
     target_frame = target_frame_arg.string_value(context)
+
+    ouster_driver_node = LifecycleNode(
+        package="ouster_ros",
+        executable="os_driver",
+        namespace=namespace,
+        name="ouster_driver",
+        parameters=[
+            {
+                "sensor_hostname": "169.254.233.152",
+                "udp_dest": "169.254.89.132",
+                "lidar_port": 7502,
+                "imu_port": 7503,
+                "lidar_mode": "1024x10",  # possible values: { 512x10, 512x20, 1024x10, 1024x20, 2048x10, 4096x5 }
+            }
+        ],
+        output="both",
+    )
+
+    lifecycle_manager = Node(
+        package="nav2_lifecycle_manager",
+        executable="lifecycle_manager",
+        name="lifecycle_manager_ouster",
+        output="screen",
+        parameters=[{"autostart": True}, {"node_names": ["ouster_driver"]}],
+        namespace=namespace,
+    )
 
     pointcloud_to_laserscan_node = Node(
         package="pointcloud_to_laserscan",
@@ -47,6 +73,10 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
+        Register.on_start(ouster_driver_node, context) if not use_sim else SKIP,
+        Register.on_log(lifecycle_manager, "Managed ouster nodes are active", context)
+        if not use_sim
+        else SKIP,
         Register.on_start(pointcloud_to_laserscan_node, context),
     ]
 
