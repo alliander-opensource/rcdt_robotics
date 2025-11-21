@@ -51,6 +51,11 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
         parameters=[{"autostart": True}, {"node_names": ["ouster_driver"]}],
         namespace=namespace,
+        remappings=[
+            # in-cloud: ("cloud_in", f"/{namespace}/scan/points"),
+            # the output scan: ("scan", f"/{namespace}/scan"),
+            # TODO: placeholder for possibly required remappings.
+        ],
     )
 
     pointcloud_to_laserscan_node = Node(
