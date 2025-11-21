@@ -6,14 +6,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # Getting help
 
-There are a few ways to connect with the `<YOUR_PROJECT_NAME>` project:
+There are a few ways to connect with the `rcdt_robotics` project:
 
 * submit an issue
-* send an email to the Technical Steering Committee: <YOUR_PROJECT_EMAIL_ADRESS@alliander.com>
+* send an email to: robots@alliander.com
 
 ## How to ask for help, suggest a feature, or give recommendations
 
-If you have trouble installing, building, or using the <YOUR_PROJECT_NAME>, but you don't think you've encountered a genuine bug, you can ask a question in the Issues tab of the repository.
+If you have trouble installing, building, or using the `rcdt_robotics` project, but you don't think you've encountered a genuine bug, you can ask a question in the Issues tab of the repository.
 
 If you have an idea for a new feature or a recommendation for existing features or documentation, you can also propose it in the Issues tab.
 
