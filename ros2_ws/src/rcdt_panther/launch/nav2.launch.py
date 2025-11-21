@@ -308,7 +308,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         respawn=use_respawn,
         respawn_delay=2.0,
         parameters=[bt_navigator_params],
-        remappings=[(f"/{namespace_vehicle}/goal_pose", "/goal_pose")],
         namespace=namespace_vehicle,
     )
 
@@ -342,9 +341,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         remappings=remappings,
     )
 
-    waypoint_follower_controller = Node(
+    nav2_manager = Node(
         package="rcdt_panther",
-        executable="waypoint_follower_controller.py",
+        executable="nav2_manager.py",
         namespace=namespace_vehicle,
     )
 
@@ -370,7 +369,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         Register.on_log(lifecycle_manager, "Managed nodes are active", context)
         if lifecycle_nodes
         else SKIP,
-        Register.on_log(waypoint_follower_controller, "Controller is ready.", context)
+        Register.on_log(nav2_manager, "Controller is ready.", context)
         if use_navigation
         else SKIP,
     ]
