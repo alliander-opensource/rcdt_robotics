@@ -334,6 +334,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     remappings = []
     if use_gps:
         remappings.append(("/gps/fix", f"/{namespace_gps}/fix"))
+        remappings.append(("/fromLL", f"/{namespace_gps}/fromLL"))
+
     waypoint_follower = Node(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
@@ -345,6 +347,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         package="rcdt_panther",
         executable="nav2_manager.py",
         namespace=namespace_vehicle,
+        remappings=remappings,
     )
 
     pub_topic = (

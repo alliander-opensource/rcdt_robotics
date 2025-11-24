@@ -7,6 +7,7 @@
 import time
 
 import rclpy
+from geographic_msgs.msg import GeoPath, GeoPoseStamped
 from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator
 from nav_msgs.msg import Path
@@ -15,16 +16,17 @@ from rclpy.node import Node
 from std_srvs.srv import Trigger
 
 
-class WaypointFollowerController(Node):
-    """Node to control the starting and stopping of the waypoint follower node."""
+class Nav2Manager(Node):
+    """ROS 2 node to manage navigation using Nav2 BasicNavigator."""
 
     def __init__(self) -> None:
-        """Initialize the WaypointFollowerController node."""
-        super().__init__("waypoint_follower_controller")
+        """Initialize the Nav2Manager node."""
+        super().__init__("nav2_manager")
         self.basic_navigator = BasicNavigator()
 
         self.create_subscription(PoseStamped, "/goal_pose", self.cb_goal_pose, 10)
         self.create_subscription(Path, "/waypoints", self.cb_waypoints, 10)
+        self.create_subscription(GeoPath, "/gps_waypoints", self.cb_gps_waypoints, 10)
         self.create_service(Trigger, "~/stop", self.cb_stop)
 
         self.get_logger().info("Controller is ready.")
@@ -44,6 +46,18 @@ class WaypointFollowerController(Node):
             msg (Path): The received Path message.
         """
         self.basic_navigator.followWaypoints(msg.poses)
+
+    def cb_gps_waypoints(self, msg: GeoPath) -> None:
+        """Callback on receiving a GeoPoseStamped message with GPS waypoints.
+
+        Args:
+            msg (GeoPath): The received GeoPath message.
+        """
+        geo_poses = []
+        for geo_pose_stamped in msg.poses:
+            geo_pose_stamped: GeoPoseStamped
+            geo_poses.append(geo_pose_stamped.pose)
+        self.basic_navigator.followGpsWaypoints(geo_poses)
 
     def cb_stop(
         self, _: Trigger.Request, response: Trigger.Response
@@ -86,7 +100,7 @@ def main(args: list | None = None) -> None:
         args (list | None): Command line arguments, defaults to None.
     """
     rclpy.init(args=args)
-    node = WaypointFollowerController()
+    node = Nav2Manager()
     spin_node(node)
 
 
