@@ -2,20 +2,21 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import copy
 import itertools
 from functools import partial
 from typing import Callable
 
 import launch_pytest
-import numpy as np
 import pytest
 import rclpy
 import termcolor
 from _pytest.fixtures import SubRequest
-from action_msgs.msg import GoalStatus
+from geographic_msgs.msg import GeoPath, GeoPoseStamped
 from geometry_msgs.msg import PoseStamped
 from launch import LaunchDescription
-from nav2_msgs.action import NavigateToPose
+from rcdt_launch.environment_configuration import EnvironmentConfiguration
+from rcdt_launch.platforms.gps import GPS
 from rcdt_launch.platforms.lidar import Lidar
 from rcdt_launch.platforms.vehicle import Vehicle
 from rcdt_utilities.launch_utils import reset
@@ -23,24 +24,22 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.ros_utils import get_file_path
 from rcdt_utilities.test_utils import (
     assert_for_message,
+    call_express_pose_in_other_frame,
     call_trigger_service,
-    create_ready_action_client,
     wait_for_register,
 )
-from rclpy.action.client import ClientGoalHandle
 from rclpy.node import Node
-from rclpy.task import Future
-from sensor_msgs.msg import JointState
-from tf_transformations import quaternion_from_euler
+from sensor_msgs.msg import JointState, NavSatFix
 
 launch_fixtures = []
 
 
-def get_tests(namespace_vehicle: str, timeout: int) -> dict:
+def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
     """Get the Nav2 tests.
 
     Args:
         namespace_vehicle (str): The namespace of the vehicle.
+        namespace_gps (str): The namespace of the GPS.
         timeout (int): The timeout in seconds.
 
     Returns:
@@ -86,55 +85,86 @@ def get_tests(namespace_vehicle: str, timeout: int) -> dict:
             is True
         )
 
-    def test_nav2_goal(_self: object, test_node: Node) -> None:
-        """Test that the Panther can receive and process a navigation goal.
+    def test_goal_pose(
+        _self: object, test_node: Node, navigation_tolerance: float
+    ) -> None:
+        """Test that navigation to a goal pose is successful.
 
         Args:
             _self (object): The test class instance.
             test_node (Node): The ROS 2 node to use for the test.
+            navigation_tolerance (float): The tolerance for navigation.
         """
-        action_client = create_ready_action_client(
+        pose_base_link_in_map = PoseStamped()
+        pose_base_link_in_map.header.frame_id = f"{namespace_vehicle}/base_link"
+        response = call_express_pose_in_other_frame(
             node=test_node,
-            action_type=NavigateToPose,
-            action_name=f"{namespace_vehicle}/navigate_to_pose",
+            pose=pose_base_link_in_map,
+            target_frame="map",
             timeout=timeout,
         )
+        current_pose = response.pose
 
-        goal_msg = NavigateToPose.Goal()
+        goal_pose: PoseStamped = copy.deepcopy(current_pose)
+        goal_pose.pose.position.x += 1  # Move 1 meter forward
 
-        pose_stamped = PoseStamped()
+        publisher = test_node.create_publisher(PoseStamped, "/goal_pose", 10)
+        publisher.publish(goal_pose)
 
-        pose_stamped.header.stamp = test_node.get_clock().now().to_msg()
-        pose_stamped.header.frame_id = "map"
+        while (
+            abs(current_pose.pose.position.x - goal_pose.pose.position.x)
+            > navigation_tolerance
+        ):
+            response = call_express_pose_in_other_frame(
+                node=test_node,
+                pose=pose_base_link_in_map,
+                target_frame="map",
+                timeout=timeout,
+            )
+            current_pose = response.pose
+            rclpy.spin_once(test_node)
 
-        # 2) Position:
-        pose_stamped.pose.position.x = 0.3
-        pose_stamped.pose.position.y = 0.0
-        pose_stamped.pose.position.z = 0.0
-
-        # 3) Orientation with 30 degrees (quaternion):
-        yaw = 30.0 * (np.pi / 180.0)
-        qx, qy, qz, qw = quaternion_from_euler(0.0, 0.0, yaw)
-        pose_stamped.pose.orientation.x = qx
-        pose_stamped.pose.orientation.y = qy
-        pose_stamped.pose.orientation.z = qz
-        pose_stamped.pose.orientation.w = qw
-
-        goal_msg.pose = pose_stamped
-
-        future = action_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(test_node, future, timeout_sec=timeout)
-        goal_handle: ClientGoalHandle = future.result()
-
-        assert goal_handle.accepted
-
-        result_future: Future = goal_handle.get_result_async()
-        rclpy.spin_until_future_complete(test_node, result_future, timeout_sec=timeout)
-
-        result: NavigateToPose.Impl.GetResultService.Response = result_future.result()
-        assert result.status == GoalStatus.STATUS_SUCCEEDED, (
-            f"Navigation failed with status: {result.status}"
+        assert (
+            abs(current_pose.pose.position.x - goal_pose.pose.position.x)
+            < navigation_tolerance
         )
+
+    def test_gps_navigation(
+        _self: object, test_node: Node, navigation_tolerance: float
+    ) -> None:
+        """Test that GPS navigation to a goal pose is successful.
+
+        Args:
+            _self (object): The test class instance.
+            test_node (Node): The ROS 2 node to use for the test.
+            navigation_tolerance (float): The tolerance for navigation.
+        """
+        current_nav_sat = {}
+
+        def callback(msg: NavSatFix) -> None:
+            current_nav_sat["latitude"] = msg.latitude
+            current_nav_sat["longitude"] = msg.longitude
+
+        test_node.create_subscription(
+            NavSatFix, f"/{namespace_gps}/gps/fix", callback, 10
+        )
+
+        while "latitude" not in current_nav_sat or "longitude" not in current_nav_sat:
+            rclpy.spin_once(test_node)
+
+        goal_nav_sat = copy.deepcopy(current_nav_sat)
+        goal_nav_sat["latitude"] += 1e-5
+
+        publisher = test_node.create_publisher(GeoPath, "/gps_waypoints", 10)
+        goal_msg = GeoPath()
+        goal_pose = GeoPoseStamped()
+        goal_pose.pose.position.latitude = goal_nav_sat["latitude"]
+        goal_pose.pose.position.longitude = goal_nav_sat["longitude"]
+        goal_msg.poses.append(goal_pose)
+        publisher.publish(goal_msg)
+
+        while abs(goal_nav_sat["latitude"] - current_nav_sat["latitude"]) > 2e-6:
+            rclpy.spin_once(test_node)
 
     # Collect all test methods defined above
     tests = {
@@ -159,13 +189,13 @@ def launch_fixture_wrapper(request: SubRequest) -> Callable:
 
 
 def launch_fixture(
-    request: SubRequest, platforms: tuple[str, str]
+    request: SubRequest, platforms: tuple[str, str, str]
 ) -> LaunchDescription:
     """Fixture to launch the selected platforms.
 
     Args:
         request (SubRequest): The pytest request object, used to access command line options.
-        platforms (tuple[str, str]): The platforms to launch.
+        platforms (tuple[str, str, str]): The platforms to launch.
 
     Returns:
         LaunchDescription: The launch description containing the platform setups.
@@ -173,12 +203,13 @@ def launch_fixture(
     reset()
     print(termcolor.colored(f"Start Nav2 test with {platforms}", "green"))
 
-    vehicle_platform, lidar_platform = platforms
+    vehicle_platform, lidar_platform, gps_platform = platforms
     vehicle = Vehicle(
         platform=vehicle_platform,
         position=[0, 0, 0.2],
         namespace=vehicle_platform,
         navigation=True,
+        use_gps=True,
     )
     Lidar(
         platform=lidar_platform,
@@ -186,6 +217,14 @@ def launch_fixture(
         parent=vehicle,
         namespace=lidar_platform,
     )
+    GPS(
+        platform=gps_platform,
+        position=[0, 0, 0.35],
+        parent=vehicle,
+        namespace=gps_platform,
+    )
+    EnvironmentConfiguration.world = "map_5.940906_51.966960"
+
     launch = RegisteredLaunchDescription(
         get_file_path("rcdt_launch", ["launch"], "bringup.launch.py"),
         launch_arguments={
@@ -198,17 +237,18 @@ def launch_fixture(
 
 vehicle_list = ["panther"]
 lidar_list = ["velodyne", "ouster"]
+gps_list = ["nmea"]
 
 # Dynamically create test classes for each combination of platforms
-for platforms in itertools.product(vehicle_list, lidar_list):
-    vehicle_platform, lidar_platform = platforms
+for platforms in itertools.product(vehicle_list, lidar_list, gps_list):
+    vehicle_platform, lidar_platform, gps_platform = platforms
 
     launch_fixtures.append(partial(launch_fixture, platforms=platforms))
 
     test_class = type(
-        f"TestNav2_{vehicle_platform}_{lidar_platform}",
+        f"TestNav2_{vehicle_platform}_{lidar_platform}_{gps_platform}",
         (object,),
-        get_tests(vehicle_platform, timeout=150),
+        get_tests(vehicle_platform, gps_platform, timeout=150),
     )
     pytest.mark.launch(fixture=launch_fixture_wrapper)(test_class)
     globals()[test_class.__name__] = test_class
