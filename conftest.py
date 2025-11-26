@@ -83,8 +83,8 @@ def joint_movement_tolerance() -> float:
 
 
 @pytest.fixture(scope="session")
-def navigation_tolerance() -> float:
-    """Tolerance of testing navigation.
+def navigation_distance_tolerance() -> float:
+    """Distance tolerance of testing navigation.
 
     This is the maximum allowed deviation for navigation during tests.
 
@@ -92,3 +92,15 @@ def navigation_tolerance() -> float:
         float: The tolerance value for navigation.
     """
     return 0.2
+
+
+@pytest.fixture(scope="session")
+def navigation_degree_tolerance() -> float:
+    """Degree tolerance of testing navigation.
+
+    This is the maximum allowed deviation for navigation during tests.
+
+    Returns:
+        float: The tolerance value for navigation.
+    """
+    return 2e-6

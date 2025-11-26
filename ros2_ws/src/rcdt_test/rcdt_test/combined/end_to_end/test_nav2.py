@@ -30,11 +30,12 @@ from rcdt_utilities.test_utils import (
 )
 from rclpy.node import Node
 from sensor_msgs.msg import JointState, NavSatFix
+from std_srvs.srv import Trigger
 
 launch_fixtures = []
 
 
-def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
+def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:  # noqa: PLR0915
     """Get the Nav2 tests.
 
     Args:
@@ -86,15 +87,16 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         )
 
     def test_goal_pose(
-        _self: object, test_node: Node, navigation_tolerance: float
+        _self: object, test_node: Node, navigation_distance_tolerance: float
     ) -> None:
         """Test that navigation to a goal pose is successful.
 
         Args:
             _self (object): The test class instance.
             test_node (Node): The ROS 2 node to use for the test.
-            navigation_tolerance (float): The tolerance for navigation.
+            navigation_distance_tolerance (float): The tolerance for navigation.
         """
+        # 1) Obtain current pose in map frame:
         pose_base_link_in_map = PoseStamped()
         pose_base_link_in_map.header.frame_id = f"{namespace_vehicle}/base_link"
         response = call_express_pose_in_other_frame(
@@ -105,15 +107,17 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         )
         current_pose = response.pose
 
+        # 2) Publish goal pose 1 meter in front of current position:
         goal_pose: PoseStamped = copy.deepcopy(current_pose)
-        goal_pose.pose.position.x += 1  # Move 1 meter forward
+        goal_pose.pose.position.x += 1
 
         publisher = test_node.create_publisher(PoseStamped, "/goal_pose", 10)
         publisher.publish(goal_pose)
 
+        # 3) Wait until goal is reached within tolerance:
         while (
             abs(current_pose.pose.position.x - goal_pose.pose.position.x)
-            > navigation_tolerance
+            > navigation_distance_tolerance
         ):
             response = call_express_pose_in_other_frame(
                 node=test_node,
@@ -124,21 +128,28 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
             current_pose = response.pose
             rclpy.spin_once(test_node)
 
-        assert (
-            abs(current_pose.pose.position.x - goal_pose.pose.position.x)
-            < navigation_tolerance
+        # 4) Stop the navigation, since the test can finish before the goal is reached due to the tolerance:
+        stop_navigation_client = test_node.create_client(
+            Trigger, f"/{namespace_vehicle}/nav2_manager/stop"
+        )
+        future = stop_navigation_client.call_async(Trigger.Request())
+        rclpy.spin_until_future_complete(test_node, future, timeout_sec=timeout)
+        service_response: Trigger.Response = future.result()
+        assert False if not service_response else service_response.success, (
+            "Failed to stop navigation."
         )
 
     def test_gps_navigation(
-        _self: object, test_node: Node, navigation_tolerance: float
+        _self: object, test_node: Node, navigation_degree_tolerance: float
     ) -> None:
         """Test that GPS navigation to a goal pose is successful.
 
         Args:
             _self (object): The test class instance.
             test_node (Node): The ROS 2 node to use for the test.
-            navigation_tolerance (float): The tolerance for navigation.
+            navigation_degree_tolerance (float): The tolerance for navigation.
         """
+        # 1) Obtain current GPS location:
         current_nav_sat = {}
 
         def callback(msg: NavSatFix) -> None:
@@ -152,6 +163,7 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         while "latitude" not in current_nav_sat or "longitude" not in current_nav_sat:
             rclpy.spin_once(test_node)
 
+        # 2) Publish goal GPS location 1e-5 degrees north of current location:
         goal_nav_sat = copy.deepcopy(current_nav_sat)
         goal_nav_sat["latitude"] += 1e-5
 
@@ -163,8 +175,23 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         goal_msg.poses.append(goal_pose)
         publisher.publish(goal_msg)
 
-        while abs(goal_nav_sat["latitude"] - current_nav_sat["latitude"]) > 2e-6:
+        # 3) Wait until goal is reached within tolerance:
+        while (
+            abs(goal_nav_sat["latitude"] - current_nav_sat["latitude"])
+            > navigation_degree_tolerance
+        ):
             rclpy.spin_once(test_node)
+
+        # 4) Stop the navigation, since the test can finish before the goal is reached due to the tolerance:
+        stop_navigation_client = test_node.create_client(
+            Trigger, f"/{namespace_vehicle}/nav2_manager/stop"
+        )
+        future = stop_navigation_client.call_async(Trigger.Request())
+        rclpy.spin_until_future_complete(test_node, future, timeout_sec=timeout)
+        service_response: Trigger.Response = future.result()
+        assert False if not service_response else service_response.success, (
+            "Failed to stop navigation."
+        )
 
     # Collect all test methods defined above
     tests = {
