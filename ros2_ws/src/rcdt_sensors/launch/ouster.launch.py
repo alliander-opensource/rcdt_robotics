@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
-from launch_ros.actions import LifecycleNode, Node
+from launch_ros.actions import LifecycleNode
 from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
@@ -47,7 +47,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "lidar_frame": lidar_frame,
                 "imu_frame": imu_frame,
                 "point_cloud_frame": lidar_frame,
-                "metadata": "/tmp/ouster_metadata.json"  # Place the metadata in a temporary folder since we do not need it.
+                "metadata": "/tmp/ouster_metadata.json",  # Place the metadata in a temporary folder since we do not need it.
             }
         ],
         output="both",
