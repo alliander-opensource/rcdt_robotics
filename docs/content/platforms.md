@@ -126,7 +126,26 @@ An Ouster lidar can be launched in simulation by creating a configuration with a
 
 ### Hardware Ouster
 
-*TODO: update when sensor has arrived.*
+**Network settings:**
+\
+When working with the Ouster LiDAR, the `IPv4 Method` has to be set to `Link-Local Only` mode.
+
+_Note:_ If the firewall is enabled in Ubuntu, communication with the LiDAR is most likely blocked. Unblock it by allowing the IP-address of the LiDAR:
+
+```bash
+sudo ufw allow to {IPv4_address}
+sudo ufw allow from {IPv4_address}
+```
+Find the IPv4-address at `http://os-{serial_number}.local/` (the serial number can be found on top of the Ouster).
+
+**ROS2 setup:**
+\
+The [Ouster driver](https://github.com/ouster-lidar/ouster-ros/tree/ros2) runs as a [LifeCycle node](https://design.ros2.org/articles/node_lifecycle.html), meaning that once created, the node starts in an `Unconfigured` state. It needs to be `configured` and `activated` to start the driver.
+
+Find all of the connected Ouster's information at `http://os-{serial_number}.local/`, where the following parameters for the driver node can be found:
+- `sensor_hostname`: Dashboard > System Information > IPv4 (Link-local) _(Remove the prefix length)_
+- `udp_dest`: Dashboard > System Status > Web Client Address
+
 
 ## Velodyne
 
