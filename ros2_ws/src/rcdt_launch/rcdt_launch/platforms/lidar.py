@@ -58,6 +58,11 @@ class Lidar(Platform):
         EnvironmentConfiguration.bridge_topics.append(
             f"/{self.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
         )
+        if platform == "ouster":
+            # The real Ouster OS1 also already publishes on the /scan topic
+            EnvironmentConfiguration.bridge_topics.append(
+                f"/{self.namespace}/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan"
+            )
 
     @property
     def base_link(self) -> str:  # noqa: PLR0911

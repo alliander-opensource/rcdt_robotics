@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from launch import LaunchContext, LaunchDescription
-from launch.actions import OpaqueFunction
+from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import LifecycleNode, Node
 from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.launch_utils import SKIP
@@ -25,64 +25,60 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
-    target_frame = target_frame_arg.string_value(context)
+    driver_node_name = "ouster_driver"
+
+    sensor_frame = f"{namespace}/ouster"
+    lidar_frame = f"{namespace}/os_lidar"
+    imu_frame = f"{namespace}/os_imu"
 
     ouster_driver_node = LifecycleNode(
         package="ouster_ros",
         executable="os_driver",
         namespace=namespace,
-        name="ouster_driver",
+        name=driver_node_name,
         parameters=[
             {
                 "sensor_hostname": "169.254.233.152",
                 "udp_dest": "169.254.89.132",
                 "lidar_port": 7502,
                 "imu_port": 7503,
-                "lidar_mode": "1024x10",  # possible values: { 512x10, 512x20, 1024x10, 1024x20, 2048x10, 4096x5 }
+                "lidar_mode": "1024x10",  # options: { 512x10, 512x20, 1024x10, 1024x20, 2048x10, 4096x5 }
+                "sensor_frame": sensor_frame,
+                "lidar_frame": lidar_frame,
+                "imu_frame": imu_frame,
+                "point_cloud_frame": lidar_frame,
+                "metadata": "/tmp/ouster_metadata.json"  # Place the metadata in a temporary folder since we do not need it.
             }
         ],
         output="both",
     )
 
-    lifecycle_manager = Node(
-        package="nav2_lifecycle_manager",
-        executable="lifecycle_manager",
-        name="lifecycle_manager_ouster",
-        output="screen",
-        parameters=[{"autostart": True}, {"node_names": ["ouster_driver"]}],
-        namespace=namespace,
-        remappings=[
-            # in-cloud: ("cloud_in", f"/{namespace}/scan/points"),
-            # the output scan: ("scan", f"/{namespace}/scan"),
-            # TODO: placeholder for possibly required remappings.
+    configure_ouster_driver = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "lifecycle",
+            "set",
+            f"/{namespace}/{driver_node_name}",
+            "configure",
         ],
+        shell=False,
     )
 
-    pointcloud_to_laserscan_node = Node(
-        package="pointcloud_to_laserscan",
-        executable="pointcloud_to_laserscan_node",
-        remappings=[
-            ("cloud_in", f"/{namespace}/scan/points"),
-            ("scan", f"/{namespace}/scan"),
+    activate_ouster_driver = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "lifecycle",
+            "set",
+            f"/{namespace}/{driver_node_name}",
+            "activate",
         ],
-        parameters=[
-            {
-                "target_frame": target_frame,
-                "min_height": 0.1,
-                "max_height": 2.0,
-                "range_min": 0.05,
-                "range_max": 90.0,
-            }
-        ],
-        namespace=namespace,
+        shell=False,
     )
 
     return [
         Register.on_start(ouster_driver_node, context) if not use_sim else SKIP,
-        Register.on_log(lifecycle_manager, "Managed ouster nodes are active", context)
-        if not use_sim
-        else SKIP,
-        Register.on_start(pointcloud_to_laserscan_node, context),
+        Register.on_exit(configure_ouster_driver, context) if not use_sim else SKIP,
+        Register.on_exit(activate_ouster_driver, context) if not use_sim else SKIP,
     ]
 
 
