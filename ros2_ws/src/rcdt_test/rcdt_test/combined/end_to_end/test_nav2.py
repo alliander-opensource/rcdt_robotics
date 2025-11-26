@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import contextlib
 import copy
 import itertools
 from functools import partial
@@ -24,13 +25,16 @@ from rcdt_utilities.register import Register, RegisteredLaunchDescription
 from rcdt_utilities.ros_utils import get_file_path
 from rcdt_utilities.test_utils import (
     assert_for_message,
-    call_express_pose_in_other_frame,
     call_trigger_service,
     wait_for_register,
 )
 from rclpy.node import Node
+from rclpy.time import Time
 from sensor_msgs.msg import JointState, NavSatFix
 from std_srvs.srv import Trigger
+from tf2_ros import TransformException  # ty: ignore[unresolved-import]
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
 
 launch_fixtures = []
 
@@ -97,36 +101,37 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
             navigation_distance_tolerance (float): The tolerance for navigation.
         """
         # 1) Obtain current pose in map frame:
-        pose_base_link_in_map = PoseStamped()
-        pose_base_link_in_map.header.frame_id = f"{namespace_vehicle}/base_link"
-        response = call_express_pose_in_other_frame(
-            node=test_node,
-            pose=pose_base_link_in_map,
-            target_frame="map",
-            timeout=timeout,
-        )
-        current_pose = response.pose
+        tf_buffer = Buffer()
+        TransformListener(tf_buffer, test_node)
+        current_pose = None
+
+        while current_pose is None:
+            rclpy.spin_once(test_node)
+            with contextlib.suppress(TransformException):
+                current_pose = tf_buffer.lookup_transform(
+                    "map", f"{namespace_vehicle}/base_link", Time()
+                )
 
         # 2) Publish goal pose 1 meter in front of current position:
-        goal_pose: PoseStamped = copy.deepcopy(current_pose)
-        goal_pose.pose.position.x += 1
+        goal_pose = PoseStamped()
+        goal_pose.header.frame_id = "map"
+        goal_pose.pose.position.x = current_pose.transform.translation.x + 1
+        goal_pose.pose.position.y = current_pose.transform.translation.y
+        goal_pose.pose.position.z = current_pose.transform.translation.z
 
         publisher = test_node.create_publisher(PoseStamped, "/goal_pose", 10)
         publisher.publish(goal_pose)
 
         # 3) Wait until goal is reached within tolerance:
         while (
-            abs(current_pose.pose.position.x - goal_pose.pose.position.x)
+            abs(current_pose.transform.translation.x - goal_pose.pose.position.x)
             > navigation_distance_tolerance
         ):
-            response = call_express_pose_in_other_frame(
-                node=test_node,
-                pose=pose_base_link_in_map,
-                target_frame="map",
-                timeout=timeout,
-            )
-            current_pose = response.pose
             rclpy.spin_once(test_node)
+            with contextlib.suppress(TransformException):
+                current_pose = tf_buffer.lookup_transform(
+                    "map", f"{namespace_vehicle}/base_link", Time()
+                )
 
         # 4) Stop the navigation, since the test can finish before the goal is reached due to the tolerance:
         stop_navigation_client = test_node.create_client(
