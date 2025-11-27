@@ -51,3 +51,18 @@ The collision detection functionality should also be a separate function of our 
 
 :::{mermaid} ../diagrams/grasping_model_integration.mmd
 :::
+
+### Software Architecture
+
+To achieve the described modular integration, several functionalities need to be developed:
+
+- create_point_cloud
+- generate_grasps_wrapper
+- collision_filtering
+
+The main question is how data is shared between these functions. We could use the ROS network for this, but this could lead to unnecessary heavy overhead. We could also consider a GraspManager (similar to our MoveitManager), that manages all the grasp related functionalities. This enables to simply share the output from one function as the input of another function.
+
+One could also argue that the MoveitManager can use an instance of the GraspingManager, since movement towards the generated grasp poses will be generated using MoveIt. To achieve this, the GraspingManager should be written as a C++ class/library, since our MoveitManager is also written in C++. The Generation based models are however written in Python, which means that the GraspModelWrapper should be a C++ class that calls the required Python functions:
+
+:::{mermaid} ../diagrams/grasping_software_architecture.mmd
+:::
