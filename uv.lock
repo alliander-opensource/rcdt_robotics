@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = "==3.12.*"
 resolution-markers = [
     "sys_platform == 'darwin'",
@@ -275,6 +275,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/263763cb2ba3816dd94b08ad3a33d5fdae34ecb856678773cc40a3605829/dnspython-2.7.0.tar.gz", hash = "sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1", size = 345197, upload-time = "2024-10-05T20:14:59.362Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/68/1b/e0a87d256e40e8c888847551b20a017a6b98139178505dc7ffb96f04e954/dnspython-2.7.0-py3-none-any.whl", hash = "sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86", size = 313632, upload-time = "2024-10-05T20:14:57.687Z" },
+]
+
+[[package]]
+name = "docker"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834, upload-time = "2024-05-23T11:13:57.216Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774, upload-time = "2024-05-23T11:13:55.01Z" },
 ]
 
 [[package]]
@@ -1088,6 +1102,19 @@ wheels = [
 ]
 
 [[package]]
+name = "python-on-whales"
+version = "0.79.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/51/f5/3a283762a9528dea6c666d28ae4c47cc14ad4ce9994ee976852dd0cb166f/python_on_whales-0.79.0.tar.gz", hash = "sha256:919bba304cc04db4b75cdd7fb14c0a8fea6ebeafacf7989f6956641cb58210e0", size = 114675, upload-time = "2025-10-24T09:07:02.81Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/32/f5/b8cf36274244c12fa1535a62fafdc72c89e8fe965ef1477a9279c09aa2f6/python_on_whales-0.79.0-py3-none-any.whl", hash = "sha256:4a39ab107a4e740e4302c853c0efc5ced4b4048f55acbb959a2faf53b7003c27", size = 118821, upload-time = "2025-10-24T09:07:01.668Z" },
+]
+
+[[package]]
 name = "python-socketio"
 version = "5.14.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1103,6 +1130,16 @@ wheels = [
 [package.optional-dependencies]
 asyncio-client = [
     { name = "aiohttp" },
+]
+
+[[package]]
+name = "pywin32"
+version = "311"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e7/ab/01ea1943d4eba0f850c3c61e78e8dd59757ff815ff3ccd0a84de5f541f42/pywin32-311-cp312-cp312-win32.whl", hash = "sha256:750ec6e621af2b948540032557b10a2d43b0cee2ae9758c54154d711cc852d31", size = 8706543, upload-time = "2025-07-14T20:13:20.765Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/a8/a0e8d07d4d051ec7502cd58b291ec98dcc0c3fff027caad0470b72cfcc2f/pywin32-311-cp312-cp312-win_amd64.whl", hash = "sha256:b8c095edad5c211ff31c05223658e71bf7116daa0ecf3ad85f3201ea3190d067", size = 9495040, upload-time = "2025-07-14T20:13:22.543Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/3a/2ae996277b4b50f17d61f0603efd8253cb2d79cc7ae159468007b586396d/pywin32-311-cp312-cp312-win_arm64.whl", hash = "sha256:e286f46a9a39c4a18b319c28f59b61de793654af2f395c102b4f819e584b5852", size = 8710102, upload-time = "2025-07-14T20:13:24.682Z" },
 ]
 
 [[package]]
@@ -1132,6 +1169,7 @@ dependencies = [
     { name = "click" },
     { name = "debugpy" },
     { name = "distinctipy" },
+    { name = "docker" },
     { name = "empy" },
     { name = "flake8" },
     { name = "flake8-pyproject" },
@@ -1153,6 +1191,7 @@ dependencies = [
     { name = "pyrealsense2" },
     { name = "pytest" },
     { name = "pytest-timeout" },
+    { name = "python-on-whales" },
     { name = "scipy" },
     { name = "scipy-stubs" },
     { name = "simplejpeg" },
@@ -1184,6 +1223,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.2.1" },
     { name = "debugpy", specifier = ">=1.8.17" },
     { name = "distinctipy", specifier = ">=1.3.4" },
+    { name = "docker", specifier = ">=7.1.0" },
     { name = "empy", specifier = "==3.3.4" },
     { name = "flake8", specifier = ">=7.2.0" },
     { name = "flake8-pyproject", specifier = ">=1.2.3" },
@@ -1205,6 +1245,7 @@ requires-dist = [
     { name = "pyrealsense2", specifier = ">=2.56.5.9235" },
     { name = "pytest", specifier = "<8.4.0" },
     { name = "pytest-timeout", specifier = ">=2.4.0" },
+    { name = "python-on-whales", specifier = ">=0.79.0" },
     { name = "scipy", specifier = ">=1.16.2" },
     { name = "scipy-stubs", specifier = ">=1.16.2.3" },
     { name = "simplejpeg", specifier = ">=1.8.2" },

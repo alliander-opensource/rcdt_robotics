@@ -30,3 +30,5 @@ clangd/
 # for LSP in neovim
 .clangd-build/
 **/compile_commands.json
+
+docker-compose.yml
