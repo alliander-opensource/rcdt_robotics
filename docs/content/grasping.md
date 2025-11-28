@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Grasping
 
-Grasping is an import but challenging skill of a robot. To integrate this skill to our robots, we require a tool that can define the best grasp position for our robot gripper, to grasp an object of interest.
+Grasping is an important but challenging skill of a robot. To integrate this skill into our robots, we require a tool that can define the best grasp position for our robot gripper, to grasp an object of interest.
 
 ## Grasp Generation Methods
 
@@ -18,11 +18,11 @@ The logic based strategy defines 'rules' that should lead to grasping an object 
 
 ### Generation based
 
-The generation based strategy uses a trained AI model to sample grasp poses on a given object, followed by a scoring and filtering to select the best poses. Creation of the required models is complex and very computational expensive, but fortunately are some models shared, for example with research papers. Two popular models published on GitHub are [GraspNet](https://github.com/graspnet/graspnet-baseline) ([AnyGrasp](https://arxiv.org/pdf/2212.08333)) and [GrasGen](https://github.com/NVlabs/GraspGen) ([paper](https://arxiv.org/pdf/2507.13097)).
+The generation based strategy uses a trained AI model to sample grasp poses on a given object, followed by a scoring and filtering to select the best poses. Creation of the required models is complex and very computational expensive, but fortunately are some models shared, for example with research papers. Two popular models published on GitHub are [GraspNet](https://github.com/graspnet/graspnet-baseline) ([AnyGrasp](https://arxiv.org/pdf/2212.08333)) and [GraspGen](https://github.com/NVlabs/GraspGen) ([paper](https://arxiv.org/pdf/2507.13097)).
 
 ### Vision Language Action based
 
-The vision language action based strategy requires an AI model that integrates vision, language and actions to execute tasks. With these models, one could theoretically give a command like 'pull the red handle'. A model like [DexGraspVLA](https://github.com/Psi-Robot/DexGraspVLA) should create an action list to bring the visioned state to the commanded state. This is a continuous process of performing actions and checking the resulting visual feedback, trying to get closer to the commanded state.
+The vision language action based strategy requires an AI model that integrates vision, language and actions to execute tasks. With these models, one could theoretically give a command like 'pull the red handle'. A model like [OpenVLA](https://github.com/openvla/openvla) or [DexGraspVLA](https://github.com/Psi-Robot/DexGraspVLA) should create an action list to bring the visioned state to the commanded state. This is a continuous process of performing actions and checking the resulting visual feedback, trying to get closer to the commanded state.
 
 ## Integration of a Generation Based Model
 
@@ -60,9 +60,9 @@ To achieve the described modular integration, several functionalities need to be
 - generate_grasps_wrapper
 - collision_filtering
 
-The main question is how data is shared between these functions. We could use the ROS network for this, but this could lead to unnecessary heavy overhead. We could also consider a GraspManager (similar to our MoveitManager), that manages all the grasp related functionalities. This enables to simply share the output from one function as the input of another function.
+To share data between these functionalities, we can use the ROS architecture. We could consider a GraspManager (similar to our MoveitManager), that manages all the grasp related functionalities. The MoveitManager can use an instance of the GraspingManager, since movement towards the generated grasp poses will be generated using MoveIt. To achieve this, the GraspingManager should be written as a C++ class/library, since our MoveitManager is also written in C++.
 
-One could also argue that the MoveitManager can use an instance of the GraspingManager, since movement towards the generated grasp poses will be generated using MoveIt. To achieve this, the GraspingManager should be written as a C++ class/library, since our MoveitManager is also written in C++. The Generation based models are however written in Python, which means that the GraspModelWrapper should be a C++ class that calls the required Python functions:
+The Generation based models are however written in Python. This means that the GraspModelWrapper should also be written in Python. We can define the GraspModelWrapper as an individual ROS node that can communicate with the other functionalities of the GraspingManager using ROS topics, services or actions.
 
 :::{mermaid} ../diagrams/grasping_software_architecture.mmd
 :::

@@ -3,21 +3,21 @@ flowchart LR
         subgraph MoveitManager
             subgraph GraspingManager
                 create_point_cloud
+                generate_grasps
                 collision_filtering
-                subgraph GraspModelWrapper
-                    generate_grasps
-                end
             end
         end
     end
 
     subgraph Python
-        subgraph GraspGen
-            GraspGenSampler.run_inference
+        subgraph GraspModelWrapper
+            subgraph GraspGen
+                GraspGenSampler.run_inference
+            end
         end
     end
 
-    generate_grasps <--> GraspGenSampler.run_inference
+    generate_grasps <-- ROS Network --> GraspGenSampler.run_inference
 
     style C++ fill: #659AD2
     style Python fill: #FFD43B
