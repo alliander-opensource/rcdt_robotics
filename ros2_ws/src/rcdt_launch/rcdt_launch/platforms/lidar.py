@@ -21,7 +21,7 @@ class Lidar(Platform):
     """Extension on Platform with lidar specific functionalities.
 
     Attributes:
-        SUPPORTED_PLATFORMS: The supported lidar platforms.
+        SUPPORTED_PLATFORMS: The supported platforms.
     """
 
     SUPPORTED_PLATFORMS = Literal["velodyne", "ouster"]

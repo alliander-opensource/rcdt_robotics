@@ -22,7 +22,7 @@ class Vehicle(Platform):
     """Extension on Platform with vehicle specific functionalities.
 
     Attributes:
-        SUPPORTED_PLATFORMS: The supported vehicle platforms.
+        SUPPORTED_PLATFORMS: The supported platforms.
     """
 
     SUPPORTED_PLATFORMS = Literal["panther"]

@@ -88,10 +88,10 @@ def launch_setup(context: LaunchContext) -> list:
         executable="rcdt_gui.py",
         parameters=[{"platforms": str(platforms_dict)}],
     )
-
+    start_rcdt_gui = not set(platforms_dict.values()).isdisjoint(["Arm", "Vehicle"])
     return [
         SetParameter(name="use_sim_time", value=EnvironmentConfiguration.simulation),
-        Register.on_start(rcdt_gui, context),
+        Register.on_start(rcdt_gui, context) if start_rcdt_gui else launch_utils.SKIP,
         Register.group(rviz, context) if use_rviz else launch_utils.SKIP,
         *[Register.on_start(node, context) for node in state_publishers],
         Register.group(gazebo, context)

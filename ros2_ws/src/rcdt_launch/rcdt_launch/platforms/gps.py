@@ -21,7 +21,7 @@ class GPS(Platform):
     """Extension on Platform with GPS specific functionalities.
 
     Attributes:
-        SUPPORTED_PLATFORMS: The supported GPS platform types.
+        SUPPORTED_PLATFORMS: The supported platforms.
     """
 
     SUPPORTED_PLATFORMS = Literal["nmea"]
