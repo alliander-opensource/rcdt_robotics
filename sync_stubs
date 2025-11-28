@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: Alliander N. V.
+# 
+# SPDX-License-Identifier: Apache-2.0
+
+# This script syncs the ROS Python stubs from the Docker image to a local .stubs directory.
+# The .stubs directory can then be used by IDEs for better code completion and analysis.
+# At the moment, this script expects one docker image.
+
+# Get the directory of this script:
+SCRIPT_DIR=$(
+    cd "$(dirname "${BASH_SOURCE[0]}")" || exit
+    pwd -P
+)
+
+# Make sure a clean stubs directory is created:
+STUBS_DIR="$SCRIPT_DIR/.stubs"
+rm -rf "$STUBS_DIR"
+mkdir "$STUBS_DIR"
+
+# Determine the correct image tag based on the current branch:
+IMAGE=rcdt/robotics
+BRANCH_NAME=$(git branch --show-current)
+IMAGE_TAG=$(. ./get_image_tag ${IMAGE_TAG})
+
+# Copy ROS Python stubs:
+echo "Copying ROS Python stubs to $STUBS_DIR ..."
+ROS_PYTHON_STUBS_DIR=/opt/ros/jazzy/lib/python3.12/site-packages/
+docker run -v "$STUBS_DIR":/stubs $IMAGE:$IMAGE_TAG -c "cp -r "${ROS_PYTHON_STUBS_DIR}" /stubs"

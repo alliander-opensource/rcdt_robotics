@@ -11,6 +11,7 @@ ignore/
 .config/
 .vscode/
 .data/
+.stubs/
 
 .personal.bashrc
 .bash_history
