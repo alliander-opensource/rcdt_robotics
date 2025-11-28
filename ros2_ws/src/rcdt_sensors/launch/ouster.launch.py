@@ -4,7 +4,7 @@
 
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
-from launch_ros.actions import LifecycleNode
+from launch_ros.actions import LifecycleNode, Node
 from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
@@ -25,6 +25,7 @@ def launch_setup(context: LaunchContext) -> list:
     """
     use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
+    target_frame = target_frame_arg.string_value(context)
     driver_node_name = "ouster_driver"
 
     sensor_frame = f"{namespace}/ouster"
@@ -47,9 +48,13 @@ def launch_setup(context: LaunchContext) -> list:
                 "lidar_frame": lidar_frame,
                 "imu_frame": imu_frame,
                 "point_cloud_frame": lidar_frame,
+                "proc_mask": "PCL",  # options: IMU|PCL|SCAN|IMG|RAW|TLM
                 "metadata": "/tmp/ouster_metadata.json",  # Place the metadata in a temporary folder since we do not need it.
             }
         ],
+        remappings=[
+            ("points", "scan/points")
+        ],  # Remap for the pointcloud_to_laserscan Node
         output="both",
     )
 
@@ -75,10 +80,30 @@ def launch_setup(context: LaunchContext) -> list:
         shell=False,
     )
 
+    pointcloud_to_laserscan_node = Node(
+        package="pointcloud_to_laserscan",
+        executable="pointcloud_to_laserscan_node",
+        remappings=[
+            ("cloud_in", f"/{namespace}/scan/points"),
+            ("scan", f"/{namespace}/scan"),
+        ],
+        parameters=[
+            {
+                "target_frame": target_frame,
+                "min_height": 0.1,
+                "max_height": 2.0,
+                "range_min": 0.05,
+                "range_max": 90.0,
+            }
+        ],
+        namespace=namespace,
+    )
+
     return [
         Register.on_start(ouster_driver_node, context) if not use_sim else SKIP,
         Register.on_exit(configure_ouster_driver, context) if not use_sim else SKIP,
         Register.on_exit(activate_ouster_driver, context) if not use_sim else SKIP,
+        Register.on_start(pointcloud_to_laserscan_node, context),
     ]
 
 
