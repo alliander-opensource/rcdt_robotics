@@ -14,7 +14,7 @@ import rclpy
 import termcolor
 from _pytest.fixtures import SubRequest
 from geographic_msgs.msg import GeoPath, GeoPoseStamped
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, TransformStamped
 from launch import LaunchDescription
 from rcdt_launch.environment_configuration import EnvironmentConfiguration
 from rcdt_launch.platforms.gps import GPS
@@ -103,9 +103,9 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         # 1) Obtain current pose in map frame:
         tf_buffer = Buffer()
         TransformListener(tf_buffer, test_node)
-        current_pose = None
+        current_pose = TransformStamped()
 
-        while current_pose is None:
+        while current_pose == TransformStamped():
             rclpy.spin_once(test_node, timeout_sec=0)
             with contextlib.suppress(TransformException):
                 current_pose = tf_buffer.lookup_transform(
@@ -155,34 +155,34 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
             navigation_degree_tolerance (float): The tolerance for navigation.
         """
         # 1) Obtain current GPS location:
-        current_nav_sat = {}
+        current_nav_sat = NavSatFix()
 
         def callback(msg: NavSatFix) -> None:
-            current_nav_sat["latitude"] = msg.latitude
-            current_nav_sat["longitude"] = msg.longitude
+            current_nav_sat.latitude = msg.latitude
+            current_nav_sat.longitude = msg.longitude
 
         test_node.create_subscription(
             NavSatFix, f"/{namespace_gps}/gps/fix", callback, 10
         )
 
-        while "latitude" not in current_nav_sat or "longitude" not in current_nav_sat:
+        while current_nav_sat == NavSatFix():
             rclpy.spin_once(test_node, timeout_sec=0)
 
         # 2) Publish goal GPS location 1e-5 degrees north of current location:
         goal_nav_sat = copy.deepcopy(current_nav_sat)
-        goal_nav_sat["latitude"] += 1e-5
+        goal_nav_sat.latitude += 1e-5
 
         publisher = test_node.create_publisher(GeoPath, "/gps_waypoints", 10)
         goal_msg = GeoPath()
         goal_pose = GeoPoseStamped()
-        goal_pose.pose.position.latitude = goal_nav_sat["latitude"]
-        goal_pose.pose.position.longitude = goal_nav_sat["longitude"]
+        goal_pose.pose.position.latitude = goal_nav_sat.latitude
+        goal_pose.pose.position.longitude = goal_nav_sat.longitude
         goal_msg.poses.append(goal_pose)
         publisher.publish(goal_msg)
 
         # 3) Wait until goal is reached within tolerance:
         while (
-            abs(goal_nav_sat["latitude"] - current_nav_sat["latitude"])
+            abs(goal_nav_sat.latitude - current_nav_sat.latitude)
             > navigation_degree_tolerance
         ):
             rclpy.spin_once(test_node, timeout_sec=0)
