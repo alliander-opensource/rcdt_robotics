@@ -2,16 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import yaml
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetRemap
-from nav2_common.launch import RewrittenYaml
-from pydantic.v1.utils import deep_update
+from rcdt_utilities.adapted_yaml import AdaptedYaml
 from rcdt_utilities.launch_argument import LaunchArgument
 from rcdt_utilities.launch_utils import SKIP
 from rcdt_utilities.register import Register
-from rcdt_utilities.ros_utils import get_file_path, get_yaml
+from rcdt_utilities.ros_utils import get_file_path
 
 autostart_arg = LaunchArgument("autostart", True, [True, False])
 use_respawn_arg = LaunchArgument("use_respawn", False, [True, False])
@@ -38,36 +36,6 @@ controller_arg = LaunchArgument(
 global_map_arg = LaunchArgument(
     "map", "simulation_map", ["simulation_map", "ipkw", "ipkw_buiten"]
 )
-
-
-class AdaptedYaml:
-    """Class to adapt a YAML file with parameter substitutions."""
-
-    def __init__(self, namespaces: list[str], file: str, substitutions: dict) -> None:
-        """Update parameters with substitutions and write to a namespaced YAML file.
-
-        Args:
-            namespaces (list[str]): List of namespaces to wrap the parameters.
-            file (str): Path to the original YAML file.
-            substitutions (dict): Dictionary of parameter substitutions.
-        """
-        self.namespaces = namespaces
-        self.params = deep_update(get_yaml(file), substitutions)
-        self.file: str
-        self.write_yaml()
-
-    def write_yaml(self) -> None:
-        """Write parameters to a namespaced YAML file."""
-        self.namespaces.append("ros__parameters")
-        self.namespaces.reverse()
-        file = "params.yml"
-        for namespace in self.namespaces:
-            self.params = {namespace: self.params}
-            if namespace != "ros__parameters":
-                file = namespace + "_" + file
-        self.file = "/tmp/" + file
-        with open(self.file, "w", encoding="utf-8") as outfile:
-            yaml.dump(self.params, outfile, default_flow_style=False)
 
 
 def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
@@ -122,7 +90,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             ]
         )
 
-    slam_params = RewrittenYaml(
+    slam_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config"], "slam_params.yaml"),
         {
             "odom_frame": f"{namespace_vehicle}/odom",
@@ -132,7 +100,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         root_key=namespace_vehicle,
     )
 
-    amcl_params = RewrittenYaml(
+    amcl_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
         {
             "base_frame_id": f"{namespace_vehicle}/base_footprint",
@@ -147,7 +115,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         plugins.append("static_layer")
 
     local_costmap_params = AdaptedYaml(
-        [namespace_vehicle, "local_costmap", "local_costmap"],
         get_file_path("rcdt_panther", ["config", "nav2"], "local_costmap.yaml"),
         {
             "global_frame": f"{namespace_vehicle}/odom",
@@ -155,10 +122,10 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             "rolling_window": use_gps,
             "plugins": plugins,
         },
+        root_key=namespace_vehicle,
     )
 
     global_costmap_params = AdaptedYaml(
-        [namespace_vehicle, "global_costmap", "global_costmap"],
         get_file_path("rcdt_panther", ["config", "nav2"], "global_costmap.yaml"),
         {
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
@@ -174,15 +141,16 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
                 }
             },
         },
+        root_key=namespace_vehicle,
     )
 
-    controller_server_params = RewrittenYaml(
+    controller_server_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "controller_server.yaml"),
         {"odom_topic": f"/{namespace_vehicle}/odom"},
         root_key=namespace_vehicle,
     )
 
-    behavior_server_params = RewrittenYaml(
+    behavior_server_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "behavior_server.yaml"),
         {
             "local_frame": f"{namespace_vehicle}/odom",
@@ -191,7 +159,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         root_key=namespace_vehicle,
     )
 
-    follow_path_params = RewrittenYaml(
+    follow_path_params = AdaptedYaml(
         get_file_path(
             "rcdt_panther", ["config", "nav2", "controllers"], f"{controller}.yaml"
         ),
@@ -199,7 +167,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         root_key=namespace_vehicle,
     )
 
-    bt_navigator_params = RewrittenYaml(
+    bt_navigator_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"),
         {
             "default_nav_to_pose_bt_xml": get_file_path(
@@ -211,20 +179,22 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         root_key=namespace_vehicle,
     )
 
-    planner_server_params = RewrittenYaml(
+    planner_server_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "planner_server.yaml"),
         {},
         root_key=namespace_vehicle,
     )
 
-    collision_monitor_params = RewrittenYaml(
+    collision_monitor_params = AdaptedYaml(
         get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"),
         {
             "base_frame_id": f"{namespace_vehicle}/base_footprint",
             "odom_frame_id": f"{namespace_vehicle}/odom",
             "cmd_vel_in_topic": f"/{namespace_vehicle}/cmd_vel_raw",
             "cmd_vel_out_topic": f"/{namespace_vehicle}/cmd_vel",
-            "topic": f"/{namespace_lidar}/scan",
+            "scan": {
+                "topic": f"/{namespace_lidar}/scan",
+            },
         },
         root_key=namespace_vehicle,
     )
@@ -233,7 +203,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         package="slam_toolbox",
         executable="async_slam_toolbox_node",
         parameters=[
-            slam_params,
+            slam_params.file,
             {
                 "use_lifecycle_manager": True,
             },
@@ -259,7 +229,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     amcl = Node(
         package="nav2_amcl",
         executable="amcl",
-        parameters=[amcl_params],
+        parameters=[amcl_params.file],
         namespace=namespace_vehicle,
         remappings=[(f"/{namespace_vehicle}/initialpose", "/initialpose")],
     )
@@ -272,8 +242,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         respawn_delay=2.0,
         parameters=[
             local_costmap_params.file,
-            controller_server_params,
-            follow_path_params,
+            controller_server_params.file,
+            follow_path_params.file,
         ],
         namespace=namespace_vehicle,
     )
@@ -285,7 +255,10 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[global_costmap_params.file, planner_server_params],
+        parameters=[
+            global_costmap_params.file,
+            planner_server_params.file,
+        ],
         namespace=namespace_vehicle,
     )
 
@@ -296,7 +269,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[behavior_server_params],
+        parameters=[behavior_server_params.file],
         namespace=namespace_vehicle,
     )
 
@@ -307,7 +280,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[bt_navigator_params],
+        parameters=[bt_navigator_params.file],
         namespace=namespace_vehicle,
     )
 
@@ -318,7 +291,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         output="screen",
         respawn=use_respawn,
         respawn_delay=2.0,
-        parameters=[collision_monitor_params],
+        parameters=[collision_monitor_params.file],
         namespace=namespace_vehicle,
     )
 
