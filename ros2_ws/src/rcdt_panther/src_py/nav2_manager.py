@@ -86,6 +86,7 @@ class Nav2Manager(Node):
                 response.success = True
                 self.get_logger().info(response.message)
                 return response
+            time.sleep(0.1)
 
         response.message = "Failed to cancel the active navigation task within timeout."
         response.success = False

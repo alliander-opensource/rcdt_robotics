@@ -96,7 +96,7 @@ def navigation_distance_tolerance() -> float:
 
 @pytest.fixture(scope="session")
 def navigation_degree_tolerance() -> float:
-    """Degree tolerance of testing navigation.
+    """Latitude/Longitude degree tolerance of testing navigation.
 
     This is the maximum allowed deviation for navigation during tests.
 
