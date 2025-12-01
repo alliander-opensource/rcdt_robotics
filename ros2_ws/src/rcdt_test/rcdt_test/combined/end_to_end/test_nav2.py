@@ -106,7 +106,7 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         current_pose = None
 
         while current_pose is None:
-            rclpy.spin_once(test_node)
+            rclpy.spin_once(test_node, timeout_sec=0)
             with contextlib.suppress(TransformException):
                 current_pose = tf_buffer.lookup_transform(
                     "map", f"{namespace_vehicle}/base_link", Time()
@@ -127,7 +127,7 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
             abs(current_pose.transform.translation.x - goal_pose.pose.position.x)
             > navigation_distance_tolerance
         ):
-            rclpy.spin_once(test_node)
+            rclpy.spin_once(test_node, timeout_sec=0)
             with contextlib.suppress(TransformException):
                 current_pose = tf_buffer.lookup_transform(
                     "map", f"{namespace_vehicle}/base_link", Time()
@@ -166,7 +166,7 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
         )
 
         while "latitude" not in current_nav_sat or "longitude" not in current_nav_sat:
-            rclpy.spin_once(test_node)
+            rclpy.spin_once(test_node, timeout_sec=0)
 
         # 2) Publish goal GPS location 1e-5 degrees north of current location:
         goal_nav_sat = copy.deepcopy(current_nav_sat)
@@ -185,7 +185,7 @@ def get_tests(namespace_vehicle: str, namespace_gps: str, timeout: int) -> dict:
             abs(goal_nav_sat["latitude"] - current_nav_sat["latitude"])
             > navigation_degree_tolerance
         ):
-            rclpy.spin_once(test_node)
+            rclpy.spin_once(test_node, timeout_sec=0)
 
         # 4) Stop the navigation, since the test can finish before the goal is reached due to the tolerance:
         stop_navigation_client = test_node.create_client(
