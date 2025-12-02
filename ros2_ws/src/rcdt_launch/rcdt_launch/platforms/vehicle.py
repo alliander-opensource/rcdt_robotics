@@ -25,7 +25,7 @@ class Vehicle(Platform):
         SUPPORTED_PLATFORMS: The supported platforms.
     """
 
-    SUPPORTED_PLATFORMS = Literal["panther"]
+    SUPPORTED_PLATFORMS = Literal["lynx", "panther"]
 
     def __init__(  # noqa: PLR0913
         self,
@@ -71,7 +71,7 @@ class Vehicle(Platform):
         self.camera: Camera | None = None
         self.gps: GPS | None = None
 
-        if platform == "panther":
+        if platform in {"lynx", "panther"}:
             Vizanti.add_platform_model(self.namespace)
             Vizanti.add_button("Trigger", f"/{self.namespace}/hardware/e_stop_trigger")
             Vizanti.add_button("Reset", f"/{self.namespace}/hardware/e_stop_reset")
@@ -126,6 +126,8 @@ class Vehicle(Platform):
             ValueError: If an unknown Vehicle platform is specified.
         """
         match self.platform_type:
+            case "lynx":
+                package = "rcdt_lynx"
             case "panther":
                 package = "rcdt_panther"
             case _:
@@ -144,6 +146,8 @@ class Vehicle(Platform):
             ValueError: If the Vehicle platform is unknown.
         """
         match self.platform_type:
+            case "lynx":
+                return "base_link"
             case "panther":
                 return "base_link"
             case _:
@@ -162,6 +166,8 @@ class Vehicle(Platform):
             ValueError: If the platform is unknown.
         """
         match self.platform_type:
+            case "lynx":
+                return get_file_path("rcdt_lynx", ["urdf"], "lynx.urdf.xacro")
             case "panther":
                 return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
             case _:
@@ -229,7 +235,7 @@ class Vehicle(Platform):
             raise ValueError("A lidar is required for use of nav2.")
 
         return RegisteredLaunchDescription(
-            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),
+            get_file_path("rcdt_panther", ["launch"], "nav2.launch.py"),  # TODO: separate nav2 from rcdt_panther package
             launch_arguments={
                 "simulation": str(EnvironmentConfiguration.simulation),
                 "slam": str(self.slam),
@@ -274,7 +280,7 @@ class Vehicle(Platform):
         pub_topic = f"/{self.namespace}/cmd_vel"
         if self.collision_monitor:
             pub_topic += "_raw"
-        if self.platform_type == "panther":
+        if self.platform_type in {"lynx", "panther"}:
             nodes.append(
                 Node(
                     package="rcdt_joystick",

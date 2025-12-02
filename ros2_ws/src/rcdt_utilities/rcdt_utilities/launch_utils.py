@@ -47,6 +47,7 @@ def order_platforms() -> None:
     """
     order = [
         "panther",
+        "lynx",
         "franka",
         "velodyne",
         "ouster",
@@ -155,7 +156,7 @@ def create_controllers() -> list[RegisteredLaunchDescription]:
     for platform in EnvironmentConfiguration.platforms:
         if (
             not EnvironmentConfiguration.simulation
-            and platform.platform_type == "panther"
+            and platform.platform_type in {"lynx", "panther"}
         ):
             continue
         if platform.controller_path is not None:
