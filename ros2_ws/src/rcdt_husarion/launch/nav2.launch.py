@@ -123,7 +123,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         )
 
     slam_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config"], "slam_params.yaml"),
+        get_file_path("rcdt_husarion", ["config"], "slam_params.yaml"),
         {
             "odom_frame": f"{namespace_vehicle}/odom",
             "base_frame": f"{namespace_vehicle}/base_footprint",
@@ -133,7 +133,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     )
 
     amcl_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "amcl.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "amcl.yaml"),
         {
             "base_frame_id": f"{namespace_vehicle}/base_footprint",
             "odom_frame_id": f"{namespace_vehicle}/odom",
@@ -148,7 +148,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
 
     local_costmap_params = AdaptedYaml(
         [namespace_vehicle, "local_costmap", "local_costmap"],
-        get_file_path("rcdt_panther", ["config", "nav2"], "local_costmap.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "local_costmap.yaml"),
         {
             "global_frame": f"{namespace_vehicle}/odom",
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
@@ -159,7 +159,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
 
     global_costmap_params = AdaptedYaml(
         [namespace_vehicle, "global_costmap", "global_costmap"],
-        get_file_path("rcdt_panther", ["config", "nav2"], "global_costmap.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "global_costmap.yaml"),
         {
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
             "rolling_window": use_gps,
@@ -177,13 +177,13 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     )
 
     controller_server_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "controller_server.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "controller_server.yaml"),
         {"odom_topic": f"/{namespace_vehicle}/odom"},
         root_key=namespace_vehicle,
     )
 
     behavior_server_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "behavior_server.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "behavior_server.yaml"),
         {
             "local_frame": f"{namespace_vehicle}/odom",
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
@@ -193,17 +193,17 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
 
     follow_path_params = RewrittenYaml(
         get_file_path(
-            "rcdt_panther", ["config", "nav2", "controllers"], f"{controller}.yaml"
+            "rcdt_husarion", ["config", "nav2", "controllers"], f"{controller}.yaml"
         ),
         {},
         root_key=namespace_vehicle,
     )
 
     bt_navigator_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "bt_navigator.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "bt_navigator.yaml"),
         {
             "default_nav_to_pose_bt_xml": get_file_path(
-                "rcdt_panther", ["config", "nav2"], "behavior_tree.xml"
+                "rcdt_husarion", ["config", "nav2"], "behavior_tree.xml"
             ),
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
             "odom_topic": f"/{namespace_vehicle}/odom",
@@ -212,13 +212,13 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     )
 
     planner_server_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "planner_server.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "planner_server.yaml"),
         {},
         root_key=namespace_vehicle,
     )
 
     collision_monitor_params = RewrittenYaml(
-        get_file_path("rcdt_panther", ["config", "nav2"], "collision_monitor.yaml"),
+        get_file_path("rcdt_husarion", ["config", "nav2"], "collision_monitor.yaml"),
         {
             "base_frame_id": f"{namespace_vehicle}/base_footprint",
             "odom_frame_id": f"{namespace_vehicle}/odom",
@@ -248,7 +248,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         parameters=[
             {
                 "yaml_filename": get_file_path(
-                    "rcdt_panther", ["config", "maps"], str(global_map) + ".yaml"
+                    "rcdt_husarion", ["config", "maps"], str(global_map) + ".yaml"
                 ),
                 "topic_name": f"/{namespace_vehicle}/map",
             }
@@ -344,7 +344,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     )
 
     nav2_manager = Node(
-        package="rcdt_panther",
+        package="rcdt_husarion",
         executable="nav2_manager.py",
         namespace=namespace_vehicle,
         remappings=remappings,

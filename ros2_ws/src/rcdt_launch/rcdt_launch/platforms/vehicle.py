@@ -127,13 +127,15 @@ class Vehicle(Platform):
         """
         match self.platform_type:
             case "lynx":
-                package = "rcdt_lynx"
+                return get_file_path(
+                    "rcdt_husarion", ["launch"], "lynx_controllers.launch.py"
+                )
             case "panther":
-                package = "rcdt_panther"
+                return get_file_path(
+                    "rcdt_husarion", ["launch"], "panther_controllers.launch.py"
+                )
             case _:
                 raise ValueError(f"Unknown Vehicle platform: {self.platform_type}")
-
-        return get_file_path(package, ["launch"], "controllers.launch.py")
 
     @property
     def default_connect_link(self) -> str:
@@ -167,9 +169,13 @@ class Vehicle(Platform):
         """
         match self.platform_type:
             case "lynx":
-                return get_file_path("rcdt_lynx", ["urdf"], "lynx.urdf.xacro")
+                return get_file_path(
+                    "rcdt_husarion", ["urdf", "lynx"], "lynx.urdf.xacro"
+                )
             case "panther":
-                return get_file_path("rcdt_panther", ["urdf"], "panther.urdf.xacro")
+                return get_file_path(
+                    "rcdt_husarion", ["urdf", "panther"], "panther.urdf.xacro"
+                )
             case _:
                 raise ValueError("Cannot provide xacro path: unknown Vehicle platform.")
 
@@ -236,8 +242,8 @@ class Vehicle(Platform):
 
         return RegisteredLaunchDescription(
             get_file_path(
-                "rcdt_panther", ["launch"], "nav2.launch.py"
-            ),  # TODO: separate nav2 from rcdt_panther package
+                "rcdt_husarion", ["launch"], "nav2.launch.py"
+            ),  # TODO: separate nav2 from rcdt_husarion package
             launch_arguments={
                 "simulation": str(EnvironmentConfiguration.simulation),
                 "slam": str(self.slam),
@@ -290,7 +296,7 @@ class Vehicle(Platform):
                     parameters=[
                         {"sub_topic": f"/{self.namespace}/joy"},
                         {"pub_topic": pub_topic},
-                        {"config_pkg": "rcdt_panther"},
+                        {"config_pkg": "rcdt_husarion"},
                     ],
                     namespace=self.namespace,
                 )

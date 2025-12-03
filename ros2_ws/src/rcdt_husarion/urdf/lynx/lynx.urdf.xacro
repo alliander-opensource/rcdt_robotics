@@ -14,13 +14,13 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:arg name="childs" default="${[]}" />
 
   <!-- Load lynx: -->
-  <xacro:include filename="$(find rcdt_lynx)/urdf/adapted/lynx_macro.urdf.xacro" ns="husarion" />
+  <xacro:include filename="$(find rcdt_husarion)/urdf/lynx/adapted/lynx_macro.urdf.xacro" ns="husarion" />
   <xacro:husarion.lynx_robot
     use_sim="$(arg use_sim)"
     imu_xyz="$(arg imu_xyz)"
     imu_rpy="$(arg imu_rpy)"
     wheel_config_file="$(find husarion_ugv_description)/config/WH05.yaml"
-    controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
+    controller_config_file="$(find rcdt_husarion)/config/lynx_controllers.yaml"
     battery_config_file=""
     namespace="$(arg namespace)" />
 
