@@ -154,10 +154,10 @@ def create_controllers() -> list[RegisteredLaunchDescription]:
     """
     controllers = []
     for platform in EnvironmentConfiguration.platforms:
-        if (
-            not EnvironmentConfiguration.simulation
-            and platform.platform_type in {"lynx", "panther"}
-        ):
+        if not EnvironmentConfiguration.simulation and platform.platform_type in {
+            "lynx",
+            "panther",
+        }:
             continue
         if platform.controller_path is not None:
             controllers.append(platform.create_controller())
