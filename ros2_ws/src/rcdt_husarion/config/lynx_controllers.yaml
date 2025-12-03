@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Based on: 
-# https://github.com/husarion/husarion_ugv_ros/blob/ros2/husarion_ugv_controller/config/WH05_controller.yaml
+# https://github.com/husarion/husarion_ugv_ros/blob/2.3.1/husarion_ugv_controller/config/WH05_controller.yaml
 
 /**:
   controller_manager:
