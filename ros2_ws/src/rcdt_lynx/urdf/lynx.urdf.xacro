@@ -20,7 +20,7 @@ SPDX-License-Identifier: Apache-2.0
     imu_xyz="$(arg imu_xyz)"
     imu_rpy="$(arg imu_rpy)"
     wheel_config_file="$(find husarion_ugv_description)/config/WH05.yaml"
-    controller_config_file="$(find husarion_ugv_controller)/config/WH05_controller.yaml"
+    controller_config_file="$(find rcdt_gazebo)/config/controllers.yaml"
     battery_config_file=""
     namespace="$(arg namespace)" />
 

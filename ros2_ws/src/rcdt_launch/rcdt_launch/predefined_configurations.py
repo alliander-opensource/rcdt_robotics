@@ -188,7 +188,7 @@ def config_panther_ouster() -> None:  # noqa: D103
 
 @register_configuration("lynx")
 def config_lynx() -> None:  # noqa: D103
-    Vehicle("lynx", [0, 0, 0.2], namespace="lynx")  # TODO: check whether [0, 0, 0.2] is the correct value
+    Vehicle("lynx", [0, 0, 0.13], namespace="lynx")  # TODO: check whether [0, 0, 0.2] is the correct value
 
 
 @register_configuration("mm")
