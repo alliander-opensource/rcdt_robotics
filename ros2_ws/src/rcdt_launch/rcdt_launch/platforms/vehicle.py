@@ -241,9 +241,7 @@ class Vehicle(Platform):
             raise ValueError("A lidar is required for use of nav2.")
 
         return RegisteredLaunchDescription(
-            get_file_path(
-                "rcdt_nav2", ["launch"], "nav2.launch.py"
-            ),
+            get_file_path("rcdt_nav2", ["launch"], "nav2.launch.py"),
             launch_arguments={
                 "simulation": str(EnvironmentConfiguration.simulation),
                 "slam": str(self.slam),

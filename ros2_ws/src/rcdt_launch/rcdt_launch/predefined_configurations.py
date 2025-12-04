@@ -198,12 +198,10 @@ def config_lynx_ouster() -> None:  # noqa: D103
 
 
 @register_configuration("lynx_gps")
-def config_panther_gps() -> None:  # noqa: D103
+def config_lynx_gps() -> None:  # noqa: D103
     EnvironmentConfiguration.world = "map_5.940906_51.966960"
     EnvironmentConfiguration.use_vizanti = True
-    lynx = Vehicle(
-        "lynx", [0, 0, 0.13], navigation=True, use_gps=True, window_size=50
-    )
+    lynx = Vehicle("lynx", [0, 0, 0.13], navigation=True, use_gps=True, window_size=50)
     GPS("nmea", [0, 0, 0.13], parent=lynx)
     Lidar("ouster", [0.1, -0.1, 0.25], parent=lynx)
 
