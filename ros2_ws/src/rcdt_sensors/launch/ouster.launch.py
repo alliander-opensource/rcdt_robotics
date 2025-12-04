@@ -12,6 +12,12 @@ from rcdt_utilities.register import Register
 use_sim_arg = LaunchArgument("simulation", True, [True, False])
 namespace_arg = LaunchArgument("namespace", "ouster")
 target_frame_arg = LaunchArgument("target_frame", "")
+ip_sensor_arg = LaunchArgument(
+    "ip_sensor", "10.15.20.5"
+)  # IP address of the Ouster LiDAR
+ip_udp_destination_arg = LaunchArgument(
+    "ip_udp_destination", "10.15.20.3"
+)  # Data destination address (host computer)
 
 
 def launch_setup(context: LaunchContext) -> list:
@@ -26,6 +32,8 @@ def launch_setup(context: LaunchContext) -> list:
     use_sim = use_sim_arg.bool_value(context)
     namespace = namespace_arg.string_value(context)
     target_frame = target_frame_arg.string_value(context)
+    ip_sensor = ip_sensor_arg.string_value(context)
+    ip_udp_destination = ip_udp_destination_arg.string_value(context)
     driver_node_name = "ouster_driver"
 
     sensor_frame = f"{namespace}/ouster"
@@ -39,8 +47,8 @@ def launch_setup(context: LaunchContext) -> list:
         name=driver_node_name,
         parameters=[
             {
-                "sensor_hostname": "169.254.233.152",
-                "udp_dest": "169.254.89.132",
+                "sensor_hostname": ip_sensor,
+                "udp_dest": ip_udp_destination,
                 "lidar_port": 7502,
                 "imu_port": 7503,
                 "lidar_mode": "1024x10",  # options: { 512x10, 512x20, 1024x10, 1024x20, 2048x10, 4096x5 }
@@ -117,6 +125,9 @@ def generate_launch_description() -> LaunchDescription:
         [
             use_sim_arg.declaration,
             namespace_arg.declaration,
+            target_frame_arg.declaration,
+            ip_sensor_arg.declaration,
+            ip_udp_destination_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )
