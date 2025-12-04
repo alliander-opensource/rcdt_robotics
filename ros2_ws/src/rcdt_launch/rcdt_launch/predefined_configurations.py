@@ -191,6 +191,23 @@ def config_lynx() -> None:  # noqa: D103
     Vehicle("lynx", [0, 0, 0.13], namespace="lynx")
 
 
+@register_configuration("lynx_ouster")
+def config_lynx_ouster() -> None:  # noqa: D103
+    lynx = Vehicle("lynx", [0, 0, 0.13], navigation=True)
+    Lidar("ouster", [0.1, -0.1, 0.25], parent=lynx)
+
+
+@register_configuration("lynx_gps")
+def config_panther_gps() -> None:  # noqa: D103
+    EnvironmentConfiguration.world = "map_5.940906_51.966960"
+    EnvironmentConfiguration.use_vizanti = True
+    lynx = Vehicle(
+        "lynx", [0, 0, 0.13], navigation=True, use_gps=True, window_size=50
+    )
+    GPS("nmea", [0, 0, 0.13], parent=lynx)
+    Lidar("ouster", [0.1, -0.1, 0.25], parent=lynx)
+
+
 @register_configuration("mm")
 def config_mm() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
@@ -201,7 +218,7 @@ def config_mm() -> None:  # noqa: D103
 def config_mm_velodyne() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Arm("franka", [0, 0, 0.14], gripper=True, parent=panther, moveit=True)
-    Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
+    Lidar("velodyne", [0.13, -0.13, 0.25], parent=panther)
 
 
 @register_configuration("mm_ouster")
