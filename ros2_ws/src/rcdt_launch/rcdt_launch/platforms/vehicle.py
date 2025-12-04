@@ -242,8 +242,8 @@ class Vehicle(Platform):
 
         return RegisteredLaunchDescription(
             get_file_path(
-                "rcdt_husarion", ["launch"], "nav2.launch.py"
-            ),  # TODO: separate nav2 from rcdt_husarion package
+                "rcdt_nav2", ["launch"], "nav2.launch.py"
+            ),
             launch_arguments={
                 "simulation": str(EnvironmentConfiguration.simulation),
                 "slam": str(self.slam),
@@ -296,7 +296,7 @@ class Vehicle(Platform):
                     parameters=[
                         {"sub_topic": f"/{self.namespace}/joy"},
                         {"pub_topic": pub_topic},
-                        {"config_pkg": "rcdt_husarion"},
+                        {"config_pkg": "rcdt_nav2"},
                     ],
                     namespace=self.namespace,
                 )

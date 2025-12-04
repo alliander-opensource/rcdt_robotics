@@ -175,7 +175,7 @@ def config_panther_zed() -> None:  # noqa: D103
 
 @register_configuration("panther_velodyne")
 def config_panther_velodyne() -> None:  # noqa: D103
-    EnvironmentConfiguration.use_vizanti = True
+    EnvironmentConfiguration.use_vizanti = False
     panther = Vehicle("panther", [0, 0, 0.2], navigation=True)
     Lidar("velodyne", [0.13, -0.13, 0.35], parent=panther)
 
