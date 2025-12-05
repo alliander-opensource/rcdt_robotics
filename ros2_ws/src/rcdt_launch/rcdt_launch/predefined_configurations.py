@@ -140,6 +140,7 @@ def config_franka_planning() -> None:  # noqa: D103
 def config_panther() -> None:  # noqa: D103
     Vehicle("panther", [0, 0, 0.2], namespace="panther")
 
+
 @register_configuration("panther_realsense")
 def config_panther_realsense() -> None:  # noqa: D103
     panther = Vehicle("panther", [0, 0, 0.2])
