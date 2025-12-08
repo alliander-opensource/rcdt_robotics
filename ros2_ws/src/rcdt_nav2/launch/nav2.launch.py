@@ -214,6 +214,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
             raise ValueError("Namespace for GPS must be provided when using GPS.")
         use_map_localization = False
 
+    remappings = []
     if use_navigation:
         if use_map_localization:
             map_server = LifecycleNode(
@@ -285,7 +286,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         )
         lifecycle_nodes["bt_navigator"] = bt_navigator
 
-        remappings = []
         if use_gps:
             remappings.append(("/gps/fix", f"/{namespace_gps}/fix"))
             remappings.append(("/fromLL", f"/{namespace_gps}/fromLL"))
