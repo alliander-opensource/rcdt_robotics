@@ -207,16 +207,15 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
     # Define lifecycle nodes:
     all_lifecycle_nodes = {}
 
-    collision_monitor = LifecycleNode(
+    all_lifecycle_nodes["collision_monitor"] = LifecycleNode(
         package="nav2_collision_monitor",
         executable="collision_monitor",
         name="collision_monitor",
         parameters=[collision_monitor_params.file],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["collision_monitor"] = collision_monitor
 
-    slam = LifecycleNode(
+    all_lifecycle_nodes["slam_toolbox"] = LifecycleNode(
         package="slam_toolbox",
         executable="async_slam_toolbox_node",
         name="slam_toolbox",
@@ -229,9 +228,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         namespace=namespace_vehicle,
         remappings=[("/map", f"/{namespace_vehicle}/map")],
     )
-    all_lifecycle_nodes["slam_toolbox"] = slam
 
-    map_server = LifecycleNode(
+    all_lifecycle_nodes["map_server"] = LifecycleNode(
         package="nav2_map_server",
         executable="map_server",
         name="map_server",
@@ -245,9 +243,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         ],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["map_server"] = map_server
 
-    amcl = LifecycleNode(
+    all_lifecycle_nodes["amcl"] = LifecycleNode(
         package="nav2_amcl",
         executable="amcl",
         name="amcl",
@@ -255,9 +252,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         namespace=namespace_vehicle,
         remappings=[(f"/{namespace_vehicle}/initialpose", "/initialpose")],
     )
-    all_lifecycle_nodes["amcl"] = amcl
 
-    controller_server = LifecycleNode(
+    all_lifecycle_nodes["controller_server"] = LifecycleNode(
         package="nav2_controller",
         executable="controller_server",
         name="controller_server",
@@ -268,9 +264,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         ],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["controller_server"] = controller_server
 
-    planner_server = LifecycleNode(
+    all_lifecycle_nodes["planner_server"] = LifecycleNode(
         package="nav2_planner",
         executable="planner_server",
         name="planner_server",
@@ -280,39 +275,35 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         ],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["planner_server"] = planner_server
 
-    behavior_server = LifecycleNode(
+    all_lifecycle_nodes["behavior_server"] = LifecycleNode(
         package="nav2_behaviors",
         executable="behavior_server",
         name="behavior_server",
         parameters=[behavior_server_params.file],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["behavior_server"] = behavior_server
 
-    bt_navigator = LifecycleNode(
+    all_lifecycle_nodes["bt_navigator"] = LifecycleNode(
         package="nav2_bt_navigator",
         executable="bt_navigator",
         name="bt_navigator",
         parameters=[bt_navigator_params.file],
         namespace=namespace_vehicle,
     )
-    all_lifecycle_nodes["bt_navigator"] = bt_navigator
 
     remappings = []
     if use_gps:
         remappings.append(("/gps/fix", f"/{namespace_gps}/fix"))
         remappings.append(("/fromLL", f"/{namespace_gps}/fromLL"))
 
-    waypoint_follower = LifecycleNode(
+    all_lifecycle_nodes["waypoint_follower"] = LifecycleNode(
         package="nav2_waypoint_follower",
         executable="waypoint_follower",
         name="waypoint_follower",
         namespace=namespace_vehicle,
         remappings=remappings,
     )
-    all_lifecycle_nodes["waypoint_follower"] = waypoint_follower
 
     lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
