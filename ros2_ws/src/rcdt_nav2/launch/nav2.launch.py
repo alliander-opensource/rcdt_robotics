@@ -311,7 +311,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0915
         name="lifecycle_manager_navigation",
         parameters=[{"autostart": True}, {"node_names": lifecycle_nodes_names}],
         namespace=namespace_vehicle,
-        remappings=remappings,
     )
 
     nav2_manager = Node(
