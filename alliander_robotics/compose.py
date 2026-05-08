@@ -56,8 +56,8 @@ class Compose:
             "${HOME}/.nix-profile/bin/nvim:/usr/bin/nvim",
             "/nix/store:/nix/store",
             "./pyproject.toml:/alliander/pyproject.toml",
-            "./alliander_core/src/alliander_description:/alliander/ros/src/alliander_description",
-            "./alliander_core/src/alliander_utilities:/alliander/ros/src/alliander_utilities",
+            "./alliander_robotics/alliander_core/src/alliander_description:/alliander/ros/src/alliander_description",
+            "./alliander_robotics/alliander_core/src/alliander_utilities:/alliander/ros/src/alliander_utilities",
         ],
     }
     host_cwd: str = os.path.abspath(os.getcwd())
@@ -95,7 +95,7 @@ class Compose:
             list[str]: A list of volume mount strings.
         """
         cwd = Path.cwd()
-        src_dir = cwd.joinpath(f"{package}", "src")
+        src_dir = cwd.joinpath("alliander_robotics", f"{package}", "src")
         return [
             f"./{str(p.relative_to(cwd))}:/alliander/ros/src/{p.name}"
             for p in src_dir.iterdir()
