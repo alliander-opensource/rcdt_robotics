@@ -6,12 +6,21 @@ cmake_minimum_required(VERSION 3.5)
 project(alliander_seekthermal)
 
 # CMake dependencies:
-find_package(ament_python REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+# Other dependencies:
+find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-# Python executables:
+# Python package including mac_finder module:
+ament_python_install_package(${PROJECT_NAME}
+  PACKAGE_DIR src_py
+)
+
+# Python executable:
 install(
-  DIRECTORY src_py/
+  PROGRAMS src_py/seekthermal_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

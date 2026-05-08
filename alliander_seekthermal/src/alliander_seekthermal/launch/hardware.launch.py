@@ -24,7 +24,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     seekthermal_bridge_node = Node(
         package="alliander_seekthermal",
-        executable="alliander_seekthermal",
+        executable="seekthermal_bridge.py",
         output="both",
         parameters=[
             {
