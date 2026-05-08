@@ -45,7 +45,8 @@
         "kylinideteam.cmake-intellisence",
         "redhat.vscode-yaml",
         "github.vscode-pull-request-github",
-        "davidanson.vscode-markdownlint"
+        "davidanson.vscode-markdownlint",
+        "redhat.vscode-xml"
       ]
     }
   }

@@ -12,6 +12,7 @@ from alliander_robotics.alliander_core.src.alliander_utilities.alliander_utiliti
     GPS,
     IMU,
     Arm,
+    Beamagine,
     Camera,
     Lidar,
     Lift,
@@ -124,6 +125,12 @@ class PredefinedConfigurations:
         ]
 
         self.sim_conf.world = "thermal_camera.sdf"
+
+    @register_configuration("beamagine")
+    def config_beamagine(self) -> None:  # noqa: D102
+        self.plat_conf.platforms = [
+            Beamagine("beamagine", (0, 0, 0.5), namespace="beamagine")
+        ]
 
     # Ewellix:
     @register_configuration("ewellix")

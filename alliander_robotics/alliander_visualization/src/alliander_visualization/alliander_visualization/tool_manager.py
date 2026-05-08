@@ -27,7 +27,9 @@ class ApplyConfigurations:
 
     rviz_parameters: list = []
 
-    def __init__(self, config: VisualizationConfig, platform_list: PlatformList):
+    def __init__(  # noqa: PLR0912
+        self, config: VisualizationConfig, platform_list: PlatformList
+    ) -> None:
         """Initialize.
 
         Args:
@@ -52,6 +54,10 @@ class ApplyConfigurations:
                     self.add_depth_camera(Camera.from_str(platform.to_str()))
                 case "ThermalCamera":
                     self.add_thermal_camera(ThermalCamera.from_str(platform.to_str()))
+                case "Beamagine":
+                    self.add_depth_camera(Camera.from_str(platform.to_str()))
+                    self.add_thermal_camera(ThermalCamera.from_str(platform.to_str()))
+                    self.add_lidar(Lidar.from_str(platform.to_str()))
                 case "GPS":
                     self.add_gps(GPS.from_str(platform.to_str()))
                 case "IMU":
