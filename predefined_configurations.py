@@ -124,7 +124,7 @@ class PredefinedConfigurations:
         ]
 
         self.sim_conf.world = "thermal_camera.sdf"
-        
+
     # Ewellix:
     @register_configuration("ewellix")
     def config_ewellix(self) -> None:  # noqa: D102
@@ -184,6 +184,14 @@ class PredefinedConfigurations:
 
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, camera]
+
+    @register_configuration("panther_seekthermal")
+    def config_panther_seekthermal(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        thermal_camera = ThermalCamera("seekthermal", (0, 0, 0.5))
+
+        link(vehicle, thermal_camera)
+        self.plat_conf.platforms = [vehicle, thermal_camera]
 
     @register_configuration("panther_velodyne")
     def config_panther_velodyne(self) -> None:  # noqa: D102

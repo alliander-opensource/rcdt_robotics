@@ -10,12 +10,11 @@ from typing import List, Optional
 
 import rclpy
 import requests
+from alliander_seekthermal.mac_finder import MacAddressFinder
 from rclpy.node import Node
 from rclpy.publisher import Publisher
 from rclpy.timer import Timer
 from sensor_msgs.msg import CompressedImage
-
-from alliander_seekthermal.mac_finder import MacAddressFinder
 
 
 class ColorPalette(Enum):

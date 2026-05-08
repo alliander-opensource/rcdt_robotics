@@ -34,8 +34,10 @@ RUN git clone --depth=1 --filter=blob:none -b v3.1.1 \
 RUN /$WORKDIR/colcon_build.sh
 
 # Install repo packages:
+# alliander_seekthermal is needed as it creates a Python package that is imported
 WORKDIR /$WORKDIR/ros
 COPY alliander_core/src/ /$WORKDIR/ros/src
+COPY alliander_seekthermal/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:

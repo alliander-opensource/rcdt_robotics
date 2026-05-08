@@ -13,14 +13,12 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-# Python package including mac_finder module:
-ament_python_install_package(${PROJECT_NAME}
-  PACKAGE_DIR src_py
-)
+# Python package:
+ament_python_install_package(${PROJECT_NAME})
 
-# Python executable:
+# Python executables:
 install(
-  PROGRAMS src_py/seekthermal_bridge.py
+  DIRECTORY src_py/
   DESTINATION lib/${PROJECT_NAME}
 )
 
