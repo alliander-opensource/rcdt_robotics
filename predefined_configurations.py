@@ -187,11 +187,12 @@ class PredefinedConfigurations:
 
     @register_configuration("panther_seekthermal")
     def config_panther_seekthermal(self) -> None:  # noqa: D102
-        vehicle = Vehicle("panther", (0, 0, 0.2))
-        thermal_camera = ThermalCamera("seekthermal", (0, 0, 0.5))
+        vehicle = Vehicle("panther", (0, -3, 0.2), (0, 0, 90))
+        thermal_camera = ThermalCamera("seekthermal", (0, 0, 0.2))
 
         link(vehicle, thermal_camera)
         self.plat_conf.platforms = [vehicle, thermal_camera]
+        self.sim_conf.world = "thermal_camera.sdf"
 
     @register_configuration("panther_velodyne")
     def config_panther_velodyne(self) -> None:  # noqa: D102

@@ -186,8 +186,10 @@ class ApplyConfigurations:
         Args:
             platform (ThermalCamera): The thermal camera platform configuration.
         """
-        Rviz.add_image(f"/{platform.namespace}/thermal/image")
-        Rviz.add_image(f"/{platform.namespace}/thermal/image/compressed")
+        if platform.simulation:
+            Rviz.add_image(f"/{platform.namespace}/thermal/image")
+        else:
+            Rviz.add_image(f"/{platform.namespace}/thermal/image/compressed")
 
     @staticmethod
     def add_gps(platform: GPS) -> None:
