@@ -18,6 +18,7 @@ from alliander_core.src.alliander_utilities.alliander_utilities.config_objects i
     Platform,
     PlatformList,
     SimulatorConfig,
+    ThermalCamera,
     Vehicle,
     VisualizationConfig,
     link,
@@ -114,6 +115,16 @@ class PredefinedConfigurations:
     def config_zed(self) -> None:  # noqa: D102
         self.plat_conf.platforms = [Camera("zed", (0, 0, 0.5), namespace="zed")]
 
+    @register_configuration("seekthermal")
+    def config_seekthermal(self) -> None:  # noqa: D102
+        self.plat_conf.platforms = [
+            ThermalCamera(
+                "seekthermal", (0, -3, 0.5), (0, 0, 90), namespace="seekthermal"
+            )
+        ]
+
+        self.sim_conf.world = "thermal_camera.sdf"
+
     # Ewellix:
     @register_configuration("ewellix")
     def config_ewellix(self) -> None:  # noqa: D102
@@ -173,6 +184,15 @@ class PredefinedConfigurations:
 
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, camera]
+
+    @register_configuration("panther_seekthermal")
+    def config_panther_seekthermal(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, -3, 0.2), (0, 0, 90))
+        thermal_camera = ThermalCamera("seekthermal", (0, 0, 0.2))
+
+        link(vehicle, thermal_camera)
+        self.plat_conf.platforms = [vehicle, thermal_camera]
+        self.sim_conf.world = "thermal_camera.sdf"
 
     @register_configuration("panther_velodyne")
     def config_panther_velodyne(self) -> None:  # noqa: D102
