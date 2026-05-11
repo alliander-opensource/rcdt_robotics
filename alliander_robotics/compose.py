@@ -22,6 +22,7 @@ SERVICE = typing.Literal[
     "platform",
     "simulator",
     "moveit",
+    "openvla",
     "nav2",
     "visualization",
     "pytest",
@@ -146,7 +147,7 @@ class Compose:
         Raises:
             ValueError: if platform is not provided while a platform is needed.
         """
-        needs_platform = service_type in {"platform", "moveit", "nav2"}
+        needs_platform = service_type in {"platform", "moveit", "openvla", "nav2"}
         if needs_platform and platform is None:
             raise ValueError(f"Platform required for '{service_type}'")
 
@@ -219,6 +220,11 @@ class Compose:
                 ),
                 "moveit": (
                     "alliander_moveit",
+                    f" platform_config:='{platform.to_str()}'",
+                    {"needs_dependency": True},
+                ),
+                "openvla": (
+                    "alliander_openvla",
                     f" platform_config:='{platform.to_str()}'",
                     {"needs_dependency": True},
                 ),
@@ -393,6 +399,8 @@ class Compose:
                     self.add_service(content, "platform", platform)
                     if getattr(platform, "moveit", False):
                         self.add_service(content, "moveit", platform)
+                    if getattr(platform, "openvla", False):
+                        self.add_service(content, "openvla", platform)
                     if getattr(platform, "nav2", False):
                         self.add_service(content, "nav2", platform)
                 if self.simulator:

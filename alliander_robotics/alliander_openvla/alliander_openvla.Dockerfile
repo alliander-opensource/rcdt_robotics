@@ -9,8 +9,8 @@ ENV ROS_DISTRO=jazzy
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
-COPY alliander_core/src/ /$WORKDIR/ros/src
-COPY alliander_openvla/src/ /$WORKDIR/ros/src
+COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
+COPY alliander_robotics/alliander_openvla/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
