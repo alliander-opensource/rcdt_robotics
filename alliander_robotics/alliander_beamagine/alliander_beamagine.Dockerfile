@@ -18,6 +18,11 @@ RUN if [ $(dpkg --print-architecture) = "amd64" ]; \
   else echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1; fi
 RUN dpkg -i "${RUN_FILE}"
 
+# Set buffer size:
+RUN echo 'net.core.rmem_default=268435456' >> /etc/sysctl.conf && \
+  echo 'net.core.rmem_max=268435456' >> /etc/sysctl.conf && \
+  echo 'net.core.netdev_max_backlog=5000' >> /etc/sysctl.conf
+
 # Install ROS driver:
 WORKDIR /$WORKDIR/external
 RUN apt update \
