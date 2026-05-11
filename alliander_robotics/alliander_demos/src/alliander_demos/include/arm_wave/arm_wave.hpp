@@ -5,8 +5,8 @@
 #ifndef ARM_WAVE_DEMO_HPP_
 #define ARM_WAVE_DEMO_HPP_
 
-#include <chrono>
-#include <memory>
+#include <cmath>
+#include <cstdlib>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/timer.hpp>
 #include <vector>
@@ -15,6 +15,9 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 
+using FollowJointTrajectory = control_msgs::action::FollowJointTrajectory;
+using GoalHandleFJT = rclcpp_action::ClientGoalHandle<FollowJointTrajectory>;
+
 class ArmWaveDemo : public rclcpp::Node {
  public:
   ArmWaveDemo();
@@ -22,8 +25,7 @@ class ArmWaveDemo : public rclcpp::Node {
  private:
   void send_wave();
 
-  rclcpp_action::Client<control_msgs::action::FollowJointTrajectory>::SharedPtr
-      action_client_;
+  rclcpp_action::Client<FollowJointTrajectory>::SharedPtr action_client_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::vector<std::string> joints_;
