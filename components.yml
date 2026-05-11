@@ -88,3 +88,7 @@ zed:
   base_image: allianderrobotics/cuda
   repository: allianderrobotics/zed
   dockerfile: alliander_zed/alliander_zed.Dockerfile
+openvla:
+  base_image: allianderrobotics/cuda
+  repository: allianderrobotics/openvla
+  dockerfile: alliander_openvla/alliander_openvla.Dockerfile
