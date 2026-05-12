@@ -361,3 +361,11 @@ class PredefinedConfigurations:
         vehicle = Vehicle("panther", (0, -0.5, 0.2))
         arm = Arm("franka", (0, 0.5, 0))
         self.plat_conf.platforms = [vehicle, arm]
+
+    # Demos
+    @register_configuration("franka_arm_wave_demo")
+    def config_franka_arm_wave_demo(self) -> None:  # noqa: D102
+        arm = Arm("franka", gripper=True, moveit=True, controller="wave_controller")
+
+        self.plat_conf.platforms = [arm]
+        self.viz_conf.gui = True

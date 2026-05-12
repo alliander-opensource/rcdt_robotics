@@ -14,11 +14,16 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
                                                                   "fr3_joint6",
                                                                   "fr3_joint7",
                                                               });
-  this->declare_parameter<int>("wave_joint_index", 4);
-  this->declare_parameter<double>("wave_amplitude", 0.8);
+  this->declare_parameter<std::vector<float>>(
+      "initial_joint_positions",
+      {0., -0.785398, 0., -2.56194, 0., 1.570796, 0.785398});
+  this->declare_parameter<int>("wave_joint_index", 3);
+  this->declare_parameter<double>("wave_amplitude", 0.5);
   this->declare_parameter<double>("wave_period_sec", 8.0);
 
   joints_ = this->get_parameter("joints").as_string_array();
+  initial_joint_positions_ =
+      this->get_parameter("initial_joint_positions").as_double_array();
   wave_joint_index_ = this->get_parameter("wave_joint_index").as_int();
   wave_amplitude_ = this->get_parameter("wave_amplitude").as_double();
   wave_period_sec_ = this->get_parameter("wave_period_sec").as_double();
@@ -37,8 +42,7 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
 
   send_wave();
   timer_ = this->create_wall_timer(
-      std::chrono::milliseconds(static_cast<int>(wave_period_sec_ * 1000)),
-      [this]() {
+      std::chrono::milliseconds(static_cast<int>(200)), [this]() {
         if (!wave_in_progress_) {
           send_wave();
         }
@@ -55,9 +59,9 @@ void ArmWaveDemo::send_wave() {
 
   // Go up
   trajectory_msgs::msg::JointTrajectoryPoint up;
-  up.positions.assign(n, 0.0);
+  up.positions = initial_joint_positions_;
   if (wave_joint_index_ < n) {
-    up.positions[wave_joint_index_] = wave_amplitude_;
+    up.positions[wave_joint_index_] += wave_amplitude_;
   }
 
   float half_sec = wave_period_sec_ / 2.0;
@@ -66,20 +70,24 @@ void ArmWaveDemo::send_wave() {
 
   // And back down
   trajectory_msgs::msg::JointTrajectoryPoint down;
-  down.positions.assign(n, 0.0);
+  down.positions = initial_joint_positions_;
   if (wave_joint_index_ < n) {
-    down.positions[wave_joint_index_] = -wave_amplitude_;
+    down.positions[wave_joint_index_] -= wave_amplitude_;
   }
   down.time_from_start.sec = static_cast<int>(wave_period_sec_);
   down.time_from_start.nanosec = 0;
 
+  RCLCPP_INFO(get_logger(), "Up position: %.3f",
+              up.positions[wave_joint_index_]);
+  RCLCPP_INFO(get_logger(), "Down position: %.3f",
+              down.positions[wave_joint_index_]);
   goal.trajectory.points = {up, down};
 
   auto send_opts =
       rclcpp_action::Client<FollowJointTrajectory>::SendGoalOptions();
 
   send_opts.goal_response_callback =
-      [this](const GoalHandleFJT::SharedPtr &handle) {
+      [this](const GoalHandleFJT::SharedPtr& handle) {
         if (!handle) {
           RCLCPP_ERROR(get_logger(), "Goal rejected by controller.");
           wave_in_progress_ = false;
@@ -89,7 +97,7 @@ void ArmWaveDemo::send_wave() {
       };
 
   send_opts.result_callback =
-      [this](const GoalHandleFJT::WrappedResult &result) {
+      [this](const GoalHandleFJT::WrappedResult& result) {
         switch (result.code) {
           case rclcpp_action::ResultCode::SUCCEEDED:
             RCLCPP_DEBUG(get_logger(), "Wave complete.");

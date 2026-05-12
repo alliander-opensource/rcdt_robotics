@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.5)
-project(alliander_demos)
+project(alliander_arm_controllers)
 
 # CMake dependencies:
 find_package(ament_cmake REQUIRED)
@@ -33,12 +33,6 @@ ament_target_dependencies(arm_wave_node
 install(
   TARGETS arm_wave_node
   DESTINATION lib/${PROJECT_NAME}
-)
-
-# Shared folders:
-install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
 )
 
 # Default test:
