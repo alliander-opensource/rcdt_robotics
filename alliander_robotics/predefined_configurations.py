@@ -242,6 +242,8 @@ class PredefinedConfigurations:
     def config_panther_slam(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
         vehicle.nav2_config.slam = True
+        vehicle.nav2_config.navigation = True
+        vehicle.nav2_config.window_size = 20
         lidar = Lidar(
             "velodyne",
             position=(0.125, 0.185, 0.20),
@@ -251,6 +253,7 @@ class PredefinedConfigurations:
 
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
+        self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_lidar_navigation")
     def config_panther_lidar_navigation(self) -> None:  # noqa: D102
