@@ -77,10 +77,6 @@ void ArmWaveDemo::send_wave() {
   down.time_from_start.sec = static_cast<int>(wave_period_sec_);
   down.time_from_start.nanosec = 0;
 
-  RCLCPP_INFO(get_logger(), "Up position: %.3f",
-              up.positions[wave_joint_index_]);
-  RCLCPP_INFO(get_logger(), "Down position: %.3f",
-              down.positions[wave_joint_index_]);
   goal.trajectory.points = {up, down};
 
   auto send_opts =
