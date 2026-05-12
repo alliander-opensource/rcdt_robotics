@@ -49,7 +49,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     # Define configuration:
     lifecycle_nodes_names = []
     use_map_localization = True
-    use_slam_map_localization = False
     plugins = ["static_layer", "obstacle_layer", "inflation_layer"]
 
     if nav2.collision_monitor:
@@ -57,7 +56,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     if nav2.slam:
         lifecycle_nodes_names.append("slam_toolbox")
         use_map_localization = False
-        use_slam_map_localization = True
     if nav2.gps:
         if not namespace_gps:
             raise ValueError("Namespace for GPS must be provided when using GPS.")
@@ -70,7 +68,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
                     "amcl",
                 ]
             )
-        elif not use_slam_map_localization:
+        elif not nav2.slam:
             plugins.remove("static_layer")
         lifecycle_nodes_names.extend(
             [
