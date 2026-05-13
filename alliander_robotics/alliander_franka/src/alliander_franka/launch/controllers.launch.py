@@ -43,7 +43,7 @@ def launch_setup(context: LaunchContext) -> list:
             package="controller_manager",
             executable="spawner",
             arguments=[
-                arm_config.controller,
+                "fr3_arm_controller",
                 "--switch-timeout",
                 str(TIMEOUT),
             ],
@@ -68,19 +68,21 @@ def launch_setup(context: LaunchContext) -> list:
                             "fr3_joint7",
                         ]
                     },
+                    # based on initial Franka joint positions
                     {
                         "initial_joint_positions": [
                             0.0,
                             -0.785398,
                             0.0,
-                            -2.0,
+                            -2.356194,
                             0.0,
                             3.0,
                             0.785398,
                         ]
                     },
-                    {"wave_joint_index": 3},
-                    {"wave_amplitude": 0.5},
+                    # bottom joint (yaw) and middle joint (up and down)
+                    {"wave_joint_indices": [0, 3]},
+                    {"wave_amplitudes": [0.4, 0.5]},
                     {"wave_period_sec": 8.0},
                 ],
                 namespace=arm_config.namespace,

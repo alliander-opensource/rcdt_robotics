@@ -9,9 +9,8 @@ from enum import Enum, auto
 import rclpy
 from alliander_interfaces.action import TriggerAction
 from rclpy.action import ActionClient
-from rclpy.node import Node
 
-ACTION_PREFIX: str = "/franka/gripper/"
+ACTION_PREFIX: str = "/franka/gripper"
 
 
 class GripperPosition(Enum):
@@ -24,13 +23,6 @@ class GripperPosition(Enum):
 
     OPEN = auto()
     CLOSE = auto()
-
-
-class GripperPositionHelper(Node):
-    def __init__(self):
-        super().__init__("gripper_position_helper")
-        self.ac_open = ActionClient(self, TriggerAction, f"{ACTION_PREFIX}/open")
-        self.ac_close = ActionClient(self, TriggerAction, f"{ACTION_PREFIX}/close")
 
 
 if __name__ == "__main__":

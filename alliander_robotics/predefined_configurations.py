@@ -365,7 +365,13 @@ class PredefinedConfigurations:
     # Demos
     @register_configuration("franka_arm_wave_demo")
     def config_franka_arm_wave_demo(self) -> None:  # noqa: D102
-        arm = Arm("franka", gripper=True, moveit=True, controller="wave_controller")
+        arm = Arm(
+            "franka",
+            gripper=True,
+            moveit=True,
+            controller="wave_controller",
+            ip_address="172.16.0.2",
+        )
 
         self.plat_conf.platforms = [arm]
         self.viz_conf.gui = True
