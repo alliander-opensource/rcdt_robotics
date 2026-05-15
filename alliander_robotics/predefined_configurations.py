@@ -131,6 +131,7 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [
             Beamagine("beamagine", (0, 0, 0.5), namespace="beamagine")
         ]
+        self.sim_conf.world = "walls.sdf"
 
     # Ewellix:
     @register_configuration("ewellix")

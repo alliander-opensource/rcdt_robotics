@@ -26,7 +26,7 @@ RUN echo 'net.core.rmem_default=268435456' >> /etc/sysctl.conf && \
 # Install ROS driver:
 WORKDIR /$WORKDIR/external
 RUN apt update \
-  && git clone -b humble https://github.com/beamaginelidar/l3cam_ros2.git src/l3cam_ros2 \
+  && git clone -b jazzy https://github.com/beamaginelidar/l3cam_ros2.git src/l3cam_ros2 \
   && cd /$WORKDIR/external \
   && rosdep update --rosdistro $ROS_DISTRO \
   && rosdep install --from-paths src -y -i
