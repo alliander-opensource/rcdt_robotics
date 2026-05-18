@@ -11,6 +11,7 @@ find_package(ament_cmake REQUIRED)
 # Other dependencies:
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(alliander_interfaces REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 
@@ -26,6 +27,7 @@ target_include_directories(arm_wave_node PUBLIC
 ament_target_dependencies(arm_wave_node
   rclcpp
   rclcpp_action
+  alliander_interfaces
   control_msgs
   trajectory_msgs
 )

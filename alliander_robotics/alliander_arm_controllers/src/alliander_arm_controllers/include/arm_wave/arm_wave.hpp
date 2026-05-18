@@ -19,9 +19,10 @@
 
 using FollowJointTrajectory = control_msgs::action::FollowJointTrajectory;
 using GoalHandleFJT = rclcpp_action::ClientGoalHandle<FollowJointTrajectory>;
-using TriggerAction = alliander_interfaces::action::TriggerAction;
-using GoalHandleTA = rclcpp_action::ClientGoalHandle<TriggerAction>;
+using GripperAction = alliander_interfaces::action::TriggerAction;
+using GoalHandleGripper = rclcpp_action::ClientGoalHandle<GripperAction>;
 
+/// Enum listing possible states for the arm wave demo.
 enum ArmState {
   Uninitialized = 0,
   Homed = 1,
@@ -30,16 +31,25 @@ enum ArmState {
   Ready = 4,
 };
 
+/// Class that handles state management and transitions for the arm wave demo.
 class StateMachine {
  private:
+  /// Current state.
   ArmState state_{ArmState::Uninitialized};
+  /// Map of state transitions, to be used in transition().
   std::map<ArmState, ArmState> transitions_{
       {ArmState::Uninitialized, ArmState::Homed},
       {ArmState::Homed, ArmState::GripperOpen},
       {ArmState::GripperOpen, ArmState::GripperClosed},
       {ArmState::GripperClosed, ArmState::Ready},
+      {ArmState::Ready, ArmState::Ready},
   };
 
+  /**
+   * @brief Returns a human-readable state name.
+   * @param state
+   * @return String representing current state.
+   */
   static std::string get_state_name_(ArmState state) {
     switch (state) {
       case ArmState::Uninitialized:
@@ -56,10 +66,20 @@ class StateMachine {
   }
 
  public:
+  /**
+   * @brief Returns the internal state.
+   * @return Enum containing the state.
+   */
   ArmState get_state() { return state_; }
 
+  /**
+   * @brief Resets the state to Uninitialized, starting over.
+   */
   void reset() { state_ = ArmState::Uninitialized; }
 
+  /**
+   * @brief Transitions to the next state.
+   */
   void transition() {
     ArmState current_state = state_;
     state_ = transitions_[state_];
@@ -81,11 +101,26 @@ class ArmWaveDemo : public rclcpp::Node {
 
  private:
   /**
+   * @brief Sends arm to home/middle position.
+   */
+  void send_home();
+  /**
+   * @brief Opens the gripper.
+   */
+  void open_gripper();
+  /**
+   * @brief Closes the gripper.
+   */
+  void close_gripper();
+  /**
    * @brief Sends wave motion to action server.
    */
   void send_wave();
-  void send_home();
 
+  /**
+   * @brief Templated function that handles an action server response.
+   * @param handle
+   */
   template <typename ActionT>
   void on_response(
       const typename rclcpp_action::ClientGoalHandle<ActionT>::SharedPtr&
@@ -98,6 +133,10 @@ class ArmWaveDemo : public rclcpp::Node {
     }
   }
 
+  /**
+   * @brief Templated function that handles an action result.
+   * @param result
+   */
   template <typename ActionT>
   void on_result(
       const typename rclcpp_action::ClientGoalHandle<ActionT>::WrappedResult&
@@ -124,9 +163,14 @@ class ArmWaveDemo : public rclcpp::Node {
 
   /// Action client to send wave motion as a JointTrajectory.
   rclcpp_action::Client<FollowJointTrajectory>::SharedPtr fjt_action_client_;
+  /// Joint trajectory send options using the templated callback functions.
   rclcpp_action::Client<FollowJointTrajectory>::SendGoalOptions fjt_send_opts_;
-  rclcpp_action::Client<TriggerAction>::SharedPtr gripper_action_client_;
-  rclcpp_action::Client<TriggerAction>::SendGoalOptions gripper_send_opts_;
+  /// Action client to open the gripper.
+  rclcpp_action::Client<GripperAction>::SharedPtr open_gripper_action_client_;
+  /// Action client to close the gripper.
+  rclcpp_action::Client<GripperAction>::SharedPtr close_gripper_action_client_;
+  /// Gripper action client send options using the templated callback functions.
+  rclcpp_action::Client<GripperAction>::SendGoalOptions gripper_send_opts_;
   /// Timer to send motion again when it is finished.
   rclcpp::TimerBase::SharedPtr timer_;
 
@@ -145,6 +189,7 @@ class ArmWaveDemo : public rclcpp::Node {
   /// Flag indicating whether a movement is in progress.
   std::atomic<bool> busy_{false};
 
+  /// State machine to handle homing, opening/closing the gripper, and waving.
   StateMachine state_machine_;
 };
 

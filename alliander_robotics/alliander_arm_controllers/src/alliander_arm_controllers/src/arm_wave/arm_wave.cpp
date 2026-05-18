@@ -8,6 +8,7 @@
 #include <rclcpp/executors.hpp>
 #include <rclcpp/utilities.hpp>
 #include <rclcpp_action/client.hpp>
+#include <rclcpp_action/create_client.hpp>
 
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 
@@ -40,46 +41,61 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
 
   fjt_action_client_ = rclcpp_action::create_client<FollowJointTrajectory>(
       this, "fr3_arm_controller/follow_joint_trajectory");
+  open_gripper_action_client_ =
+      rclcpp_action::create_client<GripperAction>(this, "gripper/open");
+  close_gripper_action_client_ =
+      rclcpp_action::create_client<GripperAction>(this, "gripper/close");
 
-  RCLCPP_INFO(get_logger(), "Waiting for action server...");
-  if (!action_client_->wait_for_action_server(std::chrono::seconds(10))) {
+  RCLCPP_INFO(get_logger(),
+              "Waiting for FollowJointTrajectory action server...");
+  if (!fjt_action_client_->wait_for_action_server(std::chrono::seconds(10))) {
     RCLCPP_ERROR(get_logger(),
-                 "Action server not available after 10s. Exiting.");
+                 "FollowJointTrajectory action server not available after 10s. "
+                 "Exiting.");
     rclcpp::shutdown();
     return;
   }
-  RCLCPP_INFO(get_logger(), "Action server found. Starting wave.");
+
+  RCLCPP_INFO(get_logger(), "Waiting for Open Gripper action server...");
+  if (!open_gripper_action_client_->wait_for_action_server(
+          std::chrono::seconds(10))) {
+    RCLCPP_ERROR(
+        get_logger(),
+        "Open gripper action server not available after 10s. Exiting.");
+    rclcpp::shutdown();
+    return;
+  }
+
+  RCLCPP_INFO(get_logger(), "Waiting for Close Gripper action server...");
+  if (!close_gripper_action_client_->wait_for_action_server(
+          std::chrono::seconds(10))) {
+    RCLCPP_ERROR(
+        get_logger(),
+        "Close gripper action server not available after 10s. Exiting.");
+    rclcpp::shutdown();
+    return;
+  }
+
+  RCLCPP_INFO(get_logger(), "Action servers found. Starting wave.");
 
   fjt_send_opts_.goal_response_callback =
       [this](const GoalHandleFJT::SharedPtr& handle) {
-        if (!handle) {
-          RCLCPP_ERROR(get_logger(), "Goal rejected by controller.");
-          busy_ = false;
-        } else {
-          RCLCPP_DEBUG(get_logger(), "Goal accepted.");
-        }
+        on_response<FollowJointTrajectory>(handle);
       };
 
   fjt_send_opts_.result_callback =
       [this](const GoalHandleFJT::WrappedResult& result) {
-        switch (result.code) {
-          case rclcpp_action::ResultCode::SUCCEEDED:
-            RCLCPP_DEBUG(get_logger(), "Goal complete.");
-            state_machine_.transition();
-            break;
-          case rclcpp_action::ResultCode::ABORTED:
-            RCLCPP_WARN(get_logger(), "Goal aborted.");
-            state_machine_.reset();
-            break;
-          case rclcpp_action::ResultCode::CANCELED:
-            RCLCPP_WARN(get_logger(), "Goal canceled.");
-            state_machine_.reset();
-            break;
-          default:
-            RCLCPP_WARN(get_logger(), "Unknown result code.");
-            break;
-        }
-        busy_ = false;
+        on_result<FollowJointTrajectory>(result);
+      };
+
+  gripper_send_opts_.goal_response_callback =
+      [this](const GoalHandleGripper::SharedPtr& handle) {
+        on_response<GripperAction>(handle);
+      };
+
+  gripper_send_opts_.result_callback =
+      [this](const GoalHandleGripper::WrappedResult& result) {
+        on_result<GripperAction>(result);
       };
 
   timer_ = this->create_wall_timer(
@@ -119,7 +135,27 @@ void ArmWaveDemo::send_home() {
 
   goal.trajectory.points = {home};
 
-  action_client_->async_send_goal(goal, fjt_send_opts_);
+  fjt_action_client_->async_send_goal(goal, fjt_send_opts_);
+}
+
+void ArmWaveDemo::open_gripper() {
+  RCLCPP_INFO(get_logger(), "Sending open gripper command to arm.");
+  busy_ = true;
+
+  auto goal = GripperAction::Goal();
+  open_gripper_action_client_->async_send_goal(goal, gripper_send_opts_);
+}
+
+void ArmWaveDemo::close_gripper() {
+  RCLCPP_INFO(get_logger(),
+              "Sending close gripper command to arm in 3 seconds.");
+  busy_ = true;
+
+  rclcpp::sleep_for(std::chrono::seconds(3));
+  RCLCPP_INFO(get_logger(), "Sending close gripper command.");
+
+  auto goal = GripperAction::Goal();
+  close_gripper_action_client_->async_send_goal(goal, gripper_send_opts_);
 }
 
 void ArmWaveDemo::send_wave() {
@@ -151,5 +187,5 @@ void ArmWaveDemo::send_wave() {
 
   goal.trajectory.points = {up, down};
 
-  action_client_->async_send_goal(goal, fjt_send_opts_);
+  fjt_action_client_->async_send_goal(goal, fjt_send_opts_);
 }
