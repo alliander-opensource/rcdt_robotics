@@ -30,6 +30,7 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
   this->declare_parameter<std::vector<int>>("wave_joint_indices", {3});
   this->declare_parameter<std::vector<float>>("wave_amplitudes", {0.5});
   this->declare_parameter<double>("wave_period_sec", 8.0);
+  this->declare_parameter<double>("wait_time_sec", 3.0);
 
   joints_ = this->get_parameter("joints").as_string_array();
   initial_joint_positions_ =
@@ -38,6 +39,8 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
       this->get_parameter("wave_joint_indices").as_integer_array();
   wave_amplitudes_ = this->get_parameter("wave_amplitudes").as_double_array();
   wave_period_sec_ = this->get_parameter("wave_period_sec").as_double();
+  wait_time_msec_ =
+      (int)(1000 * this->get_parameter("wait_time_sec").as_double());
 
   fjt_action_client_ = rclcpp_action::create_client<FollowJointTrajectory>(
       this, "fr3_arm_controller/follow_joint_trajectory");
@@ -112,7 +115,7 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
               close_gripper();
               break;
             case ArmState::GripperClosed:
-              state_machine_.transition();
+              get_ready();
               break;
             case ArmState::Ready:
               send_wave();
@@ -148,14 +151,20 @@ void ArmWaveDemo::open_gripper() {
 
 void ArmWaveDemo::close_gripper() {
   RCLCPP_INFO(get_logger(),
-              "Sending close gripper command to arm in 3 seconds.");
+              "Waiting for a few seconds before closing gripper.");
   busy_ = true;
 
-  rclcpp::sleep_for(std::chrono::seconds(3));
+  rclcpp::sleep_for(std::chrono::milliseconds(wait_time_msec_));
   RCLCPP_INFO(get_logger(), "Sending close gripper command.");
 
   auto goal = GripperAction::Goal();
   close_gripper_action_client_->async_send_goal(goal, gripper_send_opts_);
+}
+
+void ArmWaveDemo::get_ready() {
+  RCLCPP_INFO(get_logger(), "Waiting for a few seconds before starting wave.");
+  rclcpp::sleep_for(std::chrono::milliseconds(wait_time_msec_));
+  state_machine_.transition();
 }
 
 void ArmWaveDemo::send_wave() {

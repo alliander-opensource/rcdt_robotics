@@ -113,6 +113,10 @@ class ArmWaveDemo : public rclcpp::Node {
    */
   void close_gripper();
   /**
+   * @brief Waits for a bit before starting the wave.
+   */
+  void get_ready();
+  /**
    * @brief Sends wave motion to action server.
    */
   void send_wave();
@@ -185,6 +189,8 @@ class ArmWaveDemo : public rclcpp::Node {
 
   /// Period of up and down movement, in seconds.
   double wave_period_sec_;
+  /// Wait time between opening/closing and waving, in milliseconds.
+  int wait_time_msec_;
 
   /// Flag indicating whether a movement is in progress.
   std::atomic<bool> busy_{false};
