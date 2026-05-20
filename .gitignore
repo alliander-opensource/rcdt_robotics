@@ -30,3 +30,6 @@ clangd/
 compose.yml
 compose_pytest.yml
 rviz.yml
+
+# model checkpoints
+models/

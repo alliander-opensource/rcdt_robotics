@@ -1,0 +1,27 @@
+model:
+  name: "openvla/openvla-7b"
+  cache_dir: "/models"
+  
+  quantization:
+    enabled: false
+    method: "nf4"  # NormalFloat4
+    bits: 4
+    compute_dtype: "bfloat16" # Changed from bfloat16 (not anymore, changed back)
+    double_quant: true
+  
+  inference:
+    device: "cuda"
+    torch_dtype: "bfloat16" # Changed from bfloat16 (not anymore, changed back)
+    compile: false
+    compile_mode: "reduce-overhead"
+  
+  performance:
+    max_batch_size: 1
+    action_chunk_size: 1
+    temperature: 0.1
+    use_cache: true
+
+hardware:
+  min_vram_gb: 6
+  recommended_vram_gb: 12
+  cuda_version: "12.8"

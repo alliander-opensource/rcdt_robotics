@@ -380,6 +380,14 @@ class PredefinedConfigurations:
         arm = Arm("franka", (0, 0.5, 0))
         self.plat_conf.platforms = [vehicle, arm]
 
+    # Openvla test
+    @register_configuration("openvla")
+    def config_openvla(self) -> None:  # noqa: D102
+        arm = Arm("franka", moveit=True, gripper=True, openvla=True)
+        camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180))
+
+        link(arm, camera)
+        self.plat_conf.platforms = [arm, camera]
     # Demos
     @register_configuration("lynx_indoor_demo")
     def config_lynx_indoor_demo(self) -> None:  # noqa: D102
