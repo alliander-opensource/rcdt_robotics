@@ -314,14 +314,28 @@ class PredefinedConfigurations:
         vehicle.nav2_config.navigation = True
         vehicle.nav2_config.gps = True
         vehicle.nav2_config.window_size = 50
-        lidar = Lidar("ouster", (0.1, -0.1, 0.25))
-        gps = GPS("gps", (0, 0, 0.13))
+        lidar = Lidar("ouster", (0.06, 0.0, 0.25))
+        gps = GPS("gps", (-0.25, -0.08, 0.25), orientation=(0, 0, 180))
+        imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
 
         link(vehicle, lidar)
         link(vehicle, gps)
-        self.plat_conf.platforms = [vehicle, lidar, gps]
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, lidar, gps, imu]
         self.viz_conf.gui = True
         self.sim_conf.world = "map_5.940906_51.966960"
+
+    @register_configuration("lynx_lidar_navigation")
+    def config_lynx_lidar_navigation(self) -> None:  # noqa: D102
+        vehicle = Vehicle("lynx", (0, 0, 0.2))
+        vehicle.nav2_config.navigation = True
+        lidar = Lidar("ouster", (0.06, 0.0, 0.25))
+        imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
+
+        link(vehicle, lidar)
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, lidar, imu]
+        self.sim_conf.world = "walls.sdf"
 
     # Mobile Manipulators:
     @register_configuration("mm")
