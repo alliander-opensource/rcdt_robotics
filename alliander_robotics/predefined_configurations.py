@@ -242,6 +242,8 @@ class PredefinedConfigurations:
     def config_panther_slam(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
         vehicle.nav2_config.slam = True
+        vehicle.nav2_config.navigation = True
+        vehicle.nav2_config.window_size = 20
         lidar = Lidar(
             "velodyne",
             position=(0.125, 0.185, 0.20),
@@ -251,6 +253,7 @@ class PredefinedConfigurations:
 
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
+        self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_lidar_navigation")
     def config_panther_lidar_navigation(self) -> None:  # noqa: D102
@@ -311,14 +314,29 @@ class PredefinedConfigurations:
         vehicle.nav2_config.navigation = True
         vehicle.nav2_config.gps = True
         vehicle.nav2_config.window_size = 50
-        lidar = Lidar("ouster", (0.1, -0.1, 0.25))
-        gps = GPS("gps", (0, 0, 0.13))
+        lidar = Lidar("ouster", (0.06, 0.0, 0.25))
+        gps = GPS("gps", (-0.25, -0.08, 0.25), orientation=(0, 0, 180))
+        imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
 
         link(vehicle, lidar)
         link(vehicle, gps)
-        self.plat_conf.platforms = [vehicle, lidar, gps]
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, lidar, gps, imu]
         self.viz_conf.gui = True
         self.sim_conf.world = "map_5.940906_51.966960"
+
+    @register_configuration("lynx_lidar_navigation")
+    def config_lynx_lidar_navigation(self) -> None:  # noqa: D102
+        vehicle = Vehicle("lynx", (0, 0, 0.2))
+        vehicle.nav2_config.navigation = True
+        vehicle.nav2_config.controller = "mppi"
+        lidar = Lidar("ouster", (0.06, 0.0, 0.25))
+        imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
+
+        link(vehicle, lidar)
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, lidar, imu]
+        self.sim_conf.world = "walls.sdf"
 
     # Mobile Manipulators:
     @register_configuration("mm")
@@ -370,3 +388,18 @@ class PredefinedConfigurations:
 
         link(arm, camera)
         self.plat_conf.platforms = [arm, camera]
+    # Demos
+    @register_configuration("lynx_indoor_demo")
+    def config_lynx_indoor_demo(self) -> None:  # noqa: D102
+        vehicle = Vehicle("lynx", (0, 0, 0.2))
+        vehicle.nav2_config.navigation = True
+        vehicle.nav2_config.controller = "mppi"
+        lidar = Lidar("ouster", (0.06, 0.0, 0.25))
+        imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
+        camera = Camera("realsense", (0.30, 0, 0.18))
+
+        link(vehicle, lidar)
+        link(vehicle, imu)
+        link(vehicle, camera)
+        self.plat_conf.platforms = [vehicle, lidar, imu, camera]
+        self.sim_conf.world = "walls.sdf"

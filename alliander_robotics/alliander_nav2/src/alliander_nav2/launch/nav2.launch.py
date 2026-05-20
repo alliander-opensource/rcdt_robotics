@@ -68,7 +68,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
                     "amcl",
                 ]
             )
-        else:
+        elif not nav2.slam:
             plugins.remove("static_layer")
         lifecycle_nodes_names.extend(
             [
@@ -124,7 +124,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         {
             "global_frame": f"{namespace_vehicle}/odom",
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
-            "rolling_window": nav2.gps,
+            "rolling_window": (nav2.gps or nav2.slam),
             "width": 10,
             "height": 10,
             "plugins": plugins,
