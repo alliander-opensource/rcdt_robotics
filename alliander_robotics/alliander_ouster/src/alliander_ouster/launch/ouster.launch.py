@@ -9,7 +9,7 @@ from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParameter
 
 platform_arg = LaunchArgument("platform_config", "")
 
@@ -66,6 +66,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     return [
+        SetParameter(name="use_sim_time", value=lidar_config.simulation),
         Register.on_start(state_publisher, context),
         Register.on_start(static_tf, context),
         Register.group(hardware, context) if not lidar_config.simulation else SKIP,
