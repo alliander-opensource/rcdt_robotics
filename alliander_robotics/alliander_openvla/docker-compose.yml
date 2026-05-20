@@ -13,6 +13,7 @@ services:
     volumes:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
       - "/dev:/dev"
+      - "./models:/models"
     environment:
       - "DISPLAY"
       - "RCUTILS_COLORIZED_OUTPUT=1"

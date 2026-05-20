@@ -65,10 +65,16 @@ alliander-seekthermal = [
     "numpy>=2.4.4",
     "requests>=2.33.0",
 ]
-alliander-openvla = [ # Added here all OpenVLA minimum requirements
+alliander-openvla = [ # Added here all OpenVLA minimum requirements + requirements for the OpenVLA node
+    "accelerate>=0.24.0",
+    "bitsandbytes>=0.41.0",
+    "numpy>=2.4.1",
+    "opencv-python>=4.8.0",
+    "pillow>=10.0.0",
+    "scipy>=1.17.0",
     "timm==0.9.10",
     "tokenizers==0.19.1",
-    "torch>=2.2.0",
+    "torch==2.10.0",
     "torchvision>=0.16.0",
     "transformers==4.40.1",
 ]

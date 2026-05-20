@@ -9,6 +9,12 @@ project(alliander_openvla)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
+# Other dependencies
+# find_package(moveit_msgs REQUIRED)
+
+# Python package:
+ament_python_install_package(${PROJECT_NAME})
+
 # Python executables:
 install(
   DIRECTORY src_py/
@@ -17,7 +23,7 @@ install(
 
 # Shared folders:
 install(
-  DIRECTORY launch
+  DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME}
 )
 

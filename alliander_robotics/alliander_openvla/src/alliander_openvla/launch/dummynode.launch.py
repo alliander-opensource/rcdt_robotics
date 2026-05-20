@@ -8,8 +8,7 @@ from alliander_utilities.launch_utils import SKIP, state_publisher_node, static_
 from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
 
 platform_arg = LaunchArgument("platform_config", "")
@@ -24,41 +23,28 @@ def launch_setup(context: LaunchContext) -> list:
     Returns:
         list: The actions to start.
     """
-    namespace = "openVLA"
+    # What I need the launch file to do:
+    # Initialize a listener on camera feed from Gazebo sim
+    namespace = "dummy"
 
-    vla_node = Node(
+    dummy_node = Node(
         package="alliander_openvla",
-        executable="vla_node.py",
-        name="vla_node",
+        executable="dummy_node.py",
         namespace=namespace,
-        # parameters=[
-        #     {
-        #         "enable_visualization": LaunchConfiguration(
-        #             "enable_visualization"
-        #         ).perform(context),
-        #     }
-        # ],
-        output="screen",
     )
 
-    return [Register.on_start(vla_node, context)]
+    return [Register.on_start(dummy_node, context)]
 
 
 def generate_launch_description() -> LaunchDescription:
-    """Generate the launch description for the OpenVLA Node.
+    """Generate the launch description for the Dummy Node.
 
     Returns:
-        LaunchDescription: The launch description for the OpenVLA Node.
+        LaunchDescription: The launch description for the Dummy Node.
     """
-    enable_viz_arg = DeclareLaunchArgument(
-        "enable_visualization",
-        default_value="true",
-        description="Enable visualization outputs",
-    )
-
     return LaunchDescription(
         [
-            enable_viz_arg,
+            platform_arg.declaration,
             OpaqueFunction(function=launch_setup),
         ]
     )

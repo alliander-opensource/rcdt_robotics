@@ -1,0 +1,22 @@
+tasks:
+  pick_and_place:
+    prompt: "Pick up the {object} and place it in the {container}"
+    description: "Grasp object and move to target location"
+    action_dims: 7  # [x, y, z, roll, pitch, yaw, gripper]
+    
+  push_to_target:
+    prompt: "Push the {object} towards the {target}"
+    description: "Push manipulation task"
+    action_dims: 6  # [x, y, z, roll, pitch, yaw]
+    
+  reach_to_object:
+    prompt: "Move the gripper to the {object}"
+    description: "Reaching task without grasping"
+    action_dims: 6
+    
+  open_drawer:
+    prompt: "Open the {drawer} drawer"
+    description: "Drawer opening manipulation"
+    action_dims: 7
+
+default_task: "pick_and_place"
