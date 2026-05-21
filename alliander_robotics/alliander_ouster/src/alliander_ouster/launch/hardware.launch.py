@@ -40,6 +40,7 @@ def launch_setup(context: LaunchContext) -> list:
                 "lidar_port": 7502,
                 "imu_port": 7503,
                 "lidar_mode": "1024x10",  # options: { 512x10, 512x20, 1024x10, 1024x20, 2048x10, 4096x5 }
+                "timestamp_mode": "TIME_FROM_ROS_TIME",
                 "sensor_frame": sensor_frame,
                 "lidar_frame": lidar_frame,
                 "imu_frame": imu_frame,
