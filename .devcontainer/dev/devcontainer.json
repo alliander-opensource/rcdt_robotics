@@ -14,8 +14,22 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/alliander_robotics,type=bind",
   "workspaceFolder": "/alliander_robotics",
   "overrideCommand": true,
+  "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+    "source=/dev,target=/dev,type=bind,consistency=cached"
+  ],
   "runArgs": [
-    "--rm"
+    "--rm",
+    "--privileged",
+    "--network=host",
+    "-e",
+    "DISPLAY",
+    "-e",
+    "NVIDIA_VISIBLE_DEVICES=all",
+    "-e",
+    "NVIDIA_DRIVER_CAPABILITIES=all",
+    "-e",
+    "RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
   ],
   "customizations": {
     "vscode": {
@@ -31,7 +45,8 @@
         "kylinideteam.cmake-intellisence",
         "redhat.vscode-yaml",
         "redhat.vscode-xml",
-        "github.vscode-pull-request-github"
+        "github.vscode-pull-request-github",
+        "davidanson.vscode-markdownlint"
       ]
     }
   }

@@ -7,7 +7,7 @@ import sys
 
 from termcolor import colored, cprint
 
-import utils
+from alliander_robotics import utils
 
 DOCKER_ORGANIZATION = "allianderrobotics"
 
@@ -63,7 +63,11 @@ class ImageManager:
         changed_packages = utils.get_changed_packages()
         for repository in self.selected:
             package = f"alliander_{repository}"
-            tag = utils.get_git_branch() if package in changed_packages else "latest"
+            tag = (
+                "latest"
+                if set({package, "alliander_core"}).isdisjoint(changed_packages)
+                else utils.get_git_branch()
+            )
             tag = "latest" if tag == "main" else tag
             if pull:
                 self.run_pull_subprocess(repository, tag)
@@ -103,7 +107,7 @@ class ImageManager:
             cache_str = "--no-cache"
 
         cmd = f"docker build \
-            -f {self.components[repository]['dockerfile']} \
+            -f alliander_robotics/{self.components[repository]['dockerfile']} \
             --build-arg BASE_IMAGE={self.components[repository]['base_image']} \
             --platform linux/{self.arch} \
             -t {DOCKER_ORGANIZATION}/{repository}:{tag} {cache_str} \
