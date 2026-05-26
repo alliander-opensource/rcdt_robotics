@@ -4,7 +4,7 @@
 
 from alliander_utilities.config_objects import Arm
 from alliander_utilities.launch_argument import LaunchArgument
-from alliander_utilities.launch_utils import state_publisher_node, static_tf_node
+from alliander_utilities.launch_utils import SKIP, state_publisher_node, static_tf_node
 from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
@@ -24,6 +24,10 @@ def launch_setup(context: LaunchContext) -> list:
     """
     arm_config = Arm.from_str(platform_arg.string_value(context))
 
+    output_recipe_filename = get_file_path(
+        "ur_robot_driver", ["resources"], "rtde_input_recipe.txt"
+    )
+
     state_publisher = state_publisher_node(
         namespace=arm_config.namespace,
         platform="ur",
@@ -41,6 +45,8 @@ def launch_setup(context: LaunchContext) -> list:
                     for child in arm_config.childs
                 ]
             ),
+            "output_recipe_filename": output_recipe_filename,
+            "robot_ip": arm_config.ip_address,
         },
     )
 
@@ -57,9 +63,15 @@ def launch_setup(context: LaunchContext) -> list:
         launch_arguments={"platform_config": arm_config.to_str()},
     )
 
+    hardware = RegisteredLaunchDescription(
+        get_file_path("alliander_ur", ["launch"], "hardware.launch.py"),
+        launch_arguments={"platform_config": arm_config.to_str()},
+    )
+
     return [
         Register.on_start(state_publisher, context),
         Register.on_start(static_tf, context),
+        Register.group(hardware, context) if not arm_config.simulation else SKIP,
         Register.group(controllers, context),
     ]
 

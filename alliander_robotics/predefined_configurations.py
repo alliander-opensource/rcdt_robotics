@@ -165,10 +165,10 @@ class PredefinedConfigurations:
     # UR:
     @register_configuration("ur")
     def config_ur(self) -> None:  # noqa: D102
-        arm = Arm("ur", moveit=True)
+        arm = Arm("ur", moveit=False, ip_address="172.16.0.2")
 
         self.plat_conf.platforms = [arm]
-        self.viz_conf.gui = True
+        self.viz_conf.gui = False
 
     @register_configuration("ur_rviz_motion_planning")
     def config_ur_rviz_motion_planning(self) -> None:  # noqa: D102
