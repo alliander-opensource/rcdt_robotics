@@ -12,8 +12,8 @@ import yaml
 from alliander_openvla.model_manager import ModelManager
 from alliander_openvla.utils import image_to_pil, cv_to_ros_image, convert_posedelta_to_velo
 # from cv_bridge import CvBridge
-from geometry_msgs.msg import Point, TwistStamped
-# from moveit_msgs.srv import ServoCommandType
+from geometry_msgs.msg import Point, TwistStamped, PoseStamped
+from moveit_msgs.srv import ServoCommandType
 from PIL import Image as PILImage
 from rclpy.node import Node
 from tf2_ros import Buffer, TransformListener
@@ -39,12 +39,23 @@ class VLANode(Node):
         self.declare_parameter("camera_topic", "/realsense/color/image_raw")
         self.declare_parameter("max_queue_size", 2)
         self.declare_parameter("enable_visualization", True)
+        self.declare_parameter("command_mode", "pose") # Parameter to control which command type the model outputs
 
         # Get parameters
         model_config_path = self.get_parameter("model_config").value
         tasks_config_path = self.get_parameter("tasks_config").value
         camera_topic = self.get_parameter("camera_topic").value
         max_queue_size = self.get_parameter("max_queue_size").value
+        command_mode = self.get_parameter("command_mode").value
+        
+        valid_modes = ["twist", "pose"]
+
+        if command_mode not in valid_modes:
+            self.get_logger().error(
+                f"Invalid command_mode '{command_mode}'. Must be one of {valid_modes}."
+            )
+            raise ValueError(f"Unsupported command_mode: {command_mode}")
+
 
         self.get_logger().info("Initializing VLA Node...")
         # ToDo: Research how exactly I will define tasks
@@ -105,10 +116,15 @@ class VLANode(Node):
             "/vla/raw_predicted_action",
             10
         )
-        # Added publisher to servo node that publishes twiststamped messages. ToDo: check values etc.
+        # Added two publishers to servo node that publish TwistStamped or PoseStamped messages. ToDo: check values etc.
         self.twist_action_pub = self.create_publisher(
             TwistStamped,
             "/franka/servo_node/delta_twist_cmds",
+            10
+        )
+        self.pose_action_pub = self.create_publisher(
+            PoseStamped,
+            "/franka/servo_node/pose_target_cmds",
             10
         )
         self.status_pub = self.create_publisher(
@@ -121,11 +137,11 @@ class VLANode(Node):
             "/vla/metrics",
             10
         )
-        # # Client for switching moveit command type
-        # self.switch_cmd_type = self.create_client(
-        #     ServoCommandType,
-        #     "/franka/servo_node/switch_command_type"
-        # )
+        # Client for switching moveit command type
+        self.switch_cmd_type = self.create_client(
+            ServoCommandType,
+            "/franka/servo_node/switch_command_type"
+        )
 
         # State
         self.processing = False
@@ -138,39 +154,53 @@ class VLANode(Node):
         self.get_logger().info("VLA Node ready!")
         self.get_logger().info(f"Subscribed to: {camera_topic}")
         # self.get_logger().info("Publishing to: /vla/waypoint_markers, /vla/annotated_image")
-        # self.switch_servo()
+        self.set_command_mode(command_mode)
 
     
-    # def _handle_switch_response(self, future):
-    #     try:
-    #         response = future.result()
+    def _handle_switch_response(self, future):
+        try:
+            response = future.result()
 
-    #         if response.success:
-    #             self.get_logger().info("Servo command type swtiched.")
-    #         else:
-    #             self.get_logger().warn("Failed to set servo command type.")
+            if response.success:
+                self.get_logger().info("Servo command type swtiched.")
+            else:
+                self.get_logger().warn("Failed to set servo command type.")
 
-    #     except Exception as e:
-    #         self.get_logger().error(f"Service call failed: {e}")
+        except Exception as e:
+            self.get_logger().error(f"Service call failed: {e}")
 
-
-    # def switch_servo(self, command_type: int=1) -> None:
-    #     """"Function to switch the servo_node's command_in_type
+    def set_command_mode(self, mode: str) -> None:
+        if mode == "twist":
+            self.get_logger().info(f"Switching Servo command type to {mode}...")
+            self.switch_servo(1)
+        elif mode == "pose":
+            self.get_logger().info(f"Switching Servo command type to {mode}...")
+            self.switch_servo(2)
+    
+    
+    def switch_servo(self, command_type: int) -> None:
+        """"Function to switch the servo_node's command_in_type
         
-    #     Args:
-    #         command_type (int): The command_in_type to switch to. 0=JOINT, 1=TWIST, 2=POSE. Defaults to 1 (Twist).
-    #     """
-    #     if not self.switch_cmd_type.service_is_ready():
-    #         self.get_logger().warn("Switch command type service not available.")
-    #         return
-        
-    #     request = ServoCommandType.Request()
+        Args:
+            command_type (int): The command_in_type to switch to. 0=JOINT, 1=TWIST, 2=POSE.
+        """
+        if not self.switch_cmd_type.service_is_ready():
+            self.get_logger().warn("Switch command type service not available.")
+            return
+        else:
+            self.get_logger().info("Switch command type service is available")
 
-    #     request.command_type = command_type
+        self.get_logger().info("Initializing request...")
+        request = ServoCommandType.Request()
 
-    #     future = self.switch_cmd_type.call_async(request)
+        self.get_logger().info(f"Setting request's command type to {command_type}")
+        request.command_type = command_type
 
-    #     future.add_done_callback(self._handle_switch_response)
+        self.get_logger().info("Calling request to the service...")
+        future = self.switch_cmd_type.call_async(request) # I get bytes error from this line...
+        self.get_logger().info("Request to service made!")
+
+        future.add_done_callback(self._handle_switch_response)
 
 
     # Function to handle task switching, assumes a task.yaml file. Will have to see how I represent the tasks
@@ -248,6 +278,10 @@ class VLANode(Node):
     def publish_twist_action(self, twist_msg: TwistStamped) -> None:
         """Publish predicted action to servo_node as TwistStamped."""
         self.twist_action_pub.publish(twist_msg)
+
+    def publish_pose_action(self, pose_msg: PoseStamped):
+        """Publish predicted action to servo_node as PoseStamped."""
+        self.pose_action_pub.publish(pose_msg)
 
     def publish_markers(self, action: np.ndarray) -> None:
         """Publish 3D markers for RViz."""
@@ -419,17 +453,21 @@ class VLANode(Node):
             # Parse action (this is simplified - real parsing depends on model output format)
             action = self.parse_action(result["action"])
             self.last_action = action
-
-            # Convert model output to usable velocities for twist commands
-            linear, angular, gripper = convert_posedelta_to_velo(action)
-
-            # Create twist command from velocities
-            twist_msg = self.create_twist_msg(linear, angular)
-
-            # Publish action (raw + twist)
             self.publish_raw_action(action)
-            self.publish_twist_action(twist_msg)
 
+            # Check command mode and perform corresponding actions
+            command_mode = self.get_parameter("command_mode").value
+            if command_mode == "twist":
+                linear, angular, gripper = convert_posedelta_to_velo(action)
+                twist_msg = self.create_twist_msg(linear, angular)
+                self.publish_twist_action(twist_msg)
+                # + Publish gripper action?
+            elif command_mode == "pose":
+                pose_msg = self.create_pose_msg(action)
+                self.publish_pose_action(pose_msg)
+                # + Publish gripper action?
+
+            
             # Publish visualization
             if self.get_parameter("enable_visualization").value:
                 self.publish_markers(action)
@@ -445,7 +483,7 @@ class VLANode(Node):
 
         finally:
             self.processing = False
-
+    
     def create_twist_msg(self, linear, angular):
         twist = TwistStamped()
 
@@ -461,6 +499,52 @@ class VLANode(Node):
         twist.twist.angular.z = angular[2]
 
         return twist
+    
+    def create_pose_msg(self, action: np.ndarray):
+        pose_msg = PoseStamped()
+
+        pose_msg.header.stamp = self.get_clock().now().to_msg()
+        pose_msg.header.frame_id = "franka/fr3_hand_tcp"  # same as twist case
+
+        dx, dy, dz = action[:3]
+        droll, dpitch, dyaw = action[3:6]
+        
+        # Get current EE pose
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "franka/world",
+                "franka/fr3_hand_tcp",
+                rclpy.time.Time()
+            )
+
+            pos = transform.transform.translation
+            rot = transform.transform.rotation
+
+            current_rot = Rotation.from_quat([rot.x, rot.y, rot.z, rot.w])
+            delta_rot = Rotation.from_euler("xyz", [droll, dpitch, dyaw])
+
+            target_rot = current_rot * delta_rot
+
+            quat = target_rot.as_quat()
+
+            # Apply position delta (EE frame → rotate into world!)
+            delta_world = current_rot.apply([dx, dy, dz])
+
+            pose_msg.pose.position.x = pos.x + delta_world[0]
+            pose_msg.pose.position.y = pos.y + delta_world[1]
+            pose_msg.pose.position.z = pos.z + delta_world[2]
+
+            pose_msg.pose.orientation.x = quat[0]
+            pose_msg.pose.orientation.y = quat[1]
+            pose_msg.pose.orientation.z = quat[2]
+            pose_msg.pose.orientation.w = quat[3]
+
+        except Exception as e:
+            self.get_logger().warn(f"Pose transform failed: {e}")
+
+        return pose_msg
+
+
 
 
 def main(args: list | None = None) -> None:

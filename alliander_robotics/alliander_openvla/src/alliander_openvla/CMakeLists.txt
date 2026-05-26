@@ -10,9 +10,10 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
 # Other dependencies
+# ADD OTHER DEPENDENCIES HERE AND IN package.xml??
 # find_package(moveit_msgs REQUIRED)
 
-# Python package:
+# Python packages:
 ament_python_install_package(${PROJECT_NAME})
 
 # Python executables:
@@ -20,6 +21,10 @@ install(
   DIRECTORY src_py/
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# ament_target_dependencies(vla_node
+#   moveit_msgs
+# )
 
 # Shared folders:
 install(
