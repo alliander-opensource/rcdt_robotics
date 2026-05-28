@@ -13,7 +13,13 @@ DOCKER_ORGANIZATION = "allianderrobotics"
 
 
 class ImageManager:
-    """Class to pull or build Docker images."""
+    """Class to pull or build Docker images.
+
+    Attributes:
+        components (dict): dictionary containing the components to pull or build, as defined in components.yml
+    """
+
+    components: dict = utils.load_components()
 
     def __init__(self, no_cache: bool = False) -> None:
         """Initialize class.
@@ -28,7 +34,6 @@ class ImageManager:
             print(f"Architecture {self.arch} is not supported.")
             sys.exit(1)
 
-        self.components = utils.load_components()
         self.selected = []
 
     def select_repositories(self, repositories: list[str]) -> None:
@@ -115,43 +120,47 @@ class ImageManager:
         subprocess.run(cmd, shell=True, check=True)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Builds one or multiple Docker images."
-    )
+class Parser(argparse.ArgumentParser):
+    """Parser for the manager.py script."""
 
-    parser.add_argument(
-        "--pull",
-        required=False,
-        action="store_true",
-        help="Add this flag if you want to pull Docker images.",
-    )
+    def __init__(self) -> None:
+        """Initialize the parser."""
+        super().__init__()
+        self.description = "Builds or pulls one or multiple Docker images."
 
-    parser.add_argument(
-        "--build",
-        required=False,
-        action="store_true",
-        help="Add this flag if you want to build Docker images.",
-    )
+        self.add_argument(
+            "--pull",
+            required=False,
+            action="store_true",
+            help="Add this flag if you want to pull Docker images.",
+        )
 
-    parser.add_argument(
-        "--no-cache",
-        required=False,
-        action="store_true",
-        help="Add this flag if you want to build Docker images without using the cache.",
-    )
+        self.add_argument(
+            "--build",
+            required=False,
+            action="store_true",
+            help="Add this flag if you want to build Docker images.",
+        )
 
-    parser.add_argument(
-        "-c",
-        "--components",
-        required=False,
-        default=[],
-        nargs="+",
-        help="List of components to pull or build. Use the repository names as defined in components.yml.",
-    )
+        self.add_argument(
+            "--no-cache",
+            required=False,
+            action="store_true",
+            help="Add this flag if you want to build Docker images without using the cache.",
+        )
 
-    args = parser.parse_args()
+        self.add_argument(
+            "-c",
+            "--components",
+            required=False,
+            default=[],
+            nargs="+",
+            help="List of components to pull or build. Use the repository names as defined in components.yml.",
+        )
 
-    image_manager = ImageManager(args.no_cache)
-    image_manager.select_repositories(args.components)
-    image_manager.run(args.pull, args.build)
+    def run(self) -> None:
+        """Run the parser."""
+        args = self.parse_args()
+        image_manager = ImageManager(args.no_cache)
+        image_manager.select_repositories(args.components)
+        image_manager.run(args.pull, args.build)
