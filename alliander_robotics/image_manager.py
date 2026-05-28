@@ -112,7 +112,7 @@ class ImageManager:
             cache_str = "--no-cache"
 
         cmd = f"docker build \
-            -f alliander_robotics/{self.components[repository]['dockerfile']} \
+            -f {self.components[repository]['dockerfile']} \
             --build-arg BASE_IMAGE={self.components[repository]['base_image']} \
             --platform linux/{self.arch} \
             -t {DOCKER_ORGANIZATION}/{repository}:{tag} {cache_str} \

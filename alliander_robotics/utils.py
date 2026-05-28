@@ -64,6 +64,10 @@ def load_components(components_file: str = "", group: str = "") -> dict:
             print(e)
             sys.exit(1)
 
+    components_dir = components_file.replace("/components.yml", "")
+    for v in components.values():
+        v["dockerfile"] = components_dir + f"/{v['dockerfile']}"
+
     match group:
         case "ubuntu_images":
             return {
