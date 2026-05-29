@@ -8,7 +8,6 @@ from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node
 
 platform_arg = LaunchArgument("platform_config", "")
 
@@ -25,7 +24,9 @@ def launch_setup(context: LaunchContext) -> list:
     beamagine_config = Beamagine.from_str(platform_arg.string_value(context))
 
     l3cam_launch = RegisteredLaunchDescription(
-        launch_description_source=get_file_path("l3cam_ros2", ["launch"], "l3cam_launch.xml"),
+        launch_description_source=get_file_path(
+            "l3cam_ros2", ["launch"], "l3cam_launch.xml"
+        ),
         launch_arguments={
             "stream": "true",
             "configure": "true",
