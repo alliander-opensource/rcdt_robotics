@@ -24,8 +24,17 @@ def launch_setup(context: LaunchContext) -> list:
     """
     arm_config = Arm.from_str(platform_arg.string_value(context))
 
-    output_recipe_filename = get_file_path(
+    input_recipe_filename = get_file_path(
         "ur_robot_driver", ["resources"], "rtde_input_recipe.txt"
+    )
+    output_recipe_filename = get_file_path(
+        "ur_robot_driver", ["resources"], "rtde_output_recipe.txt"
+    )
+    script_filename = get_file_path(
+        "ur_client_library", ["resources"], "external_control.urscript"
+    )
+    kinematics_params_file = get_file_path(
+        "alliander_ur", ["config"], "robot_calibration.yaml"
     )
 
     state_publisher = state_publisher_node(
@@ -45,8 +54,13 @@ def launch_setup(context: LaunchContext) -> list:
                     for child in arm_config.childs
                 ]
             ),
+            "name": "ur7e",
+            "input_recipe_filename": input_recipe_filename,
             "output_recipe_filename": output_recipe_filename,
+            "script_filename": script_filename,
+            "kinematics_params": kinematics_params_file,
             "robot_ip": arm_config.ip_address,
+            "ur_type": "ur7e",
         },
     )
 
