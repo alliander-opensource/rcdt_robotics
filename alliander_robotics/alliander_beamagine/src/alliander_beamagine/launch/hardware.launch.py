@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 from alliander_utilities.config_objects import Beamagine
 from alliander_utilities.launch_argument import LaunchArgument
-from alliander_utilities.register import Register
+from alliander_utilities.launch_utils import static_tf_node
+from alliander_utilities.register import Register, RegisteredLaunchDescription
+from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node
@@ -22,14 +24,27 @@ def launch_setup(context: LaunchContext) -> list:
     """
     beamagine_config = Beamagine.from_str(platform_arg.string_value(context))
 
-    l3cam_node = Node(
-        package="l3cam_ros2",
-        executable="l3cam_ros2_node",
-        namespace=beamagine_config.namespace,
+    l3cam_launch = RegisteredLaunchDescription(
+        launch_description_source=get_file_path("l3cam_ros2", ["launch"], "l3cam_launch.xml"),
+        launch_arguments={
+            "stream": "true",
+            "configure": "true",
+            "rviz2": "false",
+            "rqt_reconfigure": "false",
+        },
+    )
+
+    parent = beamagine_config.parent
+    static_tf = static_tf_node(
+        parent_frame=f"{parent.namespace}/{parent.link}" if parent.link else "map",
+        child_frame="lidar",
+        position=beamagine_config.position,
+        orientation=beamagine_config.orientation,
     )
 
     return [
-        Register.on_start(l3cam_node, context),
+        Register.on_start(static_tf, context),
+        Register.group(l3cam_launch, context),
     ]
 
 
