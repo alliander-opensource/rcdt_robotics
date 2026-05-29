@@ -65,7 +65,9 @@ def load_components(components_file: str = "", group: str = "") -> dict:
             sys.exit(1)
 
     components_dir = components_file.replace("/components.yml", "")
+    src_directory = components_dir.replace(os.getcwd(), "")  # must be a relative path
     for v in components.values():
+        v["src_directory"] = src_directory
         v["dockerfile"] = components_dir + f"/{v['dockerfile']}"
 
     match group:

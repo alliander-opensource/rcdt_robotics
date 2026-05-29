@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
+ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
@@ -36,7 +37,7 @@ RUN /$WORKDIR/colcon_build.sh
 # Install repo packages:
 # alliander_seekthermal is needed as it creates a Python package that is imported
 WORKDIR /$WORKDIR/ros
-COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:

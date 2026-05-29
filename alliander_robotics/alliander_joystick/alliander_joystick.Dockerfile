@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
+ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
@@ -12,8 +13,8 @@ RUN apt update && apt install -y ros-$ROS_DISTRO-moveit-msgs
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
-COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
-COPY alliander_robotics/alliander_joystick/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_joystick/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:

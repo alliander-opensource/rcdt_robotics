@@ -113,6 +113,7 @@ class ImageManager:
 
         cmd = f"docker build \
             -f {self.components[repository]['dockerfile']} \
+            --build-arg SRC_DIRECTORY={self.components[repository]['src_directory']} \
             --build-arg BASE_IMAGE={self.components[repository]['base_image']} \
             --platform linux/{self.arch} \
             -t {DOCKER_ORGANIZATION}/{repository}:{tag} {cache_str} \
