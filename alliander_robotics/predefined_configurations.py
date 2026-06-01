@@ -408,7 +408,7 @@ class PredefinedConfigurations:
 
         link(vehicle, arm)
         self.plat_conf.platforms = [vehicle, arm]
-        
+
     @register_configuration("lynx_indoor_demo")
     def config_lynx_indoor_demo(self) -> None:  # noqa: D102
         vehicle = Vehicle("lynx", (0, 0, 0.2))
