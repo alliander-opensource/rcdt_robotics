@@ -26,6 +26,23 @@ def launch_setup(context: LaunchContext) -> list:
 
     controllers = get_file_path("alliander_ur", ["config"], "controllers.yaml")
 
+    dashboard_client_node = Node(
+        package="ur_robot_driver",
+        executable="dashboard_client",
+        name="dashboard_client",
+        parameters=[
+            {"robot_ip": arm_config.ip_address},
+            {"receive_timeout": 20.0},
+        ],
+        namespace=arm_config.namespace,
+    )
+
+    ur_start_arm_node = Node(
+        package="alliander_ur",
+        executable="start_arm.py",
+        namespace=arm_config.namespace,
+    )
+
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
@@ -39,7 +56,19 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         Register.on_log(
-            ros2_control_node, "Calibration checked successfully.", context
+            dashboard_client_node,
+            "Connected: Universal Robots Dashboard Server",
+            context,
+        ),
+        Register.on_log(
+            ur_start_arm_node,
+            "UR robot arm started successfully.",
+            context,
+        ),
+        Register.on_log(
+            ros2_control_node,
+            "Calibration checked successfully.",
+            context,
         ),
     ]
 

@@ -61,6 +61,7 @@ def launch_setup(context: LaunchContext) -> list:
             "kinematics_params": kinematics_params_file,
             "robot_ip": arm_config.ip_address,
             "ur_type": "ur7e",
+            "headless_mode": "true",
         },
     )
 
