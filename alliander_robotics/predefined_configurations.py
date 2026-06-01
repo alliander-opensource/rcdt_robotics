@@ -381,6 +381,34 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [vehicle, arm]
 
     # Demos
+    @register_configuration("franka_arm_wave_demo")
+    def config_franka_arm_wave_demo(self) -> None:  # noqa: D102
+        arm = Arm(
+            "franka",
+            gripper=True,
+            moveit=True,
+            controller="wave_controller",
+            ip_address="172.16.0.2",
+        )
+
+        self.plat_conf.platforms = [arm]
+        self.viz_conf.gui = True
+
+    @register_configuration("mm_arm_wave_demo")
+    def config_mm_arm_wave_demo(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        arm = Arm(
+            "franka",
+            (0, 0, 0.14),
+            gripper=True,
+            moveit=True,
+            controller="wave_controller",
+            ip_address="10.15.20.4",
+        )
+
+        link(vehicle, arm)
+        self.plat_conf.platforms = [vehicle, arm]
+
     @register_configuration("lynx_indoor_demo")
     def config_lynx_indoor_demo(self) -> None:  # noqa: D102
         vehicle = Vehicle("lynx", (0, 0, 0.2))
