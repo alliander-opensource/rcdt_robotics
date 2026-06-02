@@ -168,7 +168,7 @@ class PredefinedConfigurations:
         arm = Arm("ur", moveit=True, ip_address="172.16.0.2")
 
         self.plat_conf.platforms = [arm]
-        self.viz_conf.gui = False
+        self.viz_conf.gui = True
 
     @register_configuration("ur_rviz_motion_planning")
     def config_ur_rviz_motion_planning(self) -> None:  # noqa: D102

@@ -25,4 +25,12 @@ SPDX-License-Identifier: Apache-2.0
   <xacro:include filename="$(find alliander_utilities)/urdf/detachable_joints.urdf.xacro" />
   <xacro:detachable_joints childs="${$(arg childs)}" />
 
+  <!-- Create tcp link: -->
+  <link name="tcp" />
+  <joint name="tcp_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="3.1416 0 0" />
+    <parent link="tool0" />
+    <child link="tcp" />
+  </joint>
+
 </robot>

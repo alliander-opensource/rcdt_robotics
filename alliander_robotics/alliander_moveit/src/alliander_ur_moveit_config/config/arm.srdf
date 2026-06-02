@@ -36,6 +36,7 @@ are defined
         <joint name="wrist_1_joint" />
         <joint name="wrist_2_joint" />
         <joint name="wrist_3_joint" />
+        <link name="tcp" />
     </group>
     <group name="arm">
         <joint name="shoulder_pan_joint" />
@@ -49,7 +50,7 @@ are defined
         <joint name="wrist_3_joint" />
     </group>
     <group name="tcp">
-        <joint name="wrist_3_joint" />
+        <link name="tcp" />
     </group>
     <!--GROUP_STATES:
     Purpose: Define a named state for a particular group, in terms of joint values. This is
@@ -70,10 +71,18 @@ are defined
         <joint name="wrist_2_joint" value="-1.57" />
         <joint name="wrist_3_joint" value="-1.57" />
     </group_state>
+    <group_state name="stretch" group="arm_and_tcp">
+        <joint name="shoulder_pan_joint" value="0" />
+        <joint name="shoulder_lift_joint" value="-1.57" />
+        <joint name="elbow_joint" value="0" />
+        <joint name="wrist_1_joint" value="0" />
+        <joint name="wrist_2_joint" value="1.57" />
+        <joint name="wrist_3_joint" value="0" />
+    </group_state>
 
     <!--END_EFFECTOR:
     Purpose: Represent information about an end effector.-->
-    <end_effector name="hand" parent_link="wrist_3_link" group="hand" parent_group="arm_and_tcp" />
+    <end_effector name="hand" parent_link="tcp" group="hand" parent_group="arm_and_tcp" />
     <!--DISABLE_COLLISIONS:
     By default it is assumed that any link of the robot could potentially come into
     collision with any other link in the robot. This tag disables collision checking between a
