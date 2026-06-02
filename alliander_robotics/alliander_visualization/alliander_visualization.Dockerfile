@@ -34,7 +34,7 @@ RUN apt update \
 RUN git clone https://github.com/alliander-opensource/rosboard.git src/rosboard
 
 # Get vendor descriptions
-COPY common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
 RUN /$WORKDIR/get_vendor_descriptions.sh && rm /$WORKDIR/get_vendor_descriptions.sh
 
 # Build vizanti and vendor descriptions

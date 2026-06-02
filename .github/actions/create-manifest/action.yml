@@ -36,7 +36,7 @@ runs:
         do
           echo "Creating manifest for: $component"
           
-          REPOSITORY=$(yq .$component.repository components.yml)
+          REPOSITORY=$(yq .$component.repository alliander_robotics/components.yml)
           
           docker buildx imagetools create -t \
           $REPOSITORY:${{ inputs.tag }} \

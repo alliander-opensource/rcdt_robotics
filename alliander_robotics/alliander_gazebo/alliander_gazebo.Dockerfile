@@ -27,7 +27,7 @@ RUN mkdir -p /$WORKDIR/osm2world \
 
 # Install vendor descriptions:
 WORKDIR /$WORKDIR/external
-COPY common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
 RUN /$WORKDIR/get_vendor_descriptions.sh && rm /$WORKDIR/get_vendor_descriptions.sh
 RUN /$WORKDIR/colcon_build.sh
 
