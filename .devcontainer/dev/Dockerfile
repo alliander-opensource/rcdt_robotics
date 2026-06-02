@@ -73,7 +73,7 @@ COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
 RUN /alliander/colcon_build.sh
 
 # Install python dependencies:
-COPY pyproject.toml /alliander/pyproject.toml
+COPY $SRC_DIRECTORY/pyproject.toml /alliander/pyproject.toml
 RUN uv sync --all-groups
 
 WORKDIR /alliander
