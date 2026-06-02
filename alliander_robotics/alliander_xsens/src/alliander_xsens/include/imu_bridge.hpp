@@ -21,8 +21,6 @@ class ImuBridge : public rclcpp::Node {
 
  private:
   // ROS2 communication variables:
-  /// The ROS2 node
-  rclcpp::Node::SharedPtr node;
   /// Subsciber for the acceleration topic
   rclcpp::Subscription<geometry_msgs::msg::Vector3Stamped>::SharedPtr sub_accel;
   /// Subscriber for the angular velocity topic

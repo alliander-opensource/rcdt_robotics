@@ -13,7 +13,7 @@
 
       fr3_arm_controller:
         type: joint_trajectory_controller/JointTrajectoryController
-
+      
   fr3_arm_controller:
     ros__parameters:
       type: joint_trajectory_controller/JointTrajectoryController
