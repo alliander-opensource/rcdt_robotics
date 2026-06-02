@@ -8,7 +8,7 @@ from alliander_utilities.launch_utils import SKIP, state_publisher_node, static_
 from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
@@ -26,6 +26,9 @@ def launch_setup(context: LaunchContext) -> list:
     """
     namespace = "openVLA"
 
+    # Switching the command type when starting the OpenVLA process
+    switch_command_type = ExecuteProcess(cmd=["ros2", "service", "call", "/franka/servo_node/switch_command_type", "moveit_msgs/srv/ServoCommandType", "{command_type: 1}"])
+
     vla_node = Node(
         package="alliander_openvla",
         executable="vla_node.py",
@@ -41,7 +44,10 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
     )
 
-    return [Register.on_start(vla_node, context)]
+    return [
+        #Register.on_start(switch_command_type, context), 
+        Register.on_start(vla_node, context)
+    ]
 
 
 def generate_launch_description() -> LaunchDescription:

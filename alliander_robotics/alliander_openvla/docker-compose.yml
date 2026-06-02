@@ -19,4 +19,6 @@ services:
       - "RCUTILS_COLORIZED_OUTPUT=1"
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+    env_file:
+      - .env
     command: ["/bin/bash", "-c", "ros2 launch alliander_openvla openvla.launch.py"]

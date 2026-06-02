@@ -33,7 +33,7 @@ def cv_to_ros_image(cv_image, frame_id="camera"):
     
     return msg
 
-def convert_posedelta_to_velo(action: np.ndarray, dt_model: float=0.2):
+def convert_posedelta_to_velo(action: np.ndarray, dt_model: float=1.0):
         """Function to convert EE pose delta's (OpenVLA's output) to velocities
         which can be published to MoveIt servo node as TwistStamped commands.
         
@@ -54,7 +54,7 @@ def convert_posedelta_to_velo(action: np.ndarray, dt_model: float=0.2):
         vyaw = dyaw / dt_model
         
         # Gripper
-        gripper = action[6] if len(action) > 6 else None
+        # gripper = action[6] if len(action) > 6 else None
 
         # Then, we must convert EE frame to base frame. NOTE: Not needed because of apply_twist_commands_about_ee_frame: true in moveit servo config???
         # try:
@@ -80,5 +80,5 @@ def convert_posedelta_to_velo(action: np.ndarray, dt_model: float=0.2):
         # Could also rotate the angular velocities. However, this is less important. For simplicity, this is now commented out
         # w_base = rot.apply([vroll, vpitch, vyaw])
         # return v_base, w_base, gripper
-        return v_base, w_base, gripper
+        return v_base, w_base
 

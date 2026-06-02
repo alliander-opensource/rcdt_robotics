@@ -352,7 +352,7 @@ class ModelManager:
             try:
                 action = self.model.predict_action(
                     **inputs,
-                    unnorm_key="nyu_franka_play_dataset_converted_externally_to_rlds",   # ToDo: Check unnorm_keys; do I need a different one? Now set to the only franka unnorm key available
+                    unnorm_key= "bridge_orig", # "nyu_franka_play_dataset_converted_externally_to_rlds",   # ToDo: Check unnorm_keys; do I need a different one? Now set to the only franka unnorm key available
                     do_sample=False
                 )
                 # logger.info(f"Raw action array: {action}")

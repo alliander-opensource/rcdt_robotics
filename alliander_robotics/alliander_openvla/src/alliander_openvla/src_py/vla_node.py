@@ -22,6 +22,11 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray, String
 from visualization_msgs.msg import Marker, MarkerArray
 from alliander_utilities.ros_utils import get_file_path, get_yaml
+from rcl_interfaces.srv import SetParameters
+from rcl_interfaces.msg import Parameter, ParameterType, ParameterValue
+from rclpy.action import ActionClient
+from alliander_interfaces.action import TriggerAction
+
 
 
 # For this code, heavy inspiration was taken from https://github.com/DeeptamBhar/OpenVLA_ROS2/blob/main/demos/ros2_integration/ros2_ws/src/vla_control/vla_controller_node.py
@@ -39,7 +44,7 @@ class VLANode(Node):
         self.declare_parameter("camera_topic", "/realsense/color/image_raw")
         self.declare_parameter("max_queue_size", 2)
         self.declare_parameter("enable_visualization", True)
-        self.declare_parameter("command_mode", "pose") # Parameter to control which command type the model outputs
+        self.declare_parameter("command_mode", "pose") # Parameter to control which command type the model outputs: set to ...
 
         # Get parameters
         model_config_path = self.get_parameter("model_config").value
@@ -62,7 +67,7 @@ class VLANode(Node):
         # Load tasks configuration
         tasks_config = get_yaml(tasks_config_path)
         self.tasks = tasks_config["tasks"]
-        self.current_task = tasks_config.get("default_task", list(self.tasks.keys())[0])
+        self.current_task = tasks_config.get("reach_to_object", list(self.tasks.keys())[0])
 
         self.get_logger().info(f"Loaded {len(self.tasks)} tasks")
         self.get_logger().info(f"Current task: {self.current_task}")
@@ -78,10 +83,8 @@ class VLANode(Node):
             self.get_logger().error("Failed to load model!")
             raise RuntimeError("Model loading failed")
         
-        
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-
 
         # # CV Bridge
         # self.bridge = CvBridge()
@@ -142,20 +145,80 @@ class VLANode(Node):
             ServoCommandType,
             "/franka/servo_node/switch_command_type"
         )
+        # # Client for switching moveit command type using the servo node's parameter
+        # self.param_client - self.create_client(
+        #     SetParameters,
+        #     '/franka/servo_node/set_parameters'
+        # )
+        self.gripper_open_client = ActionClient(
+            self,
+            TriggerAction,
+            "/franka/gripper/open"
+        )
+
+        self.gripper_close_client = ActionClient(
+            self,
+            TriggerAction,
+            "/franka/gripper/close"
+        )
 
         # State
         self.processing = False
         self.last_action = None
         self.frame_count = 0
         self.dropped_frames = 0
+        self.traj_points = []
+        self.max_traj_length = 50
+        self.current_gripper_state = None
+        self.gripper_busy = False
+        self.current_target_pose = None
+        # Short debug timer
+        # self.debug_timer = self.create_timer(30.0, self.send_debug_pose)
+
 
         # Performance tracking timer
         self.create_timer(5.0, self.publish_metrics)
         self.get_logger().info("VLA Node ready!")
         self.get_logger().info(f"Subscribed to: {camera_topic}")
         # self.get_logger().info("Publishing to: /vla/waypoint_markers, /vla/annotated_image")
+        # self.set_command_via_params(command_mode)
         self.set_command_mode(command_mode)
 
+    
+    
+    def send_debug_pose(self):
+        self.get_logger().info("Sending DEBUG pose command")
+
+        # Big, visible motion (10 cm forward in EE frame)
+        action = np.array([0.10, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+        try:
+            pose_msg = self.create_pose_msg(action)
+            self.current_target_pose = pose_msg
+
+            self.publish_pose_action(pose_msg)
+
+            # Also show marker
+            if self.get_parameter("enable_visualization").value:
+                self.publish_markers(action)
+
+        except Exception as e:
+            self.get_logger().error(f"Debug pose failed: {e}")
+
+    
+    def set_command_via_params(self, command_mode) -> None:
+        while not self.param_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for MoveIt Servo parameter service to start...')
+
+        # 3. Construct the parameter request payload
+        req = SetParameters.Request()
+        param_value = ParameterValue(type=ParameterType.PARAMETER_STRING, string_value="speed_units")
+        req.parameters = [Parameter(name="command_in_type", value=param_value)]
+
+        # 4. Fire the service call asynchronously
+        self.get_logger().info('Changing MoveIt Servo command type via parameter service...')
+        future = self.param_client.call_async(req)
+        # future.add_done_callback(self._handle_switch_response)
     
     def _handle_switch_response(self, future):
         try:
@@ -260,7 +323,7 @@ class VLANode(Node):
         # In production, parse the actual model output
         task = self.tasks[self.current_task]
         action_dims = task["action_dims"]
-
+        
         # Example: Random action in normalized space [-1, 1]
         # action = np.random.uniform(-1, 1, action_dims)
 
@@ -284,58 +347,132 @@ class VLANode(Node):
         self.pose_action_pub.publish(pose_msg)
 
     def publish_markers(self, action: np.ndarray) -> None:
-        """Publish 3D markers for RViz."""
+        """Publish 3D markers for RViz based on EE delta actions."""
+
         marker_array = MarkerArray()
 
-        # Create arrow marker for end-effector target
-        marker = Marker()
-        marker.header.frame_id = "map"
-        marker.header.stamp = self.get_clock().now().to_msg()
-        marker.ns = "vla_waypoints"
-        marker.id = 0
-        marker.type = Marker.ARROW
-        marker.action = Marker.ADD
+        # Lookup current EE pose
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "franka/world",                  # target frame
+                "franka/fr3_hand_tcp",           # EE frame
+                rclpy.time.Time()
+            )
 
-        # Position (scale from normalized [-1,1] to world coordinates)
-        marker.pose.position.x = float(action[0] * 0.5)  # Scale to 0.5m range
-        marker.pose.position.y = float(action[1] * 0.5)
-        marker.pose.position.z = float(action[2] * 0.5 + 0.5)  # Offset z
+            ee_x = transform.transform.translation.x
+            ee_y = transform.transform.translation.y
+            ee_z = transform.transform.translation.z
 
-        # Orientation (if available)
-        if len(action) >= 6:
-            r = Rotation.from_euler("xyz", action[3:6])
-            quat = r.as_quat()
-            marker.pose.orientation.x = quat[0]
-            marker.pose.orientation.y = quat[1]
-            marker.pose.orientation.z = quat[2]
-            marker.pose.orientation.w = quat[3]
-        else:
-            marker.pose.orientation.w = 1.0
+            rot = transform.transform.rotation
+            current_rot = Rotation.from_quat([rot.x, rot.y, rot.z, rot.w])
 
-        # Scale and color
-        marker.scale.x = 0.2  # Arrow length
-        marker.scale.y = 0.02  # Arrow width
-        marker.scale.z = 0.02  # Arrow height
 
-        marker.color.r = 0.0
-        marker.color.g = 1.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0
+        except Exception as e:
+            self.get_logger().warn(f"TF lookup failed: {e}")
+            return  # Don't publish broken markers
 
-        marker.lifetime.sec = 0  # Persist until replaced
+        # Compute target from deltas        
+        dx, dy, dz = action[:3]
+        delta_world = current_rot.apply([dx, dy, dz])
 
-        marker_array.markers.append(marker)
+        target_x = ee_x + delta_world[0]
+        target_y = ee_y + delta_world[1]
+        target_z = ee_z + delta_world[2]
 
-        # Add text label
+
+        # Arrow: EE --> Target
+        arrow = Marker()
+        arrow.header.frame_id = "franka/world"
+        arrow.header.stamp = self.get_clock().now().to_msg()
+        arrow.ns = "vla_waypoints"
+        arrow.id = 0
+        arrow.type = Marker.ARROW
+        arrow.action = Marker.ADD
+
+        # REQUIRED when using points
+        arrow.pose.orientation.w = 1.0
+
+        # Define arrow start and end
+        arrow.points = [
+            Point(x=ee_x, y=ee_y, z=ee_z),
+            Point(x=target_x, y=target_y, z=target_z)
+        ]
+
+        # Arrow thickness
+        arrow.scale.x = 0.02  # shaft diameter
+        arrow.scale.y = 0.04  # head diameter
+        arrow.scale.z = 0.08  # head length
+
+        arrow.color.r = 0.0
+        arrow.color.g = 1.0
+        arrow.color.b = 0.0
+        arrow.color.a = 1.0
+
+        arrow.lifetime.sec = 0
+
+        marker_array.markers.append(arrow)
+
+        # Optional: EE sphere (nice debug)
+        ee_marker = Marker()
+        ee_marker.header = arrow.header
+        ee_marker.ns = "ee_position"
+        ee_marker.id = 2
+        ee_marker.type = Marker.SPHERE
+        ee_marker.action = Marker.ADD
+
+        ee_marker.pose.position.x = ee_x
+        ee_marker.pose.position.y = ee_y
+        ee_marker.pose.position.z = ee_z
+        ee_marker.pose.orientation.w = 1.0
+
+        ee_marker.scale.x = 0.04
+        ee_marker.scale.y = 0.04
+        ee_marker.scale.z = 0.04
+
+        ee_marker.color.r = 0.0
+        ee_marker.color.g = 0.0
+        ee_marker.color.b = 1.0
+        ee_marker.color.a = 1.0
+
+        marker_array.markers.append(ee_marker)
+
+        # Optional: Target sphere (nice debug)
+        target_marker = Marker()
+        target_marker.header = arrow.header
+        target_marker.ns = "target_position"
+        target_marker.id = 3
+        target_marker.type = Marker.SPHERE
+        target_marker.action = Marker.ADD
+
+        target_marker.pose.position.x = target_x
+        target_marker.pose.position.y = target_y
+        target_marker.pose.position.z = target_z
+        target_marker.pose.orientation.w = 1.0
+
+        target_marker.scale.x = 0.04
+        target_marker.scale.y = 0.04
+        target_marker.scale.z = 0.04
+
+        target_marker.color.r = 1.0
+        target_marker.color.g = 0.0
+        target_marker.color.b = 0.0
+        target_marker.color.a = 1.0
+
+        marker_array.markers.append(target_marker)
+
+        # Text label at target
         text_marker = Marker()
-        text_marker.header = marker.header
+        text_marker.header = arrow.header
         text_marker.ns = "vla_labels"
         text_marker.id = 1
         text_marker.type = Marker.TEXT_VIEW_FACING
         text_marker.action = Marker.ADD
-        text_marker.pose.position.x = marker.pose.position.x
-        text_marker.pose.position.y = marker.pose.position.y
-        text_marker.pose.position.z = marker.pose.position.z + 0.1
+
+        text_marker.pose.position.x = target_x
+        text_marker.pose.position.y = target_y
+        text_marker.pose.position.z = target_z + 0.1
+        text_marker.pose.orientation.w = 1.0
+
         text_marker.scale.z = 0.05
         text_marker.color.r = 1.0
         text_marker.color.g = 1.0
@@ -345,6 +482,37 @@ class VLANode(Node):
 
         marker_array.markers.append(text_marker)
 
+        # Add trajectory plot
+        self.traj_points.append(Point(x=target_x, y=target_y, z=target_z))
+
+        if len(self.traj_points) > self.max_traj_length:
+            self.traj_points.pop(0) # Keep buffer limited
+
+        traj_marker = Marker()
+        traj_marker.header = arrow.header
+        traj_marker.ns = "trajectory"
+        traj_marker.id = 4
+        traj_marker.type = Marker.LINE_STRIP
+        traj_marker.action = Marker.ADD
+
+        traj_marker.points = self.traj_points
+
+        traj_marker.scale.x = 0.01  # line width
+
+        traj_marker.color.r = 1.0
+        traj_marker.color.g = 1.0
+        traj_marker.color.b = 0.0
+        traj_marker.color.a = 1.0
+
+        marker_array.markers.append(traj_marker)
+
+        # Debug logging
+        self.get_logger().info(
+            f"EE: ({ee_x:.2f}, {ee_y:.2f}, {ee_z:.2f}) | "
+            f"Target: ({target_x:.2f}, {target_y:.2f}, {target_z:.2f})"
+        )
+
+        # Publish
         self.marker_pub.publish(marker_array)
 
     def publish_annotated_image(self, cv_image: np.ndarray, action: np.ndarray, result: dict) -> None:
@@ -403,6 +571,9 @@ class VLANode(Node):
         )
 
     def process_frame(self, msg, framecount) -> None:
+        # if hasattr(self, "debug_timer"):
+        #         return
+
         try:
             # Convert ROS image to OpenCV
             # cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
@@ -432,12 +603,14 @@ class VLANode(Node):
             task = self.tasks[self.current_task]
 
             # Create prompt (with example substitutions)
-            prompt = task["prompt"].format(
-                object="red cup",
+            instruction = task["prompt"].format(
+                object="red block",
                 container="blue bin",
                 target="left",
                 drawer="top"
             )
+            prompt = f"In: What action should the robot take to {instruction}?\nOut:"
+            self.get_logger().info(f'Input prompt: {prompt}')
 
             # Run inference
             result = self.model_manager.infer(pil_image, prompt, task=self.current_task)
@@ -452,20 +625,33 @@ class VLANode(Node):
 
             # Parse action (this is simplified - real parsing depends on model output format)
             action = self.parse_action(result["action"])
+            # action = np.array([0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0])
             self.last_action = action
             self.publish_raw_action(action)
+
+            # Set gripper according to action array length
+            if len(action) > 6:
+                gripper = action[6]
+            else:
+                gripper = None
 
             # Check command mode and perform corresponding actions
             command_mode = self.get_parameter("command_mode").value
             if command_mode == "twist":
-                linear, angular, gripper = convert_posedelta_to_velo(action)
+                linear, angular = convert_posedelta_to_velo(action)
                 twist_msg = self.create_twist_msg(linear, angular)
                 self.publish_twist_action(twist_msg)
                 # + Publish gripper action?
+                self.handle_gripper(gripper)
+                # + Set twist to 0 again
+                # twist_stop_msg = self.create_twist_msg((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
+                # self.publish_twist_action(twist_stop_msg)
             elif command_mode == "pose":
                 pose_msg = self.create_pose_msg(action)
+                self.current_target_pose = pose_msg
                 self.publish_pose_action(pose_msg)
                 # + Publish gripper action?
+                self.handle_gripper(gripper)
 
             
             # Publish visualization
@@ -483,7 +669,123 @@ class VLANode(Node):
 
         finally:
             self.processing = False
+
     
+    def handle_gripper(self, gripper_value):
+        if gripper_value is None:
+            return
+
+        # Prevent sending new commands while busy
+        if self.gripper_busy:
+            return
+
+        # Hysteresis (VERY important for stability)
+        open_thresh = 0.2
+        close_thresh = -0.2
+
+        if gripper_value > open_thresh:
+            desired = "open"
+        elif gripper_value < close_thresh:
+            desired = "close"
+        else:
+            return
+
+        # Avoid repeated triggering
+        if desired == self.current_gripper_state:
+            return
+
+        self.current_gripper_state = desired
+
+        if desired == "open":
+            client = self.gripper_open_client
+        else:
+            client = self.gripper_close_client
+
+        if not client.wait_for_server(timeout_sec=1.0):
+            self.get_logger().warn(f"{desired} action server not available")
+            return
+
+        goal = TriggerAction.Goal()  # usually empty
+
+        self.get_logger().info(f"Gripper: {desired}")
+
+        self.gripper_busy = True # Set busy flag
+        future = client.send_goal_async(goal)
+        future.add_done_callback(self.gripper_goal_response_callback)
+
+        # Reset busy flag after a certain time; we assume the gripper action is correctly executed.
+        # Setting a callback on the action's result caused timeouts.
+        reset_time = 0.5 if desired =="open" else 1.0
+
+        self.gripper_timer = self.create_timer(
+            reset_time,
+            self.reset_gripper_busy_once
+        )
+
+    
+    def reset_gripper_busy_once(self):
+        self.gripper_busy = False
+        self.get_logger().info("Gripper ready again")
+
+        # Cancel timer
+        if self.gripper_timer is not None:
+            self.gripper_timer.cancel()
+            self.gripper_timer = None
+
+
+    
+    def gripper_goal_response_callback(self, future) -> None:
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().warn("Gripper goal rejected")
+            self.gripper_busy = False
+            return
+
+        self.get_logger().info("Gripper goal accepted")
+
+        # result_future = goal_handle.get_result_async()
+        # result_future.add_done_callback(self.gripper_result_callback)
+
+
+    # def gripper_result_callback(self, future) -> None:
+    #     try:
+    #         result = future.result().result
+    #         self.get_logger().info("Gripper action completed")
+    #     except Exception as e:
+    #         self.get_logger().error(f"Gripper result error: {e}")
+
+
+    
+    def check_pose_goal_reached(self):
+        if self.current_target_pose is None:
+            return
+
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "franka/world",
+                "franka/fr3_hand_tcp",
+                rclpy.time.Time()
+            )
+
+            ee = transform.transform.translation
+            target = self.current_target_pose.pose.position
+
+            dist = np.sqrt(
+                (ee.x - target.x)**2 +
+                (ee.y - target.y)**2 +
+                (ee.z - target.z)**2
+            )
+
+            if dist < 0.02:  # 2 cm tolerance
+                self.get_logger().info("Target reached.")
+                self.stop_robot()
+                self.current_target_pose = None
+
+        except Exception as e:
+            self.get_logger().warn(f"Goal check failed: {e}")
+
+
+
     def create_twist_msg(self, linear, angular):
         twist = TwistStamped()
 
@@ -504,7 +806,7 @@ class VLANode(Node):
         pose_msg = PoseStamped()
 
         pose_msg.header.stamp = self.get_clock().now().to_msg()
-        pose_msg.header.frame_id = "franka/fr3_hand_tcp"  # same as twist case
+        pose_msg.header.frame_id = "franka/world"  # same as twist case TODO: Should this be world or EE frame?
 
         dx, dy, dz = action[:3]
         droll, dpitch, dyaw = action[3:6]
@@ -543,8 +845,6 @@ class VLANode(Node):
             self.get_logger().warn(f"Pose transform failed: {e}")
 
         return pose_msg
-
-
 
 
 def main(args: list | None = None) -> None:
