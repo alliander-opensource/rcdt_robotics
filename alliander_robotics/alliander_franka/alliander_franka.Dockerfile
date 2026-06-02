@@ -19,9 +19,9 @@ RUN /$WORKDIR/colcon_build.sh
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
-COPY SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
-COPY SRC_DIRECTORY/alliander_arm_controllers/src/ /$WORKDIR/ros/src
-COPY SRC_DIRECTORY/alliander_franka/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_franka/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
