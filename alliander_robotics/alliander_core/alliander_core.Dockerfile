@@ -74,7 +74,7 @@ RUN pip install uv --break-system-packages
 COPY $SRC_DIRECTORY/common/colcon_build.sh /$WORKDIR/colcon_build.sh
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc
 
-COPY entrypoint.sh /entrypoint.sh
+COPY $SRC_DIRECTORY/common/entrypoint.sh /entrypoint.sh
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]
