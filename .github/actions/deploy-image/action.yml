@@ -62,7 +62,9 @@ runs:
         context: .
         file: ${{ steps.variables.outputs.DOCKERFILE }}
         tags: ${{ steps.variables.outputs.REPOSITORY }}:${{ inputs.tag }}-${{ steps.arch.outputs.arch }}
-        build-args: BASE_IMAGE=${{ steps.variables.outputs.BASE_IMAGE }}
+        build-args: |
+          BASE_IMAGE=${{ steps.variables.outputs.BASE_IMAGE }}
+          SRC_DIRECTORY=alliander_robotics
         cache-from: |
           type=registry,ref=${{ steps.variables.outputs.REPOSITORY }}:${{ inputs.tag }}-${{ steps.arch.outputs.arch }}-cache
           type=registry,ref=${{ steps.variables.outputs.BASE_IMAGE}}:${{ inputs.tag }}-${{ steps.arch.outputs.arch }}-cache
