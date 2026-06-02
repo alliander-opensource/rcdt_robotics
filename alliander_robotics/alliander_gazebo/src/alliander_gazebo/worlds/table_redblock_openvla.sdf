@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+<!--
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+<sdf version="1.6">
+  <world name="test_table_openvla">
+
+    <!-- Physics -->
+    <physics name="1ms" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Systems -->
+    <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <!-- ========================= -->
+    <!-- TABLE (STATIC, PREBUILT) -->
+    <!-- ========================= -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/table</uri>
+      <name>table</name>
+      <pose>0.7 0 0 0 0 1.57</pose>
+      <static>true</static>
+    </include>
+
+    
+    <!-- ========================= -->
+    <!-- BLUE BIN                 -->
+    <!-- ========================= -->
+    <model name="blue_bin">
+    <pose>0.8 -0.6 1 0 0 0</pose>
+    <static>false</static>
+
+    <link name="link">
+
+        <!-- Bottom -->
+        <collision name="bottom_col">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+            <box><size>0.2 0.2 0.02</size></box>
+        </geometry>
+        </collision>
+
+        <visual name="bottom_vis">
+        <geometry>
+            <box><size>0.2 0.2 0.02</size></box>
+        </geometry>
+        <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+        </material>
+        </visual>
+
+        <!-- Simple bin walls (optional but helpful) -->
+        <collision name="wall1">
+        <pose>0 0.1 0.1 0 0 0</pose>
+        <geometry>
+            <box><size>0.2 0.02 0.2</size></box>
+        </geometry>
+        </collision>
+
+        <collision name="wall2">
+        <pose>0 -0.1 0.1 0 0 0</pose>
+        <geometry>
+            <box><size>0.2 0.02 0.2</size></box>
+        </geometry>
+        </collision>
+
+        <collision name="wall3">
+        <pose>0.1 0 0.1 0 0 0</pose>
+        <geometry>
+            <box><size>0.02 0.2 0.2</size></box>
+        </geometry>
+        </collision>
+
+        <collision name="wall4">
+        <pose>-0.1 0 0.1 0 0 0</pose>
+        <geometry>
+            <box><size>0.02 0.2 0.2</size></box>
+        </geometry>
+        </collision>
+
+        <visual name="walls_vis">
+        <geometry>
+            <box><size>0.2 0.2 0.2</size></box>
+        </geometry>
+        <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+        </material>
+        </visual>
+
+    </link>
+    </model>
+
+
+    
+    <!-- ========================= -->
+    <!-- RED BLOCK                -->
+    <!-- ========================= -->
+    <model name="red_block">
+    <pose>0.5 0.4 1.2 0 0 0</pose>
+    <static>false</static>
+
+    <link name="link">
+        <collision name="collision">
+        <geometry>
+            <box><size>0.05 0.05 0.05</size></box>
+        </geometry>
+        </collision>
+
+        <visual name="visual">
+        <geometry>
+            <box><size>0.05 0.05 0.05</size></box>
+        </geometry>
+        <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>1 0 0 1</specular>
+        </material>
+        </visual>
+    </link>
+    </model>
+
+
+    <!-- ========================= -->
+    <!-- LIGHT -->
+    <!-- ========================= -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    
+    <!-- ========================= -->
+    <!-- WALLS (ROOM)             -->
+    <!-- ========================= -->
+    <model name="walls">
+    <static>true</static>
+    <link name="walls_link">
+
+        <!-- Left wall -->
+        <collision name="back_wall_col">
+        <pose>0 1.5 1 0 0 0</pose>
+        <geometry>
+            <box><size>3 0.1 3</size></box>
+        </geometry>
+        </collision>
+        <visual name="back_wall_vis">
+        <pose>0 1.5 1 0 0 0</pose>
+        <geometry>
+            <box><size>3 0.1 3</size></box>
+        </geometry>
+        <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+        </material>
+        </visual>
+
+        <!-- Right wall -->
+        <collision name="front_wall_col">
+        <pose>0 -1.5 1 0 0 0</pose>
+        <geometry>
+            <box><size>3 0.1 3</size></box>
+        </geometry>
+        </collision>
+        <visual name="front_wall_vis">
+        <pose>0 -1.5 1 0 0 0</pose>
+        <geometry>
+            <box><size>3 0.1 3</size></box>
+        </geometry>
+        <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+        </material>
+        </visual>
+
+        <!-- Back wall -->
+        <!-- <collision name="left_wall_col">
+        <pose>-1.5 0 1 0 0 0</pose>
+        <geometry>
+            <box><size>0.1 3 3</size></box>
+        </geometry>
+        </collision>
+        <visual name="left_wall_vis">
+        <pose>-1.5 0 1 0 0 0</pose>
+        <geometry>
+            <box><size>0.1 3 3</size></box>
+        </geometry>
+        <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+        </material>
+        </visual> -->
+
+        <!-- Front wall -->
+        <collision name="right_wall_col">
+        <pose>1.5 0 1 0 0 0</pose>
+        <geometry>
+            <box><size>0.1 3 3</size></box>
+        </geometry>
+        </collision>
+        <visual name="right_wall_vis">
+        <pose>1.5 0 1 0 0 0</pose>
+        <geometry>
+            <box><size>0.1 3 3</size></box>
+        </geometry>
+        <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+        </material>
+        </visual>
+
+    </link>
+    </model>
+
+
+    <!-- ========================= -->
+    <!-- GROUND -->
+    <!-- ========================= -->
+    <model name="ground_plane">
+      <pose>0 0 0 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
+

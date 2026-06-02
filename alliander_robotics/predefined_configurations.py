@@ -383,11 +383,19 @@ class PredefinedConfigurations:
     # Openvla test
     @register_configuration("openvla")
     def config_openvla(self) -> None:  # noqa: D102
-        arm = Arm("franka", moveit=True, gripper=True, openvla=True)
-        camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180))
+        arm = Arm("franka", position=(0.0, 0, 1.0), moveit=True, gripper=True, openvla=True)
+        # Original camera
+        # camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180)) # Original
 
-        link(arm, camera)
+        # Separate camera. If using, comment out the link(arm, camera) line
+        # camera = Camera("realsense", (-0.45, -0.95, 1.5), (0, 15, 45))
+
+        camera = Camera("realsense", (-0.45, 0.95, 1.5), (0, 15, -45)) # Separate camera; flipped to left
+
+        #link(arm, camera)
         self.plat_conf.platforms = [arm, camera]
+        self.sim_conf.world = "table_redblock_openvla.sdf"
+        
     # Demos
     @register_configuration("lynx_indoor_demo")
     def config_lynx_indoor_demo(self) -> None:  # noqa: D102
