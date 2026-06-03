@@ -4,7 +4,6 @@
 
 #include "arm_wave/arm_wave.hpp"
 
-#include <chrono>
 #include <rclcpp/executors.hpp>
 #include <rclcpp/utilities.hpp>
 #include <rclcpp_action/client.hpp>
@@ -43,7 +42,7 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
       (int)(1000 * this->get_parameter("wait_time_sec").as_double());
 
   fjt_action_client_ = rclcpp_action::create_client<FollowJointTrajectory>(
-      this, "fr3_arm_controller/follow_joint_trajectory");
+      this, "joint_trajectory_controller/follow_joint_trajectory");
   open_gripper_action_client_ =
       rclcpp_action::create_client<GripperAction>(this, "gripper/open");
   close_gripper_action_client_ =
