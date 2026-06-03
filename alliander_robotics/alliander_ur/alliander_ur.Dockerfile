@@ -8,13 +8,6 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
 # Install UR packages
-# WORKDIR /$WORKDIR/external
-# RUN apt update \
-#   && git clone -b 4.5.0 https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver.git src/Universal_Robots_ROS2_Driver \
-#   && vcs import src --recursive --skip-existing < src/Universal_Robots_ROS2_Driver/Universal_Robots_ROS2_Driver.${ROS_DISTRO}.repos \
-#   && rosdep update --rosdistro $ROS_DISTRO \
-#   && rosdep install --from-paths src -y -i
-# RUN /$WORKDIR/colcon_build.sh
 RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-ur \
   ros-$ROS_DISTRO-ur-simulation-gz \

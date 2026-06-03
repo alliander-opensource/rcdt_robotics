@@ -7,8 +7,7 @@ import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Trigger
 
-MAX_TORQUES = [100.0, 100.0, 100.0, 80.0, 80.0, 40.0, 40.0]
-MAX_FORCES = [100.0, 100.0, 100.0, 30.0, 30.0, 30.0]
+TIMEOUT = 15
 
 
 class StartArm(Node):
@@ -33,15 +32,17 @@ class StartArm(Node):
 
     def power_on(self) -> None:
         """Power on the UR robot arm."""
-        if not self.success:
-            return
         while not self.power_on_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("service not available, waiting again...")
 
         request = Trigger.Request()
         future = self.power_on_client.call_async(request)
-        rclpy.spin_until_future_complete(self, future)
+        rclpy.spin_until_future_complete(self, future, timeout_sec=TIMEOUT)
         response: Trigger.Response = future.result()
+        if not response:
+            self.get_logger().error("Failed to power on UR robot arm: Timeout")
+            self.success = False
+            return
         self.success = response.success
 
         if response.success:
@@ -58,8 +59,12 @@ class StartArm(Node):
 
         request = Trigger.Request()
         future = self.brake_release_client.call_async(request)
-        rclpy.spin_until_future_complete(self, future)
+        rclpy.spin_until_future_complete(self, future, timeout_sec=TIMEOUT)
         response: Trigger.Response = future.result()
+        if not response:
+            self.get_logger().error("Failed to release UR robot arm brakes: Timeout")
+            self.success = False
+            return
         self.success = response.success
 
         if response.success:

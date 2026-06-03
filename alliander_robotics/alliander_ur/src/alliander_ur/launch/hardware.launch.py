@@ -46,10 +46,7 @@ def launch_setup(context: LaunchContext) -> list:
     ros2_control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[
-            controllers,
-            {"arm_id": "fr3"},
-        ],
+        parameters=[controllers],
         namespace=arm_config.namespace,
         on_exit=Shutdown(),
     )
