@@ -14,7 +14,8 @@ find_package(ament_cmake_python REQUIRED)
 # find_package(moveit_msgs REQUIRED)
 
 # Python packages:
-ament_python_install_package(${PROJECT_NAME})
+ament_python_install_package(${PROJECT_NAME}) # The alliander_openvla folder (PURE python files)
+ament_python_install_package(src_py) # The src_py folder (containing ROS-Python helper files)
 
 # Python executables:
 install(

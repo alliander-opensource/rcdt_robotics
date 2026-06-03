@@ -8,34 +8,11 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
 # Install ROS dependencies
-#RUN apt update && apt install -y ros-$ROS_DISTRO-moveit-msgs
-
-# Install ROS depenencies and upgrade conflicting packages to latest versions:
-# OR use apt install -y --upgrade-only ? 
-# ros-$ROS_DISTRO-fastcdr \
-#     ros-$ROS_DISTRO-rosidl-typesupport-fastrtps-c \
 RUN apt update && apt install -y --no-install-recommends \
     ros-$ROS_DISTRO-moveit-msgs \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \
   && apt clean
-
-# RUN apt update \
-# # 2. Install standard moveit-msgs package
-#     && apt install -y ros-$ROS_DISTRO-moveit-msgs \
-# # 3. Force-upgrade the extended middleware stack to match the new ABI
-#     && apt install -y --only-upgrade \
-#         ros-$ROS_DISTRO-fastcdr \
-#         ros-$ROS_DISTRO-fastrtps \
-#         ros-$ROS_DISTRO-rmw-fastrtps-cpp \
-#         ros-$ROS_DISTRO-rmw-fastrtps-shared-cpp \
-#         ros-$ROS_DISTRO-rosidl-typesupport-fastrtps-c \
-#         ros-$ROS_DISTRO-rosidl-typesupport-fastrtps-cpp \
-#         ros-$ROS_DISTRO-rclpy \
-#         ros-$ROS_DISTRO-moveit-msgs \
-# # 4. Clean cache
-#     && rm -rf /var/lib/apt/lists/*
-
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros

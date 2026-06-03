@@ -19,4 +19,4 @@ tasks:
     description: "Drawer opening manipulation"
     action_dims: 7
 
-default_task: "pick_and_place"
+default_task: "reach_to_object"
