@@ -429,7 +429,7 @@ class PredefinedConfigurations:
             "franka",
             gripper=True,
             moveit=True,
-            controller="wave_controller",
+            movement="wave",
             ip_address="172.16.0.2",
         )
 
@@ -444,7 +444,7 @@ class PredefinedConfigurations:
             (0, 0, 0.14),
             gripper=True,
             moveit=True,
-            controller="wave_controller",
+            movement="wave",
             ip_address="10.15.20.4",
         )
 
