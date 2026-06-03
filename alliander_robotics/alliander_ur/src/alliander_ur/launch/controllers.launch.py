@@ -47,9 +47,21 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=arm_config.namespace,
     )
 
+    io_and_status_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "io_and_status_controller",
+            "--switch-timeout",
+            str(TIMEOUT),
+        ],
+        namespace=arm_config.namespace,
+    )
+
     return [
         Register.on_exit(joint_state_broadcaster_spawner, context),
         Register.on_exit(joint_trajectory_controller_spawner, context),
+        Register.on_exit(io_and_status_controller_spawner, context),
     ]
 
 

@@ -17,6 +17,9 @@
       joint_trajectory_controller:
         type: joint_trajectory_controller/JointTrajectoryController
 
+      io_and_status_controller:
+        type: ur_controllers/GPIOController
+
   joint_trajectory_controller:
     ros__parameters:
       allow_nonzero_velocity_at_trajectory_end: true
@@ -49,3 +52,7 @@
         # Setting the command interface currently would clash with the io_and_status_controller
         # This will probably be changed in the future.
         # command_interface: $(var tf_prefix)speed_scaling/target_speed_fraction_cmd
+
+  io_and_status_controller:
+    ros__parameters:
+      tf_prefix: ""

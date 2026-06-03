@@ -70,6 +70,20 @@ class Dashboard:
             print(response)
         return response
 
+    def unlock_protective_stop(self, verbose: bool = True) -> str:
+        """Unlock the protective stop of the robot arm.
+
+        Args:
+            verbose (bool, optional): Whether to print the response.
+
+        Returns:
+            str: The mode of the robot arm.
+        """
+        response = self.send_command("unlock protective stop")
+        if verbose:
+            print(response)
+        return response
+
     def shutdown(self, verbose: bool = True) -> str:
         """Shutdown the controller.
 
@@ -141,6 +155,12 @@ if __name__ == "__main__":
         help="Release the brakes of the robot arm.",
     )
     parser.add_argument(
+        "--unlock",
+        required=False,
+        action="store_true",
+        help="Unlock the robot from a protective stop.",
+    )
+    parser.add_argument(
         "--off",
         required=False,
         action="store_true",
@@ -171,5 +191,9 @@ if __name__ == "__main__":
         dashboard.power_off()
     elif args.release:
         dashboard.release()
+    elif args.unlock:
+        dashboard.unlock_protective_stop()
     elif args.shutdown:
         dashboard.shutdown()
+    else:
+        parser.print_help()

@@ -53,7 +53,7 @@ We have a [UR7e](https://www.universal-robots.com/download/manuals-e-seriesur-se
 
 If desired, one can connect a display before startup using the mini display port, to visualize the control box interface. Now start the control box:
 
-- The robot needs to be connected with it's control box.
+- The robot needs to be connected with its control box.
 - Use the laboratory power supply or a vehicle platform to provide a DC source of 48V, 10A.
 - Flip the main switch on the control box (0 -> 1) to power the control box.
 - An ethernet cable should connect the control box with the network.
@@ -64,7 +64,12 @@ The control box will start, which can take two minutes, indicated by a green led
 - Use a correct manual ip address for the host device to communicate with the control box (which has `172.16.0.2` by default).
 - You can test the connection using `ping` and the `alliander_robotics/alliander_ur/dashboard.py` tool.
 - Run a configuration of the UR arm, the arm should start automatically, indicated by a green led on the control box.
-- You can power off the arm and shutdown the control box using the `dashboard.py` tool.
+- You can *power off* the arm and *shutdown* the control box using the `dashboard.py` tool.
+
+In case the arm has entered a protective stop:
+
+1. Unlock using the `dashboard.py` tool.
+2. Attach to the UR docker container and run `ros2 service call /ur/io_and_status_controller/resend_robot_program std_srvs/srv/Trigger {}`.
 
 ## Panther
 
