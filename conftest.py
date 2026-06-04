@@ -155,7 +155,9 @@ def create_compose_file(request: SubRequest) -> list:
     else:
         compose.mode = "configuration"
     compose.predefined_configuration = PredefinedConfigurations()
-    compose.visualization = False
+    compose.visualization = (
+        os.getenv("VISUALIZATION", default="false").lower() == "true"
+    )
 
     compose.predefined_configuration.plat_conf.platforms = (
         request.cls.platforms.values()

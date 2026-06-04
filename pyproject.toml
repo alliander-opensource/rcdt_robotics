@@ -52,7 +52,7 @@ alliander-gps = [
 alliander-meta = [
     "numpy>=2.4.1",
     "pure-python-adb-reborn>=1.0.0",
-    "scipy>=1.17.0"
+    "scipy>=1.17.0",
 ]
 alliander-moveit = [
     "xmltodict>=1.0.2",
@@ -64,6 +64,9 @@ alliander-nav2 = [
 alliander-seekthermal = [
     "numpy>=2.4.4",
     "requests>=2.33.0",
+]
+alliander-ur = [
+    "numpy>=2.4.1",
 ]
 alliander-visualization = [
     "nicegui>=3.12.0",
