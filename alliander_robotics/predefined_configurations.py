@@ -246,6 +246,15 @@ class PredefinedConfigurations:
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
 
+    @register_configuration("panther_beamagine")
+    def config_panther_beamagine(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        beamagine = Beamagine("beamagine", (0, 0, 0.3))
+
+        link(vehicle, beamagine)
+        self.plat_conf.platforms = [vehicle, beamagine]
+        self.sim_conf.world = "walls.sdf"
+
     @register_configuration("panther_gps")
     def config_panther_gps(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
