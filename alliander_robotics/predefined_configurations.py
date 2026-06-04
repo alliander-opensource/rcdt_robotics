@@ -436,6 +436,19 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [arm]
         self.viz_conf.gui = True
 
+    @register_configuration("ur_arm_wave_demo")
+    def config_ur_arm_wave_demo(self) -> None:  # noqa: D102
+        arm = Arm(
+            "ur",
+            gripper=False,
+            moveit=True,
+            movement="wave",
+            ip_address="172.16.0.2",
+        )
+
+        self.plat_conf.platforms = [arm]
+        self.viz_conf.gui = True
+
     @register_configuration("mm_arm_wave_demo")
     def config_mm_arm_wave_demo(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))

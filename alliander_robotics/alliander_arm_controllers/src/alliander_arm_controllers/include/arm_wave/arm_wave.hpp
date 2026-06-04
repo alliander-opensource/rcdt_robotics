@@ -187,6 +187,8 @@ class ArmWaveDemo : public rclcpp::Node {
   /// Vector containing amplitudes of movement, in rad.
   std::vector<double> wave_amplitudes_;
 
+  // Boolean indicating whether to control the gripper.
+  bool control_gripper_;
   /// Period of up and down movement, in seconds.
   double wave_period_sec_;
   /// Wait time between opening/closing and waving, in milliseconds.

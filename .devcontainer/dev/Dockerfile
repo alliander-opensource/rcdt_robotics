@@ -59,6 +59,7 @@ RUN echo "source /.dev_bashrc" >> /home/$REMOTE_USER/.bashrc
 
 # Copy repo packages:
 COPY alliander_robotics/alliander_core/src/ /alliander/ros/src
+COPY alliander_robotics/alliander_arm_controllers/src/ /$WORKDIR/ros/src
 COPY alliander_robotics/alliander_diagnostics/src/ /alliander/ros/src
 COPY alliander_robotics/alliander_franka/src/ /alliander/ros/src
 COPY alliander_robotics/alliander_joystick/src/ /alliander/ros/src

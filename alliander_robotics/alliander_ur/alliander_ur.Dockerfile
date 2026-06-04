@@ -21,6 +21,7 @@ RUN apt update && apt install -y --no-install-recommends \
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
 COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
+COPY alliander_robotics/alliander_arm_controllers/src/ /$WORKDIR/ros/src
 COPY alliander_robotics/alliander_ur/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
