@@ -42,6 +42,9 @@ alliander-seekthermal = [
     "numpy>=2.4.4",
     "requests>=2.33.0",
 ]
+alliander-ur = [
+    "numpy>=2.4.4",
+]
 alliander-visualization = [
     "nicegui>=3.12.0",
     "numpy>=2.4.1",

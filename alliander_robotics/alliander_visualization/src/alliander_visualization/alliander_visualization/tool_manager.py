@@ -27,7 +27,9 @@ class ApplyConfigurations:
 
     rviz_parameters: list = []
 
-    def __init__(self, config: VisualizationConfig, platform_list: PlatformList):
+    def __init__(  # noqa: PLR0912
+        self, config: VisualizationConfig, platform_list: PlatformList
+    ) -> None:
         """Initialize.
 
         Args:
@@ -52,6 +54,10 @@ class ApplyConfigurations:
                     self.add_depth_camera(Camera.from_str(platform.to_str()))
                 case "ThermalCamera":
                     self.add_thermal_camera(ThermalCamera.from_str(platform.to_str()))
+                case "Beamagine":
+                    self.add_rgb_camera(Camera.from_str(platform.to_str()))
+                    self.add_thermal_camera(ThermalCamera.from_str(platform.to_str()))
+                    self.add_lidar(Lidar.from_str(platform.to_str()))
                 case "GPS":
                     self.add_gps(GPS.from_str(platform.to_str()))
                 case "IMU":
@@ -166,13 +172,22 @@ class ApplyConfigurations:
         Rviz.add_point_cloud(platform.namespace)
 
     @staticmethod
+    def add_rgb_camera(platform: Camera) -> None:
+        """Add RGB camera configurations to RViz and Vizanti.
+
+        Args:
+            platform (Camera): The camera platform configuration.
+        """
+        Rviz.add_image(f"/{platform.namespace}/color/image_raw")
+
+    @staticmethod
     def add_depth_camera(platform: Camera) -> None:
         """Add depth camera configurations to RViz and Vizanti.
 
         Args:
             platform (Camera): The camera platform configuration.
         """
-        Rviz.add_image(f"/{platform.namespace}/color/image_raw")
+        ApplyConfigurations.add_rgb_camera(platform)
         Rviz.add_image(f"/{platform.namespace}/depth/image_rect_raw")
         Rviz.add_depth_cloud(
             f"/{platform.namespace}/color/image_raw",

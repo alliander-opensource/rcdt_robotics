@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
     package: franka_description
     relative_path: robots/fr3/fr3.urdf.xacro
   srdf:
-    relative_path: config/fr3.srdf
+    relative_path: config/arm.srdf
   package_settings:
     author_name: Alliander Robotics
     author_email: robots@alliander.com

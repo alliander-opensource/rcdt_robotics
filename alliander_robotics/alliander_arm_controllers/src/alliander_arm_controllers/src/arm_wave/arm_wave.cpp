@@ -4,7 +4,6 @@
 
 #include "arm_wave/arm_wave.hpp"
 
-#include <chrono>
 #include <rclcpp/executors.hpp>
 #include <rclcpp/utilities.hpp>
 #include <rclcpp_action/client.hpp>
@@ -29,6 +28,7 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
 
   this->declare_parameter<std::vector<int>>("wave_joint_indices", {3});
   this->declare_parameter<std::vector<float>>("wave_amplitudes", {0.5});
+  this->declare_parameter<bool>("control_gripper", true);
   this->declare_parameter<double>("wave_period_sec", 8.0);
   this->declare_parameter<double>("wait_time_sec", 3.0);
 
@@ -38,17 +38,13 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
   wave_joint_indices_ =
       this->get_parameter("wave_joint_indices").as_integer_array();
   wave_amplitudes_ = this->get_parameter("wave_amplitudes").as_double_array();
+  control_gripper_ = this->get_parameter("control_gripper").as_bool();
   wave_period_sec_ = this->get_parameter("wave_period_sec").as_double();
   wait_time_msec_ =
       (int)(1000 * this->get_parameter("wait_time_sec").as_double());
 
   fjt_action_client_ = rclcpp_action::create_client<FollowJointTrajectory>(
-      this, "fr3_arm_controller/follow_joint_trajectory");
-  open_gripper_action_client_ =
-      rclcpp_action::create_client<GripperAction>(this, "gripper/open");
-  close_gripper_action_client_ =
-      rclcpp_action::create_client<GripperAction>(this, "gripper/close");
-
+      this, "joint_trajectory_controller/follow_joint_trajectory");
   RCLCPP_INFO(get_logger(),
               "Waiting for FollowJointTrajectory action server...");
   if (!fjt_action_client_->wait_for_action_server(std::chrono::seconds(10))) {
@@ -59,24 +55,30 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
     return;
   }
 
-  RCLCPP_INFO(get_logger(), "Waiting for Open Gripper action server...");
-  if (!open_gripper_action_client_->wait_for_action_server(
-          std::chrono::seconds(10))) {
-    RCLCPP_ERROR(
-        get_logger(),
-        "Open gripper action server not available after 10s. Exiting.");
-    rclcpp::shutdown();
-    return;
-  }
+  if (control_gripper_) {
+    open_gripper_action_client_ =
+        rclcpp_action::create_client<GripperAction>(this, "gripper/open");
+    RCLCPP_INFO(get_logger(), "Waiting for Open Gripper action server...");
+    if (!open_gripper_action_client_->wait_for_action_server(
+            std::chrono::seconds(10))) {
+      RCLCPP_ERROR(
+          get_logger(),
+          "Open gripper action server not available after 10s. Exiting.");
+      rclcpp::shutdown();
+      return;
+    }
 
-  RCLCPP_INFO(get_logger(), "Waiting for Close Gripper action server...");
-  if (!close_gripper_action_client_->wait_for_action_server(
-          std::chrono::seconds(10))) {
-    RCLCPP_ERROR(
-        get_logger(),
-        "Close gripper action server not available after 10s. Exiting.");
-    rclcpp::shutdown();
-    return;
+    close_gripper_action_client_ =
+        rclcpp_action::create_client<GripperAction>(this, "gripper/close");
+    RCLCPP_INFO(get_logger(), "Waiting for Close Gripper action server...");
+    if (!close_gripper_action_client_->wait_for_action_server(
+            std::chrono::seconds(10))) {
+      RCLCPP_ERROR(
+          get_logger(),
+          "Close gripper action server not available after 10s. Exiting.");
+      rclcpp::shutdown();
+      return;
+    }
   }
 
   RCLCPP_INFO(get_logger(), "Action servers found. Starting wave.");
@@ -109,10 +111,10 @@ ArmWaveDemo::ArmWaveDemo() : Node("arm_wave_demo") {
               send_home();
               break;
             case ArmState::Homed:
-              open_gripper();
+              control_gripper_ ? open_gripper() : state_machine_.transition();
               break;
             case ArmState::GripperOpen:
-              close_gripper();
+              control_gripper_ ? close_gripper() : state_machine_.transition();
               break;
             case ArmState::GripperClosed:
               get_ready();

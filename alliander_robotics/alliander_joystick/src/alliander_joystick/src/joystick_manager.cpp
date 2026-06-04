@@ -217,7 +217,7 @@ void JoystickManager::handle_arm_movement(const float& x, const float& y,
                                           const float& rotation) {
   geometry_msgs::msg::TwistStamped twist;
   twist.header.stamp = node->now();
-  twist.header.frame_id = namespace_arm + "/" + "fr3_link1";
+  twist.header.frame_id = namespace_arm + "/" + "base_link";
 
   twist.twist.linear.x = (std::abs(x) > dead_axis_zone)
                              ? (x * arm_speed_scale)

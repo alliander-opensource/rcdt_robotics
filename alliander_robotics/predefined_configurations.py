@@ -12,6 +12,7 @@ from alliander_robotics.alliander_core.src.alliander_utilities.alliander_utiliti
     GPS,
     IMU,
     Arm,
+    Beamagine,
     Camera,
     Lidar,
     Lift,
@@ -125,6 +126,13 @@ class PredefinedConfigurations:
 
         self.sim_conf.world = "thermal_camera.sdf"
 
+    @register_configuration("beamagine")
+    def config_beamagine(self) -> None:  # noqa: D102
+        self.plat_conf.platforms = [
+            Beamagine("beamagine", (0, 0, 0.5), namespace="beamagine")
+        ]
+        self.sim_conf.world = "walls.sdf"
+
     # Ewellix:
     @register_configuration("ewellix")
     def config_ewellix(self) -> None:  # noqa: D102
@@ -157,6 +165,29 @@ class PredefinedConfigurations:
     @register_configuration("franka_realsense")
     def config_franka_realsense(self) -> None:  # noqa: D102
         arm = Arm("franka", moveit=True)
+        camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180))
+
+        link(arm, camera)
+        self.plat_conf.platforms = [arm, camera]
+
+    # UR:
+    @register_configuration("ur")
+    def config_ur(self) -> None:  # noqa: D102
+        arm = Arm("ur", moveit=True, ip_address="172.16.0.2")
+
+        self.plat_conf.platforms = [arm]
+        self.viz_conf.gui = True
+
+    @register_configuration("ur_rviz_motion_planning")
+    def config_ur_rviz_motion_planning(self) -> None:  # noqa: D102
+        arm = Arm("ur", moveit=True, ip_address="172.16.0.2")
+        arm.moveit_config.load_rviz_motion_planning_plugin = True
+
+        self.plat_conf.platforms = [arm]
+
+    @register_configuration("ur_realsense")
+    def config_ur_realsense(self) -> None:  # noqa: D102
+        arm = Arm("ur", moveit=True)
         camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180))
 
         link(arm, camera)
@@ -214,6 +245,15 @@ class PredefinedConfigurations:
 
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
+
+    @register_configuration("panther_beamagine")
+    def config_panther_beamagine(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        beamagine = Beamagine("beamagine", (0, 0, 0.3))
+
+        link(vehicle, beamagine)
+        self.plat_conf.platforms = [vehicle, beamagine]
+        self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_gps")
     def config_panther_gps(self) -> None:  # noqa: D102
@@ -339,10 +379,18 @@ class PredefinedConfigurations:
         self.sim_conf.world = "walls.sdf"
 
     # Mobile Manipulators:
-    @register_configuration("mm")
-    def config_mm(self) -> None:  # noqa: D102
+    @register_configuration("mm_pf")
+    def config_pf(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
         arm = Arm("franka", (0, 0, 0.14), gripper=True, moveit=True)
+
+        link(vehicle, arm)
+        self.plat_conf.platforms = [vehicle, arm]
+
+    @register_configuration("mm_pu")
+    def config_pu(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        arm = Arm("ur", (0, 0, 0.14), moveit=True)
 
         link(vehicle, arm)
         self.plat_conf.platforms = [vehicle, arm]
@@ -357,8 +405,8 @@ class PredefinedConfigurations:
         link(lift, arm)
         self.plat_conf.platforms = [vehicle, lift, arm]
 
-    @register_configuration("mm_velodyne")
-    def config_mm_velodyne(self) -> None:  # noqa: D102
+    @register_configuration("mm_pfv")
+    def config_pfv(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
         vehicle.nav2_config.navigation = True
         arm = Arm("franka", (0, 0, 0.14), gripper=True, moveit=True)
@@ -368,6 +416,17 @@ class PredefinedConfigurations:
             orientation=(0.0, 0.0, 45.0),
             ip_address="10.15.20.5",
         )
+
+        link(vehicle, arm)
+        link(vehicle, lidar)
+        self.plat_conf.platforms = [vehicle, arm, lidar]
+
+    @register_configuration("mm_puv")
+    def config_puv(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        vehicle.nav2_config.navigation = True
+        arm = Arm("ur", (0, 0, 0.14), moveit=True)
+        lidar = Lidar("velodyne", (0.13, -0.13, 0.35))
 
         link(vehicle, arm)
         link(vehicle, lidar)
@@ -387,7 +446,20 @@ class PredefinedConfigurations:
             "franka",
             gripper=True,
             moveit=True,
-            controller="wave_controller",
+            movement="wave",
+            ip_address="172.16.0.2",
+        )
+
+        self.plat_conf.platforms = [arm]
+        self.viz_conf.gui = True
+
+    @register_configuration("ur_arm_wave_demo")
+    def config_ur_arm_wave_demo(self) -> None:  # noqa: D102
+        arm = Arm(
+            "ur",
+            gripper=False,
+            moveit=True,
+            movement="wave",
             ip_address="172.16.0.2",
         )
 
@@ -402,7 +474,7 @@ class PredefinedConfigurations:
             (0, 0, 0.14),
             gripper=True,
             moveit=True,
-            controller="wave_controller",
+            movement="wave",
             ip_address="10.15.20.4",
         )
 
