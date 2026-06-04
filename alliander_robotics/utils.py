@@ -1,10 +1,13 @@
 # SPDX-FileCopyrightText: Alliander N. V.
 #
 # SPDX-License-Identifier: Apache-2.0
+import os
 import subprocess
 import sys
 
 import yaml
+
+import alliander_robotics
 
 
 def get_git_branch() -> str:
@@ -40,21 +43,32 @@ def get_files_changed(verbose: bool = False) -> list[str]:
     return files
 
 
-def load_components(group: str = "") -> dict:
+def load_components(components_file: str = "", group: str = "") -> dict:
     """Loads components.yml file into a dictionary.
 
     Args:
+        components_file (str, optional): The path to the components file. Defaults to an empty string, which will use the default components.yml file.
         group (str, optional): The group of components to load.
 
     Returns:
-        dict: A dictionary containing the components defined in components.yml.
+        dict: A dictionary containing the components defined in the specified components file.
     """
-    with open("components.yml", encoding="utf-8") as stream:
+    if not components_file:
+        components_file = (
+            os.path.dirname(alliander_robotics.__file__) + "/components.yml"
+        )
+    with open(components_file, encoding="utf-8") as stream:
         try:
             components: dict[str, dict] = yaml.safe_load(stream)
         except yaml.YAMLError as e:
             print(e)
             sys.exit(1)
+
+    components_dir = components_file.replace("/components.yml", "")
+    src_directory = components_dir.replace(os.getcwd(), "")  # must be a relative path
+    for v in components.values():
+        v["src_directory"] = src_directory
+        v["dockerfile"] = components_dir + f"/{v['dockerfile']}"
 
     match group:
         case "ubuntu_images":

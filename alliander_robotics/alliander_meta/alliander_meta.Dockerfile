@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
+ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
@@ -14,7 +15,7 @@ RUN apt update && apt install -y android-tools-adb
 RUN apt update && apt install -y \
   ffmpeg libsdl2-2.0-0 adb wget gcc git pkg-config meson ninja-build libsdl2-dev libavcodec-dev \
   libavdevice-dev libavformat-dev libavutil-dev libswresample-dev libusb-1.0-0 libusb-1.0-0-dev \
-  && git clone https://github.com/Genymobile/scrcpy \
+  && git clone -b v3.3.4 https://github.com/Genymobile/scrcpy \
   && cd scrcpy \
   && ./install_release.sh
 
@@ -23,13 +24,13 @@ RUN apt update && apt install -y ros-$ROS_DISTRO-moveit-msgs
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
-COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
-COPY alliander_robotics/alliander_meta/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_meta/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR
-COPY pyproject.toml/ /$WORKDIR/pyproject.toml
+COPY $SRC_DIRECTORY/pyproject.toml/ /$WORKDIR/pyproject.toml
 RUN uv sync --group alliander-meta \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc

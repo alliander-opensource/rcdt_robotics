@@ -4,6 +4,7 @@
 FROM allianderrobotics/base
 
 ARG REMOTE_USER
+ARG SRC_DIRECTORY=alliander_robotics
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 WORKDIR /alliander/ros
@@ -58,22 +59,22 @@ COPY .devcontainer/dev/.dev_bashrc /.dev_bashrc
 RUN echo "source /.dev_bashrc" >> /home/$REMOTE_USER/.bashrc
 
 # Copy repo packages:
-COPY alliander_robotics/alliander_core/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_arm_controllers/src/ /$WORKDIR/ros/src
-COPY alliander_robotics/alliander_diagnostics/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_franka/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_joystick/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_meta/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_moveit/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_nav2/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_seekthermal/src/ /alliander/ros/src
-COPY alliander_robotics/alliander_xsens/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_diagnostics/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_franka/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_joystick/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_meta/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_moveit/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_nav2/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_seekthermal/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
 
 # Build repo packages:
 RUN /alliander/colcon_build.sh
 
 # Install python dependencies:
-COPY pyproject.toml /alliander/pyproject.toml
+COPY $SRC_DIRECTORY/pyproject.toml /alliander/pyproject.toml
 RUN uv sync --all-groups
 
 WORKDIR /alliander

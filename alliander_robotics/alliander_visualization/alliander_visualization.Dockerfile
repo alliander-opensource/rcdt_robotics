@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
+ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
@@ -33,7 +34,7 @@ RUN apt update \
 RUN git clone https://github.com/alliander-opensource/rosboard.git src/rosboard
 
 # Get vendor descriptions
-COPY common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
 RUN /$WORKDIR/get_vendor_descriptions.sh && rm /$WORKDIR/get_vendor_descriptions.sh
 
 # Build vizanti and vendor descriptions
@@ -41,13 +42,13 @@ RUN /$WORKDIR/colcon_build.sh
 
 # Install repo packages:
 WORKDIR /$WORKDIR/ros
-COPY alliander_robotics/alliander_core/src/ /$WORKDIR/ros/src
-COPY alliander_robotics/alliander_visualization/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_visualization/src/ /$WORKDIR/ros/src
 RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR
-COPY pyproject.toml /$WORKDIR/pyproject.toml
+COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
 RUN uv sync --group alliander-visualization \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
