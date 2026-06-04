@@ -258,3 +258,30 @@ A Teltonika GPS can be launched in simulation by creating a configuration with a
 ### Hardware Teltonika
 
 When using the Teltonika GPS, make sure that the IP-address of the host device (where the nmea node is running) is set correctly in the settings. One can edit the settings of the Teltonika using a web interface on it’s IP-adress.
+
+## Beamagine L3Cam
+
+![Beamagine](../img/beamagine/beamagine.png)
+
+### Simulation Beamagine
+
+A Beamagine lidar can be launched in simulation by creating a configuration with the *Beamagine* type.
+
+### Hardware Beamagine
+
+When using the Beamagine lidar, make sure that the network buffer sizes are increased. This can be checked using:
+
+```bash
+sudo sysctl 'net.core.rmem_max' # should be 268435456
+sudo sysctl 'net.core.rmem_default' # should be 268435456
+sudo sysctl 'net.core.netdev_max_backlog' # should be 5000
+```
+
+Update the buffer size with the following commands:
+
+```bash
+sudo sh -c "echo 'net.core.rmem_default=268435456' >> /etc/sysctl.conf"
+sudo sh -c "echo 'net.core.rmem_max=268435456' >> /etc/sysctl.conf"
+sudo sh -c "echo 'net.core.netdev_max_backlog=5000' >> /etc/sysctl.conf"
+sudo sysctl -p
+```

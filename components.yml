@@ -14,6 +14,10 @@ cuda:
   dockerfile: alliander_core/alliander_core.Dockerfile
 
 # Ubuntu components:
+beamagine:
+  base_image: allianderrobotics/base
+  repository: allianderrobotics/beamagine
+  dockerfile: alliander_beamagine/alliander_beamagine.Dockerfile
 diagnostics:
   base_image: allianderrobotics/base
   repository: allianderrobotics/diagnostics

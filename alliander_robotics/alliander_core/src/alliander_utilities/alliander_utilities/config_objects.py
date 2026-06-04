@@ -336,6 +336,17 @@ class Lidar(Platform):
 
 
 @dataclass
+class Beamagine(Platform):
+    """Configuration for a Beamagine platform.
+
+    Attributes:
+        platform_type (str): Type identifier for the platform.
+    """
+
+    platform_type: str = "Beamagine"
+
+
+@dataclass
 class GPS(Platform):
     """Configuration for a GPS platform.
 
@@ -387,7 +398,18 @@ class PlatformList(Config):
 
     platforms: List[
         Annotated[
-            Union[Platform, Arm, Vehicle, Camera, GPS, IMU, Lidar, Lift, ThermalCamera],
+            Union[
+                Platform,
+                Arm,
+                Vehicle,
+                Camera,
+                GPS,
+                IMU,
+                Lidar,
+                Lift,
+                ThermalCamera,
+                Beamagine,
+            ],
             Discriminator(field="platform_type", include_supertypes=True),
         ]
     ] = field(default_factory=list)
