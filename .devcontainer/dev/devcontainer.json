@@ -44,6 +44,7 @@
         "twxs.cmake",
         "kylinideteam.cmake-intellisence",
         "redhat.vscode-yaml",
+        "redhat.vscode-xml",
         "github.vscode-pull-request-github",
         "davidanson.vscode-markdownlint",
         "redhat.vscode-xml"

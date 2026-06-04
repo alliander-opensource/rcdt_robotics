@@ -324,6 +324,8 @@ class Compose:
         env_vars = service.get("environment", [])
         if self.predefined_configuration.sim_conf.load_ui:
             env_vars.append("GAZEBO_UI=true")
+        if self.visualization:
+            env_vars.append("VISUALIZATION=true")
         if self.dev:
             env_vars.append("DEV_MOUNTS=true")
             env_vars.append(f"HOST_CWD={Compose.host_cwd}")

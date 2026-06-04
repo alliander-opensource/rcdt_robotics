@@ -195,6 +195,8 @@ class Platform(Config):
                 return "base_link"
             case "franka":
                 return "fr3_hand"
+            case "ur":
+                return "wrist_3_link"
             case "ewellix":
                 return "lift_mount"
             case _:
@@ -254,7 +256,7 @@ class Arm(Platform):
         platform_type (str): Type identifier for the platform.
         gripper (bool): Whether the arm has a gripper attached.
         moveit (bool) : Whether to enable MoveIt motion planning.
-        controller (Literal["fr3_arm_controller", "wave_controller"]): Controller to run.
+        movement (Literal["", "wave"]): Movement to execute.
         ip_address (str): IP address of the arm controller.
         moveit_config (MoveitConfig): MoveIt configuration settings.
     """
@@ -262,7 +264,7 @@ class Arm(Platform):
     platform_type: str = "Arm"
     gripper: bool = False
     moveit: bool = False
-    controller: Literal["fr3_arm_controller", "wave_controller"] = "fr3_arm_controller"
+    movement: Literal["", "wave"] = ""
     ip_address: str = "10.15.20.4"
 
     moveit_config: MoveitConfig = field(default_factory=MoveitConfig)
