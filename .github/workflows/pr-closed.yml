@@ -11,7 +11,7 @@ on:
 
 jobs:
   remove-branch-images:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6

@@ -14,7 +14,7 @@ env:
 
 jobs:
   select-components:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     outputs:
       REBUILD_CORE: ${{ steps.variables.outputs.REBUILD_CORE }}
       UBUNTU_COMPONENTS: ${{ steps.variables.outputs.UBUNTU_COMPONENTS }}
@@ -53,7 +53,7 @@ jobs:
 
   build-ubuntu-manifest:
     needs: build-ubuntu
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -87,7 +87,7 @@ jobs:
   build-ubuntu-images-manifest:
     needs: [select-components, build-ubuntu-images]
     if: always() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -118,7 +118,7 @@ jobs:
 
   build-cuda-manifest:
     needs: build-cuda
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -152,7 +152,7 @@ jobs:
   build-cuda-images-manifest:
     needs: [select-components, build-cuda-images]
     if: always() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -166,7 +166,7 @@ jobs:
   linting:
     needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
         with:

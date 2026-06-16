@@ -10,7 +10,7 @@ on:
 
 jobs:
   select-components:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     outputs:
       UBUNTU_COMPONENTS: ${{ steps.variables.outputs.UBUNTU_COMPONENTS }}
       CUDA_COMPONENTS: ${{ steps.variables.outputs.CUDA_COMPONENTS }}
@@ -43,7 +43,7 @@ jobs:
 
   build-ubuntu-manifest:
     needs: build-ubuntu
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -73,7 +73,7 @@ jobs:
 
   build-ubuntu-images-manifest:
     needs: [select-components, build-ubuntu-images]
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -100,7 +100,7 @@ jobs:
 
   build-cuda-manifest:
     needs: build-cuda
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -130,7 +130,7 @@ jobs:
 
   build-cuda-images-manifest:
     needs: [select-components, build-cuda-images]
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
       - name: Create manifest
@@ -141,7 +141,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   linting:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ubuntu-24.04]
     needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
     if: always()
     steps:
