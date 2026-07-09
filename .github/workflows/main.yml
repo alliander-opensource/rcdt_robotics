@@ -10,15 +10,16 @@ on:
 
 jobs:
   select-components:
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     outputs:
       UBUNTU_COMPONENTS: ${{ steps.variables.outputs.UBUNTU_COMPONENTS }}
       CUDA_COMPONENTS: ${{ steps.variables.outputs.CUDA_COMPONENTS }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
           cache: "pip"
@@ -30,9 +31,10 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner }}
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -43,9 +45,10 @@ jobs:
 
   build-ubuntu-manifest:
     needs: build-ubuntu
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -60,9 +63,10 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
         component: ${{ fromJSON(needs.select-components.outputs.UBUNTU_COMPONENTS) }}
-    runs-on: ${{ matrix.runner }}
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -73,9 +77,10 @@ jobs:
 
   build-ubuntu-images-manifest:
     needs: [select-components, build-ubuntu-images]
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -87,9 +92,10 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner }}
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -100,9 +106,10 @@ jobs:
 
   build-cuda-manifest:
     needs: build-cuda
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -117,9 +124,10 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
         component: ${{ fromJSON(needs.select-components.outputs.CUDA_COMPONENTS) }}
-    runs-on: ${{ matrix.runner }}
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -130,9 +138,10 @@ jobs:
 
   build-cuda-images-manifest:
     needs: [select-components, build-cuda-images]
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -141,13 +150,14 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   linting:
-    runs-on: ubuntu-24.04
+    runs-on:
+      group: managed
     needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
     if: always()
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Set up python3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
           cache: "pip"
@@ -161,17 +171,18 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner }}
+    runs-on:
+      group: managed
     needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Docker login
-        uses: docker/login-action@v4
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Set up python3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
           cache: "pip"
