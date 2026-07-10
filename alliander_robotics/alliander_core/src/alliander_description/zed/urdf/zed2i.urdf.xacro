@@ -42,7 +42,8 @@ SPDX-License-Identifier: Apache-2.0
     </joint>
 
     <!-- Include zed xacro: -->
-    <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" />
+    <!-- <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" /> -->
+    <xacro:include filename="$(find alliander_description)/zed/urdf/adapted/zed_macro.urdf.xacro" />
     <xacro:zed_camera
       name="${namespace}"
       model="${model}"

@@ -13,9 +13,9 @@ ARG TEMP_DIR="/tmp/zed_install"
 ARG RUN_FILE="$TEMP_DIR/zed_sdk.run"
 RUN mkdir -p "$TEMP_DIR"
 RUN if [ $(dpkg --print-architecture) = "amd64" ]; \
-  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.0/ZED_SDK_Ubuntu24_cuda12.8_tensorrt10.9_v5.0.7.zstd.run"; \
+  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Ubuntu24_cuda12.8_tensorrt10.9_v5.4.0.zstd.run"; \
   elif [ $(dpkg --print-architecture) = "arm64" ]; \ 
-  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.0/ZED_SDK_Tegra_L4T36.4_v5.0.7.zstd.run"; \
+  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Tegra_L4T39.2_v5.4.0.zstd.run"; \
   else echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1; fi
 RUN chmod +x "${RUN_FILE}" \
   && "${RUN_FILE}" -- silent \
@@ -26,7 +26,7 @@ RUN chmod +x "${RUN_FILE}" \
 # Install ZED Wrapper:
 WORKDIR /$WORKDIR/external
 RUN apt update \
-  && git clone -b humble-v5.0.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
+  && git clone -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
   && cd /$WORKDIR/external \
   && rosdep update --rosdistro $ROS_DISTRO \
   && rosdep install --from-paths src -y -i
