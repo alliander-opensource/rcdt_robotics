@@ -66,6 +66,10 @@ realsense:
   base_image: allianderrobotics/base
   repository: allianderrobotics/realsense
   dockerfile: alliander_realsense/alliander_realsense.Dockerfile
+robotiq:
+  base_image: allianderrobotics/base
+  repository: allianderrobotics/robotiq
+  dockerfile: alliander_robotiq/alliander_robotiq.Dockerfile
 seekthermal:
   base_image: allianderrobotics/base
   repository: allianderrobotics/seekthermal

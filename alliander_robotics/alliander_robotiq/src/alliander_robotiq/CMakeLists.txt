@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.5)
-project(alliander_description)
+project(alliander_robotiq)
 
 # CMake dependencies:
 find_package(ament_cmake REQUIRED)
@@ -11,7 +11,7 @@ find_package(ament_cmake_python REQUIRED)
 
 # Shared folders:
 install(
-  DIRECTORY ewellix beamagine franka husarion nmea_gps ouster realsense robotiq seekthermal velodyne ur xsens zed
+  DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 

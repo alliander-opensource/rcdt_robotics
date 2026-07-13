@@ -14,6 +14,7 @@ from alliander_robotics.alliander_core.src.alliander_utilities.alliander_utiliti
     Arm,
     Beamagine,
     Camera,
+    Gripper,
     Lidar,
     Lift,
     Platform,
@@ -146,6 +147,11 @@ class PredefinedConfigurations:
         link(lift, arm)
         self.plat_conf.platforms = [lift, arm]
 
+    # Grippers:
+    @register_configuration("robotiq")
+    def config_robotiq(self) -> None:  # noqa: D102
+        self.plat_conf.platforms = [Gripper("robotiq", (0, 0, 0.5))]
+
     # Franka:
     @register_configuration("franka")
     def config_franka(self) -> None:  # noqa: D102
@@ -192,6 +198,14 @@ class PredefinedConfigurations:
 
         link(arm, camera)
         self.plat_conf.platforms = [arm, camera]
+
+    @register_configuration("ur_robotiq")
+    def config_ur_robotiq(self) -> None:  # noqa: D102
+        arm = Arm("ur", moveit=True)
+        gripper = Camera("robotiq", (0, 0, 0.05), (0, 180, 0))
+
+        link(arm, gripper)
+        self.plat_conf.platforms = [arm, gripper]
 
     # Panther:
     @register_configuration("panther")

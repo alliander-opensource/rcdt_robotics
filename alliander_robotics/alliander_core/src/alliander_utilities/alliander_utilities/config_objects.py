@@ -249,6 +249,23 @@ class MoveitConfig(Config):
 
 # Platforms:
 @dataclass
+class Gripper(Platform):
+    """Configuration for a Gripper platform.
+
+    Attributes:
+        platform_type (str): Type identifier for the platform.
+        ip_address (str): IP address of the arm controller.
+        moveit (bool) : Whether to enable MoveIt motion planning.
+        moveit_config (MoveitConfig): MoveIt configuration settings.
+    """
+
+    platform_type: str = "Arm"
+    ip_address: str = "10.15.20.6"
+    moveit: bool = False
+    moveit_config: MoveitConfig = field(default_factory=MoveitConfig)
+
+
+@dataclass
 class Arm(Platform):
     """Configuration for an Arm platform.
 
