@@ -27,7 +27,7 @@ RUN chmod +x "${RUN_FILE}" \
 WORKDIR /$WORKDIR/external
 RUN apt update \
   && git clone -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
-  && cd /$WORKDIR/external \
+  && rm -rf src/zed_ros2_wrapper/zed_debug \
   && rosdep update --rosdistro $ROS_DISTRO \
   && rosdep install --from-paths src -y -i
 RUN /$WORKDIR/colcon_build.sh

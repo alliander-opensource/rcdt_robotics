@@ -9,7 +9,7 @@
 set -e
 
 colcon build --symlink-install \
-  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=1  --packages-skip zed_debug
+  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 # run clang-tidy checks, which will also produce warnings in /opt/ros/jazzy/src/gtest_vendor/...
 echo "Running clang-tidy"
