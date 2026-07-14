@@ -24,12 +24,20 @@ RUN chmod +x "${RUN_FILE}" \
   && rm -rf /var/lib/apt/lists/*
 
 # Install ZED description and msgs packages on specific version
-RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
-  ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260615.112916 \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+      apt update && apt install -y --no-install-recommends \
+        ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
+        ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260615.112916; \
+    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+      apt update && apt install -y --no-install-recommends \
+        ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.094525 \
+        ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260612.085538; \
+    else \
+      echo "Unsupported architecture: $(dpkg --print-architecture)" && exit 1; \
+    fi && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt autoremove -y && \
+    apt clean
 
 # Install ZED Wrapper:
 WORKDIR /$WORKDIR/external

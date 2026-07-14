@@ -21,9 +21,19 @@ cd src/realsense-ros
 git sparse-checkout set realsense2_description
 cd ../..
 
+# Architecture-dependent versioning
+if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+    ZED_VERSION="0.1.5-1noble.20260615.180130"
+elif [ "$(dpkg --print-architecture)" = "arm64" ]; then
+    ZED_VERSION="0.1.5-1noble.20260615.094525"
+else
+    echo "Unsupported architecture: $(dpkg --print-architecture)"
+    exit 1
+fi
+
 # Install dependencies
 apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-husarion-components-description \
-  ros-$ROS_DISTRO-velodyne-description \
-  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
-  ros-$ROS_DISTRO-ewellix-description
+    ros-$ROS_DISTRO-husarion-components-description \
+    ros-$ROS_DISTRO-velodyne-description \
+    ros-$ROS_DISTRO-zed-description=$ZED_VERSION \
+    ros-$ROS_DISTRO-ewellix-description
