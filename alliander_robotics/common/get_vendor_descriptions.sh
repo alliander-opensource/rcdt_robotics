@@ -25,5 +25,5 @@ cd ../..
 apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-husarion-components-description \
   ros-$ROS_DISTRO-velodyne-description \
-  ros-$ROS_DISTRO-zed-description \
+  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
   ros-$ROS_DISTRO-ewellix-description

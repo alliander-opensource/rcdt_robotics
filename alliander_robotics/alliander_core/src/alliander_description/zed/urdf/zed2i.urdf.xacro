@@ -42,8 +42,7 @@ SPDX-License-Identifier: Apache-2.0
     </joint>
 
     <!-- Include zed xacro: -->
-    <!-- <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" /> -->
-    <xacro:include filename="$(find alliander_description)/zed/urdf/adapted/zed_macro.urdf.xacro" />
+    <xacro:include filename="$(find zed_description)/urdf/zed_macro.urdf.xacro" />
     <xacro:zed_camera
       name="${namespace}"
       model="${model}"
@@ -63,7 +62,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${namespace}/color/image_raw</topic>
           <visualize>false</visualize>
 
-          <gz_frame_id>${namespace}/${namespace}_${align}_camera_optical_frame</gz_frame_id>
+          <gz_frame_id>${namespace}/${namespace}_${align}_camera_frame_optical</gz_frame_id>
           <camera>
             <horizontal_fov>${110.0/180.0*pi}</horizontal_fov>
             <image>
@@ -85,7 +84,7 @@ SPDX-License-Identifier: Apache-2.0
           <topic>${namespace}/depth/image_rect_raw_float</topic>
           <visualize>false</visualize>
 
-          <gz_frame_id>${namespace}/${namespace}_${align}_camera_optical_frame</gz_frame_id>
+          <gz_frame_id>${namespace}/${namespace}_${align}_camera_frame_optical</gz_frame_id>
           <camera>
             <horizontal_fov>${110.0/180.0*pi}</horizontal_fov>
             <image>
