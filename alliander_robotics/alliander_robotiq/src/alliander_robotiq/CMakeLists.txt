@@ -9,6 +9,12 @@ project(alliander_robotiq)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
+# Python executables:
+install(
+  DIRECTORY src_py/
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # Shared folders:
 install(
   DIRECTORY launch
