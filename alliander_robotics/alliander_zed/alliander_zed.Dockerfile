@@ -13,7 +13,7 @@ ARG TEMP_DIR="/tmp/zed_install"
 ARG RUN_FILE="$TEMP_DIR/zed_sdk.run"
 RUN mkdir -p "$TEMP_DIR"
 RUN if [ $(dpkg --print-architecture) = "amd64" ]; \
-  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Ubuntu24_cuda12.8_tensorrt10.9_v5.4.0.zstd.run"; \
+  then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Ubuntu24_cuda13.0_tensorrt10.13_v5.4.0.zstd.run"; \
   elif [ $(dpkg --print-architecture) = "arm64" ]; \ 
   then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Tegra_L4T39.2_v5.4.0.zstd.run"; \
   else echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1; fi
