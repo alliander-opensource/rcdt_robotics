@@ -20,7 +20,7 @@ RUN apt update && apt install -y --no-install-recommends \
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_gps/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR

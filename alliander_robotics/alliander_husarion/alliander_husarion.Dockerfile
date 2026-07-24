@@ -36,7 +36,7 @@ RUN /$WORKDIR/colcon_build.sh
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_husarion/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR

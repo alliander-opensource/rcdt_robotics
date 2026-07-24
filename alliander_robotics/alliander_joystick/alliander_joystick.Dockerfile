@@ -15,7 +15,7 @@ RUN apt update && apt install -y ros-$ROS_DISTRO-moveit-msgs
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_joystick/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR

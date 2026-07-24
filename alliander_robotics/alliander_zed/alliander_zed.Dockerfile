@@ -84,6 +84,7 @@ WORKDIR /$WORKDIR/external
 RUN apt update \
   && rosdep update --rosdistro $ROS_DISTRO \
   && rosdep install --from-paths src -y -i \
+  && rm -rf src \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy runtime SDK

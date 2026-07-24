@@ -38,7 +38,7 @@ RUN /$WORKDIR/colcon_build.sh
 # alliander_seekthermal is needed as it creates a Python package that is imported
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR
