@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARG BASE_IMAGE=ubuntu:latest
-FROM $BASE_IMAGE 
+FROM $BASE_IMAGE AS builder
 
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
@@ -18,7 +18,7 @@ RUN if [ $(dpkg --print-architecture) = "amd64" ]; \
   then wget -O "$RUN_FILE" "https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/5.4/ZED_SDK_Tegra_L4T39.2_v5.4.0.zstd.run"; \
   else echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1; fi
 RUN chmod +x "${RUN_FILE}" \
-  && "${RUN_FILE}" -- silent \
+  && "${RUN_FILE}" -- silent runtime_only skip_tools \
   && chmod -R u+rwX,go+rX /usr/local/zed \
   && rm -f "${RUN_FILE}" \
   && rm -rf /var/lib/apt/lists/*
@@ -52,7 +52,7 @@ RUN /$WORKDIR/colcon_build.sh
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_zed/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR
@@ -60,6 +60,47 @@ COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
 RUN uv sync \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
+
+##############################
+# Runtime
+##############################
+FROM ${BASE_IMAGE}
+
+ENV ROS_DISTRO=jazzy
+
+# Install only runtime dependencies
+# RUN apt-get update && \
+#     apt-get install -y \
+#         ros-jazzy-ros-base \
+#         ros-jazzy-zed-description \
+#         ros-jazzy-zed-msgs \
+#         ros-jazzy-diagnostic-updater \
+#         ros-jazzy-robot-localization \
+#         ros-jazzy-image-transport-plugins \
+#         libusb-1.0-0 \
+#         libturbojpeg0-dev \
+#     && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /opt/ros/jazzy /opt/ros/jazzy
+COPY --from=builder /usr/lib /usr/lib
+COPY --from=builder /usr/share /usr/share
+
+# Copy runtime SDK
+COPY --from=builder /usr/local/zed /usr/local/zed
+RUN echo "/usr/local/zed/lib" > /etc/ld.so.conf.d/zed.conf && ldconfig
+
+# Copy ROS install
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
+
+# Copy Python environment
+COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
+
+ENV VIRTUAL_ENV=/$WORKDIR/.venv
+ENV PATH="/$WORKDIR/.venv/bin:$PATH"
+ENV PYTHONPATH="/$WORKDIR/.venv/lib/python3.12/site-packages"
+
+RUN echo "source /$WORKDIR/external/install/setup.bash" >> /root/.bashrc && \
+    echo "source /$WORKDIR/ros/install/setup.bash" >> /root/.bashrc
 
 # Finalize
 WORKDIR /$WORKDIR
