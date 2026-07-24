@@ -4,6 +4,10 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE AS builder
 
+##############################
+# Build stage
+##############################
+
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
@@ -64,25 +68,23 @@ RUN uv sync \
 ##############################
 # Runtime
 ##############################
+
 FROM ${BASE_IMAGE}
 
 ENV ROS_DISTRO=jazzy
 
-# Install only runtime dependencies
-# RUN apt-get update && \
-#     apt-get install -y \
-#         ros-jazzy-ros-base \
-#         ros-jazzy-zed-description \
-#         ros-jazzy-zed-msgs \
-#         ros-jazzy-diagnostic-updater \
-#         ros-jazzy-robot-localization \
-#         ros-jazzy-image-transport-plugins \
-#         libusb-1.0-0 \
-#         libturbojpeg0-dev \
-#     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /opt/ros/jazzy /opt/ros/jazzy
-COPY --from=builder /usr/lib /usr/lib
-COPY --from=builder /usr/share /usr/share
+# Copy minimal dependencies
+RUN apt update && \
+    apt install -y \
+        libturbojpeg0-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
+WORKDIR /$WORKDIR/external
+RUN apt update \
+  && rosdep update --rosdistro $ROS_DISTRO \
+  && rosdep install --from-paths src -y -i \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy runtime SDK
 COPY --from=builder /usr/local/zed /usr/local/zed
@@ -94,7 +96,6 @@ COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
 # Copy Python environment
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
-
 ENV VIRTUAL_ENV=/$WORKDIR/.venv
 ENV PATH="/$WORKDIR/.venv/bin:$PATH"
 ENV PYTHONPATH="/$WORKDIR/.venv/lib/python3.12/site-packages"
