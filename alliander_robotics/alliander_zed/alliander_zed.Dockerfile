@@ -73,7 +73,7 @@ FROM ${BASE_IMAGE}
 
 ENV ROS_DISTRO=jazzy
 
-# Copy minimal dependencies
+# Install minimal dependencies
 RUN apt update && \
     apt install -y \
         libturbojpeg0-dev \

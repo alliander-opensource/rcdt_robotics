@@ -14,7 +14,7 @@ ARG RUN_FILE="$TEMP_DIR/l3cam_sdk.run"
 RUN mkdir -p "$TEMP_DIR"
 RUN if [ $(dpkg --print-architecture) = "amd64" ]; \
   then wget -O "$RUN_FILE" "https://github.com/beamaginelidar/libl3cam/releases/download/0.2.1R/libl3cam_0.2.1-1_amd64.deb"; \
-  elif [ $(dpkg --print-architecture) = "arm64" ]; \ 
+  elif [ $(dpkg --print-architecture) = "arm64" ]; \
   then wget -O "$RUN_FILE" "https://github.com/beamaginelidar/libl3cam/releases/download/0.2.1R/libl3cam_0.2.1-1_arm64.deb"; \
   else echo "Unsupported architecture: $(dpkg --print-architecture)"; exit 1; fi
 RUN dpkg -i "${RUN_FILE}"
