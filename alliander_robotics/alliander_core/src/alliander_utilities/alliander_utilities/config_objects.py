@@ -284,7 +284,7 @@ class Vehicle(Platform):
 
     @property
     def nav2(self) -> bool:
-        """Return whether any Nav2 features are enabled.
+        """Boolean that indicates whether any Nav2 features are enabled.
 
         Returns:
             bool: True if any Nav2 features are enabled, False otherwise.

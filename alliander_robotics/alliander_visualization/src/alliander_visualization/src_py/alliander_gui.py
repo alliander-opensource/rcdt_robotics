@@ -589,7 +589,7 @@ class UserInterface:
 
     @property
     def waypoints_ordered(self) -> list[Waypoint]:
-        """Get the waypoints ordered.
+        """The waypoints ordered.
 
         Returns:
             list[Waypoint]: The ordered list of waypoints.

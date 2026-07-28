@@ -28,6 +28,7 @@ SERVICE = typing.Literal[
     "pytest-no-nvidia",
     "linting",
     "documentation",
+    "documentation-build",
     "joystick",
     "meta",
     "diagnostics",
@@ -39,6 +40,7 @@ MODE = typing.Literal[
     "pytest-no-nvidia",
     "linting",
     "documentation",
+    "documentation-build",
 ]
 
 
@@ -196,6 +198,11 @@ class Compose:
             "documentation": (
                 "alliander_tests",
                 " && sphinx-autobuild --port 0 docs docs/build/html",
+                {},
+            ),
+            "documentation-build": (
+                "alliander_tests",
+                " && sphinx-build docs docs/build/html",
                 {},
             ),
             "pytest": (
@@ -378,17 +385,20 @@ class Compose:
         content = {"services": {}}
         services = content["services"]
 
-        # Remove NVIDIA runtime for linting or no-nvidia runs:
-        if self.mode in {"linting", "configuration-no-nvidia", "pytest-no-nvidia"}:
+        # Remove NVIDIA runtime for linting, documentation-build or no-nvidia runs:
+        if self.mode in {
+            "linting",
+            "documentation-build",
+            "configuration-no-nvidia",
+            "pytest-no-nvidia",
+        }:
             self.remove_nvidia = True
 
         match self.mode:
             case "pytest" | "pytest-no-nvidia":
                 self.add_service(content, self.mode, arguments=arguments)
-            case "linting":
-                self.add_service(content, "linting")
-            case "documentation":
-                self.add_service(content, "documentation")
+            case "linting" | "documentation" | "documentation-build":
+                self.add_service(content, self.mode)
             case "configuration" | "configuration-no-nvidia":
                 self.add_service(content, "diagnostics")
                 for platform in self.predefined_configuration.plat_conf.platforms:

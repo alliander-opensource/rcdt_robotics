@@ -32,6 +32,11 @@ RUN git clone --depth=1 --filter=blob:none -b v3.1.1 \
     https://github.com/frankarobotics/franka_ros2.git src/franka_ros2 \
     && cd src/franka_ros2 \
     && git sparse-checkout set franka_msgs
+# Install newer version of launch_testing from source, to solve conflict with pytest: https://github.com/ros2/launch/pull/972
+RUN git clone --depth=1 --filter=blob:none -b 3.10.0 \
+    https://github.com/ros2/launch.git src/launch \
+    && cd src/launch \
+    && git sparse-checkout set launch_testing 
 RUN /$WORKDIR/colcon_build.sh
 
 # Install repo packages:
