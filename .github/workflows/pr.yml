@@ -41,8 +41,8 @@ jobs:
     if: needs.select-components.outputs.REBUILD_CORE == 'true'
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -81,9 +81,9 @@ jobs:
     if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true' }}
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
         component: ${{ fromJSON(needs.select-components.outputs.UBUNTU_COMPONENTS) }}
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -124,8 +124,8 @@ jobs:
     if: needs.select-components.outputs.REBUILD_CORE == 'true'
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -164,9 +164,9 @@ jobs:
     if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true' }}
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
         component: ${{ fromJSON(needs.select-components.outputs.CUDA_COMPONENTS) }}
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -235,8 +235,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:

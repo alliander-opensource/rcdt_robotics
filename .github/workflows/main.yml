@@ -32,8 +32,8 @@ jobs:
   build-ubuntu:
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -69,9 +69,9 @@ jobs:
     needs: [select-components, build-ubuntu-manifest]
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
         component: ${{ fromJSON(needs.select-components.outputs.UBUNTU_COMPONENTS) }}
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -106,8 +106,8 @@ jobs:
   build-cuda:
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -143,9 +143,9 @@ jobs:
     needs: [select-components, build-cuda-manifest]
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
         component: ${{ fromJSON(needs.select-components.outputs.CUDA_COMPONENTS) }}
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -193,8 +193,8 @@ jobs:
   test:
     strategy:
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
+        runner: [mgd-ubuntu24-x64-4c16g, mgd-ubuntu24-arm64-4c16g]
+    runs-on: ${{ matrix.runner }}
     needs: [build-ubuntu-images, build-ubuntu-images-manifest, build-cuda-images, build-cuda-images-manifest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
