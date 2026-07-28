@@ -111,10 +111,15 @@ class ImageManager:
         if self.no_cache:
             cache_str = "--no-cache"
 
+        base_image_tag = (
+            "latest" if not utils.is_core_docker_changed() else utils.get_git_branch()
+        )
+        base_image_tag = "latest" if repository in {"base", "cuda"} else base_image_tag
+
         cmd = f"docker build \
             -f {self.components[repository]['dockerfile']} \
             --build-arg SRC_DIRECTORY={self.components[repository]['src_directory']} \
-            --build-arg BASE_IMAGE={self.components[repository]['base_image']} \
+            --build-arg BASE_IMAGE={self.components[repository]['base_image']}:{base_image_tag} \
             --platform linux/{self.arch} \
             -t {DOCKER_ORGANIZATION}/{repository}:{tag} {cache_str} \
             ."

@@ -5,6 +5,7 @@
 
 import re
 import subprocess
+from types import NotImplementedType
 from typing import TypeVar
 
 import numpy as np
@@ -43,6 +44,8 @@ class SpawnPlatform(Node):
         Args:
             platforms (list[T]): List of the platforms.
 
+        Raises:
+            ValueError: if the required transformation cannot be calculated.
         """
         for platform in platforms:
             position = np.array(platform.position)
@@ -65,8 +68,12 @@ class SpawnPlatform(Node):
 
                 # Finally, combine the transforms and apply the given position and orientation:
                 tf = model_tf * link_tf
+                if isinstance(tf, NotImplementedType):
+                    raise ValueError("Failed to define tf for platform to spawn.")
                 position = tf.apply(position)
                 rotation = tf.rotation * Rotation.from_euler("xyz", orientation)
+                if isinstance(rotation, NotImplementedType):
+                    raise ValueError("Failed to define rotation for platform to spawn.")
                 orientation = rotation.as_euler("xyz")
 
             self.spawn_platform(platform.namespace, position, orientation)

@@ -29,17 +29,22 @@ runs:
       with:
         username: ${{ inputs.DOCKER_USERNAME }}
         password: ${{ inputs.DOCKER_TOKEN }}
-    - name: Create manifest for ${{ inputs.component }}
+    - name: Create manifests
       shell: bash
       run: |
-        echo '${{ inputs.components }}' | yq -r '.[]' | while read -r component;
+        echo "Creating manifests for components: ${COMPONENTS}"
+
+        echo ${COMPONENTS} | yq -r '.[]' | while read -r component;
         do
           echo "Creating manifest for: $component"
           
           REPOSITORY=$(yq .$component.repository alliander_robotics/components.yml)
           
           docker buildx imagetools create -t \
-          $REPOSITORY:${{ inputs.tag }} \
-          $REPOSITORY:${{ inputs.tag }}-amd64 \
-          $REPOSITORY:${{ inputs.tag }}-arm64
+          $REPOSITORY:${TAG} \
+          $REPOSITORY:${TAG}-amd64 \
+          $REPOSITORY:${TAG}-arm64
         done
+      env:
+        COMPONENTS: ${{ inputs.components }}
+        TAG: ${{ inputs.tag }}

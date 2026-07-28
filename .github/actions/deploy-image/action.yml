@@ -12,6 +12,10 @@ inputs:
     description: "Tag to use for the image."
     required: false
     default: "latest"
+  base_image_tag:
+    description: "Tag to use for the base image."
+    required: false
+    default: "latest"
   runner:
     description: "Runner to use for deployment."
     required: true
@@ -21,33 +25,30 @@ inputs:
   DOCKER_TOKEN:
     description: "Docker Hub token."
     required: true
-  free-disk-space-before:
-    description: "Free disk space before deployment."
-    required: false
-    default: "false"
 
 runs:
   using: "composite"
   steps:
-    - name: Free disk space
-      if: ${{ inputs.free-disk-space-before == 'true' }}
-      uses: ./.github/actions/free-disk-space
     - name: Set architecture
       shell: bash
       id: arch
       run: |
-        if [[ "${{ inputs.runner }}" == *"-arm"* ]]; then
+        if [[ "${RUNNER}" == *"-arm"* ]]; then
           echo "arch=arm64" >> $GITHUB_OUTPUT
         else
           echo "arch=amd64" >> $GITHUB_OUTPUT
         fi
+      env:
+        RUNNER: ${{ inputs.runner }}
     - name: Get variables for ${{ inputs.component }}
       shell: bash
       id: variables
       run: |
-        echo "BASE_IMAGE=$(yq .${{ inputs.component }}.base_image alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
-        echo "REPOSITORY=$(yq .${{ inputs.component }}.repository alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
-        echo "DOCKERFILE=alliander_robotics/$(yq .${{ inputs.component }}.dockerfile alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
+        echo "BASE_IMAGE=$(yq .${COMPONENT}.base_image alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
+        echo "REPOSITORY=$(yq .${COMPONENT}.repository alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
+        echo "DOCKERFILE=alliander_robotics/$(yq .${COMPONENT}.dockerfile alliander_robotics/components.yml)" >> $GITHUB_OUTPUT
+      env:
+        COMPONENT: ${{ inputs.component }}
     - name: Setup Docker Buildx
       uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
     - name: Docker login
@@ -63,7 +64,7 @@ runs:
         file: ${{ steps.variables.outputs.DOCKERFILE }}
         tags: ${{ steps.variables.outputs.REPOSITORY }}:${{ inputs.tag }}-${{ steps.arch.outputs.arch }}
         build-args: |
-          BASE_IMAGE=${{ steps.variables.outputs.BASE_IMAGE }}
+          BASE_IMAGE=${{ steps.variables.outputs.BASE_IMAGE }}:${{ inputs.base_image_tag }}
           SRC_DIRECTORY=alliander_robotics
         cache-from: |
           type=registry,ref=${{ steps.variables.outputs.REPOSITORY }}:${{ inputs.tag }}-${{ steps.arch.outputs.arch }}-cache

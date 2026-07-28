@@ -34,8 +34,8 @@ repos:
   - repo: local
     hooks:
       - id: pydoclint
-        name: pydoclint 
-        entry: ./pydoclint.sh
+        name: pydoclint
+        entry: bash -c "pydoclint *.py alliander_robotics --exclude=".venv/" -q"
         language: system
         pass_filenames: false
   - repo: local
@@ -45,26 +45,45 @@ repos:
         entry: uv run ty check --error-on-warning
         language: system
         pass_filenames: false
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.2
+  - repo: local
     hooks:
       - id: clang-format
-        types_or: [c++, c, cuda]
+        name: clang-format
+        entry: bash -c "uv run clang-format -i -Werror --dry-run $(find . -name *.cpp -o -name *.hpp -o -name *.c -o -name *.h | grep -v '.venv\|.nvim\|clangd')"
+        language: system
+        pass_filenames: false
   - repo: local
     hooks:
       - id: cppcheck
         name: cppcheck
-        entry: ./run_cppcheck.sh 
+        entry: bash -c "cppcheck --suppressions-list=.cppcheck-suppressions --enable=warning,performance,portability,style --error-exitcode=1 $(find . -name *.cpp | grep -v '.venv\|.nvim\|clangd')"
         language: system
         pass_filenames: false
   - repo: local
     hooks:
       - id: doxygen
-        name: doxygen linting 
+        name: doxygen linting
         entry: ./doxygen-lint.sh
         language: system
         pass_filenames: false
-  - repo: https://github.com/fsfe/reuse-tool
-    rev: v5.0.2
+  - repo: local
     hooks:
       - id: reuse
+        name: reuse
+        entry: uv run reuse lint
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: actionlint
+        name: actionlint
+        entry: actionlint
+        language: system
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: zizmor
+        name: zizmor
+        entry: uv run zizmor . --min-severity low --fix=all
+        language: system
+        pass_filenames: false

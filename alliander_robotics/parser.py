@@ -52,6 +52,13 @@ class Parser(argparse.ArgumentParser):
             help="Add this flag to start a container serving the documentation with live reloading.",
         )
 
+        self.add_argument(
+            "--documentation_build",
+            required=False,
+            action="store_true",
+            help="Add this flag to start a container that builds the documentation and exits.",
+        )
+
         # FLAGS
         self.add_argument(
             "-w",
@@ -143,6 +150,8 @@ class Parser(argparse.ArgumentParser):
             compose.mode = "linting"
         elif args.documentation:
             compose.mode = "documentation"
+        elif args.documentation_build:
+            compose.mode = "documentation-build"
         else:
             print(
                 "Invalid configuration. Please check your arguments. Run with --help to see your options."
