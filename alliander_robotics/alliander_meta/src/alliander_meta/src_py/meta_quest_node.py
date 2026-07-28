@@ -5,6 +5,8 @@
 
 """Meta Quest Reader."""
 
+from types import NotImplementedType
+
 import numpy as np
 import rclpy
 from alliander_meta.meta_quest_reader import MetaQuestReader
@@ -42,7 +44,11 @@ class MetaQuestNode(Node):
         self.pub_joy.publish(joy)
 
     def publish_tf(self) -> None:
-        """Publish the tf data."""
+        """Publish the tf data.
+
+        Raises:
+            ValueError: if the rotation cannot be calculated.
+        """
         transform = self.reader.get_hand_controller_transform_ros("right")
         if not isinstance(transform, np.ndarray):
             return
@@ -57,6 +63,8 @@ class MetaQuestNode(Node):
 
         rotation = Rotation.from_matrix(transform[:3, :3])
         rotation *= Rotation.from_euler("xyz", [0, np.pi / 2, np.pi / 2])
+        if isinstance(rotation, NotImplementedType):
+            raise ValueError("Failed to calculate rotation.")
 
         quat = rotation.as_quat()
         transform_stamped.transform.rotation.x = quat[0]

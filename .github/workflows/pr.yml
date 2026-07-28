@@ -4,6 +4,11 @@
 
 name: pr
 
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
 on:
   pull_request:
     branches: [main]
@@ -26,13 +31,10 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-        with:
-          python-version: "3.12"
-          cache: "pip"
-      - run: pip install pyyaml requests
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       - id: variables
-        run: python3 github.py --select-components changed
+        run: uv run github.py --select-components changed
 
   build-ubuntu:
     needs: select-components
@@ -40,10 +42,15 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on:
-      group: managed
+    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check architecture
+        uses: ./.github/actions/check-architecture
+        with:
+          expected: ${{ matrix.runner }}
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -59,6 +66,8 @@ jobs:
       group: managed
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -68,33 +77,40 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-ubuntu-images:
-    needs: [select-components, build-ubuntu-manifest]
-    if: always() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true'
+    needs: [select-components, build-ubuntu, build-ubuntu-manifest]
+    if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true' }}
     strategy:
-      fail-fast: false
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
         component: ${{ fromJSON(needs.select-components.outputs.UBUNTU_COMPONENTS) }}
-    runs-on:
-      group: managed
+    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check architecture
+        uses: ./.github/actions/check-architecture
+        with:
+          expected: ${{ matrix.runner }}
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           tag: ${{ env.BRANCH_NAME }}
+          base_image_tag: ${{ needs.select-components.outputs.REBUILD_CORE == 'true' && env.BRANCH_NAME || 'latest' }}
           runner: ${{ matrix.runner }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-ubuntu-images-manifest:
     needs: [select-components, build-ubuntu-images]
-    if: always() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true'
+    if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true' }}
     runs-on:
       group: managed
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -109,10 +125,15 @@ jobs:
     strategy:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on:
-      group: managed
+    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check architecture
+        uses: ./.github/actions/check-architecture
+        with:
+          expected: ${{ matrix.runner }}
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
@@ -128,6 +149,8 @@ jobs:
       group: managed
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -137,33 +160,40 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-cuda-images:
-    needs: [select-components, build-cuda-manifest]
-    if: always() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true'
+    needs: [select-components, build-cuda, build-cuda-manifest]
+    if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true' }}
     strategy:
-      fail-fast: false
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
         component: ${{ fromJSON(needs.select-components.outputs.CUDA_COMPONENTS) }}
-    runs-on:
-      group: managed
+    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check architecture
+        uses: ./.github/actions/check-architecture
+        with:
+          expected: ${{ matrix.runner }}
       - name: Deploy image
         uses: ./.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           tag: ${{ env.BRANCH_NAME }}
+          base_image_tag: ${{ needs.select-components.outputs.REBUILD_CORE == 'true' && env.BRANCH_NAME || 'latest' }}
           runner: ${{ matrix.runner }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   build-cuda-images-manifest:
     needs: [select-components, build-cuda-images]
-    if: always() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true'
-    runs-on: 
+    if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true' }}
+    runs-on:
       group: managed
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Create manifest
         uses: ./.github/actions/create-manifest
         with:
@@ -173,8 +203,14 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   linting:
-    needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
-    if: always()
+    needs:
+      [
+        build-ubuntu-images,
+        build-ubuntu-images-manifest,
+        build-cuda-images,
+        build-cuda-images-manifest,
+      ]
+    if: ${{ !failure() && !cancelled() }}
     runs-on:
       group: managed
     steps:
@@ -182,41 +218,43 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ env.BRANCH_NAME }}
-      - name: Set up python3
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-        with:
-          python-version: "3.12"
-          cache: "pip"
-      - name: Install dependencies
-        run: pip install pyyaml mashumaro
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       - name: Run linting in alliander_tests container
-        run: python3 start.py --linting
+        run: uv run start.py --linting
 
   test:
-    needs: [build-ubuntu-images-manifest, build-cuda-images-manifest]
-    if: always()
+    needs:
+      [
+        build-ubuntu-images,
+        build-ubuntu-images-manifest,
+        build-cuda-images,
+        build-cuda-images-manifest,
+      ]
+    if: ${{ !failure() && !cancelled() }}
     strategy:
       fail-fast: false
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
-    runs-on:
-      group: managed
+    runs-on: ${{ matrix.runner == 'ubuntu-24.04-arm' && 'mgd-ubuntu24-arm64-4c16g' || 'mgd-ubuntu24-x64-4c16g' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           ref: ${{ env.BRANCH_NAME }}
+          persist-credentials: false
+      - name: Check architecture
+        uses: ./.github/actions/check-architecture
+        with:
+          expected: ${{ matrix.runner }}
       - name: Docker login
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v.2.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Set up python3
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-        with:
-          python-version: "3.12"
-          cache: "pip"
-      - name: Install dependencies
-        run: pip install pyyaml mashumaro
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       - name: Run tests in alliander_tests container
-        run: python3 start.py --pytest-no-nvidia
+        run: uv run start.py --pytest-no-nvidia
+      - run: |
+          echo "Disk space after tests:"
+          df -h /

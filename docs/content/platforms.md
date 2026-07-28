@@ -237,7 +237,7 @@ When using the Velodyne lidar, make sure that the IP-address of the host device 
 
 ## Xsens IMU
 
-![Xsens](../img/xsens/imu.png)
+![Xsens](../img/xsens/xsens.png)
 
 ### Simulation Xsens
 

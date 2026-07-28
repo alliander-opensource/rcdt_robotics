@@ -4,6 +4,11 @@
 
 name: documentation
 
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
 on:
   push:
     branches: [main]
@@ -23,8 +28,9 @@ jobs:
         with:
           persist-credentials: false
           lfs: true
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       - name: Build HTML
-        uses: ammaraskar/sphinx-action@54e52bfb642e9b60ea5b6bcb05fe3f74b40d290a # v8.2.3
+        run: uv run start.py --documentation_build
       - name: Upload artifacts
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

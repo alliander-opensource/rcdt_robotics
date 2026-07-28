@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: check-architecture
+description: Check if the expected system architecture matches the actual architecture.
+inputs:
+  expected:
+    description: "The expected architecture."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check architecture
+      shell: bash
+      run: |
+        ARCHITECTURE="$(uname -m)"
+
+        EXPECT_ARM=0; [[ "${EXPECTED}" == *"arm"* ]] && EXPECT_ARM=1
+        IS_ARM=0; [[ "$ARCHITECTURE" == *"arm"* || "$ARCHITECTURE" == *"aarch64"* ]] && IS_ARM=1
+
+        if [[ $EXPECT_ARM == $IS_ARM ]]; then
+            echo "The expected architecture (${EXPECTED}) matches the actual architecture ($ARCHITECTURE)."
+        else
+            echo "Architecture mismatch: expected ${EXPECTED}, while actual architecture is $ARCHITECTURE."
+            exit 1
+        fi
+      env:
+        EXPECTED: ${{ inputs.expected }}
