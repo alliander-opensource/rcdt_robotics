@@ -52,7 +52,6 @@ RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-control-msgs \
   ros-$ROS_DISTRO-cv-bridge \
   ros-$ROS_DISTRO-vision-msgs \
-  ros-$ROS_DISTRO-vision-msgs \
   ros-$ROS_DISTRO-geographic-msgs \
   ros-$ROS_DISTRO-topic-tools \
   && rm -rf /var/lib/apt/lists/* \
