@@ -19,6 +19,7 @@ RUN apt update && apt install -y --no-install-recommends \
 
 # Install MoveIt: 
 RUN apt update && apt install -y --no-install-recommends \
+    ros-$ROS_DISTRO-behaviortree-cpp \
     ros-$ROS_DISTRO-imu-filter-madgwick \
     ros-$ROS_DISTRO-moveit \
     ros-$ROS_DISTRO-moveit-servo \
@@ -38,16 +39,28 @@ RUN apt update && apt install -y --no-install-recommends \
     && apt autoremove -y \
     && apt clean
 
+# Install external packages 
+RUN mkdir -p /alliander/external
+WORKDIR /alliander/external
+RUN apt update \
+  && apt install -y ros-$ROS_DISTRO-behaviortree-cpp \
+  && git clone https://github.com/BehaviorTree/BehaviorTree.ROS2.git src/behaviortree_ros2 \
+  && git clone --depth=1 --filter=blob:none -b v3.1.1 \
+  https://github.com/frankarobotics/franka_ros2.git src/franka_ros2 \
+  && cd src/franka_ros2 \
+  && git sparse-checkout set franka_msgs \
+  && cd /alliander/external \
+  && rosdep update --rosdistro $ROS_DISTRO \
+  && rosdep install --from-paths src -y -i
+RUN /alliander/colcon_build.sh
+
 # Install custom msgs:
 RUN apt update && apt install -y --no-install-recommends \
     ros-$ROS_DISTRO-ewellix-interfaces \
     && rm -rf /var/lib/apt/lists/* \
     && apt autoremove -y \
     && apt clean
-RUN git clone --depth=1 --filter=blob:none -b v3.1.1 \
-    https://github.com/frankarobotics/franka_ros2.git src/franka_ros2 \
-    && cd src/franka_ros2 \
-    && git sparse-checkout set franka_msgs
+WORKDIR /alliander/external
 
 # Install debug tools:
 RUN apt update && apt install -y --no-install-recommends \
@@ -60,7 +73,8 @@ RUN echo "source /.dev_bashrc" >> /home/$REMOTE_USER/.bashrc
 
 # Copy repo packages:
 COPY $SRC_DIRECTORY/alliander_core/src/ /alliander/ros/src
-COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_behaviortree/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_diagnostics/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_franka/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_joystick/src/ /alliander/ros/src
@@ -71,6 +85,7 @@ COPY $SRC_DIRECTORY/alliander_seekthermal/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
 
 # Build repo packages:
+WORKDIR /alliander/ros
 RUN /alliander/colcon_build.sh
 
 # Install python dependencies:

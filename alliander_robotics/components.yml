@@ -18,6 +18,10 @@ beamagine:
   base_image: allianderrobotics/base
   repository: allianderrobotics/beamagine
   dockerfile: alliander_beamagine/alliander_beamagine.Dockerfile
+behaviortree:
+  base_image: allianderrobotics/base
+  repository: allianderrobotics/behaviortree
+  dockerfile: alliander_behaviortree/alliander_behaviortree.Dockerfile
 diagnostics:
   base_image: allianderrobotics/base
   repository: allianderrobotics/diagnostics
