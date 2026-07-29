@@ -59,7 +59,7 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(state_publisher, context),
         Register.on_start(static_tf, context),
         Register.on_start(hardware, context) if not robotiq_config.simulation else SKIP,
-        # Register.group(controllers, context),
+        Register.group(controllers, context) if robotiq_config.simulation else SKIP,
     ]
 
 
