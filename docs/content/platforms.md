@@ -285,3 +285,15 @@ sudo sh -c "echo 'net.core.rmem_max=268435456' >> /etc/sysctl.conf"
 sudo sh -c "echo 'net.core.netdev_max_backlog=5000' >> /etc/sysctl.conf"
 sudo sysctl -p
 ```
+
+## RobotIQ 3-finger gripper
+
+![RobotIQ](../img/robotiq/robotiq.png)
+
+### Simulation RobotIQ
+
+A RobotIQ gripper can be launched in simulation by creating a configuration with a Gripper of type *Robotiq*. After launching the RobotIQ configuration, one can control the gripper by sending one of the supported commands (activate, reset, open, close, wide-open, wide-close, pinch-open, pinch-close) to the `/robotiq/gripper_controller/action` action server as a string.
+
+### Hardware RobotIQ
+
+When using the RobotIQ gripper, connect the power cable to a 24V, 1.5A power source and connect the communication cable to the ethernet port of the host device. One the host device, configure the wired connection to manually use an ip-address in the `192.168.1` range, for example `192.168.1.2`. The gripper uses the `192.168.1.11` address by default. After launching the RobotIQ configuration, one can control the gripper by sending one of the supported commands (activate, reset, open, close, wide-open, wide-close, pinch-open, pinch-close) to the `/robotiq/gripper_controller/action` action server as a string. The status of the gripper is published on the `/robotiq/status` topic as a JSON string and can be continuously visualized in the terminal using our `print_json` utility node: `ros2 run alliander_utilities print_json.py --ros-args -p topic:=/robotiq/status`.
