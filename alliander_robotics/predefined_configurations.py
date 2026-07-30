@@ -202,7 +202,7 @@ class PredefinedConfigurations:
     @register_configuration("ur_robotiq")
     def config_ur_robotiq(self) -> None:  # noqa: D102
         arm = Arm("ur", moveit=True)
-        gripper = Camera("robotiq", (0, 0, 0.05), (0, 180, 0))
+        gripper = Gripper("robotiq", (0, 0, 0.05), (0, 180, 0))
 
         link(arm, gripper)
         self.plat_conf.platforms = [arm, gripper]
