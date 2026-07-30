@@ -4,6 +4,7 @@
 
 from alliander_utilities.config_objects import Gripper
 from alliander_utilities.launch_argument import LaunchArgument
+from alliander_utilities.launch_utils import SKIP
 from alliander_utilities.register import Register
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
@@ -24,6 +25,7 @@ def launch_setup(context: LaunchContext) -> list:
         list: A list of actions to be executed in the launch description.
     """
     gripper_config = Gripper.from_str(platform_arg.string_value(context))
+    sim = gripper_config.simulation
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
@@ -47,9 +49,17 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=gripper_config.namespace,
     )
 
+    gripper_controller = Node(
+        package="alliander_robotiq",
+        executable="gripper_controller.py",
+        namespace=gripper_config.namespace,
+        parameters=[{"simulation": gripper_config.simulation}],
+    )
+
     return [
-        Register.on_exit(joint_state_broadcaster_spawner, context),
-        Register.on_exit(position_controller, context),
+        Register.on_exit(joint_state_broadcaster_spawner, context) if sim else SKIP,
+        Register.on_exit(position_controller, context) if sim else SKIP,
+        Register.on_log(gripper_controller, "RobotIQ controller initialized.", context),
     ]
 
 

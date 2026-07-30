@@ -18,8 +18,9 @@ from pyModbusTCP.client import ModbusClient
 from rclpy.action.server import ActionServer, ServerGoalHandle
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+from rclpy.publisher import Publisher
 from sensor_msgs.msg import JointState
-from std_msgs.msg import String
+from std_msgs.msg import Float64MultiArray, String
 
 IP = "192.168.1.11"
 PORT = 502
@@ -74,26 +75,38 @@ class RobotiqController(Node):
     def __init__(self) -> None:
         """Initialize node."""
         super().__init__("gripper_controller")
-        self.modbus_controller = ModbusController(IP, PORT)
-
-        self.get_logger().info("Connecting with gripper...")
-        connected = self.modbus_controller.open()
-        if connected:
-            self.get_logger().info("Connection successful.")
-        else:
-            self.get_logger().error("Connection failed.")
+        self.declare_parameter("simulation", False)
+        simulation = self.get_parameter("simulation").get_parameter_value().bool_value
 
         self.status_publisher = self.create_publisher(String, "status", 10)
         self.joint_state_publisher = self.create_publisher(
             JointState, "joint_states", 10
         )
-        self.timer = self.create_timer(RATE, self.update_callback)
+        simulation_controller_publisher = self.create_publisher(
+            Float64MultiArray, "position_controller/commands", 10
+        )
+
+        if simulation:
+            self.modbus_controller = ModbusControllerSimulation(
+                simulation_controller_publisher
+            )
+        else:
+            self.modbus_controller = ModbusController(IP, PORT)
+
+            self.get_logger().info("Connecting with gripper...")
+            connected = self.modbus_controller.open()
+            if connected:
+                self.get_logger().info("Connection successful.")
+            else:
+                self.get_logger().error("Connection failed.")
+
+            self.timer = self.create_timer(RATE, self.update_callback)
 
         self.modbus_controller.send_command()
-
         self.action_server = ActionServer(
             self, StringAction, "~/action", self.action_callback
         )
+        self.get_logger().info("RobotIQ controller initialized.")
 
     def update_callback(self) -> None:
         """Update the status of the gripper."""
@@ -120,19 +133,16 @@ class RobotiqController(Node):
             "palm_finger_1_joint",
             "palm_finger_2_joint",
         ]
-        msg.position = [
-            self.modbus_controller.status.finger_a.joint1,
-            self.modbus_controller.status.finger_a.joint2,
-            self.modbus_controller.status.finger_a.joint3,
-            self.modbus_controller.status.finger_b.joint1,
-            self.modbus_controller.status.finger_b.joint2,
-            self.modbus_controller.status.finger_b.joint3,
-            self.modbus_controller.status.finger_c.joint1,
-            self.modbus_controller.status.finger_c.joint2,
-            self.modbus_controller.status.finger_c.joint3,
-            self.modbus_controller.status.finger_s.joint1,
-            self.modbus_controller.status.finger_s.joint2,
-        ]
+
+        joint_positions_request = []
+        for finger in self.modbus_controller.status.fingers:
+            for joint in range(finger.number_of_joints + 1):
+                position = finger.position if finger.position else 0
+                joint_positions_request.append(
+                    finger_joint_position_from_bit(position, joint, finger.scissor)
+                )
+
+        msg.position = joint_positions_request
         self.joint_state_publisher.publish(msg)
 
     def action_callback(self, goal_handle: ServerGoalHandle) -> StringAction.Result:  # ruff: ignore[too-many-branches]
@@ -191,6 +201,61 @@ class RobotiqController(Node):
             goal_handle.abort()
 
         return result
+
+
+class ModbusControllerSimulation:
+    """Class that simulates the modbus controller."""
+
+    def __init__(self, publisher: Publisher) -> None:
+        """Initialize the Modbus simulation.
+
+        Args:
+            publisher (Publisher): The publisher to publish the joint positions to the ROS controller.
+        """
+        self.publisher = publisher
+        self.status = GripperStatus()
+        self.status.motion_status = "reached_target_position"  # Set target position reached always in simulation.
+
+    def send_command(
+        self, activate: bool = True, mode: MODES = "basic", position: int = 0
+    ) -> None:
+        """A simplified version of the send_command method that talks with the ROS controller instead of TCP server on the gripper.
+
+        Args:
+            activate (bool): Activate the gripper.
+            mode (MODES): The mode of the gripper.
+            position (int): The target position of the gripper (0 = Open, 255 = Closed).u
+        """
+        if not activate:
+            return
+        joint_positions_request = []
+
+        # Define finger joints:
+        for _ in range(3):
+            for joint in range(3):
+                joint_positions_request.append(
+                    finger_joint_position_from_bit(position, joint + 1)
+                )
+
+        # Define scissor joints:
+        match mode:
+            case "basic":
+                scissor_position = 135
+            case "pinch":
+                scissor_position = 255
+            case "wide":
+                scissor_position = 0
+        for joint in range(2):
+            joint_positions_request.append(
+                finger_joint_position_from_bit(scissor_position, joint + 1, True)
+            )
+
+        command = Float64MultiArray(data=joint_positions_request)
+        self.publisher.publish(command)
+
+    def read_status(self) -> None:
+        """Not implemented in simulation. The motion status is always set to "reached_target_position"."""
+        pass
 
 
 class ModbusController(ModbusClient):
@@ -394,6 +459,46 @@ class ModbusController(ModbusClient):
         return format(force, "08b")
 
 
+def finger_joint_position_from_bit(
+    position: int, joint: int, scissor: bool = False
+) -> float:
+    """Convert a finger position (0-255) to joint angles (rad).
+
+    Args:
+        position (int): The position of the finger (0 = Open, 255 = Closed).
+        joint (int): The joint number (1, 2, or 3).
+        scissor (bool): Whether the finger is a scissor or not.
+
+    Returns:
+        float: The joint angle (rad) of the finger.
+
+    Raises:
+        ValueError: If scissor is True and joint is 3, as the scissor does not have a third joint.
+    """
+    match joint:
+        case 1:
+            lower_limit = -0.1784 if scissor else 0.0
+            upper_limit = 0.192 if scissor else 1.2218
+        case 2:
+            lower_limit = -0.192 if scissor else 0.0
+            upper_limit = 0.1784 if scissor else 1.5708
+        case 3:
+            if scissor:
+                raise ValueError("Scissor does not have a third joint.")
+            lower_limit = 0.0523
+            upper_limit = 1.2217
+
+    reach = upper_limit - lower_limit
+
+    # Only the first joint of the scissor is inverted:
+    if scissor and joint == 1:
+        angle = upper_limit - (position / 255) * reach
+    else:
+        angle = lower_limit + (position / 255) * reach
+
+    return angle
+
+
 @dataclass
 class FingerStatus(DataClassJSONMixin):
     """Dataclass to hold the status of a specific finger.
@@ -421,46 +526,13 @@ class FingerStatus(DataClassJSONMixin):
         self.status = typing.get_args(STATUS_FINGER)[status]
 
     @property
-    def joint1(self) -> float:
-        """The angle (rad) of the first joint of the finger."""
-        lower_limit = -0.1784 if self.scissor else 0.0
-        upper_limit = 0.192 if self.scissor else 1.2218
-        reach = upper_limit - lower_limit
+    def number_of_joints(self) -> int:
+        """The number of joints for the finger.
 
-        # The joint1 of the scissor is inverted, so we need to invert the position as well.
-        if self.scissor:
-            return (
-                0.0
-                if not self.position
-                else upper_limit - (self.position / 255) * reach
-            )
-
-        return 0.0 if not self.position else lower_limit + (self.position / 255) * reach
-
-    @property
-    def joint2(self) -> float:
-        """The angle (rad) of the second joint of the finger."""
-        lower_limit = -0.192 if self.scissor else 0.0
-        upper_limit = 0.1784 if self.scissor else 1.5708
-        reach = upper_limit - lower_limit
-
-        return 0.0 if not self.position else lower_limit + (self.position / 255) * reach
-
-    @property
-    def joint3(self) -> float:
-        """The angle (rad) of the third joint of the finger.
-
-        Raises:
-            ValueError: If the finger is a scissor, as it does not have a third joint.
+        Returns:
+            int: The number of joints (2 for scissor, 3 for regular fingers).
         """
-        if self.scissor:
-            raise ValueError("Scissor does not have a third joint.")
-
-        lower_limit = 0.0523
-        upper_limit = 1.2217
-        reach = upper_limit - lower_limit
-
-        return 0.0 if not self.position else lower_limit + (self.position / 255) * reach
+        return 2 if self.scissor else 3
 
 
 @dataclass
@@ -478,6 +550,7 @@ class GripperStatus(DataClassJSONMixin):
         finger_b (FingerStatus): The status of finger B.
         finger_c (FingerStatus): The status of finger C.
         finger_s (FingerStatus): The status of the scissor.
+        fingers (list[FingerStatus]): A list of all fingers.
     """
 
     # Gripper status:
@@ -495,10 +568,12 @@ class GripperStatus(DataClassJSONMixin):
     finger_b: FingerStatus = field(default_factory=FingerStatus)
     finger_c: FingerStatus = field(default_factory=FingerStatus)
     finger_s: FingerStatus = field(default_factory=FingerStatus)
+    fingers: list[FingerStatus] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Initialize the platform configuration."""
         self.finger_s.scissor = True
+        self.fingers = [self.finger_a, self.finger_b, self.finger_c, self.finger_s]
 
     def update_gripper_status(self, gripper_status: str) -> None:
         """Update the general status of the gripper.

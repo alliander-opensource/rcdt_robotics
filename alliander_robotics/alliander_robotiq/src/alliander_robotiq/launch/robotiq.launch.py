@@ -4,12 +4,11 @@
 
 from alliander_utilities.config_objects import Gripper
 from alliander_utilities.launch_argument import LaunchArgument
-from alliander_utilities.launch_utils import SKIP, state_publisher_node, static_tf_node
+from alliander_utilities.launch_utils import state_publisher_node, static_tf_node
 from alliander_utilities.register import Register, RegisteredLaunchDescription
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
-from launch_ros.actions import Node
 
 platform_arg = LaunchArgument("platform_config", "")
 
@@ -44,12 +43,6 @@ def launch_setup(context: LaunchContext) -> list:
         orientation=robotiq_config.orientation,
     )
 
-    hardware = Node(
-        package="alliander_robotiq",
-        executable="gripper_controller.py",
-        namespace=robotiq_config.namespace,
-    )
-
     controllers = RegisteredLaunchDescription(
         get_file_path("alliander_robotiq", ["launch"], "controllers.launch.py"),
         launch_arguments={"platform_config": robotiq_config.to_str()},
@@ -58,8 +51,7 @@ def launch_setup(context: LaunchContext) -> list:
     return [
         Register.on_start(state_publisher, context),
         Register.on_start(static_tf, context),
-        Register.on_start(hardware, context) if not robotiq_config.simulation else SKIP,
-        Register.group(controllers, context) if robotiq_config.simulation else SKIP,
+        Register.group(controllers, context),
     ]
 
 
