@@ -6,6 +6,7 @@
 # Based on: https://github.com/baha2r/robotiq3f_py/blob/main/robotiqcontrol/GripperController.py
 
 
+import time
 import typing
 from dataclasses import dataclass, field
 from typing import Literal, Optional
@@ -15,6 +16,7 @@ from alliander_interfaces.action import StringAction
 from mashumaro.mixins.json import DataClassJSONMixin
 from pyModbusTCP.client import ModbusClient
 from rclpy.action.server import ActionServer, ServerGoalHandle
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
@@ -22,6 +24,7 @@ from std_msgs.msg import String
 IP = "192.168.1.11"
 PORT = 502
 RATE = 0.1
+TIMEOUT = 15
 
 MODES = Literal[
     "basic",
@@ -132,7 +135,7 @@ class RobotiqController(Node):
         ]
         self.joint_state_publisher.publish(msg)
 
-    def action_callback(self, goal_handle: ServerGoalHandle) -> StringAction.Result:
+    def action_callback(self, goal_handle: ServerGoalHandle) -> StringAction.Result:  # ruff: ignore[too-many-branches]
         """Execute the action server callback.
 
         Args:
@@ -168,8 +171,25 @@ class RobotiqController(Node):
                 goal_handle.abort()
                 return result
 
-        result.success = True
-        goal_handle.succeed()
+        time.sleep(1)
+        start_time = time.time()
+        while self.modbus_controller.status.motion_status == "in_motion":
+            time.sleep(0.1)
+            if time.time() - start_time > TIMEOUT:
+                result.success = False
+                result.message = "Timeout reached while waiting for action to complete."
+                self.get_logger().error(result.message)
+                goal_handle.abort()
+                return result
+
+        if self.modbus_controller.status.motion_status == "reached_target_position":
+            result.success = True
+            goal_handle.succeed()
+        else:
+            result.success = False
+            result.message = "Failed to reach target position."
+            goal_handle.abort()
+
         return result
 
 
@@ -558,9 +578,14 @@ def main(args: list | None = None) -> None:
     """
     rclpy.init(args=args)
     griper_controller = RobotiqController()
-    rclpy.spin(griper_controller)
-    griper_controller.destroy_node()
-    rclpy.shutdown()
+    executor = MultiThreadedExecutor()
+    executor.add_node(griper_controller)
+    try:
+        executor.spin()
+    finally:
+        executor.shutdown()
+        griper_controller.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":
