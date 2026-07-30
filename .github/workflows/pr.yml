@@ -20,7 +20,7 @@ env:
 jobs:
   select-components:
     runs-on:
-      group: managed
+      group: managed-linux
     outputs:
       REBUILD_CORE: ${{ steps.variables.outputs.REBUILD_CORE }}
       UBUNTU_COMPONENTS: ${{ steps.variables.outputs.UBUNTU_COMPONENTS }}
@@ -63,7 +63,7 @@ jobs:
   build-ubuntu-manifest:
     needs: build-ubuntu
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -106,7 +106,7 @@ jobs:
     needs: [select-components, build-ubuntu-images]
     if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_UBUNTU_IMAGES == 'true' }}
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -146,7 +146,7 @@ jobs:
   build-cuda-manifest:
     needs: build-cuda
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -189,7 +189,7 @@ jobs:
     needs: [select-components, build-cuda-images]
     if: ${{ !failure() && !cancelled() && needs.select-components.outputs.REBUILD_CUDA_IMAGES == 'true' }}
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -212,7 +212,7 @@ jobs:
       ]
     if: ${{ !failure() && !cancelled() }}
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
