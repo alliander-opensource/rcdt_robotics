@@ -20,7 +20,7 @@ jobs:
   # Based on: https://www.sphinx-doc.org/en/master/tutorial/deploying.html#
   build:
     runs-on:
-      group: managed
+      group: managed-linux
     permissions:
       contents: write
     steps:
@@ -40,7 +40,7 @@ jobs:
   deploy:
     needs: build
     runs-on:
-      group: managed
+      group: managed-linux
     permissions:
       pages: write
       id-token: write
