@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARG BASE_IMAGE=ubuntu:latest
-FROM $BASE_IMAGE 
+FROM $BASE_IMAGE AS builder
 
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
@@ -32,6 +32,32 @@ COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
 RUN uv sync --group alliander-ur  \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
+
+##############################
+# Runtime
+##############################
+
+FROM ${BASE_IMAGE}
+
+ENV ROS_DISTRO=jazzy
+
+# Install minimal dependencies
+RUN apt update && apt install -y --no-install-recommends \
+  ros-$ROS_DISTRO-ur \
+  ros-$ROS_DISTRO-ur-simulation-gz \
+  ros-$ROS_DISTRO-ur-description \
+  ros-$ROS_DISTRO-ur-moveit-config \
+  ros-$ROS_DISTRO-ur-robot-driver \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
+# Copy ROS install
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+
+# Copy environments
+COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
+COPY --from=builder /root/.bashrc /root/.bashrc
 
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]

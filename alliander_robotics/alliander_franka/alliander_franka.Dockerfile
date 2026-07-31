@@ -2,7 +2,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARG BASE_IMAGE=ubuntu:latest
-FROM $BASE_IMAGE AS builder 
+FROM $BASE_IMAGE AS builder
+
+##############################
+# Build stage
+##############################
 
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
@@ -52,14 +56,10 @@ RUN apt update \
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
-# Copy Python environment
+# Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
-ENV VIRTUAL_ENV=/$WORKDIR/.venv
-ENV PATH="/$WORKDIR/.venv/bin:$PATH"
-ENV PYTHONPATH="/$WORKDIR/.venv/lib/python3.12/site-packages"
 
-RUN echo "source /$WORKDIR/external/install/setup.bash" >> /root/.bashrc && \
-    echo "source /$WORKDIR/ros/install/setup.bash" >> /root/.bashrc
+COPY --from=builder /root/.bashrc /root/.bashrc
 
 # Finalize
 WORKDIR /$WORKDIR

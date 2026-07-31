@@ -2,7 +2,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARG BASE_IMAGE=ubuntu:latest
-FROM $BASE_IMAGE 
+FROM $BASE_IMAGE AS builder
+
+##############################
+# Build stage
+##############################
 
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
@@ -43,6 +47,48 @@ COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
 RUN uv sync --group alliander-gazebo  \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
+
+##############################
+# Runtime
+##############################
+
+FROM ${BASE_IMAGE}
+
+ARG SRC_DIRECTORY
+ENV ROS_DISTRO=jazzy
+
+# Copy environments
+COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
+COPY --from=builder /root/.bashrc /root/.bashrc
+
+# Install minimal dependencies
+RUN apt update && apt install -y --no-install-recommends \
+  unzip \
+  ros-$ROS_DISTRO-ros-gz \
+  ros-$ROS_DISTRO-gz-ros2-control \
+  ros-$ROS_DISTRO-ros2-controllers \
+  openjdk-17-jre \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
+WORKDIR /$WORKDIR/external
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
+RUN /$WORKDIR/get_vendor_descriptions.sh --runtime-install && rm /$WORKDIR/get_vendor_descriptions.sh
+
+# Copy minimal dependencies
+COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
+WORKDIR /$WORKDIR/external
+RUN apt update \
+  && rosdep update --rosdistro $ROS_DISTRO \
+  && rosdep install --from-paths src -y -i \
+  && rm -rf src \
+  && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /$WORKDIR/osm2world /$WORKDIR/osm2world
+
+# Copy ROS install
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]

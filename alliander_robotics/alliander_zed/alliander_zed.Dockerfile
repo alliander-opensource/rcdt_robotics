@@ -95,14 +95,9 @@ RUN echo "/usr/local/zed/lib" > /etc/ld.so.conf.d/zed.conf && ldconfig
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
-# Copy Python environment
+# Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
-ENV VIRTUAL_ENV=/$WORKDIR/.venv
-ENV PATH="/$WORKDIR/.venv/bin:$PATH"
-ENV PYTHONPATH="/$WORKDIR/.venv/lib/python3.12/site-packages"
-
-RUN echo "source /$WORKDIR/external/install/setup.bash" >> /root/.bashrc && \
-    echo "source /$WORKDIR/ros/install/setup.bash" >> /root/.bashrc
+COPY --from=builder /root/.bashrc /root/.bashrc
 
 # Finalize
 WORKDIR /$WORKDIR
