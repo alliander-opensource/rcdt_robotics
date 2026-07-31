@@ -124,17 +124,17 @@ class Parser(argparse.ArgumentParser):
         config_setup = PredefinedConfigurations()
         config_setup.sim_conf.load_ui = args.ui
         compose.dev = args.dev
+        compose.simulator = not args.hardware
+        compose.visualization = args.visualization
+        compose.joystick = args.joystick
+        compose.gazebo_ui = args.ui
+        compose.meta = args.meta
         if args.configuration:
             config_setup.apply_configuration(args.configuration)
-            compose.simulator = not args.hardware
-            compose.visualization = args.visualization
-            compose.joystick = args.joystick
-            compose.meta = args.meta
             compose.rviz_yaml = args.rviz
             compose.mode = "configuration"
         elif isinstance(args.pytest, list):
             arguments = " " + " ".join(args.pytest)
-            compose.gazebo_ui = args.ui
             compose.mode = "pytest"
         elif isinstance(args.pytest_no_nvidia, list):
             arguments = " " + " ".join(args.pytest_no_nvidia)

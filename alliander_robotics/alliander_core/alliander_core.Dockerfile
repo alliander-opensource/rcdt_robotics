@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
+ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 ENV WORKDIR=alliander
@@ -70,10 +71,10 @@ RUN apt update \
 RUN pip install uv --break-system-packages
 
 # Prepare ROS workspace for child images
-COPY common/colcon_build.sh /$WORKDIR/colcon_build.sh
+COPY $SRC_DIRECTORY/common/colcon_build.sh /$WORKDIR/colcon_build.sh
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc
 
-COPY entrypoint.sh /entrypoint.sh
+COPY $SRC_DIRECTORY/common/entrypoint.sh /entrypoint.sh
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]

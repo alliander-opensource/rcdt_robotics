@@ -19,8 +19,8 @@ def select_components(components: str) -> None:
     if components not in {"all", "changed"}:
         sys.exit("Invalid argument to select_components, expected 'all' or 'changed'.")
 
-    ubuntu_components = set(utils.load_components("ubuntu_images").keys())
-    cuda_components = set(utils.load_components("cuda_images").keys())
+    ubuntu_components = set(utils.load_components(group="ubuntu_images").keys())
+    cuda_components = set(utils.load_components(group="cuda_images").keys())
 
     changed_packages = utils.get_changed_packages(verbose=True)
     changed_components = {p.removeprefix("alliander_") for p in changed_packages}

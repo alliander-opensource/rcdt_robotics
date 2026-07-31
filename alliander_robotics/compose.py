@@ -275,9 +275,8 @@ class Compose:
             platform (Platform | None): platform that depends_on waits for, or None if not applicable.
         """
         if config.get("needs_dependency") and platform:
-            service["depends_on"] = {
-                platform.package(): {"condition": "service_healthy"}
-            }
+            dependee = platform.namespace if platform.namespace else platform.package()
+            service["depends_on"] = {dependee: {"condition": "service_healthy"}}
 
     def apply_dev_settings(self, service: dict, package: str) -> None:
         """Adds dev mounts to a specific service, if applicable.
@@ -324,6 +323,8 @@ class Compose:
         env_vars = service.get("environment", [])
         if self.predefined_configuration.sim_conf.load_ui:
             env_vars.append("GAZEBO_UI=true")
+        if self.visualization:
+            env_vars.append("VISUALIZATION=true")
         if self.dev:
             env_vars.append("DEV_MOUNTS=true")
             env_vars.append(f"HOST_CWD={Compose.host_cwd}")
@@ -331,6 +332,27 @@ class Compose:
         if service_type == "pytest-no-nvidia":
             env_vars.append("NO_NVIDIA=true")
         service["environment"] = env_vars
+
+    @staticmethod
+    def update_content(
+        content: dict,
+        service: dict,
+        service_type: SERVICE,
+        namespace: str,
+    ) -> None:
+        """Updates the service name and its container name to the platform's namespace.
+
+        Args:
+            content (dict): Dictionary containing the docker compose content.
+            service (dict): Service to update in the compose.
+            service_type (SERVICE): Type of service to put in compose.
+            namespace (str): Namespace of the platform.
+        """
+        if service_type == "platform" and namespace:
+            service["container_name"] = namespace
+            content["services"][namespace] = service
+        else:
+            content["services"][service["container_name"]] = service
 
     def add_service(
         self,
@@ -357,7 +379,8 @@ class Compose:
         self.apply_runtime_settings(service)
         self.apply_env_settings(service, service_type)
 
-        content["services"][package] = service
+        namespace = platform.namespace if platform else ""
+        self.update_content(content, service, service_type, namespace)
 
     def create_compose(  # noqa: PLR0912
         self,

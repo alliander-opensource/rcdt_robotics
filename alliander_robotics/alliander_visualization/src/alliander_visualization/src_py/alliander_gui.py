@@ -372,6 +372,9 @@ class UserInterface:
                     with ui.row():
                         ui.button("Home", on_click=lambda: arm_control.move("home"))
                         ui.button("Drop", on_click=lambda: arm_control.move("drop"))
+                        ui.button(
+                            "Stretch", on_click=lambda: arm_control.move("stretch")
+                        )
                 with ui.card().classes("items-center w-full"):
                     ui.label("Octomap Scan").classes("text-lg")
                     with ui.row():
@@ -586,7 +589,7 @@ class UserInterface:
 
     @property
     def waypoints_ordered(self) -> list[Waypoint]:
-        """Get the waypoints ordered.
+        """List of waypoints, ordered.
 
         Returns:
             list[Waypoint]: The ordered list of waypoints.

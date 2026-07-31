@@ -66,11 +66,11 @@ def get_bridge_topics(platforms: list[T]) -> list[str]:
     """
     bridge_topics = ["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"]
     for platform in platforms:
-        if platform.platform_type == "Lidar":
+        if platform.platform_type in {"Lidar", "Beamagine"}:
             bridge_topics.append(
                 f"/{platform.namespace}/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked"
             )
-        if platform.platform_type == "Camera":
+        if platform.platform_type in {"Camera", "Beamagine"}:
             bridge_topics.extend(
                 [
                     f"/{platform.namespace}/color/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
@@ -83,7 +83,7 @@ def get_bridge_topics(platforms: list[T]) -> list[str]:
             bridge_topics.append(
                 f"/{platform.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
             )
-        if platform.platform_type == "ThermalCamera":
+        if platform.platform_type in {"ThermalCamera", "Beamagine"}:
             bridge_topics.append(
                 f"/{platform.namespace}/thermal/image@sensor_msgs/msg/Image@gz.msgs.Image"
             )

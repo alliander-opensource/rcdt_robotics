@@ -182,7 +182,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ["config", "nav2", "controllers"],
             f"{nav2.controller}.yaml",
         ),
-        {},
+        {
+            "FollowPath": {
+                "visualize": vehicle_config.simulation,
+            }
+        },
         root_key=namespace_vehicle,
     )
 

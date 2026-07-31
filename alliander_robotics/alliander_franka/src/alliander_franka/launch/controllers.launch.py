@@ -38,13 +38,48 @@ def launch_setup(context: LaunchContext) -> list:
         namespace=arm_config.namespace,
     )
 
-    fr3_arm_controller_spawner = Node(
+    joint_trajectory_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "fr3_arm_controller",
+            "joint_trajectory_controller",
             "--switch-timeout",
             str(TIMEOUT),
+        ],
+        namespace=arm_config.namespace,
+    )
+
+    wave_node = Node(
+        package="alliander_arm_controllers",
+        executable="arm_wave_node",
+        parameters=[
+            {
+                "joints": [
+                    "fr3_joint1",
+                    "fr3_joint2",
+                    "fr3_joint3",
+                    "fr3_joint4",
+                    "fr3_joint5",
+                    "fr3_joint6",
+                    "fr3_joint7",
+                ]
+            },
+            # based on initial Franka joint positions
+            {
+                "initial_joint_positions": [
+                    0.0,
+                    -0.785398,
+                    0.0,
+                    -2.356194,
+                    0.0,
+                    3.0,
+                    0.785398,
+                ]
+            },
+            # bottom joint (yaw) and middle joint (up and down)
+            {"wave_joint_indices": [0, 3]},
+            {"wave_amplitudes": [0.4, 0.5]},
+            {"wave_period_sec": 8.0},
         ],
         namespace=arm_config.namespace,
     )
@@ -80,13 +115,14 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         Register.on_exit(joint_state_broadcaster_spawner, context),
-        Register.on_exit(fr3_arm_controller_spawner, context),
+        Register.on_exit(joint_trajectory_controller_spawner, context),
+        Register.on_start(wave_node, context)
+        if arm_config.movement == "wave"
+        else SKIP,
         Register.on_start(fr3_gripper, context),
-        (
-            Register.on_exit(gripper_action_controller_spawner, context)
-            if arm_config.simulation
-            else SKIP
-        ),
+        Register.on_exit(gripper_action_controller_spawner, context)
+        if arm_config.simulation
+        else SKIP,
     ]
 
 

@@ -195,6 +195,8 @@ class Platform(Config):
                 return "base_link"
             case "franka":
                 return "fr3_hand"
+            case "ur":
+                return "wrist_3_link"
             case "ewellix":
                 return "lift_mount"
             case _:
@@ -245,6 +247,27 @@ class MoveitConfig(Config):
     load_rviz_motion_planning_plugin: bool = False
 
 
+@dataclass
+class NtripConfig(Config):
+    """Configuration for NTRIP client.
+
+    Attributes:
+        use_https (bool): Whether to use HTTPS.
+        host (str): URL of the NTRIP client.
+        port (int): Port of the NTRIP client.
+        mountpoint (str): Mountpoint for the NTRIP client.
+        username (str): Username for the NTRIP client.
+        password (str): Password for the NTRIP client.
+    """
+
+    use_https: bool = True
+    host: str = ""
+    port: int = 2101
+    mountpoint: str = ""
+    username: str = ""
+    password: str = ""
+
+
 # Platforms:
 @dataclass
 class Arm(Platform):
@@ -254,6 +277,7 @@ class Arm(Platform):
         platform_type (str): Type identifier for the platform.
         gripper (bool): Whether the arm has a gripper attached.
         moveit (bool) : Whether to enable MoveIt motion planning.
+        movement (Literal["", "wave"]): Movement to execute.
         ip_address (str): IP address of the arm controller.
         moveit_config (MoveitConfig): MoveIt configuration settings.
     """
@@ -261,6 +285,7 @@ class Arm(Platform):
     platform_type: str = "Arm"
     gripper: bool = False
     moveit: bool = False
+    movement: Literal["", "wave"] = ""
     ip_address: str = "10.15.20.4"
 
     moveit_config: MoveitConfig = field(default_factory=MoveitConfig)
@@ -280,7 +305,7 @@ class Vehicle(Platform):
 
     @property
     def nav2(self) -> bool:
-        """Return whether any Nav2 features are enabled.
+        """Checks whether any Nav2 features are enabled.
 
         Returns:
             bool: True if any Nav2 features are enabled, False otherwise.
@@ -332,20 +357,39 @@ class Lidar(Platform):
 
 
 @dataclass
+class Beamagine(Platform):
+    """Configuration for a Beamagine platform.
+
+    Attributes:
+        platform_type (str): Type identifier for the platform.
+    """
+
+    platform_type: str = "Beamagine"
+
+
+@dataclass
 class GPS(Platform):
     """Configuration for a GPS platform.
 
     Attributes:
         platform_type (str): Type identifier for the platform.
-        ip_address (str): IP address of the GPS receiver.
+        usb_device (str): USB busnum of the GPS receiver, e.g. 1-2.1.
+        operation_mode (Literal["fb_base", "fb_rover", "mb_base", "mb_rover"]): Operation mode of the GPS receiver.
         diagnostic_topic (str): GPS topic to monitor for diagnostic data.
         diagnostic_timeouts (tuple[int, int, int]): timeout to trigger status levels WARN, ERROR, and STALE.
+        ntrip_config (NtripConfig): NTRIP configuration for the GPS platform.
     """
 
     platform_type: str = "GPS"
-    ip_address: str = ""
+    usb_device: str = ""
+    operation_mode: Literal["fb_base", "fb_rover", "mb_base", "mb_rover", "rover"] = (
+        "rover"
+    )
+    device_family: str = "X20P"
     diagnostic_topic: str = "gps/fix"
     diagnostic_timeouts: tuple[int, int, int] = (3, 5, 10)
+
+    ntrip_config: NtripConfig = field(default_factory=NtripConfig)
 
 
 @dataclass
@@ -383,7 +427,18 @@ class PlatformList(Config):
 
     platforms: List[
         Annotated[
-            Union[Platform, Arm, Vehicle, Camera, GPS, IMU, Lidar, Lift, ThermalCamera],
+            Union[
+                Platform,
+                Arm,
+                Vehicle,
+                Camera,
+                GPS,
+                IMU,
+                Lidar,
+                Lift,
+                ThermalCamera,
+                Beamagine,
+            ],
             Discriminator(field="platform_type", include_supertypes=True),
         ]
     ] = field(default_factory=list)

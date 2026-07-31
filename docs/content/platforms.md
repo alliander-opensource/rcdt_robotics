@@ -36,6 +36,41 @@ A Franka arm can be launched in simulation by creating a configuration with an *
 
 In the web-interface, settings can be changed and the joints can be (un)locked. The mode can also be changed to the required FCI mode.
 
+## UR
+
+![UR](../img/ur/ur.png)
+
+### Simulation UR
+
+A UR arm can be launched in simulation by creating a configuration with an *Arm* of type *ur*.
+
+### Hardware UR
+
+We have a [UR7e](https://www.universal-robots.com/download/manuals-e-seriesur-series/user/ur7e/522/user-manual-ur7e-sw-522-english-international-en/) arm with the [OEM DC Control Box](https://www.universal-robots.com/download/manuals-e-seriesur-series/installation-guides/oem-control-box/oem-control-box-installation-guide-english-en-e-seriesur-series/), so that it is possible to directly the power the UR arm with one of our vehicle platforms. This OEM version does not contain a Teach Pendant and a correct DC power supply is required. We built the following circuit to power the control box:
+
+| ![circuit](../img/ur/circuit.png) | ![diagram](../img/ur/diagram.png) |
+| - | - |
+
+If desired, one can connect a display before startup using the mini display port, to visualize the control box interface. Now start the control box:
+
+- The robot needs to be connected with its control box.
+- Use the laboratory power supply or a vehicle platform to provide a DC source of 48V, 10A.
+- Flip the main switch on the control box (0 -> 1) to power the control box.
+- An ethernet cable should connect the control box with the network.
+- Start the control box by pressing the small button in the red mount.
+
+The control box will start, which can take two minutes, indicated by a green led on the control box. Since [remote control](https://docs.universal-robots.com/Universal_Robots_ROS2_Documentation/doc/ur_client_library/doc/setup/robot_setup.html#robot-setup) is enabled, the arm can be started directly from our code using [headless mode](https://docs.universal-robots.com/Universal_Robots_ROS2_Documentation/doc/ur_robot_driver/ur_robot_driver/doc/operation_modes.html):
+
+- Use a correct manual ip address for the host device to communicate with the control box (which has `172.16.0.2` by default).
+- You can test the connection using `ping` and the `alliander_robotics/alliander_ur/dashboard.py` tool.
+- Run a configuration of the UR arm, the arm should start automatically, indicated by a green led on the control box.
+- You can *power off* the arm and *shutdown* the control box using the `dashboard.py` tool.
+
+In case the arm has entered a protective stop:
+
+1. Unlock using the `dashboard.py` tool.
+2. Attach to the UR docker container and run `ros2 service call /ur/io_and_status_controller/resend_robot_program std_srvs/srv/Trigger {}`.
+
 ## Panther
 
 ![Panther](../img/panther/panther.png)
@@ -139,7 +174,7 @@ A Seek Thermal camera can be launched in simulation by creating a configuration 
 
 ### Hardware Seek Thermal
 
-To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules. 
+To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules.
 
 ## ZED
 
@@ -201,6 +236,7 @@ When using the Velodyne lidar, make sure that the IP-address of the host device 
 |-------------------------------------------------------------|----------------------------------------------------------------|
 
 ## Xsens IMU
+
 ![Xsens](../img/xsens/imu.png)
 
 ### Simulation Xsens
@@ -211,14 +247,52 @@ An Xsens IMU can be launched by creating a configuration with an *IMU* of type *
 
 When using the Xsens IMU, make sure that the IMU shows up on your device (use *lsusb* to check) and that the Docker container runs with *privileged: true* (standard in our repo).
 
-## Teltonika GPS
+## GPS 
+### U-Blox GPS
+#### Hardware X20P
+If using multiple GPS devices, e.g. in a rover-base configuration, correct device enumeration may need some extra configuration. The GPS library ![ublox-dgnss](https://github.com/aussierobots/ublox_dgnss.git) diffentiates between X20P devices based on the `DEVICE_SERIAL_STRING`, which can be found by running `python3 ublox_serial.py list` in `alliander_ublox/src/alliander_ublox/scripts/` with a U-Blox GPS attached (works better if you are in the `allianderrobotics/gps` Docker container with `sleep infinity`). 
+The value is supposed to be unique for each device, set during construction in the factory. This is not always the case however -- sometimes it just reads 0. 
 
+In that case, you have two options:
+- set it with `python3 ublox_serial.py set-persistent <bus-port> <string>`. Remove and plug the device in again for the change to take effect. You can do this from a Docker container (make sure to add the `privileged` flag for hardware access!): `docker run -it --rm --privileged allianderrobotics/gps bash`. 
+- set it in u-center 2 on Windows, under `Device Configuration > USB > SERIAL_NO_STR0`. Make sure to `Set` and `Send` to RAM, BBR, and flash.
+
+### Teltonika GPS
 ![Teltonika](../img/teltonika/nmea.png)
 
-### Simulation Teltonika
 
-A Teltonika GPS can be launched in simulation by creating a configuration with an *GPS* of type *teltonika*.
 
-### Hardware Teltonika
+#### Simulation Teltonika
+
+A Teltonika GPS can be launched in simulation by creating a configuration with a *GPS* of type *teltonika*.
+
+#### Hardware Teltonika
 
 When using the Teltonika GPS, make sure that the IP-address of the host device (where the nmea node is running) is set correctly in the settings. One can edit the settings of the Teltonika using a web interface on it’s IP-adress.
+
+## Beamagine L3Cam
+
+![Beamagine](../img/beamagine/beamagine.png)
+
+### Simulation Beamagine
+
+A Beamagine lidar can be launched in simulation by creating a configuration with the *Beamagine* type.
+
+### Hardware Beamagine
+
+When using the Beamagine lidar, make sure that the network buffer sizes are increased. This can be checked using:
+
+```bash
+sudo sysctl 'net.core.rmem_max' # should be 268435456
+sudo sysctl 'net.core.rmem_default' # should be 268435456
+sudo sysctl 'net.core.netdev_max_backlog' # should be 5000
+```
+
+Update the buffer size with the following commands:
+
+```bash
+sudo sh -c "echo 'net.core.rmem_default=268435456' >> /etc/sysctl.conf"
+sudo sh -c "echo 'net.core.rmem_max=268435456' >> /etc/sysctl.conf"
+sudo sh -c "echo 'net.core.netdev_max_backlog=5000' >> /etc/sysctl.conf"
+sudo sysctl -p
+```
