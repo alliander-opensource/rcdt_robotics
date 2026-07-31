@@ -40,7 +40,7 @@ RUN uv sync --group alliander-meta \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
 ##############################
-# Runtime
+# Runtime stage
 ##############################
 
 FROM ${BASE_IMAGE}
@@ -49,7 +49,6 @@ ENV ROS_DISTRO=jazzy
 
 # Install minimal dependencies
 RUN apt update && apt install -y \
-  android-tools-adb \
   ffmpeg libsdl2-2.0-0 libusb-1.0-0 android-tools-adb \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \

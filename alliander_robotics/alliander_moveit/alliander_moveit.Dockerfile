@@ -18,7 +18,6 @@ RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-moveit-servo \
   ros-$ROS_DISTRO-moveit-visual-tools \
   ros-$ROS_DISTRO-moveit-ros-perception \
-  ros-$ROS_DISTRO-topic-tools \
   ros-$ROS_DISTRO-ur-description \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \
@@ -43,7 +42,7 @@ RUN uv sync --group alliander-moveit \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
 ##############################
-# Runtime
+# Runtime stage
 ##############################
 
 FROM ${BASE_IMAGE}
@@ -56,7 +55,6 @@ RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-moveit-servo \
   ros-$ROS_DISTRO-moveit-visual-tools \
   ros-$ROS_DISTRO-moveit-ros-perception \
-  ros-$ROS_DISTRO-topic-tools \
   ros-$ROS_DISTRO-ur-description \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \

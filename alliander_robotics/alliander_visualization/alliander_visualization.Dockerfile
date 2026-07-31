@@ -4,6 +4,10 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE AS builder
 
+##############################
+# Build stage
+##############################
+
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
@@ -12,7 +16,6 @@ ENV ROS_DISTRO=jazzy
 RUN apt update && apt install -y --no-install-recommends \
   ros-dev-tools \
   ros-$ROS_DISTRO-image-transport-plugins \
-  ros-$ROS_DISTRO-launch-pytest \
   ros-$ROS_DISTRO-plotjuggler-ros \
   ros-$ROS_DISTRO-rqt-tf-tree \
   ros-$ROS_DISTRO-moveit-ros-visualization \
@@ -53,7 +56,7 @@ RUN uv sync --group alliander-visualization \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
 ##############################
-# Runtime
+# Runtime stage
 ##############################
 
 FROM ${BASE_IMAGE}
@@ -65,7 +68,6 @@ ENV ROS_DISTRO=jazzy
 RUN apt update && apt install -y --no-install-recommends \
   ros-dev-tools \
   ros-$ROS_DISTRO-image-transport-plugins \
-  ros-$ROS_DISTRO-launch-pytest \
   ros-$ROS_DISTRO-plotjuggler-ros \
   ros-$ROS_DISTRO-rqt-tf-tree \
   ros-$ROS_DISTRO-moveit-ros-visualization \

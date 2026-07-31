@@ -36,8 +36,6 @@ else
     echo "Skipping external source packages (--runtime-install enabled)"
 fi
 
-# echo "GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$alliander/ros/install/alliander_description/share" >> /root/.bashrc
-
 # Architecture-dependent versioning
 if [ "$(dpkg --print-architecture)" = "amd64" ]; then
     ZED_VERSION="0.1.5-1noble.20260615.180130"

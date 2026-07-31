@@ -49,7 +49,7 @@ RUN uv sync --group alliander-gazebo  \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
 ##############################
-# Runtime
+# Runtime stage
 ##############################
 
 FROM ${BASE_IMAGE}

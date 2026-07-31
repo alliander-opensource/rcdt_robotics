@@ -4,6 +4,10 @@
 ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE AS builder
 
+##############################
+# Build stage
+##############################
+
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
@@ -34,7 +38,7 @@ RUN uv sync --group alliander-ur  \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
 ##############################
-# Runtime
+# Runtime stage
 ##############################
 
 FROM ${BASE_IMAGE}
