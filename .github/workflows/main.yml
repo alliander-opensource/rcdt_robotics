@@ -16,7 +16,7 @@ on:
 jobs:
   select-components:
     runs-on:
-      group: managed
+      group: managed-linux
     outputs:
       UBUNTU_COMPONENTS: ${{ steps.variables.outputs.UBUNTU_COMPONENTS }}
       CUDA_COMPONENTS: ${{ steps.variables.outputs.CUDA_COMPONENTS }}
@@ -53,7 +53,7 @@ jobs:
   build-ubuntu-manifest:
     needs: build-ubuntu
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -91,7 +91,7 @@ jobs:
   build-ubuntu-images-manifest:
     needs: [select-components, build-ubuntu-images]
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -127,7 +127,7 @@ jobs:
   build-cuda-manifest:
     needs: build-cuda
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -165,7 +165,7 @@ jobs:
   build-cuda-images-manifest:
     needs: [select-components, build-cuda-images]
     runs-on:
-      group: managed
+      group: managed-linux
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -179,7 +179,7 @@ jobs:
 
   linting:
     runs-on:
-      group: managed
+      group: managed-linux
     needs: [build-ubuntu-images, build-ubuntu-images-manifest, build-cuda-images, build-cuda-images-manifest]
     if: ${{ !failure() && !cancelled() }}
     steps:
