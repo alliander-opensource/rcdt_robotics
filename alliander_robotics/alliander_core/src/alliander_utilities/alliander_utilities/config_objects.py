@@ -254,15 +254,13 @@ class Gripper(Platform):
 
     Attributes:
         platform_type (str): Type identifier for the platform.
-        ip_address (str): IP address of the arm controller.
-        moveit (bool) : Whether to enable MoveIt motion planning.
-        moveit_config (MoveitConfig): MoveIt configuration settings.
+        ip_address (str): IP address of the gripper.
+        port (int): Port number of the gripper.
     """
 
-    platform_type: str = "Arm"
-    ip_address: str = "10.15.20.6"
-    moveit: bool = False
-    moveit_config: MoveitConfig = field(default_factory=MoveitConfig)
+    platform_type: str = "Gripper"
+    ip_address: str = "192.168.1.11"
+    port: int = 502
 
 
 @dataclass
@@ -421,6 +419,7 @@ class PlatformList(Config):
                 Vehicle,
                 Camera,
                 GPS,
+                Gripper,
                 IMU,
                 Lidar,
                 Lift,

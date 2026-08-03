@@ -292,7 +292,11 @@ sudo sysctl -p
 
 ### Simulation RobotIQ
 
-A RobotIQ gripper can be launched in simulation by creating a configuration with a Gripper of type *Robotiq*. After launching the RobotIQ configuration, one can control the gripper by sending one of the supported commands (activate, reset, open, close, wide-open, wide-close, pinch-open, pinch-close) to the `/robotiq/gripper_controller/action` action server as a string.
+A RobotIQ gripper can be launched in simulation by creating a configuration with a Gripper of type *Robotiq*. After launching the RobotIQ configuration, one can control the gripper by sending one of the supported commands (activate, reset, open, close, wide-open, wide-close, pinch-open, pinch-close) to the `/robotiq/gripper_controller/action` action server as a string. For example:
+
+```bash
+ros2 action send_goal /robotiq/gripper_controller/action alliander_interfaces/action/StringAction '{text: close}'
+```
 
 ### Hardware RobotIQ
 

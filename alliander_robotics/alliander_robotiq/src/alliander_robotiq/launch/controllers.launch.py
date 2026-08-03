@@ -53,7 +53,13 @@ def launch_setup(context: LaunchContext) -> list:
         package="alliander_robotiq",
         executable="gripper_controller.py",
         namespace=gripper_config.namespace,
-        parameters=[{"simulation": gripper_config.simulation}],
+        parameters=[
+            {
+                "simulation": gripper_config.simulation,
+                "ip": gripper_config.ip_address,
+                "port": gripper_config.port,
+            }
+        ],
     )
 
     return [
