@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 We provide docker images to simplify the installation of all the software dependencies. To use these image, you need to install docker first. Please follow [these](docker) instructions to install docker.
 
 **Git LFS**\
-The repository uses git LFS for large files, in particular for 3D simulation assets. To clone these large files, you need to install git LFS. Please follow  [these](https://git-lfs.com/) instructions to install git LFS.
+The repository uses git LFS for large files, in particular for 3D simulation assets. To clone these large files, you need to install git LFS. Please follow  [these](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage) instructions to install git LFS.
 
 ## Clone
 

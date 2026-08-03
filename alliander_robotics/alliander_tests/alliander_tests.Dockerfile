@@ -2,7 +2,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 ARG BASE_IMAGE=ubuntu:latest
-FROM $BASE_IMAGE 
+FROM $BASE_IMAGE AS builder
+
+##############################
+# Build stage
+##############################
 
 ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
@@ -43,7 +47,7 @@ RUN /$WORKDIR/colcon_build.sh
 # alliander_seekthermal is needed as it creates a Python package that is imported
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR
@@ -51,6 +55,41 @@ COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
 RUN uv sync --all-groups \
     && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
     && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
+
+##############################
+# Runtime stage
+##############################
+
+FROM ${BASE_IMAGE}
+
+ENV ROS_DISTRO=jazzy
+
+# Install minimal dependencies
+RUN curl -fsSL https://get.docker.com | sh
+RUN apt update && apt install -y --no-install-recommends \
+    doxygen \
+    ros-$ROS_DISTRO-moveit-configs-utils \
+    ros-$ROS_DISTRO-nav2-simple-commander \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt autoremove -y \
+    && apt clean
+
+# Copy minimal dependencies
+COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
+WORKDIR /$WORKDIR/external
+RUN apt update \
+  && rosdep update --rosdistro $ROS_DISTRO \
+  && rosdep install --from-paths src -y -i \
+  && rm -rf src \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copy ROS install
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
+
+# Copy environments
+COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
+COPY --from=builder /root/.bashrc /root/.bashrc
 
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]

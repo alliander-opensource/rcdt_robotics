@@ -9,7 +9,7 @@ base:
   dockerfile: alliander_core/alliander_core.Dockerfile
 
 cuda:
-  base_image: allianderrobotics/nvidia-cuda-12.9.1-cudnn-devel-ubuntu24.04
+  base_image: allianderrobotics/cuda-dl-base-26.05-cuda13.2-devel-ubuntu24.04
   repository: allianderrobotics/cuda
   dockerfile: alliander_core/alliander_core.Dockerfile
 

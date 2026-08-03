@@ -8,8 +8,20 @@
 
 set -e
 
-colcon build --symlink-install \
-  --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+COLCON_ARGS=()
+
+if [ "$1" = "--symlink-install" ]; then
+  echo "Using --symlink-install"
+  COLCON_ARGS+=(--symlink-install)
+else
+  echo "Using regular colcon build"
+fi
+
+colcon build \
+  "${COLCON_ARGS[@]}" \
+  --cmake-args \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 # run clang-tidy checks, which will also produce warnings in /opt/ros/jazzy/src/gtest_vendor/...
 echo "Running clang-tidy"

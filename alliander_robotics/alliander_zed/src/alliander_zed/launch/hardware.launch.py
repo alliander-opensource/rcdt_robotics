@@ -54,7 +54,7 @@ def launch_setup(context: LaunchContext) -> list:
         remappings=[
             (f"/{namespace}/left/camera_info", f"/{namespace}/color/camera_info"),
             (
-                f"/{namespace}/left/image_rect_color",
+                f"/{namespace}/rgb/color/rect/image",
                 f"/{namespace}/color/image_raw",
             ),
             (

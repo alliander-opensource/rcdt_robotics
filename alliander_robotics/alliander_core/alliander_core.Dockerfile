@@ -34,7 +34,7 @@ RUN apt update && apt install -y -qq --no-install-recommends \
 
 # Install ROS2 - maybe ros-base or ROS base image
 RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-desktop \
+  ros-$ROS_DISTRO-ros-base \
   python3-colcon-common-extensions \
   python3-rosdep \
   python3-vcstool \
@@ -50,7 +50,7 @@ RUN rosdep init \
 RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
   ros-$ROS_DISTRO-control-msgs \
-  ros-$ROS_DISTRO-vision-msgs \
+  ros-$ROS_DISTRO-cv-bridge \
   ros-$ROS_DISTRO-vision-msgs \
   ros-$ROS_DISTRO-geographic-msgs \
   ros-$ROS_DISTRO-topic-tools \
