@@ -51,7 +51,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     gripper_controller = Node(
         package="alliander_robotiq",
-        executable="gripper_controller.py",
+        executable="gripper_controller",
         namespace=gripper_config.namespace,
         parameters=[
             {

@@ -67,6 +67,7 @@ COPY $SRC_DIRECTORY/alliander_joystick/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_meta/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_moveit/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_nav2/src/ /alliander/ros/src
+COPY $SRC_DIRECTORY/alliander_robotiq/src /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_seekthermal/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
 
