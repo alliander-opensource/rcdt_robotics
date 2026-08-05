@@ -25,14 +25,12 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# C++ executables:
+#########################
+# C++ gripper_controller:
+#########################
 include_directories(include)
 add_executable(gripper_controller
   src/gripper_controller.cpp
-  src/finger_status.cpp
-  src/gripper_status.cpp
-  src/json_utils.cpp
-  src/modbus_tcp_client.cpp
   src/modbus_controller.cpp
 )
 ament_target_dependencies(gripper_controller
@@ -43,10 +41,33 @@ ament_target_dependencies(gripper_controller
   alliander_interfaces
 )
 
+# magic_enum:
+find_package(magic_enum CONFIG REQUIRED)
+target_link_libraries(gripper_controller magic_enum::magic_enum)
+
+# libmodbus:
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MODBUS REQUIRED libmodbus)
+target_include_directories(gripper_controller PRIVATE ${MODBUS_INCLUDE_DIRS})
+target_link_libraries(gripper_controller ${MODBUS_LIBRARIES})
+
+# Glaze:
+include(FetchContent)
+FetchContent_Declare(
+  glaze
+  GIT_REPOSITORY https://github.com/stephenberry/glaze.git
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(glaze)
+target_link_libraries(gripper_controller glaze::glaze)
+
+# Install targets:
 install(
   TARGETS gripper_controller
   DESTINATION lib/${PROJECT_NAME}
 )
+#########################
 
 # Shared folders:
 install(

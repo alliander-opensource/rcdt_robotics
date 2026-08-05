@@ -16,4 +16,4 @@ services:
       - "/tmp/.X11-unix:/tmp/.X11-unix"
       - "/dev:/dev"
     command:
-      ["/bin/bash", "-c", "ros2 launch alliander_robotiq robotiq.launch.py"]
+      ["/bin/bash", "-c", "cd /alliander/ros && colcon build --packages-select alliander_robotiq && ros2 launch alliander_robotiq robotiq.launch.py"]

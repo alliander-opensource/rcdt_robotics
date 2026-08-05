@@ -19,10 +19,14 @@ RUN apt update && apt install -y --no-install-recommends \
   && apt autoremove -y \
   && apt clean
 
+# Upgrade CMake:
+RUN pip install --upgrade cmake --break-system-packages
+
 # Install repo package:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_robotiq/src/ /$WORKDIR/ros/src
+RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths src -y -i
 RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
@@ -47,8 +51,12 @@ RUN apt update && apt install -y --no-install-recommends \
   && apt autoremove -y \
   && apt clean
 
+# Upgrade CMake:
+RUN pip install --upgrade cmake --break-system-packages
+
 # Copy ROS install
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths /$WORKDIR/ros/src -y -i
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv

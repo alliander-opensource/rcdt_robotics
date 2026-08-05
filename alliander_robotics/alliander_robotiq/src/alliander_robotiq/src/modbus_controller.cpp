@@ -4,63 +4,28 @@
 
 #include "alliander_robotiq/modbus_controller.hpp"
 
+#include <modbus/modbus.h>
+
+#include <array>
 #include <cstdint>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
-#include "alliander_robotiq/modbus_tcp_client.hpp"
-
-/**
- * @brief Convert protocol position byte to URDF joint angle in radians.
- * @param position Position byte [0..255].
- * @param joint Joint index (1-based).
- * @param scissor True when converting a scissor joint.
- * @return Joint angle in radians.
- */
-double finger_joint_position_from_bit(int position, int joint, bool scissor) {
-  double lower_limit;
-  double upper_limit;
-
-  if (joint == 1) {
-    lower_limit = scissor ? -0.1784 : 0.0;
-    upper_limit = scissor ? 0.192 : 1.2218;
-  } else if (joint == 2) {
-    lower_limit = scissor ? -0.192 : 0.0;
-    upper_limit = scissor ? 0.1784 : 1.5708;
-  } else if (joint == 3) {
-    if (scissor) {
-      throw std::invalid_argument("Scissor does not have a third joint.");
-    }
-    lower_limit = 0.0523;
-    upper_limit = 1.2217;
-  } else {
-    throw std::invalid_argument("Unsupported joint number.");
-  }
-
-  // Only the first joint of the scissor is inverted:
-  const double reach = upper_limit - lower_limit;
-  if (scissor && joint == 1) {
-    return upper_limit - (static_cast<double>(position) / 255.0) * reach;
-  }
-
-  return lower_limit + (static_cast<double>(position) / 255.0) * reach;
-}
-
-/**
- * @brief Private implementation of hardware controller transport and status.
- */
 class ModbusControllerHardware::Impl {
  public:
-  /**
-   * @brief Construct implementation object.
-   * @param host IPv4 address of target device.
-   * @param port Modbus TCP port.
-   */
-  Impl(const std::string& host, int port) : client(host, port, 5) {}
+  Impl(const std::string& host, int port)
+      : ctx_(modbus_new_tcp(host.c_str(), port)) {}
 
-  /// Low-level Modbus TCP transport.
-  ModbusTcpClient client;
+  ~Impl() {
+    if (ctx_) {
+      modbus_close(ctx_);
+      modbus_free(ctx_);
+    }
+  }
+
+  /// libmodbus context owning the TCP connection.
+  modbus_t* ctx_;
   /// Most recently decoded gripper status.
   GripperStatus status;
 };
@@ -71,7 +36,13 @@ ModbusControllerHardware::ModbusControllerHardware(const std::string& host,
 
 ModbusControllerHardware::~ModbusControllerHardware() = default;
 
-bool ModbusControllerHardware::open() { return impl_->client.open(); }
+bool ModbusControllerHardware::open() {
+  if (!impl_->ctx_) {
+    return false;
+  }
+  modbus_set_response_timeout(impl_->ctx_, 5, 0);
+  return modbus_connect(impl_->ctx_) != -1;
+}
 
 void ModbusControllerHardware::send_command(
     bool activate, const std::string& mode, bool go_to, bool automatic_release,
@@ -118,48 +89,29 @@ void ModbusControllerHardware::send_command(
       static_cast<std::uint16_t>(position & 0xFF),
       static_cast<std::uint16_t>(((speed & 0xFF) << 8U) | (force & 0xFF))};
 
-  impl_->client.write_multiple_registers(0, registers);
+  modbus_write_registers(impl_->ctx_, 0, static_cast<int>(registers.size()),
+                         registers.data());
 }
 
 void ModbusControllerHardware::read_status() {
-  const auto registers = impl_->client.read_input_registers(0, 8);
-  if (registers.size() != 8) {
+  std::array<std::uint16_t, 8> registers{};
+  if (modbus_read_input_registers(impl_->ctx_, 0, 8, registers.data()) != 8) {
     return;
   }
 
-  auto gripper_status = (registers[0] >> 8U) & 0xFFU;  // Register 0, high byte
-  auto object_status = registers[0] & 0xFFU;           // Register 0, low byte
-  auto fault_status = (registers[1] >> 8U) & 0xFFU;    // Register 1, high byte
-  auto a_request = registers[1] & 0xFFU;               // Register 1, low byte
-  auto a_position = (registers[2] >> 8U) & 0xFFU;      // Register 2, high byte
-  auto a_current = registers[2] & 0xFFU;               // Register 2, low byte
-  auto b_request = (registers[3] >> 8U) & 0xFFU;       // Register 3, high byte
-  auto b_position = registers[3] & 0xFFU;              // Register 3, low byte
-  auto b_current = (registers[4] >> 8U) & 0xFFU;       // Register 4, high byte
-  auto c_request = registers[4] & 0xFFU;               // Register 4, low byte
-  auto c_position = (registers[5] >> 8U) & 0xFFU;      // Register 5, high byte
-  auto c_current = registers[5] & 0xFFU;               // Register 5, low byte
-  auto s_request = (registers[6] >> 8U) & 0xFFU;       // Register 6, high byte
-  auto s_position = registers[6] & 0xFFU;              // Register 6, low byte
-  auto s_current = (registers[7] >> 8U) & 0xFFU;       // Register 7, high byte
+  // Split the registers into bytes:
+  std::vector<uint8_t> bytes;
+  for (const auto reg : registers) {
+    bytes.push_back(static_cast<uint8_t>((reg >> 8U) & 0xFFU));  // High byte
+    bytes.push_back(static_cast<uint8_t>(reg & 0xFFU));          // Low byte
+  }
 
-  impl_->status.update_gripper_status(gripper_status);
-  impl_->status.update_finger_status(object_status);
-  impl_->status.update_fault_status(fault_status);
-  impl_->status.update_finger_states(std::vector<unsigned int>{
-      a_request,
-      a_position,
-      a_current,
-      b_request,
-      b_position,
-      b_current,
-      c_request,
-      c_position,
-      c_current,
-      s_request,
-      s_position,
-      s_current,
-  });
+  // Update the status:
+  impl_->status.update_gripper_status(bytes[0]);
+  impl_->status.update_finger_status(bytes[1]);
+  impl_->status.update_fault_status(bytes[2]);
+  impl_->status.update_finger_states(
+      std::vector<uint8_t>(bytes.begin() + 3, bytes.end()));
 }
 
 GripperStatus& ModbusControllerHardware::status() { return impl_->status; }
@@ -167,7 +119,7 @@ GripperStatus& ModbusControllerHardware::status() { return impl_->status; }
 ModbusControllerSimulation::ModbusControllerSimulation(
     rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher)
     : publisher_(std::move(publisher)) {
-  status_.motion_status = "reached_target_position";
+  gripper_status_.motion_status = STATUS_MOTION::IN_MOTION;
 }
 
 bool ModbusControllerSimulation::open() { return true; }
@@ -187,8 +139,8 @@ void ModbusControllerSimulation::send_command(
   for (int finger = 0; finger < 3; ++finger) {
     (void)finger;
     for (int joint = 1; joint <= 3; ++joint) {
-      joint_positions.push_back(
-          finger_joint_position_from_bit(position, joint, false));
+      joint_positions.push_back(gripper_status_.finger_joint_position_from_bit(
+          position, joint, false));
     }
   }
 
@@ -200,18 +152,15 @@ void ModbusControllerSimulation::send_command(
   }
 
   for (int joint = 1; joint <= 2; ++joint) {
-    joint_positions.push_back(
-        finger_joint_position_from_bit(scissor_position, joint, true));
+    joint_positions.push_back(gripper_status_.finger_joint_position_from_bit(
+        scissor_position, joint, true));
   }
 
   std_msgs::msg::Float64MultiArray command;
   command.data = joint_positions;
   publisher_->publish(command);
-
-  status_.mode = mode;
-  status_.motion_status = "reached_target_position";
 }
 
 void ModbusControllerSimulation::read_status() {}
 
-GripperStatus& ModbusControllerSimulation::status() { return status_; }
+GripperStatus& ModbusControllerSimulation::status() { return gripper_status_; }

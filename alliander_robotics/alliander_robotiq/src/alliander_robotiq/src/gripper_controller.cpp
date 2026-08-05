@@ -46,10 +46,13 @@ RobotiqController::RobotiqController() : Node("gripper_controller") {
     } else {
       RCLCPP_INFO(this->get_logger(), "Connection successful.");
     }
-
-    timer_ = this->create_wall_timer(
-        update_rate_, std::bind(&RobotiqController::update_callback, this));
   }
+
+  timer_callback_group_ =
+      create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+  timer_ = this->create_wall_timer(
+      update_rate_, std::bind(&RobotiqController::update_callback, this),
+      timer_callback_group_);
 
   controller_->send_command();
 
@@ -85,9 +88,10 @@ void RobotiqController::update_joint_state() {
   const auto finger_list = controller_->status().fingers();
   for (const auto* finger : finger_list) {
     const int position = finger->position;
-    for (int joint = 1; joint <= finger->number_of_joints(); ++joint) {
+    for (int joint = 0; joint < finger->number_of_joints(); ++joint) {
       joint_positions_request.push_back(
-          finger_joint_position_from_bit(position, joint, finger->scissor));
+          controller_->status().finger_joint_position_from_bit(
+              position, joint, finger->scissor));
     }
   }
 
@@ -147,7 +151,7 @@ void RobotiqController::execute(
   rclcpp::sleep_for(std::chrono::seconds(1));
 
   const auto start = std::chrono::steady_clock::now();
-  while (controller_->status().motion_status == "in_motion") {
+  while (controller_->status().motion_status == STATUS_MOTION::IN_MOTION) {
     rclcpp::sleep_for(std::chrono::milliseconds(100));
     if (std::chrono::steady_clock::now() - start >
         std::chrono::seconds(timeout_)) {
@@ -159,7 +163,8 @@ void RobotiqController::execute(
     }
   }
 
-  if (controller_->status().motion_status == "reached_target_position") {
+  if (controller_->status().motion_status ==
+      STATUS_MOTION::REACHED_TARGET_POSITION) {
     result->success = true;
     goal_handle->succeed(result);
   } else {

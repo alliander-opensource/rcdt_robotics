@@ -13,16 +13,6 @@
 #include "alliander_robotiq/gripper_status.hpp"
 
 /**
- * @brief Convert an 8-bit finger position to the corresponding joint angle.
- * @param position Position byte [0..255].
- * @param joint Joint index (1-based).
- * @param scissor True when converting a scissor joint.
- * @return Joint angle in radians.
- */
-double finger_joint_position_from_bit(int position, int joint,
-                                      bool scissor = false);
-
-/**
  * @brief Interface for hardware and simulation Modbus controllers.
  */
 class IModbusController {
@@ -125,7 +115,7 @@ class ModbusControllerSimulation : public IModbusController {
   /// Publisher used to command simulated joints.
   rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher_;
   /// Internal status snapshot mirrored from the latest command.
-  GripperStatus status_;
+  GripperStatus gripper_status_;
 };
 
 #endif  // ALLIANDER_ROBOTIQ__MODBUS_CONTROLLER_HPP_
