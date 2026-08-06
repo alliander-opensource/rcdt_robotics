@@ -5,29 +5,30 @@
 #ifndef ALLIANDER_ROBOTIQ__MODBUS_CONTROLLER_HPP_
 #define ALLIANDER_ROBOTIQ__MODBUS_CONTROLLER_HPP_
 
-#include <memory>
+#include <modbus/modbus.h>
+
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 #include <string>
 
 #include "alliander_robotiq/gripper_status.hpp"
 
+// ==========================
+// ModbusController Interface
+// ==========================
+
 /**
  * @brief Interface for hardware and simulation Modbus controllers.
  */
 class IModbusController {
  public:
-  /// Virtual destructor for interface polymorphism.
   virtual ~IModbusController() = default;
 
-  /**
-   * @brief Open controller communication channel when needed.
-   * @return True if communication is ready.
-   */
-  virtual bool open() = 0;
+  /// The current status of the gripper.
+  GripperStatus gripper_status_;
 
   /**
-   * @brief Send a command frame to the controller.
+   * @brief Send a command to the gripper.
    * @param activate Activate/reset bit.
    * @param mode Gripper mode label.
    * @param go_to Execute movement towards requested position.
@@ -49,13 +50,11 @@ class IModbusController {
    * @brief Refresh status fields from underlying transport.
    */
   virtual void read_status() = 0;
-
-  /**
-   * @brief Access mutable current controller status.
-   * @return Reference to status object.
-   */
-  virtual GripperStatus& status() = 0;
 };
+
+// =======================================
+// ModbusControllerHardware implementation
+// =======================================
 
 /**
  * @brief Modbus TCP controller for real Robotiq hardware.
@@ -68,27 +67,22 @@ class ModbusControllerHardware : public IModbusController {
    * @param port Modbus TCP port.
    */
   ModbusControllerHardware(const std::string& host, int port);
-
-  /**
-   * @brief Destroy controller implementation.
-   */
-  ~ModbusControllerHardware() override;
-
-  bool open() override;
+  ~ModbusControllerHardware();
   void send_command(bool activate = true, const std::string& mode = "basic",
                     bool go_to = true, bool automatic_release = false,
                     bool individual_control_fingers = false,
                     bool individual_control_scissor = false, int position = 0,
                     int speed = 0, int force = 0) override;
   void read_status() override;
-  GripperStatus& status() override;
 
  private:
-  /// Forward-declared implementation with socket transport details.
-  class Impl;
-  /// PIMPL pointer for ABI-safe transport implementation.
-  std::unique_ptr<Impl> impl_;
+  /// Modbus TCP context.
+  modbus_t* mb;
 };
+
+// =========================================
+// ModbusControllerSimulation implementation
+// =========================================
 
 /**
  * @brief Simulation controller that publishes joint commands directly.
@@ -99,23 +93,19 @@ class ModbusControllerSimulation : public IModbusController {
    * @brief Construct simulation controller.
    * @param publisher Publisher for position controller commands.
    */
-  explicit ModbusControllerSimulation(
+  ModbusControllerSimulation(
       rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher);
 
-  bool open() override;
   void send_command(bool activate = true, const std::string& mode = "basic",
                     bool go_to = true, bool automatic_release = false,
                     bool individual_control_fingers = false,
                     bool individual_control_scissor = false, int position = 0,
                     int speed = 0, int force = 0) override;
   void read_status() override;
-  GripperStatus& status() override;
 
  private:
-  /// Publisher used to command simulated joints.
+  /// Publisher used to publish joint commands on the controller topic.
   rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher_;
-  /// Internal status snapshot mirrored from the latest command.
-  GripperStatus gripper_status_;
 };
 
 #endif  // ALLIANDER_ROBOTIQ__MODBUS_CONTROLLER_HPP_

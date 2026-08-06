@@ -70,6 +70,9 @@ RUN apt update \
 # Install uv
 RUN pip install uv --break-system-packages
 
+# Upgrade CMake:
+RUN pip install --upgrade cmake --break-system-packages
+
 # Prepare ROS workspace for child images
 COPY $SRC_DIRECTORY/common/colcon_build.sh /$WORKDIR/colcon_build.sh
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc

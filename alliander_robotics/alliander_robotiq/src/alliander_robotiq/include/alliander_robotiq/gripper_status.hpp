@@ -13,14 +13,18 @@
 
 #include "alliander_robotiq/finger_status.hpp"
 
-// Use magic_enum to serialize enum values to JSON:
-// https://stephenberry.github.io/glaze/enum-reflection/
+namespace glz {
+/// Use magic_enum to serialize enum values to JSON:
+/// https://stephenberry.github.io/glaze/enum-reflection/
 template <typename T>
   requires std::is_enum_v<T>
-struct glz::meta<T> {
+struct meta<T> {
+  /// Keys
   static constexpr auto keys = magic_enum::enum_names<T>();
+  /// Values
   static constexpr auto value = magic_enum::enum_values<T>();
 };
+}  // namespace glz
 
 // Definitions:
 enum class MODES {
@@ -54,16 +58,21 @@ enum class STATUS_FAULT {
   AUTOMATIC_RELEASE_COMPLETED_RESET_REQUIRED
 };
 
-// Joint limits as defined in the URDF:
+/// Struct to hold upper and lower limit for a joint.
 struct JointLimit {
+  /// Lower limit in radians.
   double lower_limit;
+  /// Upper limit in radians.
   double upper_limit;
 };
 
+/// Joint limits (from URDF) for the fingers and scissor axis of the gripper.
 struct JointLimits {
+  /// Joint limits for the fingers (3 joints).
   std::vector<JointLimit> joints{JointLimit{0.0, 1.2218},
                                  JointLimit{0.0, 1.5708},
                                  JointLimit{0.0523, 1.2217}};
+  /// Joint limits for the scissor axis (2 joints).
   std::vector<JointLimit> scissors{JointLimit{-0.1784, 0.192},
                                    JointLimit{-0.192, 0.1784}};
 };
@@ -93,6 +102,10 @@ struct GripperStatus {
   /// Scissor status.
   FingerStatus finger_s{true};
 
+  /**
+   * @brief Get a vector of pointers to all fingers, including the scissor.
+   * @return Vector of pointers to all fingers, including the scissor.
+   */
   std::vector<FingerStatus*> fingers() {
     return {&finger_a, &finger_b, &finger_c, &finger_s};
   };
@@ -144,11 +157,18 @@ struct GripperStatus {
     }
   }
 
+  /**
+   * @brief Convert a finger position byte to a joint position in radians.
+   * @param position Position byte [0..255].
+   * @param joint Joint index
+   * @param scissor True if joint is part of the scissor axis.
+   * @return Joint position in radians.
+   */
   double finger_joint_position_from_bit(int position, int joint, bool scissor) {
     auto upper_limit = scissor ? JointLimits().scissors[joint].upper_limit
-                               : JointLimits().joints[joint - 1].upper_limit;
+                               : JointLimits().joints[joint].upper_limit;
     auto lower_limit = scissor ? JointLimits().scissors[joint].lower_limit
-                               : JointLimits().joints[joint - 1].lower_limit;
+                               : JointLimits().joints[joint].lower_limit;
     const double reach = upper_limit - lower_limit;
 
     // Only the first joint of the scissor is inverted:

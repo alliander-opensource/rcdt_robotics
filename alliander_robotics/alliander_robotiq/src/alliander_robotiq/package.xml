@@ -25,6 +25,7 @@ SPDX-License-Identifier: Apache-2.0
   <depend>magic_enum</depend>
   <depend>libmodbus-dev</depend>
 
+  <exec_depend>controller_manager</exec_depend>
   <exec_depend>libmodbus5</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>

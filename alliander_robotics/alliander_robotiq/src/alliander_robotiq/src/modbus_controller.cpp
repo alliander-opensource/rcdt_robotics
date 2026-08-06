@@ -9,39 +9,30 @@
 #include <array>
 #include <cstdint>
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
-class ModbusControllerHardware::Impl {
- public:
-  Impl(const std::string& host, int port)
-      : ctx_(modbus_new_tcp(host.c_str(), port)) {}
-
-  ~Impl() {
-    if (ctx_) {
-      modbus_close(ctx_);
-      modbus_free(ctx_);
-    }
-  }
-
-  /// libmodbus context owning the TCP connection.
-  modbus_t* ctx_;
-  /// Most recently decoded gripper status.
-  GripperStatus status;
-};
+// =======================================
+// ModbusControllerHardware implementation
+// =======================================
 
 ModbusControllerHardware::ModbusControllerHardware(const std::string& host,
-                                                   int port)
-    : impl_(std::make_unique<Impl>(host, port)) {}
-
-ModbusControllerHardware::~ModbusControllerHardware() = default;
-
-bool ModbusControllerHardware::open() {
-  if (!impl_->ctx_) {
-    return false;
+                                                   int port) {
+  mb = modbus_new_tcp(host.c_str(), port);
+  if (!mb) {
+    throw std::runtime_error("Failed to create Modbus context.");
   }
-  modbus_set_response_timeout(impl_->ctx_, 5, 0);
-  return modbus_connect(impl_->ctx_) != -1;
+
+  if (modbus_connect(mb) == -1) {
+    modbus_free(mb);
+    throw std::runtime_error("Failed to connect to Modbus server.");
+  }
+}
+
+ModbusControllerHardware::~ModbusControllerHardware() {
+  if (mb) {
+    modbus_close(mb);
+    modbus_free(mb);
+  }
 }
 
 void ModbusControllerHardware::send_command(
@@ -89,14 +80,16 @@ void ModbusControllerHardware::send_command(
       static_cast<std::uint16_t>(position & 0xFF),
       static_cast<std::uint16_t>(((speed & 0xFF) << 8U) | (force & 0xFF))};
 
-  modbus_write_registers(impl_->ctx_, 0, static_cast<int>(registers.size()),
-                         registers.data());
+  if (modbus_write_registers(mb, 0, static_cast<int>(registers.size()),
+                             registers.data()) == -1) {
+    throw std::runtime_error("Failed to write Modbus registers.");
+  }
 }
 
 void ModbusControllerHardware::read_status() {
   std::array<std::uint16_t, 8> registers{};
-  if (modbus_read_input_registers(impl_->ctx_, 0, 8, registers.data()) != 8) {
-    return;
+  if (modbus_read_input_registers(mb, 0, 8, registers.data()) != 8) {
+    throw std::runtime_error("Failed to read Modbus input registers.");
   }
 
   // Split the registers into bytes:
@@ -107,22 +100,22 @@ void ModbusControllerHardware::read_status() {
   }
 
   // Update the status:
-  impl_->status.update_gripper_status(bytes[0]);
-  impl_->status.update_finger_status(bytes[1]);
-  impl_->status.update_fault_status(bytes[2]);
-  impl_->status.update_finger_states(
+  gripper_status_.update_gripper_status(bytes[0]);
+  gripper_status_.update_finger_status(bytes[1]);
+  gripper_status_.update_fault_status(bytes[2]);
+  gripper_status_.update_finger_states(
       std::vector<uint8_t>(bytes.begin() + 3, bytes.end()));
 }
 
-GripperStatus& ModbusControllerHardware::status() { return impl_->status; }
+// =========================================
+// ModbusControllerSimulation implementation
+// =========================================
 
 ModbusControllerSimulation::ModbusControllerSimulation(
     rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr publisher)
-    : publisher_(std::move(publisher)) {
-  gripper_status_.motion_status = STATUS_MOTION::IN_MOTION;
+    : publisher_(publisher) {
+  gripper_status_.motion_status = STATUS_MOTION::REACHED_TARGET_POSITION;
 }
-
-bool ModbusControllerSimulation::open() { return true; }
 
 void ModbusControllerSimulation::send_command(
     bool activate, const std::string& mode, bool /*go_to*/,
@@ -133,17 +126,18 @@ void ModbusControllerSimulation::send_command(
     return;
   }
 
-  std::vector<double> joint_positions;
-  joint_positions.reserve(11);
+  std_msgs::msg::Float64MultiArray command;
 
+  // Define joint angles for the three fingers based on the integer command:
   for (int finger = 0; finger < 3; ++finger) {
     (void)finger;
-    for (int joint = 1; joint <= 3; ++joint) {
-      joint_positions.push_back(gripper_status_.finger_joint_position_from_bit(
+    for (int joint = 0; joint < 3; ++joint) {
+      command.data.push_back(gripper_status_.finger_joint_position_from_bit(
           position, joint, false));
     }
   }
 
+  // Define integer command for the scissor axis based on the mode:
   int scissor_position = 135;
   if (mode == "pinch") {
     scissor_position = 255;
@@ -151,16 +145,13 @@ void ModbusControllerSimulation::send_command(
     scissor_position = 0;
   }
 
-  for (int joint = 1; joint <= 2; ++joint) {
-    joint_positions.push_back(gripper_status_.finger_joint_position_from_bit(
+  // Define joint angles for the scissor axis based on the integer command:
+  for (int joint = 0; joint < 2; ++joint) {
+    command.data.push_back(gripper_status_.finger_joint_position_from_bit(
         scissor_position, joint, true));
   }
 
-  std_msgs::msg::Float64MultiArray command;
-  command.data = joint_positions;
   publisher_->publish(command);
 }
 
 void ModbusControllerSimulation::read_status() {}
-
-GripperStatus& ModbusControllerSimulation::status() { return gripper_status_; }

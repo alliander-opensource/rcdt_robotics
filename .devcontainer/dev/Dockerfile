@@ -58,9 +58,9 @@ RUN apt update && apt install -y --no-install-recommends \
 COPY .devcontainer/dev/.dev_bashrc /.dev_bashrc
 RUN echo "source /.dev_bashrc" >> /home/$REMOTE_USER/.bashrc
 
-# Copy repo packages:
+# Copy Alliander ROS packages with C++ code, install build dependencies and build the packages:
 COPY $SRC_DIRECTORY/alliander_core/src/ /alliander/ros/src
-COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_diagnostics/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_franka/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_joystick/src/ /alliander/ros/src
@@ -70,8 +70,7 @@ COPY $SRC_DIRECTORY/alliander_nav2/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_robotiq/src /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_seekthermal/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
-
-# Build repo packages:
+RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --dependency-types=build --from-paths src -y -i -t build
 RUN /alliander/colcon_build.sh
 
 # Install python dependencies:

@@ -12,21 +12,11 @@ ARG SRC_DIRECTORY
 ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
-# Install required packages:
-RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-controller-manager \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
-
-# Upgrade CMake:
-RUN pip install --upgrade cmake --break-system-packages
-
-# Install repo package:
+# Copy Alliander ROS packages, install build dependencies and build the packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_robotiq/src/ /$WORKDIR/ros/src
-RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths src -y -i
+RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths /$WORKDIR/ros/src -y -i -t build
 RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
@@ -44,19 +34,9 @@ FROM ${BASE_IMAGE}
 
 ENV ROS_DISTRO=jazzy
 
-# Install minimal dependencies
-RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-controller-manager \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
-
-# Upgrade CMake:
-RUN pip install --upgrade cmake --break-system-packages
-
-# Copy ROS install
+# Copy Alliander ROS packages and install runtime dependencies:
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
-RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths /$WORKDIR/ros/src -y -i
+RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths /$WORKDIR/ros/src -y -i -t exec
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv

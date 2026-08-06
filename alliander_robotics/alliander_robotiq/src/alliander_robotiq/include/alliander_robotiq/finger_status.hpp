@@ -34,8 +34,8 @@ struct FingerStatus {
   int number_of_joints() const { return scissor ? 2 : 3; }
 
   /**
-   * @brief Update the protocol status label from a status index.
-   * @param status_index Status index in range [0..3].
+   * @brief Update the status of the finger.
+   * @param status The new status to set for the finger.
    */
   void update_status(STATUS_FINGER status) { this->status = status; }
 };

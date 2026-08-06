@@ -24,16 +24,16 @@ typedef sensor_msgs::msg::JointState JointState;
 
 /// Node to control the Robotiq 3-finger gripper.
 class RobotiqController : public rclcpp::Node {
-public:
+ public:
   /**
    * @brief constructor for the RobotiqController class.
    */
   RobotiqController();
 
-private:
-  /// Publisher of serialized gripper status.
+ private:
+  /// Publisher of the gripper status.
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr status_publisher_;
-  /// Publisher of kinematic joint states.
+  /// Publisher of the joint states.
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr
       joint_state_publisher_;
   /// Publisher used in simulation mode to command joint controller.
@@ -59,7 +59,7 @@ private:
   void update_callback();
 
   /**
-   * @brief Convert current finger bytes to joint state message and publish.
+   * @brief Publish the current joint state based on the gripper status.
    */
   void update_joint_state();
 
@@ -69,24 +69,24 @@ private:
    * @param goal Goal payload.
    * @return ACCEPT_AND_EXECUTE for all goals.
    */
-  rclcpp_action::GoalResponse
-  handle_goal(const rclcpp_action::GoalUUID &uuid,
-              std::shared_ptr<const StringAction::Goal> goal);
+  rclcpp_action::GoalResponse handle_goal(
+      const rclcpp_action::GoalUUID& uuid,
+      std::shared_ptr<const StringAction::Goal> goal);
 
   /**
    * @brief Accept cancellation requests.
    * @param goal_handle Goal to cancel.
    * @return ACCEPT always.
    */
-  rclcpp_action::CancelResponse
-  handle_cancel(const std::shared_ptr<GoalHandleStringAction> goal_handle);
+  rclcpp_action::CancelResponse handle_cancel(
+      const std::shared_ptr<GoalHandleStringAction> goal_handle);
 
   /**
    * @brief Execute accepted goals.
    * @param goal_handle Accepted goal handle.
    */
-  void
-  handle_accepted(const std::shared_ptr<GoalHandleStringAction> goal_handle);
+  void handle_accepted(
+      const std::shared_ptr<GoalHandleStringAction> goal_handle);
 
   /**
    * @brief Execute a gripper command and complete the action goal.
@@ -95,4 +95,4 @@ private:
   void execute(const std::shared_ptr<GoalHandleStringAction> goal_handle);
 };
 
-#endif // ALLIANDER_ROBOTIQ__GRIPPER_CONTROLLER_HPP_
+#endif  // ALLIANDER_ROBOTIQ__GRIPPER_CONTROLLER_HPP_
