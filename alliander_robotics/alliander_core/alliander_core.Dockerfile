@@ -71,7 +71,7 @@ RUN apt update \
 RUN pip install uv --break-system-packages
 
 # Upgrade CMake:
-RUN pip install --upgrade cmake --break-system-packages
+RUN pip install --upgrade cmake==3.31.6 --break-system-packages
 
 # Prepare ROS workspace for child images
 COPY $SRC_DIRECTORY/common/colcon_build.sh /$WORKDIR/colcon_build.sh
