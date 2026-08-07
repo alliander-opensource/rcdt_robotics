@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# From https://github.com/aussierobots/ublox_dgnss/blob/main/ublox_dgnss/launch/ublox_mb%2Br_rover.launch.py
+ublox_dgnss:
+  ros__parameters:
+    DEVICE_FAMILY: substitute_me
+    DEVICE_SERIAL_STRING: substitute_me
+    FRAME_ID: substitute_me
+    # config measurement interval to 200 ms (ie 5 Hz) and nav update rate to once per measurement
+    CFG_RATE_MEAS: 200
+    CFG_RATE_NAV: 1
+
+    # disable all messages on UART1
+    CFG_UART1INPROT_NMEA: false
+    CFG_UART1INPROT_RTCM3X: false
+    CFG_UART1INPROT_UBX: false
+    CFG_UART1OUTPROT_NMEA: false
+    CFG_UART1OUTPROT_RTCM3X: false
+    CFG_UART1OUTPROT_UBX: false
+
+    # set UART2 baud rate to 460800
+    CFG-UART2-BAUDRATE: 460800 
+
+    # receive RTCM messages only (from base) on UART2
+    CFG_UART2INPROT_NMEA: false
+    CFG_UART2INPROT_RTCM3X: true
+    CFG_UART2INPROT_UBX: false
+    CFG_UART2OUTPROT_NMEA: false
+    CFG_UART2OUTPROT_RTCM3X: false
+    CFG_UART2OUTPROT_UBX: false
+
+    # send/receive UBX messages only on USB
+    CFG_USBINPROT_NMEA: false
+    CFG_USBINPROT_RTCM3X: false
+    CFG_USBINPROT_UBX: true
+    CFG_USBOUTPROT_NMEA: false
+    CFG_USBOUTPROT_RTCM3X: false
+    CFG_USBOUTPROT_UBX: true
+
+    # messages required for navsatfix calcs by ROS node
+    CFG_MSGOUT_UBX_NAV_HPPOSLLH_USB: 1
+    CFG_MSGOUT_UBX_NAV_COV_USB: 1
+    CFG_MSGOUT_UBX_NAV_STATUS_USB: 1
+    CFG_MSGOUT_UBX_NAV_PVT_USB: 1
+
+    # output relative position messages
+    CFG_MSGOUT_UBX_NAV_RELPOSNED_USB: 1

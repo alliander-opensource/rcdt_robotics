@@ -9,7 +9,7 @@ controller_server:
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
       motion_model: "DiffDrive"
-      visualize: true  # computationally expensive, set to false on robot
+      visualize: substitute_me  # computationally expensive, set to false on robot
       time_steps: 56
       model_dt: 0.05  # set this to 1 / controller_frequency
       batch_size: 2000

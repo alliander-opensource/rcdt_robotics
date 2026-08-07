@@ -12,6 +12,7 @@ local_costmap:
       rolling_window: substitute_me
       update_frequency: 10.0
       publish_frequency: 5.0
+      transform_tolerance: 0.3
       width: substitute_me
       height: substitute_me
       footprint: "[[0.4045, 0.424], [0.4045, -0.424], [-0.4045, -0.424], [-0.4045, 0.424]]"

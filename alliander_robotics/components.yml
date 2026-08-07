@@ -34,10 +34,10 @@ gazebo:
   base_image: allianderrobotics/base
   repository: allianderrobotics/gazebo
   dockerfile: alliander_gazebo/alliander_gazebo.Dockerfile
-gps:
+ublox:
   base_image: allianderrobotics/base
-  repository: allianderrobotics/gps
-  dockerfile: alliander_gps/alliander_gps.Dockerfile
+  repository: allianderrobotics/ublox
+  dockerfile: alliander_ublox/alliander_ublox.Dockerfile
 husarion:
   base_image: allianderrobotics/base
   repository: allianderrobotics/husarion

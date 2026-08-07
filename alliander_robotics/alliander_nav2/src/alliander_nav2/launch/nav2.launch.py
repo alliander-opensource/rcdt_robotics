@@ -116,7 +116,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     navsat_transform_params = AdaptedYaml(
         get_file_path("alliander_nav2", ["config", "nav2"], "navsat_transform.yaml"),
         {},
-        root_key=namespace_gps,
+        root_key=namespace_vehicle,
     )
 
     local_costmap_params = AdaptedYaml(
@@ -182,7 +182,11 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ["config", "nav2", "controllers"],
             f"{nav2.controller}.yaml",
         ),
-        {},
+        {
+            "FollowPath": {
+                "visualize": vehicle_config.simulation,
+            }
+        },
         root_key=namespace_vehicle,
     )
 
@@ -308,8 +312,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
 
     remappings = []
     if nav2.gps:
-        remappings.append(("/gps/fix", f"/{namespace_gps}/fix"))
-        remappings.append(("/fromLL", f"/{namespace_gps}/fromLL"))
+        remappings.append(("/gps/fix", f"/{namespace_gps}/gps/fix"))
+        remappings.append(("/fromLL", f"/{namespace_vehicle}/fromLL"))
 
     all_lifecycle_nodes["waypoint_follower"] = LifecycleNode(
         package="nav2_waypoint_follower",
@@ -343,11 +347,13 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         package="robot_localization",
         executable="navsat_transform_node",
         name="navsat_transform",
-        namespace=namespace_gps,
+        namespace=namespace_vehicle,
+        arguments=["--ros-args", "--log-level", "warn"],
         parameters=[navsat_transform_params.file],
         remappings=[
-            ("odometry/filtered", f"/{namespace_vehicle}/odometry/global"),
+            ("odometry/filtered", "odometry/global"),
             ("imu", f"/{namespace_imu}/imu/data"),
+            ("gps/fix", f"/{namespace_gps}/gps/fix"),
         ],
     )
 

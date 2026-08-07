@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# From https://github.com/aussierobots/ublox_dgnss/blob/main/ublox_dgnss/launch/ublox_fb%2Br_base.launch.py
+ublox_dgnss:
+  ros__parameters:
+    DEVICE_FAMILY: substitute_me
+    DEVICE_SERIAL_STRING: substitute_me
+    FRAME_ID: substitute_me
+    CFG_USBOUTPROT_NMEA: false 
+    # output RTCM messages
+    CFG_MSGOUT_RTCM_3X_TYPE1005_USB: 1
+    CFG_MSGOUT_RTCM_3X_TYPE1077_USB: 1
+    CFG_MSGOUT_RTCM_3X_TYPE1087_USB: 1
+    CFG_MSGOUT_RTCM_3X_TYPE1127_USB: 1
+    CFG_MSGOUT_RTCM_3X_TYPE1097_USB: 1
+    CFG_MSGOUT_RTCM_3X_TYPE1230_USB: 1
+    # set GPS to survey in mode
+    CFG_TMODE_MODE: 1
+    CFG_TMODE_SVIN_ACC_LIMIT: 50000
+    CFG_TMODE_SVIN_MIN_DUR: 60
+    # output some recommended UBX messages
+    CFG_MSGOUT_UBX_NAV_SIG_USB: 1
+    CFG_MSGOUT_UBX_NAV_PVT_USB: 1
+    CFG_MSGOUT_UBX_NAV_POSLLH_USB: 1
+    CFG_MSGOUT_UBX_NAV_RELPOSNED_USB: 1
+    CFG_MSGOUT_UBX_NAV_STATUS_USB: 1
+    CFG_MSGOUT_UBX_NAV_SVIN_USB: 1

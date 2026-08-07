@@ -247,15 +247,26 @@ An Xsens IMU can be launched by creating a configuration with an *IMU* of type *
 
 When using the Xsens IMU, make sure that the IMU shows up on your device (use *lsusb* to check) and that the Docker container runs with *privileged: true* (standard in our repo).
 
-## Teltonika GPS
+## GPS 
+### U-Blox GPS
+#### Hardware X20P
+If using multiple GPS devices, e.g. in a rover-base configuration, correct device enumeration may need some extra configuration. The GPS library ![ublox-dgnss](https://github.com/aussierobots/ublox_dgnss.git) diffentiates between X20P devices based on the `DEVICE_SERIAL_STRING`, which can be found by running `python3 ublox_serial.py list` in `alliander_ublox/src/alliander_ublox/scripts/` with a U-Blox GPS attached (works better if you are in the `allianderrobotics/gps` Docker container with `sleep infinity`). 
+The value is supposed to be unique for each device, set during construction in the factory. This is not always the case however -- sometimes it just reads 0. 
 
+In that case, you have two options:
+- set it with `python3 ublox_serial.py set-persistent <bus-port> <string>`. Remove and plug the device in again for the change to take effect. You can do this from a Docker container (make sure to add the `privileged` flag for hardware access!): `docker run -it --rm --privileged allianderrobotics/gps bash`. 
+- set it in u-center 2 on Windows, under `Device Configuration > USB > SERIAL_NO_STR0`. Make sure to `Set` and `Send` to RAM, BBR, and flash.
+
+### Teltonika GPS
 ![Teltonika](../img/teltonika/nmea.png)
 
-### Simulation Teltonika
 
-A Teltonika GPS can be launched in simulation by creating a configuration with an *GPS* of type *teltonika*.
 
-### Hardware Teltonika
+#### Simulation Teltonika
+
+A Teltonika GPS can be launched in simulation by creating a configuration with a *GPS* of type *teltonika*.
+
+#### Hardware Teltonika
 
 When using the Teltonika GPS, make sure that the IP-address of the host device (where the nmea node is running) is set correctly in the settings. One can edit the settings of the Teltonika using a web interface on it’s IP-adress.
 

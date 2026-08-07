@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# From https://github.com/aussierobots/ublox_dgnss/blob/main/ublox_dgnss/launch/ublox_fb%2Br_rover.launch.py
+ublox_dgnss:
+  ros__parameters:
+    DEVICE_FAMILY: substitute_me
+    DEVICE_SERIAL_STRING: substitute_me
+    FRAME_ID: substitute_me
+    CFG_USBOUTPROT_NMEA: false 
+    CFG_RATE_MEAS: 10
+    CFG_RATE_NAV: 100
+    CFG_MSGOUT_UBX_NAV_HPPOSLLH_USB: 1
+    CFG_MSGOUT_UBX_NAV_COV_USB: 1
+    CFG_MSGOUT_UBX_RXM_RTCM_USB: 1
+    CFG_MSGOUT_UBX_NAV_SIG_USB: 1
+    CFG_MSGOUT_UBX_NAV_PVT_USB: 1
+    CFG_MSGOUT_UBX_NAV_POSLLH_USB: 1
+    CFG_MSGOUT_UBX_NAV_RELPOSNED_USB: 1
+    CFG_MSGOUT_UBX_NAV_STATUS_USB: 1
+    CFG_MSGOUT_UBX_NAV_SVIN_USB: 1
+    CFG_MSGOUT_UBX_NAV_SOL_USB: 1

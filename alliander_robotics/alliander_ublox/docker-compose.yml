@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 services:
-  alliander_gps:
-    image: allianderrobotics/gps
-    container_name: alliander_gps
+  alliander_ublox:
+    image: allianderrobotics/ublox
+    container_name: alliander_ublox
     network_mode: host
     privileged: true
     mem_limit: 6gb
@@ -14,4 +14,4 @@ services:
       - "/dev:/dev"
     env_file:
       - .env
-    command: ["/bin/bash", "-c", "ros2 launch alliander_gps gps.launch.py"]
+    command: ["/bin/bash", "-c", "ros2 launch alliander_ublox ublox.launch.py"]
