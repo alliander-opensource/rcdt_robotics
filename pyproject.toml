@@ -30,8 +30,9 @@ preview = true
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.pytest.ini_options]
-timeout = 60
+[tool.pytest]
+testpaths = ["alliander_robotics"]
+timeout = "60"
 timeout_func_only = true
 timeout_method = "thread"
 norecursedirs = ["install", "build", "log", ".venv", ".cache"]
