@@ -60,6 +60,8 @@ class ApplyConfigurations:
                     self.add_lidar(Lidar.from_str(platform.to_str()))
                 case "GPS":
                     self.add_gps(GPS.from_str(platform.to_str()))
+                case "Gripper":
+                    pass
                 case "IMU":
                     pass
                 case "Lift":

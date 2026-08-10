@@ -249,6 +249,21 @@ class MoveitConfig(Config):
 
 # Platforms:
 @dataclass
+class Gripper(Platform):
+    """Configuration for a Gripper platform.
+
+    Attributes:
+        platform_type (str): Type identifier for the platform.
+        ip_address (str): IP address of the gripper.
+        port (int): Port number of the gripper.
+    """
+
+    platform_type: str = "Gripper"
+    ip_address: str = "192.168.1.11"
+    port: int = 502
+
+
+@dataclass
 class Arm(Platform):
     """Configuration for an Arm platform.
 
@@ -404,6 +419,7 @@ class PlatformList(Config):
                 Vehicle,
                 Camera,
                 GPS,
+                Gripper,
                 IMU,
                 Lidar,
                 Lift,

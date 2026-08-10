@@ -11,7 +11,7 @@ find_package(ament_cmake_python REQUIRED)
 
 # Shared folders:
 install(
-  DIRECTORY ewellix beamagine franka husarion nmea_gps ouster realsense seekthermal velodyne ur xsens zed
+  DIRECTORY ewellix beamagine franka husarion nmea_gps ouster realsense robotiq seekthermal velodyne ur xsens zed
   DESTINATION share/${PROJECT_NAME}
 )
 
