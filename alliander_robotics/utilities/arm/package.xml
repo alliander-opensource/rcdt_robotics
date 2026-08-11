@@ -8,9 +8,9 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <package format="3">
-  <name>alliander_arm_controllers</name>
+  <name>alliander_utilities_arm</name>
   <version>0.1.0</version>
-  <description>Package with controllers for robot arms.</description>
+  <description>Alliander Robotics utilities for arm platforms.</description>
   <maintainer email="robots@alliander.com">Alliander Robotics</maintainer>
   <license>Apache 2.0</license>
 

@@ -20,6 +20,7 @@ fi
 colcon build \
   "${COLCON_ARGS[@]}" \
   --cmake-args \
+    -DBUILD_TESTING=0 \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 

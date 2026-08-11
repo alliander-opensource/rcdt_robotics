@@ -19,6 +19,9 @@ SPDX-License-Identifier: Apache-2.0
 
   <test_depend>ament_lint_auto</test_depend>
 
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>twist_mux</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

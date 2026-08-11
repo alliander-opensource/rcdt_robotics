@@ -5,7 +5,6 @@ FROM allianderrobotics/base
 
 ARG REMOTE_USER
 ARG SRC_DIRECTORY=alliander_robotics
-ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 WORKDIR /alliander/ros
 
@@ -60,7 +59,6 @@ RUN echo "source /.dev_bashrc" >> /home/$REMOTE_USER/.bashrc
 
 # Copy Alliander ROS packages with C++ code, install build dependencies and build the packages:
 COPY $SRC_DIRECTORY/alliander_core/src/ /alliander/ros/src
-COPY $SRC_DIRECTORY/alliander_arm_controllers/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_diagnostics/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_franka/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_joystick/src/ /alliander/ros/src
@@ -70,12 +68,13 @@ COPY $SRC_DIRECTORY/alliander_nav2/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_robotiq/src /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_seekthermal/src/ /alliander/ros/src
 COPY $SRC_DIRECTORY/alliander_xsens/src/ /alliander/ros/src
-RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --dependency-types=build --from-paths src -y -i -t build
+COPY $SRC_DIRECTORY/utilities/ /alliander/ros/src
+RUN /alliander/rosdep_install.sh --build
 RUN /alliander/colcon_build.sh
 
 # Install python dependencies:
 COPY $SRC_DIRECTORY/pyproject.toml /alliander/pyproject.toml
-RUN uv sync --all-groups
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --all-groups
 
 WORKDIR /alliander
 CMD ["sleep", "infinity"]

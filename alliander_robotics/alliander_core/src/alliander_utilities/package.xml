@@ -19,13 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-  <depend>rclcpp</depend>
-  <depend>cv_bridge</depend>
-  <depend>std_srvs</depend>
-  <depend>alliander_interfaces</depend>
-  <depend>rviz_visual_tools</depend>
-  <depend>tf2_eigen</depend>
-
   <test_depend>ament_lint_auto</test_depend>
 
   <export>

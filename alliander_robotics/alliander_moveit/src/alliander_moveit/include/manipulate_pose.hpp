@@ -9,8 +9,6 @@
 #include <tf2_ros/transform_listener.hpp>
 
 #include "alliander_interfaces/srv/transform_pose_to_frame.hpp"
-#include "geometry_msgs/msg/pose_stamped.hpp"
-#include "geometry_msgs/msg/transform.hpp"
 #include "tf2_ros/buffer.hpp"
 
 /**

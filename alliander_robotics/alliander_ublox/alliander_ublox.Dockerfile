@@ -9,30 +9,30 @@ FROM $BASE_IMAGE AS builder
 ##############################
 
 ARG SRC_DIRECTORY
-ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
 # Install ROS dependencies 
 # gpsd is only used for ubxtool, and python3-gps is a dependency for ubxtool 
-RUN apt update && apt install -y --no-install-recommends \
-  ros-"$ROS_DISTRO"-ntrip-client \
-  ros-"$ROS_DISTRO"-ublox-dgnss \
-  gpsd \
-  python3-gps \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
+# RUN apt update && apt install -y --no-install-recommends \
+#   ros-"$ROS_DISTRO"-ntrip-client \
+#   ros-"$ROS_DISTRO"-ublox-dgnss \
+#   gpsd \
+#   python3-gps \
+#   && rm -rf /var/lib/apt/lists/* \
+#   && apt autoremove -y \
+#   && apt clean
 
-# Install repo packages:
-WORKDIR /"$WORKDIR"/ros
-COPY $SRC_DIRECTORY/alliander_core/src/ /"$WORKDIR"/ros/src
-COPY $SRC_DIRECTORY/alliander_ublox/src/ /"$WORKDIR"/ros/src
-RUN /"$WORKDIR"/colcon_build.sh
+# Install alliander packages:
+WORKDIR /$WORKDIR/ros
+COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_gps/src/ /$WORKDIR/ros/src
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
+RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
-WORKDIR "$WORKDIR"
-COPY $SRC_DIRECTORY/pyproject.toml/ /"$WORKDIR"/pyproject.toml
-RUN uv sync --group alliander-ublox \
+WORKDIR $WORKDIR
+COPY $SRC_DIRECTORY/pyproject.toml/ /$WORKDIR/pyproject.toml
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --group alliander-ublox \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
@@ -41,23 +41,16 @@ RUN uv sync --group alliander-ublox \
 ##############################
 
 FROM ${BASE_IMAGE}
-
 ENV ROS_DISTRO=jazzy
-
-# Install minimal dependencies
-RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-husarion-components-description \
-  ros-$ROS_DISTRO-nmea-navsat-driver \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
-
-# Copy ROS install
-COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
+
+# Copy alliander packages and install runtime dependencies:
+WORKDIR /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
 
 # Finalize
 WORKDIR /"$WORKDIR"

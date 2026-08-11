@@ -8,8 +8,7 @@ import xmltodict
 from alliander_moveit.moveit import Moveit
 from alliander_utilities.config_objects import Arm
 from alliander_utilities.launch_argument import LaunchArgument
-from alliander_utilities.register import Register, RegisteredLaunchDescription
-from alliander_utilities.ros_utils import get_file_path
+from alliander_utilities.register import Register
 from launch import LaunchContext, LaunchDescription
 from launch.actions import OpaqueFunction
 from launch_ros.actions import Node, SetParameter
@@ -84,9 +83,9 @@ def launch_setup(context: LaunchContext) -> list:
     moveit_servo_parameters.append(configuration.robot_description_kinematics)
     moveit_servo_parameters.append(Moveit.servo_configurations[arm_config.namespace])
 
-    # TODO: Add pose_manipulator directly to Moveit, so that utilities can be removed:
-    utilities = RegisteredLaunchDescription(
-        get_file_path("alliander_utilities", ["launch"], "utils.launch.py")
+    manipulate_pose = Node(
+        package="alliander_moveit",
+        executable="manipulate_pose",
     )
 
     move_group = Node(
@@ -113,7 +112,7 @@ def launch_setup(context: LaunchContext) -> list:
 
     return [
         SetParameter(name="use_sim_time", value=arm_config.simulation),
-        Register.group(utilities, context),
+        Register.on_start(manipulate_pose, context),
         Register.on_log(
             move_group, "MoveGroup context initialization complete", context
         ),

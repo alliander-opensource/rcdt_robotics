@@ -9,7 +9,6 @@ FROM $BASE_IMAGE AS builder
 ##############################
 
 ARG SRC_DIRECTORY
-ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
 # Install ZED SDK:
@@ -29,39 +28,39 @@ RUN chmod +x "${RUN_FILE}" \
 
 # Install ZED description and msgs packages on specific version
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-      apt update && apt install -y --no-install-recommends \
-        ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
-        ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260615.112916; \
-    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-      apt update && apt install -y --no-install-recommends \
-        ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.094525 \
-        ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260612.085538; \
-    else \
-      echo "Unsupported architecture: $(dpkg --print-architecture)" && exit 1; \
-    fi && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt autoremove -y && \
-    apt clean
+  apt update && apt install -y --no-install-recommends \
+  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
+  ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260615.112916; \
+  elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+  apt update && apt install -y --no-install-recommends \
+  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.094525 \
+  ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260612.085538; \
+  else \
+  echo "Unsupported architecture: $(dpkg --print-architecture)" && exit 1; \
+  fi && \
+  rm -rf /var/lib/apt/lists/* && \
+  apt autoremove -y && \
+  apt clean
 
-# Install ZED Wrapper:
+# Install external packages:
 WORKDIR /$WORKDIR/external
-RUN apt update \
-  && git clone -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
-  && rm -rf src/zed_ros2_wrapper/zed_debug \
-  && rosdep update --rosdistro $ROS_DISTRO \
-  && rosdep install --from-paths src -y -i
+RUN git clone -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
+  && rm -rf src/zed_ros2_wrapper/zed_debug
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
-# Install repo packages:
+# Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_zed/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/utilities/depth_camera/ /$WORKDIR/ros/src/depth_camera
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR
 COPY $SRC_DIRECTORY/pyproject.toml /$WORKDIR/pyproject.toml
-RUN uv sync \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
@@ -70,34 +69,31 @@ RUN uv sync \
 ##############################
 
 FROM ${BASE_IMAGE}
-
 ENV ROS_DISTRO=jazzy
 
-# Install minimal dependencies
-RUN apt update && \
-    apt install -y \
-        libturbojpeg0-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy environments
+COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
+COPY --from=builder /root/.bashrc /root/.bashrc
 
-COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
-WORKDIR /$WORKDIR/external
-RUN apt update \
-  && rosdep update --rosdistro $ROS_DISTRO \
-  && rosdep install --from-paths src -y -i \
-  && rm -rf src \
+# Install minimal dependencies
+RUN apt update && apt install -y \
+  libturbojpeg0-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy runtime SDK
 COPY --from=builder /usr/local/zed /usr/local/zed
 RUN echo "/usr/local/zed/lib" > /etc/ld.so.conf.d/zed.conf && ldconfig
 
-# Copy ROS install
-COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
-COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
+# Copy external packages and install runtime dependencies:
+WORKDIR /$WORKDIR/external
+COPY --from=builder /$WORKDIR/external /$WORKDIR/external
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
+RUN rm -rf src build log
 
-# Copy environments
-COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
-COPY --from=builder /root/.bashrc /root/.bashrc
+# Copy alliander packages and install runtime dependencies:
+WORKDIR /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
 
 # Finalize
 WORKDIR /$WORKDIR

@@ -48,7 +48,7 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     convert_32FC1_to_16UC1 = Node(  # noqa: N806
-        package="alliander_utilities",
+        package="alliander_utilities_depth_camera",
         executable="convert_32FC1_to_16UC1",
         namespace=camera_config.namespace,
     )

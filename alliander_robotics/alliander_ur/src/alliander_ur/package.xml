@@ -19,6 +19,8 @@ SPDX-License-Identifier: Apache-2.0
 
   <test_depend>ament_lint_auto</test_depend>
 
+  <exec_depend>ur_robot_driver</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>
