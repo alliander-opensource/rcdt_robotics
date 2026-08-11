@@ -9,6 +9,7 @@ import time
 import rclpy
 from alliander_utilities.config_objects import GPS, Lidar, Vehicle, link
 from geographic_msgs.msg import GeoPath, GeoPoseStamped
+from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from sensor_msgs.msg import NavSatFix
 
@@ -42,12 +43,12 @@ class _TestNavigationGPS:
         # 1) Obtain current GPS location:
         current_nav_sat = NavSatFix()
 
-        def callback(msg: NavSatFix) -> None:
+        def callback_gps(msg: NavSatFix) -> None:
             current_nav_sat.latitude = msg.latitude
             current_nav_sat.longitude = msg.longitude
 
         test_node.create_subscription(
-            NavSatFix, f"/{self.platforms['gps'].namespace}/gps/fix", callback, 10
+            NavSatFix, f"/{self.platforms['gps'].namespace}/gps/fix", callback_gps, 10
         )
 
         start_time = time.time()
@@ -56,7 +57,27 @@ class _TestNavigationGPS:
             if time.time() - start_time > timeout:
                 raise TimeoutError("Timeout while waiting for current GPS location.")
 
-        # 2) Publish goal GPS location 1e-5 degrees north of current location:
+        # 2) Wait for the GPS odometry:
+        odometry_received = False
+
+        def callback_odom(_msg: Odometry) -> None:
+            nonlocal odometry_received
+            odometry_received = True
+
+        test_node.create_subscription(
+            Odometry,
+            f"/{self.platforms['vehicle'].namespace}/odometry/gps",
+            callback_odom,
+            10,
+        )
+
+        start_time = time.time()
+        while not odometry_received:
+            rclpy.spin_once(test_node, timeout_sec=0)
+            if time.time() - start_time > timeout:
+                raise TimeoutError("Timeout while waiting for GPS odometry.")
+
+        # 3) Publish goal GPS location 1e-5 degrees north of current location:
         goal_nav_sat = copy.deepcopy(current_nav_sat)
         goal_nav_sat.latitude += 1e-5
 
@@ -69,7 +90,7 @@ class _TestNavigationGPS:
         goal_msg.poses.append(goal_pose)
         publisher.publish(goal_msg)
 
-        # 3) Wait until goal is reached within tolerance:
+        # 4) Wait until goal is reached within tolerance:
         start_time = time.time()
         distance: float = sys.float_info.max
         timed_out = False
@@ -92,7 +113,7 @@ class _TestNavigationGPS:
             f"Timeout: distance {distance} > tolerance {navigation_degree_tolerance}"
         )
 
-        # 4) Stop navigation, since the goal can be reached before the navigation is finished due to tolerance:
+        # 5) Stop navigation, since the goal can be reached before the navigation is finished due to tolerance:
         assert call_trigger_service(
             test_node,
             f"/{self.platforms['vehicle'].namespace}/nav2_manager/stop",
