@@ -107,7 +107,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             "odom_frame": f"{namespace_vehicle}/odom",
             "base_link_frame": f"{namespace_vehicle}/base_footprint",
             "odom0": f"/{namespace_vehicle}/odometry/wheels",
-            "odom1": f"/{namespace_gps}/odometry/gps",
+            "odom1": f"/{namespace_vehicle}/odometry/gps",
             "imu0": f"/{namespace_imu}/imu/data",
         },
         root_key=namespace_vehicle,

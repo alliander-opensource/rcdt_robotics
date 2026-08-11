@@ -40,9 +40,9 @@ class Route(Enum):
         SIM_TIGHT_ALLEYS: Simulation route in Arnhem, with buildings close together.
     """
 
-    IPKW_KB_TRUCK_PARKING_SPACE = auto()
     IPKW_KB_RAMP = auto()
     IPKW_KB_SEMI_OPEN = auto()
+    IPKW_KB_TRUCK_PARKING_SPACE = auto()
     SIM_TIGHT_ALLEYS = auto()
 
 

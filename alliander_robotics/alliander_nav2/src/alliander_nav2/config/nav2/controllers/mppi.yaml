@@ -22,7 +22,7 @@ controller_server:
       ax_min: -10.0
       az_max: 10.0
       iteration_count: 1
-      transform_tolerance: 0.1
+      transform_tolerance: 0.3
       temperature: 0.3
       gamma: 0.015
       reset_period: 1.0 # (only in Humble)
