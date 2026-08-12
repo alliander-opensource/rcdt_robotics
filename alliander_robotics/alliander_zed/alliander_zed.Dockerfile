@@ -26,26 +26,11 @@ RUN chmod +x "${RUN_FILE}" \
   && rm -f "${RUN_FILE}" \
   && rm -rf /var/lib/apt/lists/*
 
-# Install ZED description and msgs packages on specific version
-RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-  apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.180130 \
-  ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260615.112916; \
-  elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-  apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-zed-description=0.1.5-1noble.20260615.094525 \
-  ros-$ROS_DISTRO-zed-msgs=5.3.0-1noble.20260612.085538; \
-  else \
-  echo "Unsupported architecture: $(dpkg --print-architecture)" && exit 1; \
-  fi && \
-  rm -rf /var/lib/apt/lists/* && \
-  apt autoremove -y && \
-  apt clean
-
 # Install external packages:
 WORKDIR /$WORKDIR/external
-RUN git clone -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
-  && rm -rf src/zed_ros2_wrapper/zed_debug
+RUN git clone --depth=1 --filter=blob:none --sparse -b v5.4.0 https://github.com/stereolabs/zed-ros2-wrapper.git src/zed_ros2_wrapper \
+  && cd src/zed_ros2_wrapper \
+  && git sparse-checkout set zed_wrapper zed_components
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
@@ -74,13 +59,6 @@ ENV ROS_DISTRO=jazzy
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
-
-# Install minimal dependencies
-RUN apt update && apt install -y \
-  libturbojpeg0-dev \
-  && rm -rf /var/lib/apt/lists/*
-
-# Copy runtime SDK
 COPY --from=builder /usr/local/zed /usr/local/zed
 RUN echo "/usr/local/zed/lib" > /etc/ld.so.conf.d/zed.conf && ldconfig
 
