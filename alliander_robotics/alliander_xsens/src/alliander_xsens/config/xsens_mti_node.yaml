@@ -149,7 +149,7 @@ xsens_driver:
     pub_pressure: true
     pub_accelerationhr: false      #High Rate Data Acceleration, when this is true, set enable_high_rate to true as well
     pub_angular_velocity_hr: false #High Rate Data Angular Velocity,  when this is true, set enable_high_rate to true as well
-    pub_transform: true
+    pub_transform: false 
     pub_status: true
     pub_twist: true         # For GNSS/INS Version of MTI only
     pub_gnss: true          # For GNSS/INS Version of MTI only

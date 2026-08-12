@@ -71,6 +71,9 @@ RUN apt update \
 # Copy ROS install
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
+# Files specific to Xsens MTi library
+COPY --from=builder /$WORKDIR/external/build/ntrip/ament_cmake_environment_hooks/local_setup.* /$WORKDIR/external/build/ntrip/ament_cmake_environment_hooks/local_setup.*
+COPY --from=builder /$WORKDIR/external/src/xsens/src/ntrip/package.xml /$WORKDIR/external/src/xsens/src/ntrip/package.xml
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv

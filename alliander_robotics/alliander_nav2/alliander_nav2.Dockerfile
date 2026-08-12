@@ -24,7 +24,7 @@ RUN apt update && apt install -y --no-install-recommends \
 
 # Install nav2 packages 
 WORKDIR /$WORKDIR/external
-RUN git clone -b jazzy-devel https://github.com/blackcoffeerobotics/vector_pursuit_controller.git src/vector_pursuit_controller
+RUN git clone -b jazzy https://github.com/blackcoffeerobotics/vector_pursuit_controller.git src/vector_pursuit_controller
 RUN /$WORKDIR/colcon_build.sh
 
 # Install repo packages:
