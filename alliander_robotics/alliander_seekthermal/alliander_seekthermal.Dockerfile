@@ -36,6 +36,10 @@ ENV ROS_DISTRO=jazzy
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
 
+# Install arp-scan:
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked \
+  apt update && apt install -y --no-install-recommends arp-scan
+
 # Copy alliander packages and install runtime dependencies:
 WORKDIR /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros

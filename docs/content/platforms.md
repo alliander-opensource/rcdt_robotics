@@ -174,7 +174,7 @@ A Seek Thermal camera can be launched in simulation by creating a configuration 
 
 ### Hardware Seek Thermal
 
-To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules.
+To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, define a manual internet connection with an ip address in the `169.254.63.X` range (not 169.254.63.63, since this is the defautl ip address of the sensor), then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules.
 
 ## ZED
 
