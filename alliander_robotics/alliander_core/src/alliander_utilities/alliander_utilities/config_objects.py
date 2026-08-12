@@ -261,11 +261,11 @@ class NtripConfig(Config):
     """
 
     use_https: bool = True
-    host: str = ""
-    port: int = 2101
-    mountpoint: str = ""
-    username: str = ""
-    password: str = ""
+    host: str = "ntrip.kadaster.nl"
+    port: int = 443
+    mountpoint: str = "APEL00NLD0"
+    username: str = "user"
+    password: str = "pass"
 
 
 # Platforms:
@@ -388,7 +388,7 @@ class GPS(Platform):
 
     Attributes:
         platform_type (str): Type identifier for the platform.
-        usb_device (str): USB busnum of the GPS receiver, e.g. 1-2.1.
+        usb_device (str): USB serial name (e.g. PANTHER), to be set by the ublox_serial.py script.
         operation_mode (Literal["fb_base", "fb_rover", "mb_base", "mb_rover", "rover"]): Operation mode of the GPS receiver.
         device_family (Literal["F9P", "F9R", "X20P"]): U-Blox chip device family.
         diagnostic_topic (str): GPS topic to monitor for diagnostic data.

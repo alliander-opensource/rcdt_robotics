@@ -96,14 +96,7 @@ class PredefinedConfigurations:
 
     @register_configuration("ublox")
     def config_gps(self) -> None:  # noqa: D102
-        ntrip = NtripConfig(
-            use_https=True,
-            host="ntrip.kadaster.nl",
-            port=443,
-            mountpoint="APEL00NLD0",
-            username="user",
-            password="pass",
-        )
+        ntrip = NtripConfig()
         gps = GPS(
             "ublox",
             (0, 0, 0.5),
@@ -114,14 +107,7 @@ class PredefinedConfigurations:
 
     @register_configuration("dual_ublox")
     def config_dual_gps(self) -> None:  # noqa: D102
-        ntrip = NtripConfig(
-            use_https=True,
-            host="ntrip.kadaster.nl",
-            port=443,
-            mountpoint="APEL00NLD0",
-            username="user",
-            password="pass",
-        )
+        ntrip = NtripConfig()
         gps_base = GPS(
             "ublox",
             (0.5, 0.5, 0.5),
@@ -320,26 +306,10 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [vehicle, beamagine]
         self.sim_conf.world = "walls.sdf"
 
-    @register_configuration("panther_gps")
-    def config_panther_gps(self) -> None:  # noqa: D102
-        vehicle = Vehicle("panther", (0, 0, 0.2))
-        beamagine = Beamagine("beamagine", (0, 0, 0.3))
-
-        link(vehicle, beamagine)
-        self.plat_conf.platforms = [vehicle, beamagine]
-        self.sim_conf.world = "walls.sdf"
-
     @register_configuration("panther_ublox")
     def config_panther_ublox(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
-        ntrip = NtripConfig(
-            use_https=True,
-            host="ntrip.kadaster.nl",
-            port=443,
-            mountpoint="APEL00NLD0",
-            username="user",
-            password="pass",
-        )
+        ntrip = NtripConfig()
         gps = GPS(
             "ublox",
             (-0.21, 0.2, 0.19),
@@ -413,14 +383,7 @@ class PredefinedConfigurations:
             ip_address="10.15.20.5",
         )
 
-        ntrip = NtripConfig(
-            use_https=True,
-            host="ntrip.kadaster.nl",
-            port=443,
-            mountpoint="APEL00NLD0",
-            username="user",
-            password="pass",
-        )
+        ntrip = NtripConfig()
         gps = GPS(
             "ublox",
             (-0.21, 0.2, 0.19),
@@ -461,14 +424,7 @@ class PredefinedConfigurations:
         vehicle.nav2_config.window_size = 50
 
         lidar = Lidar("ouster", (0.06, 0.0, 0.25))
-        ntrip = NtripConfig(
-            use_https=True,
-            host="ntrip.kadaster.nl",
-            port=443,
-            mountpoint="APEL00NLD0",
-            username="user",
-            password="pass",
-        )
+        ntrip = NtripConfig()
         gps = GPS(
             "ublox",
             (-0.21, 0.2, 0.19),
