@@ -17,6 +17,7 @@ from alliander_robotics.alliander_core.src.alliander_utilities.alliander_utiliti
     Gripper,
     Lidar,
     Lift,
+    NtripConfig,
     Platform,
     PlatformList,
     SimulatorConfig,
@@ -93,9 +94,37 @@ class PredefinedConfigurations:
     def config_axis(self) -> None:  # noqa: D102
         self.plat_conf.platforms = [Platform("axis")]
 
-    @register_configuration("gps")
+    @register_configuration("ublox")
     def config_gps(self) -> None:  # noqa: D102
-        self.plat_conf.platforms = [GPS("gps", (0, 0, 0.5), ip_address="10.15.20.202")]
+        ntrip = NtripConfig()
+        gps = GPS(
+            "ublox",
+            (0, 0, 0.5),
+            namespace="ublox",
+            ntrip_config=ntrip,
+        )
+        self.plat_conf.platforms = [gps]
+
+    @register_configuration("dual_ublox")
+    def config_dual_gps(self) -> None:  # noqa: D102
+        ntrip = NtripConfig()
+        gps_base = GPS(
+            "ublox",
+            (0.5, 0.5, 0.5),
+            namespace="ublox_base",
+            operation_mode="mb_base",
+            ntrip_config=ntrip,
+            usb_device="BASE",
+        )
+        gps_rover = GPS(
+            "ublox",
+            (-0.5, -0.5, 0.5),
+            namespace="ublox_rover",
+            operation_mode="mb_rover",
+            ntrip_config=ntrip,
+            usb_device="ROVER",
+        )
+        self.plat_conf.platforms = [gps_base, gps_rover]
 
     @register_configuration("ouster")
     def config_ouster(self) -> None:  # noqa: D102
@@ -252,6 +281,14 @@ class PredefinedConfigurations:
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
 
+    @register_configuration("panther_xsens")
+    def config_panther_xsens(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2))
+        imu = IMU("xsens", position=(-0.195, -0.01, 0.18), orientation=(-90, 0, 90))
+
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, imu]
+
     @register_configuration("panther_ouster")
     def config_panther_ouster(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
@@ -269,11 +306,18 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [vehicle, beamagine]
         self.sim_conf.world = "walls.sdf"
 
-    @register_configuration("panther_gps")
-    def config_panther_gps(self) -> None:  # noqa: D102
+    @register_configuration("panther_ublox")
+    def config_panther_ublox(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
-        gps = GPS("gps", position=(-0.08, -0.25, 0.2), orientation=(0, 0, -90))
-
+        ntrip = NtripConfig()
+        gps = GPS(
+            "ublox",
+            (-0.21, 0.2, 0.19),
+            namespace="ublox",
+            operation_mode="rover",
+            ntrip_config=ntrip,
+            usb_device="PANTHER",
+        )
         link(vehicle, gps)
         self.plat_conf.platforms = [vehicle, gps]
         self.sim_conf.world = "map_5.940906_51.966960"
@@ -324,21 +368,31 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [vehicle, lidar]
         self.sim_conf.world = "walls.sdf"
 
-    @register_configuration("panther_gps_navigation")
+    @register_configuration("panther_outdoor_navigation")
     def config_panther_gps_navigation(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2), (0, 0, 45))
         vehicle.nav2_config.controller = "mppi"
         vehicle.nav2_config.navigation = True
         vehicle.nav2_config.gps = True
         vehicle.nav2_config.window_size = 50
+
         lidar = Lidar(
             "velodyne",
             position=(0.125, 0.185, 0.2),
             orientation=(0, 0, 45),
             ip_address="10.15.20.5",
         )
-        gps = GPS("gps", position=(-0.08, -0.25, 0.2), orientation=(0, 0, -90))
-        imu = IMU("xsens", position=(-0.23, -0.08, 0.18), orientation=(0, 0, 180))
+
+        ntrip = NtripConfig()
+        gps = GPS(
+            "ublox",
+            (-0.21, 0.2, 0.19),
+            namespace="ublox",
+            operation_mode="rover",
+            ntrip_config=ntrip,
+            usb_device="PANTHER",
+        )
+        imu = IMU("xsens", position=(-0.195, -0.01, 0.18), orientation=(-90, 0, 90))
         camera = Camera("realsense", (0.18, 0, 0.2))
 
         link(vehicle, lidar)
@@ -362,14 +416,23 @@ class PredefinedConfigurations:
         link(vehicle, lidar)
         self.plat_conf.platforms = [vehicle, lidar]
 
-    @register_configuration("lynx_gps_navigation")
+    @register_configuration("lynx_outdoor_navigation")
     def config_lynx_gps_navigation(self) -> None:  # noqa: D102
         vehicle = Vehicle("lynx", (0, 0, 0.13))
         vehicle.nav2_config.navigation = True
         vehicle.nav2_config.gps = True
         vehicle.nav2_config.window_size = 50
+
         lidar = Lidar("ouster", (0.06, 0.0, 0.25))
-        gps = GPS("gps", (-0.25, -0.08, 0.25), orientation=(0, 0, 180))
+        ntrip = NtripConfig()
+        gps = GPS(
+            "ublox",
+            (-0.21, 0.2, 0.19),
+            namespace="gps",
+            operation_mode="rover",
+            ntrip_config=ntrip,
+            usb_device="LYNX",
+        )
         imu = IMU("xsens", position=(-0.28, 0.04, 0.25), orientation=(0, 0, 180))
 
         link(vehicle, lidar)
@@ -509,3 +572,4 @@ class PredefinedConfigurations:
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, lidar, imu, camera]
         self.sim_conf.world = "walls.sdf"
+        self.viz_conf.gui = True

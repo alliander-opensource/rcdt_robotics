@@ -12,6 +12,7 @@ global_costmap:
       height: substitute_me
       update_frequency: 20.0
       publish_frequency: 20.0
+      transform_tolerance: 0.3
       always_send_full_costmap: true
       robot_base_frame: substitute_me
       footprint: "[[0.4045, 0.424], [0.4045, -0.424], [-0.4045, -0.424], [-0.4045, 0.424]]"

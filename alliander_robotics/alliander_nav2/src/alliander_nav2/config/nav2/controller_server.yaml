@@ -7,6 +7,8 @@
 controller_server:
   ros__parameters:
     enable_stamped_cmd_vel: true
+    controller_frequency: 20.0
+    transform_tolerance: 0.3
     PathHandler:
       prune_distance: 5.5  # at least as large as furthest distance of interest by critic
 

@@ -28,8 +28,8 @@ def launch_setup(context: LaunchContext) -> list:
 
     state_publisher = state_publisher_node(
         namespace=gps_config.namespace,
-        platform="nmea_gps",
-        xacro="nmea_navsat.urdf.xacro",
+        platform="drotek",
+        xacro="drotek_da435.urdf.xacro",
         xacro_arguments={
             "namespace": gps_config.namespace,
             "parent": "" if gps_config.parent.link else "world",
@@ -45,7 +45,12 @@ def launch_setup(context: LaunchContext) -> list:
     )
 
     hardware = RegisteredLaunchDescription(
-        get_file_path("alliander_gps", ["launch"], "hardware.launch.py"),
+        get_file_path("alliander_ublox", ["launch"], "hardware.launch.py"),
+        {"platform_config": gps_config.to_str()},
+    )
+
+    ntrip = RegisteredLaunchDescription(
+        get_file_path("alliander_ublox", ["launch"], "ntrip.launch.py"),
         {"platform_config": gps_config.to_str()},
     )
 
@@ -54,6 +59,9 @@ def launch_setup(context: LaunchContext) -> list:
         Register.on_start(state_publisher, context),
         Register.on_start(static_tf, context),
         Register.group(hardware, context) if not gps_config.simulation else SKIP,
+        Register.group(ntrip, context)
+        if (gps_config.ntrip_config.host and not gps_config.simulation)
+        else SKIP,
     ]
 
 

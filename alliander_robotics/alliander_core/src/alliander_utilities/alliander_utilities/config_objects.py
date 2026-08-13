@@ -231,7 +231,7 @@ class Nav2Config(Config):
         "pure_pursuit",
         "rotation_shim",
         "vector_pursuit",
-    ] = "vector_pursuit"
+    ] = "mppi"
     map: Literal["simulation_map", "ipkw", "ipkw_buiten"] = "simulation_map"
     window_size: int = 10
 
@@ -245,6 +245,27 @@ class MoveitConfig(Config):
     """
 
     load_rviz_motion_planning_plugin: bool = False
+
+
+@dataclass
+class NtripConfig(Config):
+    """Configuration for NTRIP client.
+
+    Attributes:
+        use_https (bool): Whether to use HTTPS.
+        host (str): URL of the NTRIP client.
+        port (int): Port of the NTRIP client.
+        mountpoint (str): Mountpoint for the NTRIP client.
+        username (str): Username for the NTRIP client.
+        password (str): Password for the NTRIP client.
+    """
+
+    use_https: bool = True
+    host: str = "ntrip.kadaster.nl"
+    port: int = 443
+    mountpoint: str = "APEL00NLD0"
+    username: str = "user"
+    password: str = "pass"
 
 
 # Platforms:
@@ -367,15 +388,24 @@ class GPS(Platform):
 
     Attributes:
         platform_type (str): Type identifier for the platform.
-        ip_address (str): IP address of the GPS receiver.
+        usb_device (str): USB serial name (e.g. PANTHER), to be set by the ublox_serial.py script.
+        operation_mode (Literal["fb_base", "fb_rover", "mb_base", "mb_rover", "rover"]): Operation mode of the GPS receiver.
+        device_family (Literal["F9P", "F9R", "X20P"]): U-Blox chip device family.
         diagnostic_topic (str): GPS topic to monitor for diagnostic data.
         diagnostic_timeouts (tuple[int, int, int]): timeout to trigger status levels WARN, ERROR, and STALE.
+        ntrip_config (NtripConfig): NTRIP configuration for the GPS platform.
     """
 
     platform_type: str = "GPS"
-    ip_address: str = ""
+    usb_device: str = ""
+    operation_mode: Literal["fb_base", "fb_rover", "mb_base", "mb_rover", "rover"] = (
+        "rover"
+    )
+    device_family: Literal["F9P", "F9R", "X20P"] = "X20P"
     diagnostic_topic: str = "gps/fix"
     diagnostic_timeouts: tuple[int, int, int] = (3, 5, 10)
+
+    ntrip_config: NtripConfig = field(default_factory=NtripConfig)
 
 
 @dataclass

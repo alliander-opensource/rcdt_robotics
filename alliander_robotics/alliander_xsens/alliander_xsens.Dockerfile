@@ -71,6 +71,9 @@ RUN apt update \
 # Copy ROS install
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
+# Files specific to Xsens MTi library
+COPY --from=builder /$WORKDIR/external/build /$WORKDIR/external/build
+COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv

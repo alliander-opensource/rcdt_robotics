@@ -23,9 +23,6 @@ alliander-gazebo = [
     "scipy>=1.17.0",
     "xmltodict>=1.0.2",
 ]
-alliander-gps = [
-    "pydantic>=2.12.5",
-]
 alliander-meta = [
     "numpy>=2.4.1",
     "pure-python-adb-reborn>=1.0.0",
@@ -46,6 +43,9 @@ alliander-seekthermal = [
     "numpy>=2.4.4",
     "requests>=2.33.0",
 ]
+alliander-ublox = [
+    "pydantic>=2.12.5",
+]
 alliander-ur = [
     "numpy>=2.4.4",
 ]
@@ -57,6 +57,7 @@ alliander-visualization = [
 ]
 alliander-xsens = [
     "matplotlib>=3.10.9",
+    "pydantic>=2.12.5",
     "pyserial>=3.5",
 ]
 

@@ -34,28 +34,35 @@ class Route(Enum):
     """Enum containing predefined routes for GPS Waypoint Follower.
 
     Attributes:
-        IPKW_KB_TRUCK_PARKING_SPACE: Route nearby Roboticalab entrance.
         IPKW_KB_RAMP: Route nearby Roboticalab entrance.
+        IPKW_KB_SEMI_OPEN: Route just outside the Roboticalab entrance, beneath a semi-open concrete roof.
+        IPKW_KB_TRUCK_PARKING_SPACE: Route nearby Roboticalab entrance.
         SIM_TIGHT_ALLEYS: Simulation route in Arnhem, with buildings close together.
     """
 
-    IPKW_KB_TRUCK_PARKING_SPACE = auto()
     IPKW_KB_RAMP = auto()
+    IPKW_KB_SEMI_OPEN = auto()
+    IPKW_KB_TRUCK_PARKING_SPACE = auto()
     SIM_TIGHT_ALLEYS = auto()
 
 
 ROUTES: dict[Route, list[GPSWaypoint]] = {
-    Route.IPKW_KB_TRUCK_PARKING_SPACE: [
-        GPSWaypoint(51.966663, 5.940867),
-        GPSWaypoint(51.966511, 5.940912),
-        GPSWaypoint(51.966512, 5.940945),
-        GPSWaypoint(51.966661, 5.940892, yaw=math.pi / 4),
-    ],
     Route.IPKW_KB_RAMP: [
         GPSWaypoint(51.966705, 5.940815, yaw=-math.pi / 4),
         GPSWaypoint(51.966705, 5.940869),
         GPSWaypoint(51.966694, 5.940869),
         GPSWaypoint(51.966694, 5.940815, yaw=math.pi / 4),
+    ],
+    Route.IPKW_KB_SEMI_OPEN: [
+        GPSWaypoint(51.966632, 5.940393),
+        GPSWaypoint(51.966638, 5.940446),
+        GPSWaypoint(51.966632, 5.940393),
+    ],
+    Route.IPKW_KB_TRUCK_PARKING_SPACE: [
+        GPSWaypoint(51.966663, 5.940867),
+        GPSWaypoint(51.966511, 5.940912),
+        GPSWaypoint(51.966512, 5.940945),
+        GPSWaypoint(51.966661, 5.940892, yaw=math.pi / 4),
     ],
     Route.SIM_TIGHT_ALLEYS: [
         GPSWaypoint(51.977291, 5.954022, yaw=-math.pi),

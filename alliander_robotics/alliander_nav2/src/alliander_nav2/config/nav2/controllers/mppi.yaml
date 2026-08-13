@@ -9,7 +9,7 @@ controller_server:
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
       motion_model: "DiffDrive"
-      visualize: true  # computationally expensive, set to false on robot
+      visualize: substitute_me  # computationally expensive, set to false on robot
       time_steps: 56
       model_dt: 0.05  # set this to 1 / controller_frequency
       batch_size: 2000
@@ -22,7 +22,7 @@ controller_server:
       ax_min: -10.0
       az_max: 10.0
       iteration_count: 1
-      transform_tolerance: 0.1
+      transform_tolerance: 0.3
       temperature: 0.3
       gamma: 0.015
       reset_period: 1.0 # (only in Humble)

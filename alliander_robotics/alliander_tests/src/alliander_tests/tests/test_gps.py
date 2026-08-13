@@ -28,7 +28,7 @@ class _TestGPS:
         )
 
 
-for gps in ["gps"]:
+for gps in ["ublox"]:
     gps_platform = GPS(gps, (0, 0, 0.5))
     test_class = type(
         f"Test{gps.capitalize()}",

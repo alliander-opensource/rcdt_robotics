@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from alliander_utilities.adapted_yaml import AdaptedYaml
 from alliander_utilities.config_objects import IMU
 from alliander_utilities.launch_argument import LaunchArgument
 from alliander_utilities.launch_utils import SKIP, state_publisher_node, static_tf_node
@@ -43,11 +44,17 @@ def launch_setup(context: LaunchContext) -> list:
         orientation=imu_config.orientation,
     )
 
-    parameter_file = get_file_path("alliander_xsens", ["config"], "xsens_mti_node.yaml")
+    params = AdaptedYaml(
+        get_file_path("alliander_xsens", ["config"], "xsens_mti_node.yaml"),
+        {
+            "frame_id": f"{imu_config.namespace}/imu_link",
+        },
+        root_key=imu_config.namespace,
+    )
     hardware = Node(
         package="xsens_mti_ros2_driver",
         executable="xsens_mti_node",
-        parameters=[parameter_file],
+        parameters=[params.file],
         respawn=True,
         remappings=[
             ("/imu/acceleration", "imu/acceleration"),
@@ -71,6 +78,12 @@ def launch_setup(context: LaunchContext) -> list:
     madgwick_filter_node = Node(
         package="imu_filter_madgwick",
         executable="imu_filter_madgwick_node",
+        parameters=[
+            {
+                "fixed_frame": f"{parent.namespace}/odom" if parent.link else "odom",
+                "publish_tf": not bool(parent.link),
+            }
+        ],
         remappings=[],
         namespace=imu_config.namespace,
     )
@@ -83,13 +96,13 @@ def launch_setup(context: LaunchContext) -> list:
         if not imu_config.simulation
         else SKIP,
         Register.on_start(
-            madgwick_filter_node,
+            hardware,
             context,
         )
         if not imu_config.simulation
         else SKIP,
         Register.on_start(
-            hardware,
+            madgwick_filter_node,
             context,
         )
         if not imu_config.simulation

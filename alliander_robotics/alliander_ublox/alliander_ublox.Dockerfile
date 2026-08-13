@@ -13,23 +13,26 @@ ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
 # Install ROS dependencies 
+# gpsd is only used for ubxtool, and python3-gps is a dependency for ubxtool 
 RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-husarion-components-description \
-  ros-$ROS_DISTRO-nmea-navsat-driver \
+  ros-"$ROS_DISTRO"-ntrip-client \
+  ros-"$ROS_DISTRO"-ublox-dgnss \
+  gpsd \
+  python3-gps \
   && rm -rf /var/lib/apt/lists/* \
   && apt autoremove -y \
   && apt clean
 
 # Install repo packages:
-WORKDIR /$WORKDIR/ros
-COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
-COPY $SRC_DIRECTORY/alliander_gps/src/ /$WORKDIR/ros/src
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+WORKDIR /"$WORKDIR"/ros
+COPY $SRC_DIRECTORY/alliander_core/src/ /"$WORKDIR"/ros/src
+COPY $SRC_DIRECTORY/alliander_ublox/src/ /"$WORKDIR"/ros/src
+RUN /"$WORKDIR"/colcon_build.sh
 
 # Install python dependencies:
-WORKDIR $WORKDIR
-COPY $SRC_DIRECTORY/pyproject.toml/ /$WORKDIR/pyproject.toml
-RUN uv sync --group alliander-gps \
+WORKDIR "$WORKDIR"
+COPY $SRC_DIRECTORY/pyproject.toml/ /"$WORKDIR"/pyproject.toml
+RUN uv sync --group alliander-ublox \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
@@ -57,6 +60,6 @@ COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
 
 # Finalize
-WORKDIR /$WORKDIR
+WORKDIR /"$WORKDIR"
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["sleep", "infinity"]
