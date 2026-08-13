@@ -38,15 +38,6 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --group allian
 FROM ${BASE_IMAGE}
 ENV ROS_DISTRO=jazzy
 
-# # Install minimal dependencies
-# RUN apt update && apt install -y --no-install-recommends \
-#   ros-$ROS_DISTRO-imu-filter-madgwick \
-#   ros-$ROS_DISTRO-nmea-msgs \
-#   ros-$ROS_DISTRO-mavros-msgs \
-#   && rm -rf /var/lib/apt/lists/* \
-#   && apt autoremove -y \
-#   && apt clean
-
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
