@@ -356,6 +356,18 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ("gps/fix", f"/{namespace_gps}/gps/fix"),
         ],
     )
+    datum_gate = Node(
+        package="alliander_nav2",
+        executable="datum_gate_node",
+        name="datum_gate",
+        namespace=namespace_vehicle,
+        parameters=[
+            {
+                "gps_topic": f"/{namespace_gps}/gps/fix",
+                "datum_service": f"/{namespace_vehicle}/datum",
+            }
+        ],
+    )
 
     nav2_manager = Node(
         package="alliander_nav2",
@@ -380,6 +392,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         *[Register.on_start(node, context) for node in register_lifecycle_nodes],
         Register.on_start(ekf_global, context) if nav2.gps else SKIP,
         Register.on_start(navsat_transform, context) if nav2.gps else SKIP,
+        Register.on_start(datum_gate, context) if nav2.gps else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
         Register.on_log(nav2_manager, "Controller is ready.", context)
         if nav2.navigation

@@ -8,6 +8,8 @@ project(alliander_gazebo)
 # CMake dependencies:
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 # Python executables:
 install(
@@ -22,6 +24,20 @@ ament_python_install_package(${PROJECT_NAME})
 install(
   DIRECTORY config launch models worlds
   DESTINATION share/${PROJECT_NAME}
+)
+
+# C++ executables:
+add_executable(navsat_covariance_node
+  src/navsat_covariance.cpp
+)
+ament_target_dependencies(navsat_covariance_node
+  rclcpp
+  sensor_msgs
+)
+ 
+install(TARGETS
+  navsat_covariance_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 # Default test:

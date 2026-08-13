@@ -6,15 +6,21 @@
 import xml.etree.ElementTree as ET
 from typing import TypeVar
 
-from alliander_gazebo.create_sdf import create_map_world
-from alliander_gazebo.gazebo_ros_paths import GazeboRosPaths
-from alliander_utilities.config_objects import Platform, PlatformList, SimulatorConfig
+from alliander_utilities.config_objects import (
+    GPS,
+    Platform,
+    PlatformList,
+    SimulatorConfig,
+)
 from alliander_utilities.launch_argument import LaunchArgument
 from alliander_utilities.register import Register
 from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
+
+from alliander_gazebo.create_sdf import create_map_world
+from alliander_gazebo.gazebo_ros_paths import GazeboRosPaths
 
 config_arg = LaunchArgument("sim_config", "")
 platform_list_arg = LaunchArgument("platform_list", "")
@@ -81,7 +87,7 @@ def get_bridge_topics(platforms: list[T]) -> list[str]:
             )
         if platform.platform_type == "GPS":
             bridge_topics.append(
-                f"/{platform.namespace}/gps/fix@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
+                f"/{platform.namespace}/gps/fix_raw@sensor_msgs/msg/NavSatFix@gz.msgs.NavSat"
             )
         if platform.platform_type in {"ThermalCamera", "Beamagine"}:
             bridge_topics.append(
@@ -139,6 +145,25 @@ def launch_setup(context: LaunchContext) -> list:
         output="screen",
     )
 
+    # Republish GPS fixes with covariance (Gazebo plugin doesn't provide any) to make navsat_transform work properly in simulation
+    gps_platforms = [c for c in platforms.platforms if c.__class__ == GPS]
+    navsat_covariance_nodes = []
+    for gps in gps_platforms:
+        namespace_gps = gps.namespace
+        navsat_covariance_nodes.append(
+            Node(
+                package="alliander_gazebo",
+                executable="navsat_covariance_node",
+                namespace=namespace_gps,
+                parameters=[
+                    {
+                        "input_topic": f"/{namespace_gps}/gps/fix_raw",
+                        "output_topic": f"/{namespace_gps}/gps/fix",
+                    }
+                ],
+            )
+        )
+
     unpause_sim = ExecuteProcess(
         cmd=[
             "gz",
@@ -165,6 +190,7 @@ def launch_setup(context: LaunchContext) -> list:
             context,
         ),
         Register.on_log(spawn_platforms, "All platforms spawned!", context),
+        *[Register.on_start(node, context) for node in navsat_covariance_nodes],
         Register.on_start(unpause_sim, context),
     ]
 

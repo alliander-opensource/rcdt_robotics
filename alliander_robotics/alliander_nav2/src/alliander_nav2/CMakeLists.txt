@@ -10,6 +10,9 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(nav2_behavior_tree REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(robot_localization REQUIRED)
 
 add_library(bt_is_system_healthy_node SHARED
   src/diagnostics_health_check.cpp
@@ -40,6 +43,11 @@ install(TARGETS bt_is_system_healthy_node
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
+add_executable(datum_gate_node src/datum_gate_node.cpp)
+ament_target_dependencies(datum_gate_node rclcpp sensor_msgs robot_localization)
+
+install(TARGETS datum_gate_node DESTINATION lib/${PROJECT_NAME})
 
 # Default test:
 if(BUILD_TESTING)

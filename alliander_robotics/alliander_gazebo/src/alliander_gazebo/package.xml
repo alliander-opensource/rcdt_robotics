@@ -20,6 +20,7 @@ SPDX-License-Identifier: Apache-2.0
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
   <depend>std_srvs</depend>
   <depend>alliander_interfaces</depend>
   <depend>rviz_visual_tools</depend>
