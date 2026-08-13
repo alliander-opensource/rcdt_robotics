@@ -51,6 +51,10 @@ COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
 COPY --from=builder /$WORKDIR/osm2world /$WORKDIR/osm2world
 
+# Install java runtime for OSM2World:
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked \
+  apt update && apt install -y --no-install-recommends openjdk-17-jre
+
 # Copy external packages and install runtime dependencies:
 WORKDIR /$WORKDIR/external
 COPY --from=builder /$WORKDIR/external /$WORKDIR/external
