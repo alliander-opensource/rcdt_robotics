@@ -24,6 +24,7 @@ RUN /$WORKDIR/colcon_build.sh
 # # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
+COPY $SRC_DIRECTORY/alliander_tests/src/ /$WORKDIR/ros/src
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh --symlink-install
 
@@ -45,15 +46,8 @@ ENV ROS_DISTRO=jazzy
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
 
-# Install minimal dependencies
+# Install tools:
 RUN curl -fsSL https://get.docker.com | sh
-RUN apt update && apt install -y --no-install-recommends \
-    doxygen \
-    ros-$ROS_DISTRO-moveit-configs-utils \
-    ros-$ROS_DISTRO-nav2-simple-commander \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt autoremove -y \
-    && apt clean
 
 # Copy external packages and install runtime dependencies:
 WORKDIR /$WORKDIR/external
@@ -65,10 +59,6 @@ RUN rm -rf src build log
 WORKDIR /$WORKDIR/ros
 COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
-
-# Copy ROS install
-COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
-COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
 WORKDIR /$WORKDIR
 ENTRYPOINT ["/entrypoint.sh"]
