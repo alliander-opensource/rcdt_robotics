@@ -28,7 +28,7 @@ UBLOX_PRODUCT_IDS = {
     "01ab": "ZED-X20P / ZED-F20P",
     "01a9": "ZED-F9P / ZED-F9R",
 }
-UBXTOOL = "/usr/bin/ubxtool"
+UBXTOOL = "ubxtool"
 UBXTOOL_PROTO = "50"
 UBXTOOL_BAUD = "115200"
 MAX_SERIAL_STR_LENGTH = 8
