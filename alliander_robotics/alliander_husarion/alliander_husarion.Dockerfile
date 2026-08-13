@@ -11,21 +11,11 @@ FROM $BASE_IMAGE AS builder
 ARG SRC_DIRECTORY
 ENV ROS_DISTRO=jazzy
 
-# Install ROS dependencies 
-RUN apt update && apt install -y --no-install-recommends \
-  ros-$ROS_DISTRO-twist-mux \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
-
 # Install external packages:
 WORKDIR /$WORKDIR/external
 RUN git clone --depth=1 --filter=blob:none --sparse -b 2.3.1 https://github.com/husarion/husarion_ugv_ros.git src/husarion_ugv_ros \
-  && export HUSARION_ROS_BUILD_TYPE=simulation \ 
   && cd src/husarion_ugv_ros \
-  && git sparse-checkout set husarion_ugv husarion_ugv_description \
-  && cd ../.. \
-  && vcs import src < src/husarion_ugv_ros/husarion_ugv/${HUSARION_ROS_BUILD_TYPE}_deps.repos
+  && git sparse-checkout set husarion_ugv_description
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
