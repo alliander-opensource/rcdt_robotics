@@ -361,11 +361,8 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         executable="datum_gate_node",
         name="datum_gate",
         namespace=namespace_vehicle,
-        parameters=[
-            {
-                "gps_topic": f"/{namespace_gps}/gps/fix",
-                "datum_service": f"/{namespace_vehicle}/datum",
-            }
+        remappings=[
+            ("gps/fix", f"/{namespace_gps}/gps/fix"),
         ],
     )
 

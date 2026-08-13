@@ -6,6 +6,8 @@
 import xml.etree.ElementTree as ET
 from typing import TypeVar
 
+from alliander_gazebo.create_sdf import create_map_world
+from alliander_gazebo.gazebo_ros_paths import GazeboRosPaths
 from alliander_utilities.config_objects import (
     GPS,
     Platform,
@@ -18,9 +20,6 @@ from alliander_utilities.ros_utils import get_file_path
 from launch import LaunchContext, LaunchDescription
 from launch.actions import ExecuteProcess, OpaqueFunction
 from launch_ros.actions import Node
-
-from alliander_gazebo.create_sdf import create_map_world
-from alliander_gazebo.gazebo_ros_paths import GazeboRosPaths
 
 config_arg = LaunchArgument("sim_config", "")
 platform_list_arg = LaunchArgument("platform_list", "")
