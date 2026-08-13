@@ -81,7 +81,7 @@ def launch_setup(context: LaunchContext) -> list:
         parameters=[
             {
                 "fixed_frame": f"{parent.namespace}/odom" if parent.link else "odom",
-                "publish_tf": bool(parent.link),
+                "publish_tf": not bool(parent.link),
             }
         ],
         remappings=[],
