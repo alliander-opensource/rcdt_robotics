@@ -33,7 +33,9 @@ def launch_setup(context: LaunchContext) -> list:
             "ip_address": arm_config.ip_address,
             "namespace": arm_config.namespace,
             "parent": "" if arm_config.parent.link else "world",
-            "connected_to": "" if arm_config.parent.link else "world",
+            "connected_to": "world"
+            if not arm_config.parent.link and arm_config.simulation
+            else "",
             "childs": str(
                 [
                     [child.connects_to, child.namespace, child.link]
