@@ -20,8 +20,8 @@ RUN mkdir -p /$WORKDIR/osm2world \
 
 # Install external packages:
 WORKDIR /$WORKDIR/external
-COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
-RUN /$WORKDIR/get_vendor_descriptions.sh && rm /$WORKDIR/get_vendor_descriptions.sh
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.py /$WORKDIR/get_vendor_descriptions.py
+RUN python3 /$WORKDIR/get_vendor_descriptions.py
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
@@ -44,7 +44,6 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --group allian
 ##############################
 
 FROM ${BASE_IMAGE}
-ARG SRC_DIRECTORY
 ENV ROS_DISTRO=jazzy
 
 # Copy environments

@@ -16,8 +16,8 @@ WORKDIR /$WORKDIR/external
 RUN git clone -b ros2 https://github.com/MoffKalast/vizanti.git src/vizanti \
   && git clone -b jazzy https://github.com/alliander-opensource/rws.git src/rws \
   && git clone https://github.com/alliander-opensource/rosboard.git src/rosboard
-COPY $SRC_DIRECTORY/common/get_vendor_descriptions.sh /$WORKDIR/get_vendor_descriptions.sh
-RUN /$WORKDIR/get_vendor_descriptions.sh && rm /$WORKDIR/get_vendor_descriptions.sh
+COPY $SRC_DIRECTORY/common/get_vendor_descriptions.py /$WORKDIR/get_vendor_descriptions.py
+RUN python3 /$WORKDIR/get_vendor_descriptions.py
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
@@ -40,25 +40,11 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --group allian
 ##############################
 
 FROM ${BASE_IMAGE}
-
-ARG SRC_DIRECTORY
 ENV ROS_DISTRO=jazzy
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
-
-# Install visualization tools: 
-RUN apt update && apt install -y --no-install-recommends \
-  ros-dev-tools \
-  ros-$ROS_DISTRO-image-transport-plugins \
-  ros-$ROS_DISTRO-plotjuggler-ros \
-  ros-$ROS_DISTRO-rqt-tf-tree \
-  ros-$ROS_DISTRO-moveit-ros-visualization \
-  ros-$ROS_DISTRO-rviz-satellite \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt autoremove -y \
-  && apt clean
 
 # Copy external packages and install runtime dependencies:
 WORKDIR /$WORKDIR/external
