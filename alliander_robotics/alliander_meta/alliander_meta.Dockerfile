@@ -11,6 +11,14 @@ FROM $BASE_IMAGE AS builder
 ARG SRC_DIRECTORY
 ENV ROS_DISTRO=jazzy
 
+# Install srcpy:
+RUN apt update && apt install -y \
+  ffmpeg libsdl2-2.0-0 adb wget gcc git pkg-config meson ninja-build libsdl2-dev libavcodec-dev \
+  libavdevice-dev libavformat-dev libavutil-dev libswresample-dev libusb-1.0-0 libusb-1.0-0-dev \
+  && git clone -b v3.3.4 https://github.com/Genymobile/scrcpy \
+  && cd scrcpy \
+  && ./install_release.sh
+
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
@@ -32,20 +40,15 @@ RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync --group allian
 FROM ${BASE_IMAGE}
 ENV ROS_DISTRO=jazzy
 
-# Install adb:
-RUN apt update && apt install -y android-tools-adb
-
-# Install srcpy:
-RUN apt update && apt install -y \
-  ffmpeg libsdl2-2.0-0 adb wget gcc git pkg-config meson ninja-build libsdl2-dev libavcodec-dev \
-  libavdevice-dev libavformat-dev libavutil-dev libswresample-dev libusb-1.0-0 libusb-1.0-0-dev \
-  && git clone -b v3.3.4 https://github.com/Genymobile/scrcpy \
-  && cd scrcpy \
-  && ./install_release.sh
-
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
+COPY --from=builder /usr/local/bin/scrcpy /usr/local/bin/scrcpy
+COPY --from=builder /usr/local/share/scrcpy /usr/local/share/scrcpy
+
+# Install adb:
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked \
+  apt update && apt install -y --no-install-recommends android-tools-adb
 
 # Copy alliander packages and install runtime dependencies:
 WORKDIR /$WORKDIR/ros
