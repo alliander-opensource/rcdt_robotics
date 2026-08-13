@@ -231,7 +231,7 @@ class Nav2Config(Config):
         "pure_pursuit",
         "rotation_shim",
         "vector_pursuit",
-    ] = "vector_pursuit"
+    ] = "mppi"
     map: Literal["simulation_map", "ipkw", "ipkw_buiten"] = "simulation_map"
     window_size: int = 10
 
