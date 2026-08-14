@@ -15,21 +15,11 @@ using sensor_msgs::msg::NavSatFix;
 /**
  * @brief A ROS2 node that republishes NavSatFix messages with a fixed
  * diagonal position covariance.
- *
- * Gazebo's navsat sensor publishes NavSatFix with position_covariance
- * left at all zeros / COVARIANCE_TYPE_UNKNOWN, since the underlying
- * gz.msgs.NavSat message carries no covariance data. This node fills
- * that gap so downstream consumers (e.g. a datum gate node or
- * navsat_transform_node) have a covariance to check against.
  */
 class NavSatCovarianceFixer : public rclcpp::Node {
  public:
   /**
    * @brief Constructor for the NavSatCovarianceFixer class.
-   *
-   * Declares the horizontal_stddev and vertical_stddev parameters,
-   * derives the fixed covariance matrix from them, and sets up the
-   * subscription/publisher pair.
    */
   NavSatCovarianceFixer() : Node("navsat_covariance_fixer") {
     horizontal_stddev_ =

@@ -44,10 +44,10 @@ install(TARGETS bt_is_system_healthy_node
   RUNTIME DESTINATION bin
 )
 
-add_executable(datum_gate_node src/datum_gate_node.cpp)
-ament_target_dependencies(datum_gate_node rclcpp sensor_msgs robot_localization)
+add_executable(set_datum_node src/set_datum_node.cpp)
+ament_target_dependencies(set_datum_node rclcpp sensor_msgs robot_localization)
 
-install(TARGETS datum_gate_node DESTINATION lib/${PROJECT_NAME})
+install(TARGETS set_datum_node DESTINATION lib/${PROJECT_NAME})
 
 # Default test:
 if(BUILD_TESTING)

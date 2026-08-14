@@ -26,8 +26,8 @@ It uses this to create a _static_ transform between UTM and `map`, e.g. the datu
 :::{mermaid} ../diagrams/global_localization.mmd
 :::
 
-### Datum gating
-It is important the `datum` be set correctly. If not, a large offset from the true position can cause accuracy errors. For this reason, the `datum_gate_node` was added to `alliander_nav2`: it only sets the datum after a few succesive valid GPS fixes with a suitable covariance are received.
+### Setting datum
+It is important the `datum` be set correctly. If not, a large offset from the true position can cause accuracy errors. For this reason, the `set_datum_node` was added to `alliander_nav2`: it only sets the datum after a few succesive valid GPS fixes with a suitable covariance are received.
 
 ## Planner
 We choose to implement, for our Husarion platforms, the `SmacPlanner2D` planner. This because it is a standard planner in Nav2, and does not need a minimum turning radius. The `SmacPlannerHybrid` needs a minimum turning radius as large as the costmap resolution, a constraint that the Husarion platforms do not have. Using the Hybrid-A* planner sometimes results in no path being found, even though the Husarion robot is able to physically move to the goal pose. Using the classic 2D A* planner resolves this.

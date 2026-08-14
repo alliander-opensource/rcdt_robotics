@@ -154,11 +154,9 @@ def launch_setup(context: LaunchContext) -> list:
                 package="alliander_gazebo",
                 executable="navsat_covariance_node",
                 namespace=namespace_gps,
-                parameters=[
-                    {
-                        "input_topic": f"/{namespace_gps}/gps/fix_raw",
-                        "output_topic": f"/{namespace_gps}/gps/fix",
-                    }
+                remappings=[
+                    ("gps/fix_in", f"/{namespace_gps}/gps/fix_raw"),
+                    ("gps/fix_out", f"/{namespace_gps}/gps/fix"),
                 ],
             )
         )
