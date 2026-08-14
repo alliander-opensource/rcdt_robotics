@@ -12,11 +12,28 @@ According to the official [website](https://docs.nav2.org/):
 
 This documentation shows Nav2 components that are used in this repository, sometimes with some additional explanation about implementation choices.
 
+## GPS localization
+It is possible to do GPS localization using Nav2. For this, the platform needs to be equipped with a GPS sensor, using e.g. `alliander_ublox`, and a sensor that provides an absolute yaw measurement. This can be an IMU (e.g. `alliander_xsens`), a dual GPS system, or pointcloud/image matching.
+Nav2 uses the TF tree `map -> odom -> base_link -> <sensor_frames>`. To relate GPS latitude/longitude data to the `map` and `odom` frames, UTM zones are used. These zones divide the Earth into 60 vertical strips. Any (latitude, longitude) pair can then be expressed as a number of meters from the origin of a UTM zone.
+
+### Global EKF
+The `odom -> base_link` transform is provided by EKF, based on wheel odometry and IMU data. In GPS localization, `odometry/gps` is added as an additional odometry source. 
+
+### `navsat_transform`
+The `odometry/gps` measurements are provided by `navsat_transform`. It uses GPS data to relate the `map` frame origin and orientation to latitude and longitude coordinates. To do this, it subscribes to EKF's `odometry/global` output, but only for initialization: after `delay` seconds, it creates a snapshot based on the first GPS fix it gets, the current IMU heading, and the current `odometry/global` message. 
+It uses this to create a _static_ transform between UTM and `map`, e.g. the datum. After that, each new GPS fix is run through that same static transform to output `odometry/gps` in meters. This is then fused by the global EKF, completing the loop.
+
+:::{mermaid} ../diagrams/global_localization.mmd
+:::
+
+### Datum gating
+It is important the `datum` be set correctly. If not, a large offset from the true position can cause accuracy errors. For this reason, the `datum_gate_node` was added to `alliander_nav2`: it only sets the datum after a few succesive valid GPS fixes with a suitable covariance are received.
+
 ## Planner
 We choose to implement, for our Husarion platforms, the `SmacPlanner2D` planner. This because it is a standard planner in Nav2, and does not need a minimum turning radius. The `SmacPlannerHybrid` needs a minimum turning radius as large as the costmap resolution, a constraint that the Husarion platforms do not have. Using the Hybrid-A* planner sometimes results in no path being found, even though the Husarion robot is able to physically move to the goal pose. Using the classic 2D A* planner resolves this.
 
 ## Controller
-With a relatively simple planner, we choose MPPI as the Husarion robots` controller. This because it is good for dynamic obstacle avoidance, produces smooth commands, and supports GPU acceleration.
+With a relatively simple planner, we choose MPPI as the Husarion robots' controller. This because it is good for dynamic obstacle avoidance and produces smooth commands. The `mppi_generic` implementation supports GPU acceleration.
 
 
 ## Behaviour Tree
