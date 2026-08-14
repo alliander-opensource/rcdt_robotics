@@ -26,6 +26,7 @@
    content/nav2.md
 
    content/docker.md
+   content/transitive.md
    content/workflows.md
 
    content/conventions/conventions.md
