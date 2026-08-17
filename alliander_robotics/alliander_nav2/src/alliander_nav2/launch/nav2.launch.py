@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
 from alliander_utilities.adapted_yaml import AdaptedYaml
 from alliander_utilities.config_objects import Vehicle
 from alliander_utilities.launch_argument import LaunchArgument
@@ -314,6 +315,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     if nav2.gps:
         remappings.append(("/gps/fix", f"/{namespace_gps}/gps/fix"))
         remappings.append(("/fromLL", f"/{namespace_vehicle}/fromLL"))
+        remappings.append(
+            ("odometry/filtered", f"/{namespace_vehicle}/odometry/global")
+        )
 
     all_lifecycle_nodes["waypoint_follower"] = LifecycleNode(
         package="nav2_waypoint_follower",
@@ -358,7 +362,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     )
     set_datum = Node(
         package="alliander_nav2",
-        executable="set_datum_node",
+        executable="initialize_odometry_node",
         name="set_datum",
         namespace=namespace_vehicle,
         remappings=[
@@ -370,6 +374,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         package="alliander_nav2",
         executable="nav2_manager.py",
         namespace=namespace_vehicle,
+        parameters=[{"costmap_size": float(nav2.window_size)}],
         remappings=remappings,
     )
 
