@@ -41,7 +41,7 @@ class Nav2Manager(Node):
         self.create_subscription(PoseStamped, "/goal_pose", self.cb_goal_pose, 10)
         self.create_subscription(Path, "/waypoints", self.cb_waypoints, 10)
         self.create_subscription(GeoPath, "/gps_waypoints", self.cb_gps_waypoints, 10)
-        self.create_subscription(NavSatFix, "gps/fix", self.cb_gps_fix, 10)
+        self.create_subscription(NavSatFix, "/gps/fix", self.cb_gps_fix, 10)
         self.create_subscription(Odometry, "odometry/filtered", self.cb_odometry, 10)
         self.create_service(Trigger, "~/stop", self.cb_stop)
 
