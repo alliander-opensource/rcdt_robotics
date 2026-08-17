@@ -2,10 +2,12 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
+#include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <robot_localization/srv/set_datum.hpp>
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
 #include <sensor_msgs/msg/nav_sat_status.hpp>
+#include <std_srvs/srv/empty.hpp>
 
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 
@@ -16,35 +18,32 @@ using namespace std::chrono_literals;
  * consecutive, sufficiently-precise GPS fixes.
  *
  * Listens on the gps/fix topic and, once required_consecutive_fixes_ good
- * fixes in a row have been seen (fix status at or above STATUS_FIX, known
- * covariance, and horizontal covariance within max_position_covariance_),
- * calls robot_localization's datum service with that fix and shuts down.
+ * fixes in a row have been seen, calls robot_localization's datum service
+ * with that fix and shuts down.
  */
-class DatumGateNode : public rclcpp::Node {
+class OdometryGateNode : public rclcpp::Node {
  public:
   /**
-   * @brief Constructor for the DatumGateNode class.
-   *
-   * Sets up the NavSatFix subscription and the datum service client, then
-   * declares the required_consecutive_fixes and max_position_covariance_m2
-   * parameters.
+   * @brief Constructor for the OdometryGateNode class.
    */
-  DatumGateNode()
-      : Node("set_datum_node"),
+  OdometryGateNode()
+      : Node("initialize_odom_node"),
         fix_sub_(create_subscription<sensor_msgs::msg::NavSatFix>(
             "gps/fix", rclcpp::SensorDataQoS(),
             [this](const sensor_msgs::msg::NavSatFix::SharedPtr msg) {
               this->fixCallback(msg);
             })),
         datum_client_(
-            create_client<robot_localization::srv::SetDatum>("datum")) {
+            create_client<robot_localization::srv::SetDatum>("datum")),
+        odometry_toggle_client_(create_client<std_srvs::srv::Empty>("enable")) {
     required_consecutive_fixes_ =
         declare_parameter<int>("required_consecutive_fixes", 5);
     max_position_covariance_ =
         declare_parameter<double>("max_position_covariance_m2", 4.0);
 
     RCLCPP_INFO(get_logger(),
-                "Waiting for %d consecutive good fixes on before setting datum",
+                "Waiting for %d consecutive good fixes on before setting datum "
+                "and enabling global EKF",
                 required_consecutive_fixes_);
   }
 
@@ -54,13 +53,11 @@ class DatumGateNode : public rclcpp::Node {
    *
    * Tracks the streak of consecutive good fixes, resetting it whenever a
    * fix falls out of tolerance, and triggers setDatum() once the streak
-   * reaches required_consecutive_fixes_. No-ops once a datum has already
-   * been requested.
-   *
+   * reaches required_consecutive_fixes_.
    * @param msg Shared pointer to the incoming NavSatFix message.
    */
   void fixCallback(const sensor_msgs::msg::NavSatFix::SharedPtr msg) {
-    if (datum_requested_) {
+    if (odometry_enabled_) {
       return;
     }
 
@@ -70,19 +67,28 @@ class DatumGateNode : public rclcpp::Node {
                     "Fix dropped out of tolerance, resetting streak");
       }
       consecutive_good_fixes_ = 0;
+      RCLCPP_WARN_THROTTLE(
+          get_logger(), *get_clock(), 5000,
+          "Fix not good enough yet (status=%d, covariance=%.7f,%.7f)",
+          msg->status.status, msg->position_covariance[0],
+          msg->position_covariance[4]);
       return;
     }
 
     ++consecutive_good_fixes_;
-    RCLCPP_INFO(get_logger(), "Good fix %d/%d (lat=%.7f lon=%.7f status=%d)",
-                consecutive_good_fixes_, required_consecutive_fixes_,
-                msg->latitude, msg->longitude, msg->status.status);
+    RCLCPP_INFO(
+        get_logger(),
+        "Good fix %d/%d (lat=%.7f, lon=%.7f, status=%d, covariance=%.7f,%.7f)",
+        consecutive_good_fixes_, required_consecutive_fixes_, msg->latitude,
+        msg->longitude, msg->status.status, msg->position_covariance[0],
+        msg->position_covariance[4]);
 
     if (consecutive_good_fixes_ < required_consecutive_fixes_) {
       return;
     }
 
     setDatum(*msg);
+    enableOdometry();
   }
 
   /**
@@ -118,13 +124,7 @@ class DatumGateNode : public rclcpp::Node {
   }
 
   /**
-   * @brief Sends the SetDatum request for the given fix and shuts the node
-   * down once it completes.
-   *
-   * If the datum service isn't up yet, resets the good-fix streak so the
-   * gate re-accumulates fixes before retrying. Sets datum_requested_ before
-   * the async call returns so fixCallback() stops processing further fixes
-   * immediately.
+   * @brief Sends the SetDatum request for the given fix.
    *
    * @param msg The qualifying NavSatFix to use as the datum.
    */
@@ -143,20 +143,42 @@ class DatumGateNode : public rclcpp::Node {
     request->geo_pose.position.altitude = msg.altitude;
     request->geo_pose.orientation.w = 1.0;
 
-    datum_requested_ = true;
     datum_client_->async_send_request(
         request,
         [this](
             rclcpp::Client<robot_localization::srv::SetDatum>::SharedFuture) {
-          RCLCPP_INFO(get_logger(), "Datum set, shutting down");
+          RCLCPP_INFO(get_logger(), "Datum set");
+        });
+  }
+
+  /**
+   * @brief Sends an Empty service request to the enable service for the global
+   * EKF and shuts the node down once it completes.
+   */
+  void enableOdometry() {
+    if (!odometry_toggle_client_->wait_for_service(1s)) {
+      RCLCPP_WARN(
+          get_logger(),
+          "odometry toggle service not up yet, will retry on next good fix");
+      consecutive_good_fixes_ = 0;
+      return;
+    }
+
+    auto request = std::make_shared<std_srvs::srv::Empty::Request>();
+    odometry_enabled_ = true;
+    odometry_toggle_client_->async_send_request(
+        request, [this](rclcpp::Client<std_srvs::srv::Empty>::SharedFuture) {
+          RCLCPP_INFO(get_logger(), "Global EKF enabled, shutting down");
           rclcpp::shutdown();
         });
   }
 
   /// Subscriber that listens to the GPS fix topic
   rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr fix_sub_;
-  /// Client for robot_localization's SetDatum service
+  /// Client to robot_localization's set_datum service
   rclcpp::Client<robot_localization::srv::SetDatum>::SharedPtr datum_client_;
+  /// Client to enable global EKF
+  rclcpp::Client<std_srvs::srv::Empty>::SharedPtr odometry_toggle_client_;
 
   /// Number of consecutive good fixes required before setting the datum
   int required_consecutive_fixes_;
@@ -164,13 +186,13 @@ class DatumGateNode : public rclcpp::Node {
   double max_position_covariance_;
   /// Current length of the consecutive good-fix streak
   int consecutive_good_fixes_ = 0;
-  /// Whether a datum has already been requested (gate satisfied)
-  bool datum_requested_ = false;
+  /// Whether odometry is already enabled (gate satisfied)
+  bool odometry_enabled_ = false;
 };
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<DatumGateNode>());
+  rclcpp::spin(std::make_shared<OdometryGateNode>());
   rclcpp::shutdown();
   return 0;
 }

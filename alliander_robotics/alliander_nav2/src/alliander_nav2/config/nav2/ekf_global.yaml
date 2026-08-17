@@ -8,6 +8,7 @@ ekf_global:
     frequency: 20.0
     sensor_timeout: 0.5
     two_d_mode: true
+    disabled_at_startup: true
 
     transform_time_offset: 0.0
     transform_timeout: 0.05

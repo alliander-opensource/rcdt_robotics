@@ -34,10 +34,6 @@ gazebo:
   base_image: allianderrobotics/base
   repository: allianderrobotics/gazebo
   dockerfile: alliander_gazebo/alliander_gazebo.Dockerfile
-ublox:
-  base_image: allianderrobotics/base
-  repository: allianderrobotics/ublox
-  dockerfile: alliander_ublox/alliander_ublox.Dockerfile
 husarion:
   base_image: allianderrobotics/base
   repository: allianderrobotics/husarion
@@ -78,6 +74,10 @@ tests:
   base_image: allianderrobotics/base
   repository: allianderrobotics/tests
   dockerfile: alliander_tests/alliander_tests.Dockerfile
+ublox:
+  base_image: allianderrobotics/base
+  repository: allianderrobotics/ublox
+  dockerfile: alliander_ublox/alliander_ublox.Dockerfile
 ur:
   base_image: allianderrobotics/base
   repository: allianderrobotics/ur

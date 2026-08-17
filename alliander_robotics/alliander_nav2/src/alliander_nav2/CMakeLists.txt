@@ -12,6 +12,7 @@ find_package(nav2_behavior_tree REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(robot_localization REQUIRED)
 
 add_library(bt_is_system_healthy_node SHARED
@@ -44,10 +45,10 @@ install(TARGETS bt_is_system_healthy_node
   RUNTIME DESTINATION bin
 )
 
-add_executable(set_datum_node src/set_datum_node.cpp)
-ament_target_dependencies(set_datum_node rclcpp sensor_msgs robot_localization)
+add_executable(initialize_odometry_node src/initialize_global_odometry.cpp)
+ament_target_dependencies(initialize_odometry_node rclcpp sensor_msgs robot_localization std_srvs)
 
-install(TARGETS set_datum_node DESTINATION lib/${PROJECT_NAME})
+install(TARGETS initialize_odometry_node DESTINATION lib/${PROJECT_NAME})
 
 # Default test:
 if(BUILD_TESTING)

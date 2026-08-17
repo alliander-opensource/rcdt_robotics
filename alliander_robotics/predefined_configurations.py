@@ -370,7 +370,7 @@ class PredefinedConfigurations:
         self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_outdoor_navigation")
-    def config_panther_gps_navigation(self) -> None:  # noqa: D102
+    def config_panther_outdoor_navigation(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2), (0, 0, 45))
         vehicle.nav2_config.controller = "mppi"
         vehicle.nav2_config.navigation = True
