@@ -24,7 +24,7 @@ The tool requires Android Debug Bridge (ADB) to work. Make sure to install ADB o
 sudo apt install android-tools-adb
 ```
 
-Next, connect the Quest to the host device via USB. You should see the Quest as:
+Next, connect the Quest to the host device via USB. When using `lsusb` you should see the Quest as:
 
 ```bash
 ID XXXX:YYYY Oculus VR, Inc. Quest 3
