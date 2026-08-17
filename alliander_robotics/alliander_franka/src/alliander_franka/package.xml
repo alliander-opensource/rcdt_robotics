@@ -25,6 +25,7 @@ SPDX-License-Identifier: Apache-2.0
   <depend>alliander_interfaces</depend>
 
   <exec_depend>controller_manager</exec_depend>
+  <exec_depend>ros2_controllers</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
 

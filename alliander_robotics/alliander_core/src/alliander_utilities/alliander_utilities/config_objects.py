@@ -172,8 +172,6 @@ class Platform(Config):
         match self.name:
             case "panther" | "lynx":
                 return "odom"
-            case "franka":
-                return "fr3_link0" if self.parent.namespace else "world"
             case _:
                 return (
                     "base_link"

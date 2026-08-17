@@ -114,20 +114,21 @@ https://code.visualstudio.com/docs/editing/codebasics#_compare-files
       <child  link="${arm_prefix}${arm_id}_link0" />
     </joint>
 
+    <!-- Create a link to world when there is no parent specified: -->
+    <xacro:if value="${parent != ''}">
+      <!-- Gazebo requires a joint to a link called "world" for statically mounted robots -->
+      <xacro:if value="${parent == 'world'}">
+        <link name="${parent}" />
+      </xacro:if>
+      <joint name="${parent}_joint" type="fixed">
+        <origin xyz="${xyz}" rpy="${rpy}" />
+        <parent link="${parent}" />
+        <child  link="base_link" />
+      </joint>
+    </xacro:if>
+
     <!-- Definition of additional Gazebo tags -->
     <xacro:if value="${gazebo}">
-
-      <xacro:if value="${parent != ''}">
-        <!-- Gazebo requires a joint to a link called "world" for statically mounted robots -->
-        <xacro:if value="${parent == 'world'}">
-          <link name="${parent}" />
-        </xacro:if>
-        <joint name="${parent}_joint" type="fixed">
-          <origin xyz="${xyz}" rpy="${rpy}" />
-          <parent link="${parent}" />
-          <child  link="base_link" />
-        </joint>
-      </xacro:if>
 
       <xacro:gazebo-joint joint="${arm_prefix}${arm_id}_joint1" transmission="hardware_interface/PositionJointInterface" />
       <xacro:gazebo-joint joint="${arm_prefix}${arm_id}_joint2" transmission="hardware_interface/PositionJointInterface" />
