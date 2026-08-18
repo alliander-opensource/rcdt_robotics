@@ -47,7 +47,6 @@ def launch_setup(context: LaunchContext) -> list:
                 "alliander_description", ["ur", "config"], "controllers.yaml"
             ),
             "ros_namespace": arm_config.namespace,
-            "parent": "" if arm_config.parent.link else "world",
             "childs": str(
                 [
                     [child.connects_to, child.namespace, child.link]

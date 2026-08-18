@@ -174,7 +174,7 @@ A Seek Thermal camera can be launched in simulation by creating a configuration 
 
 ### Hardware Seek Thermal
 
-To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules.
+To use the Seek Thermal camera, connect it to a PoE injector's *OUT* port. A PoE injector is shipped as an accessory with the G300, and can be plugged into a power socket. Connect the *IN* port to your device, define a manual internet connection with an ip address in the `169.254.63.X` range (not 169.254.63.63, since this is the defautl ip address of the sensor), then launch the *alliander_seekthermal* container. If you get a connection error, you may need to press the *RESET* pin on the G300 while it is connected to your device in order for the G300 to follow your device's network rules.
 
 ## ZED
 
@@ -247,20 +247,23 @@ An Xsens IMU can be launched by creating a configuration with an *IMU* of type *
 
 When using the Xsens IMU, make sure that the IMU shows up on your device (use *lsusb* to check) and that the Docker container runs with *privileged: true* (standard in our repo).
 
-## GPS 
+## GPS
+
 ### U-Blox GPS
+
 #### Hardware X20P
-If using multiple GPS devices, e.g. in a rover-base configuration, correct device enumeration may need some extra configuration. The GPS library ![ublox-dgnss](https://github.com/aussierobots/ublox_dgnss.git) diffentiates between X20P devices based on the `DEVICE_SERIAL_STRING`, which can be found by running `python3 ublox_serial.py list` in `alliander_ublox/src/alliander_ublox/scripts/` with a U-Blox GPS attached (works better if you are in the `allianderrobotics/gps` Docker container with `sleep infinity`). 
-The value is supposed to be unique for each device, set during construction in the factory. This is not always the case however -- sometimes it just reads 0. 
+
+If using multiple GPS devices, e.g. in a rover-base configuration, correct device enumeration may need some extra configuration. The GPS library ![ublox-dgnss](https://github.com/aussierobots/ublox_dgnss.git) diffentiates between X20P devices based on the `DEVICE_SERIAL_STRING`, which can be found by running `python3 ublox_serial.py list` in `alliander_ublox/src/alliander_ublox/scripts/` with a U-Blox GPS attached (works better if you are in the `allianderrobotics/gps` Docker container with `sleep infinity`).
+The value is supposed to be unique for each device, set during construction in the factory. This is not always the case however -- sometimes it just reads 0.
 
 In that case, you have two options:
-- set it with `python3 ublox_serial.py set-persistent <bus-port> <string>`. Remove and plug the device in again for the change to take effect. You can do this from a Docker container (make sure to add the `privileged` flag for hardware access!): `docker run -it --rm --privileged allianderrobotics/gps bash`. 
+
+- set it with `python3 ublox_serial.py set-persistent <bus-port> <string>`. Remove and plug the device in again for the change to take effect. You can do this from a Docker container (make sure to add the `privileged` flag for hardware access!): `docker run -it --rm --privileged allianderrobotics/gps bash`.
 - set it in u-center 2 on Windows, under `Device Configuration > USB > SERIAL_NO_STR0`. Make sure to `Set` and `Send` to RAM, BBR, and flash.
 
 ### Teltonika GPS
+
 ![Teltonika](../img/teltonika/nmea.png)
-
-
 
 #### Simulation Teltonika
 
@@ -296,6 +299,8 @@ sudo sh -c "echo 'net.core.rmem_max=268435456' >> /etc/sysctl.conf"
 sudo sh -c "echo 'net.core.netdev_max_backlog=5000' >> /etc/sysctl.conf"
 sudo sysctl -p
 ```
+
+The Beamagine requires a 12V 5A power supply. Connect the ethernet cable to the host device and define a manual network connection with MTU of 9000 (identity page) and an ip address of `192.168.0.10`.
 
 ## RobotIQ 3-finger gripper
 

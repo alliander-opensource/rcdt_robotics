@@ -2,7 +2,7 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include "arm_wave/arm_wave.hpp"
+#include "arm_wave.hpp"
 
 #include <rclcpp/executors.hpp>
 #include <rclcpp/utilities.hpp>

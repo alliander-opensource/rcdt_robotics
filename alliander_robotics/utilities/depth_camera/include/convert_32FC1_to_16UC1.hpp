@@ -2,13 +2,7 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include <cv_bridge/cv_bridge.hpp>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/opencv.hpp>
-#include <rclcpp/executors.hpp>
 #include <rclcpp/node.hpp>
-#include <rclcpp/publisher.hpp>
-#include <rclcpp/subscription.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
 using std::placeholders::_1;

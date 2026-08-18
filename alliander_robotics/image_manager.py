@@ -115,6 +115,7 @@ class ImageManager:
             "latest" if not utils.is_core_docker_changed() else utils.get_git_branch()
         )
         base_image_tag = "latest" if repository in {"base", "cuda"} else base_image_tag
+        base_image_tag = "latest" if base_image_tag == "main" else base_image_tag
 
         cmd = f"docker build \
             -f {self.components[repository]['dockerfile']} \

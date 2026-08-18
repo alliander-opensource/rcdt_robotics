@@ -172,7 +172,7 @@ struct GripperStatus {
     const double reach = upper_limit - lower_limit;
 
     // Only the first joint of the scissor is inverted:
-    if (scissor && joint == 1) {
+    if (scissor && joint == 0) {
       return upper_limit - (static_cast<double>(position) / 255.0) * reach;
     }
 

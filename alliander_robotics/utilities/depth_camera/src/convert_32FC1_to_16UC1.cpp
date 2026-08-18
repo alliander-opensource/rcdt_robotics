@@ -2,7 +2,10 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include "alliander_utilities/convert_32FC1_to_16UC1.hpp"
+#include "convert_32FC1_to_16UC1.hpp"
+
+#include <cv_bridge/cv_bridge.hpp>
+#include <rclcpp/executors.hpp>
 
 Convert32FC1to16UC1::Convert32FC1to16UC1() : Node("convert_32FC1_to_16UC1") {
   std::string ns = this->get_namespace();

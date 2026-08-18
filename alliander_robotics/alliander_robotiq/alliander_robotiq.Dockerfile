@@ -31,7 +31,6 @@ RUN uv sync --group alliander-robotiq  \
 ##############################
 
 FROM ${BASE_IMAGE}
-
 ENV ROS_DISTRO=jazzy
 
 # Copy Alliander ROS packages and install runtime dependencies:

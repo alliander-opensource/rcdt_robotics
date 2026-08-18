@@ -9,29 +9,26 @@ FROM $BASE_IMAGE AS builder
 ##############################
 
 ARG SRC_DIRECTORY
-ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 
-# Install Ewellix packages:
+# Install external packages:
 WORKDIR /$WORKDIR/external
-RUN apt update \
-  && apt install -y ros-$ROS_DISTRO-ewellix-description ros-$ROS_DISTRO-ros2-controllers \
-  && git clone -b 0.2.3 https://github.com/clearpathrobotics/ewellix_lift.git src/ewellix_lift \
-  && git clone https://github.com/joshnewans/serial.git src/serial \
-  && rosdep update --rosdistro $ROS_DISTRO \
-  && rosdep install --from-paths src -y -i
+RUN git clone -b 0.2.3 https://github.com/clearpathrobotics/ewellix_lift.git src/ewellix_lift \
+  && git clone https://github.com/joshnewans/serial.git src/serial
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh
 
-# Install repo packages:
+# Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_ewellix/src/ /$WORKDIR/ros/src
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
 RUN /$WORKDIR/colcon_build.sh --symlink-install
 
 # Install python dependencies:
 WORKDIR $WORKDIR
 COPY $SRC_DIRECTORY/pyproject.toml/ /$WORKDIR/pyproject.toml
-RUN uv sync \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv uv sync \
   && echo "export PYTHONPATH=\"$(dirname $(dirname $(uv python find)))/lib/python3.12/site-packages:\$PYTHONPATH\"" >> /root/.bashrc \
   && echo "export PATH=\"$(dirname $(dirname $(uv python find)))/bin:\$PATH\"" >> /root/.bashrc
 
@@ -40,26 +37,22 @@ RUN uv sync \
 ##############################
 
 FROM ${BASE_IMAGE}
-
 ENV ROS_DISTRO=jazzy
-
-# Copy minimal dependencies
-COPY --from=builder /$WORKDIR/external/src /$WORKDIR/external/src
-WORKDIR /$WORKDIR/external
-RUN apt update \
-  && apt install -y ros-$ROS_DISTRO-ewellix-description ros-$ROS_DISTRO-ros2-controllers \
-  && rosdep update --rosdistro $ROS_DISTRO \
-  && rosdep install --from-paths src -y -i \
-  && rm -rf src \
-  && rm -rf /var/lib/apt/lists/*
-
-# Copy ROS install
-COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
-COPY --from=builder /$WORKDIR/external/install /$WORKDIR/external/install
 
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
+
+# Copy external packages and install runtime dependencies:
+WORKDIR /$WORKDIR/external
+COPY --from=builder /$WORKDIR/external /$WORKDIR/external
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
+RUN rm -rf src build log
+
+# Copy alliander packages and install runtime dependencies:
+WORKDIR /$WORKDIR/ros
+COPY --from=builder /$WORKDIR/ros /$WORKDIR/ros
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
 
 # Finalize
 WORKDIR /$WORKDIR

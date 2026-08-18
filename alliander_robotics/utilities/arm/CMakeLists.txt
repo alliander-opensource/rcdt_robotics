@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.5)
-project(alliander_arm_controllers)
+project(alliander_utilities_arm)
 
 # CMake dependencies:
 find_package(ament_cmake REQUIRED)
@@ -18,8 +18,8 @@ find_package(trajectory_msgs REQUIRED)
 # C++ executable - Arm Wave demo:
 include_directories(include)
 add_executable(arm_wave_node
-  src/arm_wave/arm_wave_node.cpp
-  src/arm_wave/arm_wave.cpp
+  src/arm_wave_node.cpp
+  src/arm_wave.cpp
 )
 target_include_directories(arm_wave_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/arm_wave>

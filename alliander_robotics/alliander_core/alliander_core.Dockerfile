@@ -5,7 +5,6 @@ ARG BASE_IMAGE=ubuntu:latest
 FROM $BASE_IMAGE 
 
 ARG SRC_DIRECTORY
-ARG COLCON_BUILD_SEQUENTIAL
 ENV ROS_DISTRO=jazzy
 ENV WORKDIR=alliander
 
@@ -23,6 +22,7 @@ RUN apt update && apt install -y -qq --no-install-recommends \
   net-tools \
   python3-pip \
   software-properties-common \
+  unzip \
   wget \
   xvfb \
   zstd \
@@ -50,7 +50,6 @@ RUN rosdep init \
 RUN apt update && apt install -y --no-install-recommends \
   ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
   ros-$ROS_DISTRO-control-msgs \
-  ros-$ROS_DISTRO-cv-bridge \
   ros-$ROS_DISTRO-vision-msgs \
   ros-$ROS_DISTRO-geographic-msgs \
   ros-$ROS_DISTRO-topic-tools \
@@ -75,6 +74,7 @@ RUN pip install --upgrade cmake==3.31.6 --break-system-packages
 
 # Prepare ROS workspace for child images
 COPY $SRC_DIRECTORY/common/colcon_build.sh /$WORKDIR/colcon_build.sh
+COPY $SRC_DIRECTORY/common/rosdep_install.sh /$WORKDIR/rosdep_install.sh
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /root/.bashrc
 
 COPY $SRC_DIRECTORY/common/entrypoint.sh /entrypoint.sh

@@ -25,6 +25,6 @@ SPDX-License-Identifier: Apache-2.0
     namespace="$(arg namespace)" />
 
   <!-- Create detachable joints with given childs: -->
-  <xacro:include filename="$(find alliander_utilities)/urdf/detachable_joints.urdf.xacro" />
+  <xacro:include filename="$(find alliander_description)/common/detachable_joints.urdf.xacro" />
   <xacro:detachable_joints childs="${$(arg childs)}" />
 </robot>

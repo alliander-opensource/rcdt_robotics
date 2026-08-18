@@ -44,6 +44,7 @@ alliander-seekthermal = [
     "requests>=2.33.0",
 ]
 alliander-ublox = [
+    "gpsd>=3.27.5.0.175",
     "pydantic>=2.12.5",
 ]
 alliander-ur = [

@@ -21,6 +21,18 @@ SPDX-License-Identifier: Apache-2.0
 
   <test_depend>ament_lint_auto</test_depend>
 
+  <!-- Descriptions: -->
+  <exec_depend>ewellix_description</exec_depend>
+  <exec_depend>zed_description</exec_depend>
+  <exec_depend>velodyne_description</exec_depend>
+
+  <!-- <exec_depend>ros_dev_tools</exec_depend> -->
+  <exec_depend>image_transport_plugins</exec_depend>
+  <exec_depend>plotjuggler_ros</exec_depend>
+  <exec_depend>rqt_tf_tree</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>rviz_satellite</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

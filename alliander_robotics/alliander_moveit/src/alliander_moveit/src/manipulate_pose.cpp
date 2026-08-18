@@ -2,7 +2,9 @@
 //
 // # SPDX-License-Identifier: Apache-2.0
 
-#include "alliander_utilities/manipulate_pose.hpp"
+#include "manipulate_pose.hpp"
+
+#include <rclcpp/executors/single_threaded_executor.hpp>
 
 PoseManipulator::PoseManipulator() : rclcpp::Node("pose_manipulator") {
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());

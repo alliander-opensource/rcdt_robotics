@@ -326,6 +326,7 @@ class PredefinedConfigurations:
     def config_panther_collision_monitor(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
         vehicle.nav2_config.collision_monitor = True
+        vehicle.nav2_config.navigation = True
         lidar = Lidar(
             "velodyne",
             position=(0.125, 0.185, 0.20),

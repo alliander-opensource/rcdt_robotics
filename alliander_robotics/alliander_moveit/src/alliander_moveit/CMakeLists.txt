@@ -17,7 +17,7 @@ find_package(alliander_interfaces REQUIRED)
 # Python package:
 ament_python_install_package(${PROJECT_NAME})
 
-# C++ executables:
+# Moveit Manager:
 include_directories(include)
 add_executable(moveit_manager src/moveit_manager.cpp)
 ament_target_dependencies(moveit_manager
@@ -32,16 +32,54 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
+# Manipulate Pose:
+add_executable(manipulate_pose 
+  src/manipulate_pose.cpp
+  src/main.cpp
+  )
+ament_target_dependencies(manipulate_pose
+  rclcpp
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  geometry_msgs
+  alliander_interfaces
+)
+
+install(
+  TARGETS manipulate_pose
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # Shared folders:
 install(
   DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Default test:
+# Unit tests:
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
+
   ament_lint_auto_find_test_dependencies()
+
+  ament_add_gtest(manipulate_pose_test
+    tests/test_package.cpp
+    src/manipulate_pose.cpp
+  )
+  ament_target_dependencies(manipulate_pose_test
+    rclcpp
+    tf2
+    tf2_ros
+    tf2_geometry_msgs
+    geometry_msgs
+    alliander_interfaces
+  )
+  install(
+    TARGETS manipulate_pose_test
+    DESTINATION lib/${PROJECT_NAME}
+  )
 endif()
 
 ament_package()

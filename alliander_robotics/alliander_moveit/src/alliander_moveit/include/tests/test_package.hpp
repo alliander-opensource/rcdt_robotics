@@ -13,7 +13,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "alliander_interfaces/srv/transform_pose_to_frame.hpp"
-#include "alliander_utilities/manipulate_pose.hpp"
+#include "manipulate_pose.hpp"
 
 /**
  * Class to test the package.
