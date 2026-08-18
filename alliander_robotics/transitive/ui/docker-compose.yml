@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+services:
+  transitive_ui:
+    container_name: transitive_ui
+    image: transitive_ui:latest
+    pull_policy: build
+    build:
+      dockerfile: transitive_ui.Dockerfile
+    network_mode: host
+    tty: true 
+    environment:
+      - TERM=${TERM}
+    volumes:
+      - "./project:/root/project"
