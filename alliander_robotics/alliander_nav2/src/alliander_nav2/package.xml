@@ -25,7 +25,6 @@ SPDX-License-Identifier: Apache-2.0
   <test_depend>ament_lint_auto</test_depend>
 
   <exec_depend>navigation2</exec_depend>
-  <exec_depend>robot_localization</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
 
   <export>

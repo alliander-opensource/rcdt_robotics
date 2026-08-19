@@ -254,7 +254,7 @@ class PredefinedConfigurations:
     @register_configuration("panther_zed")
     def config_panther_zed(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
-        camera = Camera("zed", (0, 0, 0.5))
+        camera = Camera("zed", (0.08, 0, 0.4), orientation=(0, 10, 0))
 
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, camera]
@@ -273,8 +273,8 @@ class PredefinedConfigurations:
         vehicle = Vehicle("panther", (0, 0, 0.2))
         lidar = Lidar(
             "velodyne",
-            position=(0.125, 0.185, 0.20),
-            orientation=(0.0, 0.0, 45.0),
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
             ip_address="10.15.20.5",
         )
 
@@ -284,7 +284,7 @@ class PredefinedConfigurations:
     @register_configuration("panther_xsens")
     def config_panther_xsens(self) -> None:  # noqa: D102
         vehicle = Vehicle("panther", (0, 0, 0.2))
-        imu = IMU("xsens", position=(-0.195, -0.01, 0.18), orientation=(-90, 0, 90))
+        imu = IMU("xsens", position=(0.16, -0.09, 0.155), orientation=(90, 0, -90))
 
         link(vehicle, imu)
         self.plat_conf.platforms = [vehicle, imu]
@@ -312,7 +312,7 @@ class PredefinedConfigurations:
         ntrip = NtripConfig()
         gps = GPS(
             "ublox",
-            (-0.21, 0.2, 0.19),
+            (-0.21, -0.2, 0.19),
             namespace="ublox",
             operation_mode="rover",
             ntrip_config=ntrip,
@@ -329,8 +329,8 @@ class PredefinedConfigurations:
         vehicle.nav2_config.navigation = True
         lidar = Lidar(
             "velodyne",
-            position=(0.125, 0.185, 0.20),
-            orientation=(0.0, 0.0, 45.0),
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
             ip_address="10.15.20.5",
         )
 
@@ -345,8 +345,8 @@ class PredefinedConfigurations:
         vehicle.nav2_config.window_size = 20
         lidar = Lidar(
             "velodyne",
-            position=(0.125, 0.185, 0.20),
-            orientation=(0.0, 0.0, 45.0),
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
             ip_address="10.15.20.5",
         )
 
@@ -360,8 +360,8 @@ class PredefinedConfigurations:
         vehicle.nav2_config.navigation = True
         lidar = Lidar(
             "velodyne",
-            position=(0.125, 0.185, 0.20),
-            orientation=(0.0, 0.0, 45.0),
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
             ip_address="10.15.20.5",
         )
 
@@ -379,22 +379,55 @@ class PredefinedConfigurations:
 
         lidar = Lidar(
             "velodyne",
-            position=(0.125, 0.185, 0.2),
-            orientation=(0, 0, 45),
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
             ip_address="10.15.20.5",
         )
 
         ntrip = NtripConfig()
         gps = GPS(
             "ublox",
-            (-0.21, 0.2, 0.19),
+            (-0.21, -0.2, 0.19),
             namespace="ublox",
             operation_mode="rover",
             ntrip_config=ntrip,
             usb_device="PANTHER",
         )
-        imu = IMU("xsens", position=(-0.195, -0.01, 0.18), orientation=(-90, 0, 90))
-        camera = Camera("realsense", (0.18, 0, 0.2))
+        imu = IMU("xsens", position=(0.16, -0.09, 0.155), orientation=(90, 0, -90))
+
+        link(vehicle, lidar)
+        link(vehicle, gps)
+        link(vehicle, imu)
+        self.plat_conf.platforms = [vehicle, lidar, gps, imu]
+        self.viz_conf.gui = True
+        self.sim_conf.world = "map_5.954036_51.977320"
+
+    @register_configuration("panther_outdoor_navigation_zed")
+    def config_panther_outdoor_navigation_zed(self) -> None:  # noqa: D102
+        vehicle = Vehicle("panther", (0, 0, 0.2), (0, 0, 45))
+        vehicle.nav2_config.controller = "mppi"
+        vehicle.nav2_config.navigation = True
+        vehicle.nav2_config.gps = True
+        vehicle.nav2_config.window_size = 50
+
+        lidar = Lidar(
+            "velodyne",
+            position=(0.13, 0.17, 0.18),
+            orientation=(0, 0, 0),
+            ip_address="10.15.20.5",
+        )
+
+        ntrip = NtripConfig()
+        gps = GPS(
+            "ublox",
+            (-0.21, -0.2, 0.19),
+            namespace="ublox",
+            operation_mode="rover",
+            ntrip_config=ntrip,
+            usb_device="PANTHER",
+        )
+        imu = IMU("xsens", position=(0.16, -0.09, 0.155), orientation=(90, 0, -90))
+        camera = Camera("zed", (0.08, 0, 0.4), orientation=(0, 10, 0))
 
         link(vehicle, lidar)
         link(vehicle, gps)
