@@ -190,7 +190,7 @@ void JoystickManager::handle_buttons_vehicle(
 bool JoystickManager::check_btn_pressed(size_t idx,
                                         const std::vector<int32_t>& curr,
                                         const std::vector<int32_t>& prev) {
-  return curr[idx] != prev[idx];
+  return curr[idx] != prev[idx] && curr[idx] == 1;
 }
 
 void JoystickManager::handle_driving(const float& linear,
