@@ -250,6 +250,7 @@ class PredefinedConfigurations:
 
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, camera]
+        self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_zed")
     def config_panther_zed(self) -> None:  # noqa: D102
