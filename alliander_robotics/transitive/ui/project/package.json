@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@transitive-sdk/utils-web": "^0.17.5",
+    "jose": "^6.2.9",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-bootstrap": "^2.10.10"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",

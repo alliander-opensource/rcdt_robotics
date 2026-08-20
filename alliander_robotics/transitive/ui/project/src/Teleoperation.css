@@ -1,0 +1,37 @@
+/*  
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0  
+*/
+
+.card {
+    aspect-ratio: 0.9;
+    border-style: solid;
+
+}
+
+.widget {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-style: solid;
+}
+
+.teleop-capability {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.remote-teleop-joystick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-style: solid;
+}
+
+.remote-teleop-gamepad-indicator {
+    margin-bottom: 30px;
+}

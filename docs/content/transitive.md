@@ -28,7 +28,7 @@ TR_LABELS=<optional_labels_separated_by_comma>
 Create the the file if it doesn't exist yet, fill the required variables with a unique id for the robot. Next, one can start the container:
 
 ```bash
-cd alliander_robotics/transitive_agent
+cd alliander_robotics/transitive/agent
 docker compose up -d
 ```
 
@@ -41,3 +41,22 @@ docker compose up -d
 
 To monitor the robots running a Transitive agent, one can visit the online portal at <https://portal.transitiverobotics.com/>.
 After logging, the **Devices** page is shown where one can select a robot in the fleet. After selecting a device, the device page will be opened where capabilities can be added to the robot.
+
+## Web UI
+
+One can embed the capabilities added in the portal to a web page. Embedding allows to set specific settings for the capability. Right now, we have a very basic Web UI that can be served locally using Vite. To do this, one can simply use the `transitive_ui` docker container in our repository. This container expects a `transitive.env` file in the home directory of the host device with the following content:
+
+```env
+VITE_USERID=${TR_USERID}
+VITE_DEVICE="d_${TR_INSTALL_HASH}"
+VITE_JWT_SECRET=<JWT secret in our Transitive account>
+```
+
+Fill the required variables. Next, one can start the container:
+
+```bash
+cd alliander_robotics/transitive/ui
+docker compose up
+```
+
+The Web UI is locally served using Vite and the terminal shows the address to open the web page.

@@ -1,0 +1,81 @@
+// # SPDX-FileCopyrightText: Alliander N. V.
+//
+// # SPDX-License-Identifier: Apache-2.0
+
+import { TransitiveCapability } from '@transitive-sdk/utils-web';
+import { useEffect, useState } from 'react';
+import { generateJWT } from './jwt';
+import './Teleoperation.css';
+
+export function Teleoperation() {
+  const [jwtToken, setJwtToken] = useState('');
+  const [jwtError, setJwtError] = useState<string | null>(null);
+  const [cameraTopic, setCameraTopic] = useState('/realsense/color/image_raw');
+  const [capability, setCapability] = useState(<div className="teleop-capability"></div>);
+
+  // Generate JWT token on mount
+  useEffect(() => {
+    generateJWT('@transitive-robotics/remote-teleop').then(({ jwtToken: token, jwtError: error }) => {
+      setJwtToken(token);
+      setJwtError(error);
+    });
+  }, []);
+
+  // Update the capability when the camera topic or JWT token changes
+  useEffect(() => {
+    if (!jwtToken) {
+      return;
+    }
+
+    const embed = <TransitiveCapability
+      key={cameraTopic}
+      jwt={jwtToken}
+      ssl="true"
+      count="1"
+      quantizer="40"
+      timeout="1800"
+      type="rostopic"
+      rosVersion="2"
+      source={cameraTopic}
+      disabledeviceverification="true"
+      control_topic="/joy"
+      control_type="sensor_msgs/Joy"
+      alwayson="true"
+      inverted="true"
+    />;
+
+    setCapability(<div className="teleop-capability">{embed}</div>);
+  }, [cameraTopic, jwtToken]);
+
+  // Input field to specify the camera topic
+  const inputField = (
+    <div>
+      <input
+        type="text"
+        value={cameraTopic}
+        onChange={(event) => {
+          setCameraTopic(event.target.value);
+        }}
+        placeholder="/camera_topic"
+      />
+    </div>
+  );
+
+  // Combine the input field and capability into a single widget
+  const widget = (
+    <>
+      {inputField}
+      {capability}
+    </>
+  );
+
+  // Render as a card with a title and the widget.
+  return (
+    <div className="card">
+      <h2>Teleoperation</h2>
+      <div className="widget">
+        {jwtError ? <p>Error: {jwtError}</p> : widget}
+      </div>
+    </div>
+  );
+}

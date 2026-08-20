@@ -12,5 +12,7 @@ services:
     tty: true 
     environment:
       - TERM=${TERM}
+    env_file:
+      - $HOME/transitive.env
     volumes:
       - "./project:/root/project"
