@@ -32,7 +32,7 @@ RUN git clone --depth=1 --filter=blob:none --sparse -b v5.4.0 https://github.com
   && cd src/zed_ros2_wrapper \
   && git sparse-checkout set zed_wrapper zed_components
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
@@ -40,7 +40,7 @@ COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_zed/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/utilities/depth_camera/ /$WORKDIR/ros/src/depth_camera
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

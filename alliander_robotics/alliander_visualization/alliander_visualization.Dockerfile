@@ -19,14 +19,14 @@ RUN git clone -b ros2 https://github.com/MoffKalast/vizanti.git src/vizanti \
 COPY $SRC_DIRECTORY/common/get_vendor_descriptions.py /$WORKDIR/get_vendor_descriptions.py
 RUN python3 /$WORKDIR/get_vendor_descriptions.py
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_visualization/src/ /$WORKDIR/ros/src
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR
