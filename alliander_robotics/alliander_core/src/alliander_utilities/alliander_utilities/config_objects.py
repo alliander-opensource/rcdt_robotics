@@ -300,6 +300,7 @@ class Arm(Platform):
     platform_type: str = "Arm"
     gripper: bool = False
     moveit: bool = False
+    ai_service: bool = False
     movement: Literal["", "wave"] = ""
     ip_address: str = "10.15.20.4"
 

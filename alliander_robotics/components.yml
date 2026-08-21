@@ -100,3 +100,7 @@ zed:
   base_image: allianderrobotics/cuda
   repository: allianderrobotics/zed
   dockerfile: alliander_zed/alliander_zed.Dockerfile
+thesisai:
+  base_image: allianderrobotics/cuda
+  repository: allianderrobotics/thesisai
+  dockerfile: alliander_thesisai/alliander_thesisai.Dockerfile

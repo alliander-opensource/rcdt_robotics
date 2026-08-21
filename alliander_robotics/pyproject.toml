@@ -43,6 +43,9 @@ alliander-seekthermal = [
     "numpy>=2.4.4",
     "requests>=2.33.0",
 ]
+alliander-thesisai = [
+    "numpy>=2.4.1",
+]
 alliander-ublox = [
     "pydantic>=2.12.5",
 ]

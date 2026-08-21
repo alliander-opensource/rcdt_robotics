@@ -229,6 +229,11 @@ class Compose:
                     f" platform_config:='{platform.to_str()}'",
                     {"needs_dependency": True},
                 ),
+                "thesisai": (
+                    "alliander_thesisai",
+                    f" platform_config:='{platform.to_str()}'",
+                    {"needs_dependency": True},
+                ),
                 "nav2": (
                     "alliander_nav2",
                     f" platform_config:='{platform.to_str()}'",
@@ -426,6 +431,8 @@ class Compose:
                     self.add_service(content, "platform", platform)
                     if getattr(platform, "moveit", False):
                         self.add_service(content, "moveit", platform)
+                    if getattr(platform, "thesisai", False):
+                        self.add_service(content, "thesisai", platform)
                     if getattr(platform, "nav2", False):
                         self.add_service(content, "nav2", platform)
                 if self.simulator:

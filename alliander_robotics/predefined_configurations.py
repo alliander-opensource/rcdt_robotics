@@ -573,3 +573,27 @@ class PredefinedConfigurations:
         self.plat_conf.platforms = [vehicle, lidar, imu, camera]
         self.sim_conf.world = "walls.sdf"
         self.viz_conf.gui = True
+
+    # Franka:
+    @register_configuration("franka_thesis")
+    def config_franka_thesis(self) -> None:  # noqa: D102
+        arm = Arm(
+            "franka",
+            position=(0.0, 0, 1.0), # Position set higher so Franka sits at table height
+            gripper=True,
+            moveit=True,
+            ai_service = True,
+        )
+        # Original camera
+        # camera = Camera("realsense", (0.05, 0, 0), (0, -90, 180)) # Original
+
+        # Separate camera. If using, comment out the link(arm, camera) line
+        # camera = Camera("realsense", (-0.45, -0.95, 1.5), (0, 15, 45))
+
+        camera = Camera("realsense", (-0.45, 0.95, 1.5), (0, 15, -45)) # Separate camera; flipped to left
+
+        # link(arm, camera)
+        # self.sim_conf.world = "table_redblock_openvla.sdf"
+
+        self.plat_conf.platforms = [arm, camera]
+        self.viz_conf.gui = True
