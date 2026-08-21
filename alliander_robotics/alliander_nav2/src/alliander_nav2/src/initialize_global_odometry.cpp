@@ -9,8 +9,6 @@
 #include <sensor_msgs/msg/nav_sat_status.hpp>
 #include <std_srvs/srv/empty.hpp>
 
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-
 using namespace std::chrono_literals;
 
 /**

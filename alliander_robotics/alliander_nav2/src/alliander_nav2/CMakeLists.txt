@@ -9,6 +9,8 @@ project(alliander_nav2)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(nav2_behavior_tree REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -49,6 +51,11 @@ add_executable(initialize_odometry_node src/initialize_global_odometry.cpp)
 ament_target_dependencies(initialize_odometry_node rclcpp sensor_msgs robot_localization std_srvs)
 
 install(TARGETS initialize_odometry_node DESTINATION lib/${PROJECT_NAME})
+
+add_executable(goal_projector_node src/goal_projector.cpp)
+ament_target_dependencies(goal_projector_node rclcpp geometry_msgs nav2_msgs)
+
+install(TARGETS goal_projector_node DESTINATION lib/${PROJECT_NAME})
 
 # Default test:
 if(BUILD_TESTING)
