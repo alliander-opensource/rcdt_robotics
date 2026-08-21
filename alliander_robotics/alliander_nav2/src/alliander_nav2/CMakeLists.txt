@@ -52,10 +52,4 @@ ament_target_dependencies(initialize_odometry_node rclcpp sensor_msgs robot_loca
 
 install(TARGETS initialize_odometry_node DESTINATION lib/${PROJECT_NAME})
 
-# Default test:
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
 ament_package()

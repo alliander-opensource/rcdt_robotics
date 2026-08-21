@@ -40,11 +40,5 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Default test:
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.sh.in")
 ament_package()

@@ -85,8 +85,8 @@ If the package contains a Python package, it needs to be installed.
 **33-37**:\
 All shared folders are installed into the share directory. This includes the directory of launch files, but also other possible directories, like `urdf/` or `config/`, if these exist.
 
-**39-45**:\
-The file always ends with a default test and the *ament_package()* command.
+**39**:\
+The file always ends with the *ament_package()* command.
 
 ## package.xml
 
@@ -109,8 +109,8 @@ Next, we define the build tool dependencies for building C++ and/or Python files
 **20-21**:\
 Next, we define other packages where our package depends on.
 
-**23-28**:\
-The file ends with the default test dependency and an export definition.
+**23-26**:\
+The file ends with the default export definition.
 
 ## Custom Messages, Services and Actions
 
