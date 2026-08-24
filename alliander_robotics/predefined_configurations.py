@@ -375,7 +375,7 @@ class PredefinedConfigurations:
         vehicle.nav2_config.controller = "mppi"
         vehicle.nav2_config.navigation = True
         vehicle.nav2_config.gps = True
-        vehicle.nav2_config.window_size = 50
+        vehicle.nav2_config.window_size = 150
 
         lidar = Lidar(
             "velodyne",
@@ -400,7 +400,7 @@ class PredefinedConfigurations:
         link(vehicle, imu)
         self.plat_conf.platforms = [vehicle, lidar, gps, imu]
         self.viz_conf.gui = True
-        self.sim_conf.world = "map_5.940906_51.966960"
+        self.sim_conf.world = "map_5.954036_51.977320"
 
     @register_configuration("panther_outdoor_navigation_zed")
     def config_panther_outdoor_navigation_zed(self) -> None:  # noqa: D102
