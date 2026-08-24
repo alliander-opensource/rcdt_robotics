@@ -370,17 +370,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ("gps/fix", f"/{namespace_gps}/gps/fix"),
         ],
     )
-    goal_projector = Node(
-        package="alliander_nav2",
-        executable="goal_projector_node",
-        name="goal_projector",
-        namespace=namespace_vehicle,
-        remappings=[
-            ("/costmap_topic", f"/{namespace_vehicle}/global_costmap/costmap"),
-            ("/goal_pose_topic", "/goal_pose"),
-            ("/updated_goal_pose_topic", f"/{namespace_vehicle}/updated_goal"),
-        ],
-    )
 
     nav2_manager = Node(
         package="alliander_nav2",
@@ -407,7 +396,6 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         Register.on_start(ekf_global, context) if nav2.gps else SKIP,
         Register.on_start(navsat_transform, context) if nav2.gps else SKIP,
         Register.on_start(odom_gate, context) if nav2.gps else SKIP,
-        Register.on_start(goal_projector, context) if nav2.gps else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
         Register.on_log(nav2_manager, "Controller is ready.", context)
         if nav2.navigation
