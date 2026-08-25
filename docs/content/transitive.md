@@ -25,7 +25,7 @@ TR_DISPLAYNAME=${TR_INSTALL_HASH}
 TR_LABELS=<optional_labels_separated_by_comma>
 ```
 
-Create the the file if it doesn't exist yet, fill the required variables with a unique id for the robot. Next, one can start the container:
+Create the file if it doesn't exist yet, fill the required variables with a unique id for the robot. Next, one can start the container:
 
 ```bash
 cd alliander_robotics/transitive/agent

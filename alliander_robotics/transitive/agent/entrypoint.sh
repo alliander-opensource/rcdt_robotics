@@ -15,7 +15,6 @@ printf "${UNDERLINE}Transitive Agent.${NORMAL}\n\n"
 
 # Check for required environment variables:
 vars=(
-
     TR_INSTALL_HASH
     TR_USERID
     TR_ROBOT_TOKEN
