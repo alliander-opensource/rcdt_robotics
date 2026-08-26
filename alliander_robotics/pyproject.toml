@@ -34,7 +34,6 @@ alliander-moveit = [
 alliander-nav2 = [
     "numpy>=2.4.1",
     "pydantic>=2.12.5",
-    "pyproj>=3.7.2",
 ]
 alliander-robotiq = [
     "numpy>=2.4.1",
