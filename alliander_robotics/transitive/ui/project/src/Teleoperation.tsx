@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { generateJWT } from './jwt';
 import './Teleoperation.css';
 
-export function Teleoperation() {
+export function Teleoperation({ device }: { device: string }) {
   const [jwtToken, setJwtToken] = useState('');
   const [jwtError, setJwtError] = useState<string | null>(null);
   const [cameraTopic, setCameraTopic] = useState('/realsense/color/image_raw');
@@ -15,11 +15,11 @@ export function Teleoperation() {
 
   // Generate JWT token on mount
   useEffect(() => {
-    generateJWT('@transitive-robotics/remote-teleop').then(({ jwtToken: token, jwtError: error }) => {
+    generateJWT(device, '@transitive-robotics/remote-teleop').then(({ jwtToken: token, jwtError: error }) => {
       setJwtToken(token);
       setJwtError(error);
     });
-  }, []);
+  }, [device]);
 
   // Update the capability when the camera topic or JWT token changes
   useEffect(() => {
@@ -72,7 +72,7 @@ export function Teleoperation() {
   // Render as a card with a title and the widget.
   return (
     <div className="card">
-      <h2>Teleoperation</h2>
+      <h2>Teleoperation ({device})</h2>
       <div className="widget">
         {jwtError ? <p>Error: {jwtError}</p> : widget}
       </div>
