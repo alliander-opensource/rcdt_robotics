@@ -48,7 +48,6 @@ One can embed the capabilities added in the portal to a web page. Embedding allo
 
 ```env
 VITE_USERID=${TR_USERID}
-VITE_DEVICE="d_${TR_INSTALL_HASH}"
 VITE_JWT_SECRET=<JWT secret in our Transitive account>
 ```
 
