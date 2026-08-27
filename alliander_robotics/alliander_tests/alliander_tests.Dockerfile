@@ -19,14 +19,14 @@ RUN git clone --depth=1 --filter=blob:none -b v3.1.1 https://github.com/frankaro
 RUN git clone --depth=1 --filter=blob:none -b 3.10.0 https://github.com/ros2/launch.git src/launch \
     && cd src/launch && git sparse-checkout set launch_testing 
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_tests/src/ /$WORKDIR/ros/src
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

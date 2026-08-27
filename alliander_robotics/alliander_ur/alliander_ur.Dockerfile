@@ -17,7 +17,7 @@ COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_ur/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/utilities/arm/ /$WORKDIR/ros/src/arm
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

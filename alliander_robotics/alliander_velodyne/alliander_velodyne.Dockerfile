@@ -15,14 +15,14 @@ ENV ROS_DISTRO=jazzy
 WORKDIR /$WORKDIR/external
 RUN git clone -b ros2 https://github.com/alliander-opensource/velodyne.git src/velodyne
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_velodyne/src/ /$WORKDIR/ros/src
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

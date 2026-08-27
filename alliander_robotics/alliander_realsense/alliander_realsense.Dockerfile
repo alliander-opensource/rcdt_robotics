@@ -34,7 +34,7 @@ RUN unzip "$ZIP_FILE" -d "$TEMP_DIR" && dpkg -i "$TEMP_DIR"/*.deb && rm -rf "$TE
 WORKDIR /$WORKDIR/external
 RUN git clone -b 4.57.2 https://github.com/IntelRealSense/realsense-ros.git src/realsense_ros
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
@@ -42,7 +42,7 @@ COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_realsense/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/utilities/depth_camera/ /$WORKDIR/ros/src/depth_camera
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

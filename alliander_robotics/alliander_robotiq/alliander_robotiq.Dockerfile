@@ -17,7 +17,7 @@ WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_robotiq/src/ /$WORKDIR/ros/src
 RUN apt update && rosdep update --rosdistro $ROS_DISTRO && rosdep install --from-paths /$WORKDIR/ros/src -y -i -t build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR

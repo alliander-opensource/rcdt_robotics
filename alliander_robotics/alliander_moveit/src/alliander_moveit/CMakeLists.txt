@@ -59,11 +59,7 @@ install(
 
 # Unit tests:
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
-
-  ament_lint_auto_find_test_dependencies()
-
   ament_add_gtest(manipulate_pose_test
     tests/test_package.cpp
     src/manipulate_pose.cpp
@@ -75,10 +71,6 @@ if(BUILD_TESTING)
     tf2_geometry_msgs
     geometry_msgs
     alliander_interfaces
-  )
-  install(
-    TARGETS manipulate_pose_test
-    DESTINATION lib/${PROJECT_NAME}
   )
 endif()
 

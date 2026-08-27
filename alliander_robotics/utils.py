@@ -110,10 +110,14 @@ def is_core_docker_changed() -> bool:
     Returns:
         bool: True if the core docker image is changed, False otherwise.
     """
-    return (
-        "alliander_robotics/alliander_core/alliander_core.Dockerfile"
-        in get_files_changed()
-    )
+    core_files = [
+        "alliander_robotics/alliander_core/alliander_core.Dockerfile",
+        "alliander_robotics/common/colcon_build.sh",
+        "alliander_robotics/common/entrypoint.sh",
+        "alliander_robotics/common/rosdep_install.sh",
+    ]
+
+    return any(changed_file in core_files for changed_file in get_files_changed())
 
 
 def is_core_files_changed() -> bool:

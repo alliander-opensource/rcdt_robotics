@@ -31,7 +31,7 @@ RUN echo 'net.core.rmem_default=268435456' >> /etc/sysctl.conf && \
 WORKDIR /$WORKDIR/external
 RUN git clone -b jazzy https://github.com/alliander-robotics/l3cam_ros2.git src/l3cam_ros2
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh
+RUN /$WORKDIR/colcon_build.sh --external
 
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
@@ -39,7 +39,7 @@ COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/alliander_beamagine/src/ /$WORKDIR/ros/src
 COPY $SRC_DIRECTORY/utilities/depth_camera/ /$WORKDIR/ros/src/depth_camera
 RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
-RUN /$WORKDIR/colcon_build.sh --symlink-install
+RUN /$WORKDIR/colcon_build.sh
 
 # Install python dependencies:
 WORKDIR $WORKDIR
