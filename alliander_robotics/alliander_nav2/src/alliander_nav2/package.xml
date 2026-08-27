@@ -19,12 +19,12 @@ SPDX-License-Identifier: Apache-2.0
 
   <depend>rclcpp</depend>
   <depend>nav2_behavior_tree</depend>
-  <depend>diagnostic_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>robot_localization</depend>
 
   <test_depend>ament_lint_auto</test_depend>
 
   <exec_depend>navigation2</exec_depend>
-  <exec_depend>robot_localization</exec_depend>
   <exec_depend>slam_toolbox</exec_depend>
 
   <export>

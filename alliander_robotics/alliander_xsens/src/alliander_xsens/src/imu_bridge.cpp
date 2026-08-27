@@ -24,7 +24,7 @@ ImuBridge::ImuBridge() : Node("imu_bridge") {
 
 void ImuBridge::publish_imu() {
   sensor_msgs::msg::Imu msg;
-  msg.header.stamp = this->now();
+  msg.header.stamp = this->latest_accel_msg.header.stamp;
   msg.header.frame_id = this->latest_accel_msg.header.frame_id;
 
   msg.linear_acceleration = this->latest_accel_msg.vector;

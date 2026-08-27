@@ -63,8 +63,24 @@ SPDX-License-Identifier: Apache-2.0
 	<sensor name="navsat" type="navsat">
 	  <always_on>1</always_on>
 	  <update_rate>5</update_rate>
-	  <topic>${namespace}/gps/fix</topic>
+	  <topic>${namespace}/gps/fix_raw</topic>
 	  <gz_frame_id>${namespace}/base_link</gz_frame_id>
+	  <navsat>
+	    <position_sensing>
+	      <horizontal>
+		<noise type="gaussian">
+		  <mean>0.0</mean>
+		  <stddev>2e-7</stddev>
+		</noise>
+	      </horizontal>
+	      <vertical>
+		<noise type="gaussian">
+		  <mean>0.0</mean>
+		  <stddev>2e-7</stddev>
+		</noise>
+	      </vertical>
+	    </position_sensing>  
+	  </navsat>
 	</sensor>
       </gazebo>
     </xacro:if>

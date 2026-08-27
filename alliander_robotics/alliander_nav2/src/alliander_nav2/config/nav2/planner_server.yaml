@@ -10,4 +10,11 @@ planner_server:
     allow_partial_planning: True
     GridBased:
       plugin: "nav2_smac_planner::SmacPlanner2D"
+      # the changes below make paths slightly smoother in sparse lidar environments (e.g. simulation)
+      # if real-life testing sees degraded performance, then feel free to change back
+      cost_travel_multiplier: 1.0
+      smoother:
+        w_smooth: 0.5
+        w_data: 0.1
+        refinement_num: 4
 

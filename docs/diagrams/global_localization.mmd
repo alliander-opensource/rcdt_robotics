@@ -1,0 +1,7 @@
+flowchart TD
+    A[Initial valid GPS fix] --> D
+    B[Initial IMU heading] --> D
+    C[Initial pose] --> D
+    D[Initial odometry/global] --> E[datum set]
+    F[GPS: New fix] --> G[Navsat transform: odometry/gps] 
+    G --> H[Global EKF: odometry/global]

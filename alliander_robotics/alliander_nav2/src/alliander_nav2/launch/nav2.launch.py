@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+
 from alliander_utilities.adapted_yaml import AdaptedYaml
 from alliander_utilities.config_objects import Vehicle
 from alliander_utilities.launch_argument import LaunchArgument
@@ -198,6 +199,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ),
             "robot_base_frame": f"{namespace_vehicle}/base_footprint",
             "odom_topic": f"/{namespace_vehicle}/odometry/filtered",
+            "goal_updater_topic": f"/{namespace_vehicle}/updated_goal",
         },
         root_key=namespace_vehicle,
     )
@@ -314,6 +316,9 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
     if nav2.gps:
         remappings.append(("/gps/fix", f"/{namespace_gps}/gps/fix"))
         remappings.append(("/fromLL", f"/{namespace_vehicle}/fromLL"))
+        remappings.append(
+            ("odometry/filtered", f"/{namespace_vehicle}/odometry/global")
+        )
 
     all_lifecycle_nodes["waypoint_follower"] = LifecycleNode(
         package="nav2_waypoint_follower",
@@ -356,11 +361,21 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
             ("gps/fix", f"/{namespace_gps}/gps/fix"),
         ],
     )
+    odom_gate = Node(
+        package="alliander_nav2",
+        executable="initialize_odometry_node",
+        name="odom_gate",
+        namespace=namespace_vehicle,
+        remappings=[
+            ("gps/fix", f"/{namespace_gps}/gps/fix"),
+        ],
+    )
 
     nav2_manager = Node(
         package="alliander_nav2",
         executable="nav2_manager.py",
         namespace=namespace_vehicle,
+        parameters=[{"costmap_size": float(nav2.window_size)}],
         remappings=remappings,
     )
 
@@ -380,6 +395,7 @@ def launch_setup(context: LaunchContext) -> list:  # noqa: PLR0912, PLR0915
         *[Register.on_start(node, context) for node in register_lifecycle_nodes],
         Register.on_start(ekf_global, context) if nav2.gps else SKIP,
         Register.on_start(navsat_transform, context) if nav2.gps else SKIP,
+        Register.on_start(odom_gate, context) if nav2.gps else SKIP,
         Register.on_log(lifecycle_manager, "Managed nodes are active", context),
         Register.on_log(nav2_manager, "Controller is ready.", context)
         if nav2.navigation
