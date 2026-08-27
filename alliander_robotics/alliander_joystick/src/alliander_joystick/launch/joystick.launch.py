@@ -76,9 +76,6 @@ def launch_setup(context: LaunchContext) -> list:
     joystick_controller = Node(
         package="joy",
         executable="game_controller_node",
-        parameters=[
-            {"sticky_buttons": True},
-        ],
     )
 
     return [

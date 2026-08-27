@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Alliander N. V.
+#
+# SPDX-License-Identifier: Apache-2.0
+services:
+  transitive_agent:
+    container_name: transitive_agent
+    image: transitive_agent:latest
+    pull_policy: build
+    build:
+      dockerfile: transitive_agent.Dockerfile
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - TERM=${TERM}
+    env_file:
+      - $HOME/transitive.env
+    volumes:
+      - "$HOME/.transitive:/root/.transitive"

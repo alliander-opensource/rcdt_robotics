@@ -250,6 +250,7 @@ class PredefinedConfigurations:
 
         link(vehicle, camera)
         self.plat_conf.platforms = [vehicle, camera]
+        self.sim_conf.world = "walls.sdf"
 
     @register_configuration("panther_zed")
     def config_panther_zed(self) -> None:  # noqa: D102
@@ -441,6 +442,14 @@ class PredefinedConfigurations:
     @register_configuration("lynx")
     def config_lynx(self) -> None:  # noqa: D102
         self.plat_conf.platforms = [Vehicle("lynx", (0, 0, 0.13), namespace="lynx")]
+
+    @register_configuration("lynx_realsense")
+    def config_lynx_realsense(self) -> None:  # noqa: D102
+        vehicle = Vehicle("lynx", (0, 0, 0.13), namespace="lynx")
+        camera = Camera("realsense", (0.15, 0, 0.23))
+
+        link(vehicle, camera)
+        self.plat_conf.platforms = [vehicle, camera]
 
     @register_configuration("lynx_ouster")
     def config_lynx_ouster(self) -> None:  # noqa: D102

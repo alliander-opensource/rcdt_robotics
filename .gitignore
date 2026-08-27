@@ -18,6 +18,7 @@ ignore/
 build/
 clangd/
 **/target/
+**/node_modules/
 
 .cache
 .venv
