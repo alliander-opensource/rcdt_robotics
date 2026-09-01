@@ -5,10 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 .card {
-    width: 50%;
-    aspect-ratio: 0.9;
+    width: calc(100% / 3);
+    overflow: scroll;
     border-style: solid;
-
+    border-color: purple;
 }
 
 .header {

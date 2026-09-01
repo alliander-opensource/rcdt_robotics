@@ -4,8 +4,10 @@
 
 import { useState } from 'react';
 import './App.css';
-import { HealthMonitor } from './HealthMonitor';
-import { Teleoperation } from './Teleoperation';
+import { HealthMonitor } from './capabilities/HealthMonitor';
+import { RosTool } from './capabilities/RosTool';
+import { Teleoperation } from './capabilities/Teleoperation';
+import { Map } from './Map';
 
 type Device = 'simulation' | 'lynx' | 'panther' | 'none';
 const DEVICE: Device = 'simulation';
@@ -13,6 +15,7 @@ const DEVICE: Device = 'simulation';
 function App() {
   const device_stored = sessionStorage.getItem(DEVICE) as Device | null;
   const [device] = useState<Device>(device_stored ?? DEVICE);
+  const [position, setPosition] = useState<[number, number] | null>(null);
 
   const handleDeviceChange = (value: Device) => {
     sessionStorage.setItem(DEVICE, value);
@@ -50,6 +53,12 @@ function App() {
     </label>
   </div>
 
+  const teleoperation = <Teleoperation device={device} />;
+  const healthMonitor = <HealthMonitor device={device} />;
+  const rosTool = <RosTool device={device} setPosition={setPosition} />;
+
+  const map = <Map position={position} />;
+
   return (
     <>
       <div className="app">
@@ -58,12 +67,16 @@ function App() {
           {deviceSelector}
         </div>
         <div className="cards">
-          <Teleoperation device={device} />
-          <HealthMonitor device={device} />
+          {teleoperation}
+          {healthMonitor}
+          {rosTool}
+        </div>
+        <div className="map">
+          {map}
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default App

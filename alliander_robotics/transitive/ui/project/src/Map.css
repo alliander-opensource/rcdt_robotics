@@ -1,0 +1,14 @@
+/*  
+SPDX-FileCopyrightText: Alliander N. V.
+
+SPDX-License-Identifier: Apache-2.0  
+*/
+
+.leaflet-container {
+  height: 100%;
+}
+
+.controls{
+  border-style: solid;
+  pointer-events: auto;
+}

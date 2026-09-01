@@ -4,15 +4,44 @@ SPDX-FileCopyrightText: Alliander N. V.
 SPDX-License-Identifier: Apache-2.0  
 */
 
+body {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 .app {
-  max-width: 1500px;
+  margin: 1vh;
+  height: 98vh;
+  width: 98vw;
   border-style: solid;
 }
 
 .title {
+  height: 10%;
   text-align: center;
+  border-style: solid;
+  border-color: green;
 }
 
 .cards {
+  height: 40%;
   display: flex;
+  border-style: solid;
+  border-color: red;
+
+}
+
+.map {
+  height: 50%;
+  border-style: solid;
+  border-color: blue;
+}
+
+.leaflet-container {
+  height: 100%;
 }
