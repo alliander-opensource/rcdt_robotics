@@ -8,7 +8,7 @@ import './card.css';
 import './HealthMonitor.css';
 import { generateJWT } from './jwt';
 
-export function HealthMonitor({ device }: { device: string }) {
+export function HealthMonitor({ device, time }: { device: string, time: number | null }) {
   const [jwtToken, setJwtToken] = useState('');
   const [jwtError, setJwtError] = useState<string | null>(null);
   const [capability, setCapability] = useState(<div className="health-capability"></div>);
@@ -49,6 +49,7 @@ export function HealthMonitor({ device }: { device: string }) {
     <div className="card">
       <div className="header"><b>Health Monitor ({device})</b></div>
       <div className="widget">
+        Time: {time}
         {jwtError ? <p>Error: {jwtError}</p> : widget}
       </div>
     </div>

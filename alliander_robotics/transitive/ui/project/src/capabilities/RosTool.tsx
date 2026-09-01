@@ -7,28 +7,48 @@ import { useContext, useEffect, useState } from 'react';
 import './card.css';
 import { generateJWT } from './jwt';
 
-const Subscriber = ({ setPosition }: { setPosition: (value: [number, number] | null) => void }) => {
+export interface Subscription {
+  topic: string;
+  fields: string[];
+  callback: (data: any) => void;
+}
+
+const Subscriber = ({ subscriptions }: { subscriptions: Subscription[] }) => {
   // import the API exposed by the ros-tool capability
   const { isReady, subscribe, unsubscribe, deviceData } = useContext(CapabilityContext)
+  const messages = deviceData?.ros?.[2].messages
 
   useEffect(() => {
+    // Subscribe to the topics:
     if (isReady?.()) {
-      subscribe(2, '/ublox/gps/fix');
+      subscriptions.forEach(sub => subscribe(2, sub.topic));
     }
 
-    // unsubscribe when React component unmounts
+    // Unsubscribe when React component unmounts:
     return () => {
-      unsubscribe?.(2, '/ublox/gps/fix');
+      subscriptions.forEach(sub => unsubscribe?.(2, sub.topic));
     }
   }, [isReady, subscribe])
 
-  // Update the messages
-  const messages = deviceData?.ros?.[2].messages
-  const latitude = messages?.ublox?.gps?.fix?.latitude;
-  const longitude = messages?.ublox?.gps?.fix?.longitude;
-  useEffect(() => {
-    setPosition(latitude && longitude ? [latitude, longitude] : null);
-  }, [latitude, longitude]);
+  // Create useEffect hooks for each subscription:
+  for (const sub of subscriptions) {
+
+    // Define the variables based on the fields of the subscription:
+    let variables = []
+    for (const field of sub.fields) {
+      let attributes = sub.topic.concat(field).split('/').filter(attr => attr !== '');
+      let variable = messages;
+      for (const attr of attributes) {
+        variable = variable?.[attr];
+      }
+      variables.push(variable);
+    }
+
+    // The subscription callback will be called whenever one of the relevant variables changes:
+    useEffect(() => {
+      sub.callback(variables);
+    }, variables);
+  }
 
   return (
     <pre>
@@ -37,7 +57,7 @@ const Subscriber = ({ setPosition }: { setPosition: (value: [number, number] | n
   );
 }
 
-export function RosTool({ device, setPosition }: { device: string, setPosition: (value: [number, number] | null) => void }) {
+export function RosTool({ device, subscriptions }: { device: string, subscriptions: Subscription[] }) {
   const [jwtToken, setJwtToken] = useState('');
   const [jwtError, setJwtError] = useState<string | null>(null);
   const [capability, setCapability] = useState(<div></div>);
@@ -57,7 +77,7 @@ export function RosTool({ device, setPosition }: { device: string, setPosition: 
     }
 
     const embed = <CapabilityContextProvider jwt={jwtToken}>
-      <Subscriber setPosition={setPosition} />
+      <Subscriber subscriptions={subscriptions} />
     </CapabilityContextProvider>
 
     setCapability(<div className="capability">{embed}</div>);

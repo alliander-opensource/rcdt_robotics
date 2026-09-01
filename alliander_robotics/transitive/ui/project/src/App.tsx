@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import './App.css';
 import { HealthMonitor } from './capabilities/HealthMonitor';
+import type { Subscription } from './capabilities/RosTool';
 import { RosTool } from './capabilities/RosTool';
 import { Teleoperation } from './capabilities/Teleoperation';
 import { Map } from './Map';
@@ -16,6 +17,7 @@ function App() {
   const device_stored = sessionStorage.getItem(DEVICE) as Device | null;
   const [device] = useState<Device>(device_stored ?? DEVICE);
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [time, setTime] = useState<number | null>(null);
 
   const handleDeviceChange = (value: Device) => {
     sessionStorage.setItem(DEVICE, value);
@@ -53,9 +55,42 @@ function App() {
     </label>
   </div>
 
+  //Subscription on GPS topic: 
+  const gps_callback = (data: any) => {
+    if (data && data.length >= 2) {
+      if (typeof data[0] === 'number' && typeof data[1] === 'number') {
+        setPosition([data[0], data[1]]);
+        console.log("Update GPS!")
+      }
+    }
+  };
+  const gps_subscription: Subscription = {
+    topic: '/ublox/gps/fix',
+    fields: ['/latitude', '/longitude'],
+    callback: gps_callback,
+  };
+
+  // Subscription on Clock topic:
+  const clock_callback = (data: any) => {
+    if (data && data.length >= 1) {
+      if (typeof data[0] === 'number') {
+        setTime(data[0]);
+        console.log("Update Clock!")
+      }
+    }
+  };
+  const clock_subscription: Subscription = {
+    topic: '/clock',
+    fields: ['/clock/sec'],
+    callback: clock_callback,
+  };
+
+  // Define ROS tool
+  const subscriptions: Subscription[] = [gps_subscription, clock_subscription];
+  const rosTool = <RosTool device={device} subscriptions={subscriptions} />;
+
   const teleoperation = <Teleoperation device={device} />;
-  const healthMonitor = <HealthMonitor device={device} />;
-  const rosTool = <RosTool device={device} setPosition={setPosition} />;
+  const healthMonitor = <HealthMonitor device={device} time={time} />;
 
   const map = <Map position={position} />;
 
