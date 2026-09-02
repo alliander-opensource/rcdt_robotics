@@ -4,13 +4,14 @@
 
 import { TransitiveCapability } from '@transitive-sdk/utils-web';
 import { useEffect, useState } from 'react';
+import './card.css';
 import { generateJWT } from './jwt';
 import './Teleoperation.css';
 
 export function Teleoperation({ device }: { device: string }) {
   const [jwtToken, setJwtToken] = useState('');
   const [jwtError, setJwtError] = useState<string | null>(null);
-  const [cameraTopic, setCameraTopic] = useState('/realsense/color/image_raw');
+  const [cameraTopic, setCameraTopic] = useState('/zed/color/image_raw');
   const [capability, setCapability] = useState(<div className="teleop-capability"></div>);
 
   // Generate JWT token on mount
@@ -28,7 +29,7 @@ export function Teleoperation({ device }: { device: string }) {
     }
 
     const embed = <TransitiveCapability
-      key={cameraTopic}
+      key={`${device}-${cameraTopic}`}
       jwt={jwtToken}
       ssl="true"
       count="1"
@@ -44,7 +45,7 @@ export function Teleoperation({ device }: { device: string }) {
       inverted="true"
     />;
 
-    setCapability(<div className="teleop-capability">{embed}</div>);
+    setCapability(<div className="capability">{embed}</div>);
   }, [cameraTopic, jwtToken]);
 
   // Input field to specify the camera topic
@@ -72,7 +73,7 @@ export function Teleoperation({ device }: { device: string }) {
   // Render as a card with a title and the widget.
   return (
     <div className="card">
-      <h2>Teleoperation ({device})</h2>
+      <div className="header"><b>Teleoperation ({device})</b></div>
       <div className="widget">
         {jwtError ? <p>Error: {jwtError}</p> : widget}
       </div>
