@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
     width: calc(100% / 3);
     overflow: scroll;
     border-style: solid;
-    border-color: purple;
+    border-width: 1px;
 }
 
 .header {

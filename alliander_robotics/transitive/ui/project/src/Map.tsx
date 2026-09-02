@@ -27,8 +27,8 @@ export function Map({ position }: { position?: [number, number] | null }) {
 
         return (
             <div className="leaflet-bottom leaflet-left leaflet-control controls">
-                <button onClick={home}>🏠</button>
-                <button onClick={robot}>🤖</button>
+                <button onClick={home}><span className='button'>🏠</span></button>
+                <button onClick={robot}><span className='button'>🤖</span></button>
             </div>
         )
     }

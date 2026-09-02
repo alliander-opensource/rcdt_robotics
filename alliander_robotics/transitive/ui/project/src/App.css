@@ -18,28 +18,29 @@ body {
   margin: 1vh;
   height: 98vh;
   width: 98vw;
-  border-style: solid;
+  
 }
 
 .title {
   height: 10%;
   text-align: center;
+  overflow: scroll;
   border-style: solid;
-  border-color: green;
+  border-width: 1px;
 }
 
 .cards {
   height: 40%;
   display: flex;
   border-style: solid;
-  border-color: red;
+  border-width: 1px;
 
 }
 
 .map {
   height: 50%;
   border-style: solid;
-  border-color: blue;
+  border-width: 1px;
 }
 
 .leaflet-container {

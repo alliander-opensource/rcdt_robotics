@@ -4,11 +4,10 @@ SPDX-FileCopyrightText: Alliander N. V.
 SPDX-License-Identifier: Apache-2.0  
 */
 
-.leaflet-container {
-  height: 100%;
+.controls {
+  pointer-events: auto;
 }
 
-.controls{
-  border-style: solid;
-  pointer-events: auto;
+.button {
+  font-size: 20px;
 }

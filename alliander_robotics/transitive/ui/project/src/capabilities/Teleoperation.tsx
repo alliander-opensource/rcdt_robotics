@@ -16,7 +16,7 @@ export function Teleoperation({ device }: { device: string }) {
 
   // Generate JWT token on mount
   useEffect(() => {
-        generateJWT(device, '@transitive-robotics/remote-teleop').then(({ jwtToken: token, jwtError: error }) => {
+    generateJWT(device, '@transitive-robotics/remote-teleop').then(({ jwtToken: token, jwtError: error }) => {
       setJwtToken(token);
       setJwtError(error);
     });
