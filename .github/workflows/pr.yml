@@ -48,11 +48,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: base
           tag: ${{ env.BRANCH_NAME }}
@@ -69,7 +69,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: '["base"]'
           tag: ${{ env.BRANCH_NAME }}
@@ -89,11 +89,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           tag: ${{ env.BRANCH_NAME }}
@@ -112,7 +112,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: ${{ needs.select-components.outputs.UBUNTU_COMPONENTS}}
           tag: ${{ env.BRANCH_NAME }}
@@ -131,11 +131,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: cuda
           tag: ${{ env.BRANCH_NAME }}
@@ -152,7 +152,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: '["cuda"]'
           tag: ${{ env.BRANCH_NAME }}
@@ -172,11 +172,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           tag: ${{ env.BRANCH_NAME }}
@@ -195,7 +195,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: ${{ needs.select-components.outputs.CUDA_COMPONENTS }}
           tag: ${{ env.BRANCH_NAME }}
@@ -244,7 +244,7 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Docker login

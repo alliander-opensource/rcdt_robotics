@@ -39,11 +39,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: base
           runner: ${{ matrix.runner }}
@@ -59,7 +59,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: '["base"]'
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -77,11 +77,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           runner: ${{ matrix.runner }}
@@ -97,7 +97,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: ${{ needs.select-components.outputs.UBUNTU_COMPONENTS}}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -113,11 +113,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: cuda
           runner: ${{ matrix.runner }}
@@ -133,7 +133,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: '["cuda"]'
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -151,11 +151,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Deploy image
-        uses: ./.github/actions/deploy-image
+        uses: $/.github/actions/deploy-image
         with:
           component: ${{ matrix.component }}
           runner: ${{ matrix.runner }}
@@ -171,7 +171,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Create manifest
-        uses: ./.github/actions/create-manifest
+        uses: $/.github/actions/create-manifest
         with:
           components: ${{ needs.select-components.outputs.CUDA_COMPONENTS }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -201,7 +201,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check architecture
-        uses: ./.github/actions/check-architecture
+        uses: $/.github/actions/check-architecture
         with:
           expected: ${{ matrix.runner }}
       - name: Docker login
