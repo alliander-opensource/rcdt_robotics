@@ -46,7 +46,9 @@ const Subscriber = ({ subscriptions }: { subscriptions: Subscription[] }) => {
 
     // The subscription callback will be called whenever one of the relevant variables changes:
     useEffect(() => {
-      sub.callback(variables);
+      if (variables.every(v => v !== null && v !== undefined)) {
+        sub.callback(variables);
+      }
     }, variables);
   }
 

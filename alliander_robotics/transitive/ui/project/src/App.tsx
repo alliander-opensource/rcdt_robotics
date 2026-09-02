@@ -58,10 +58,7 @@ function App() {
   //Subscription on GPS topic: 
   const gps_callback = (data: any) => {
     if (data && data.length >= 2) {
-      if (typeof data[0] === 'number' && typeof data[1] === 'number') {
-        setPosition([data[0], data[1]]);
-        console.log("Update GPS!")
-      }
+      setPosition([data[0], data[1]]);
     }
   };
   const gps_subscription: Subscription = {
@@ -73,10 +70,7 @@ function App() {
   // Subscription on Clock topic:
   const clock_callback = (data: any) => {
     if (data && data.length >= 1) {
-      if (typeof data[0] === 'number') {
-        setTime(data[0]);
-        console.log("Update Clock!")
-      }
+      setTime(data[0]);
     }
   };
   const clock_subscription: Subscription = {
