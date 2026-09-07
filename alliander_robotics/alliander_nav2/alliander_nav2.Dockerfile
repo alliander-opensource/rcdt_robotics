@@ -11,6 +11,18 @@ FROM $BASE_IMAGE AS builder
 ARG SRC_DIRECTORY
 ENV ROS_DISTRO=jazzy
 
+# Install PyQt6:
+RUN apt update && apt install -y --no-install-recommends python3-pyqt6 \
+  && rm -rf /var/lib/apt/lists/* \
+  && apt autoremove -y \
+  && apt clean
+
+# Install external packages:
+WORKDIR /$WORKDIR/external
+RUN git clone --depth=1 -b main https://github.com/sutharsan-311/nav2_config src/nav2_config
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --build
+RUN /$WORKDIR/colcon_build.sh --external
+
 # Install alliander packages:
 WORKDIR /$WORKDIR/ros
 COPY $SRC_DIRECTORY/alliander_core/src/ /$WORKDIR/ros/src
@@ -35,6 +47,12 @@ ENV ROS_DISTRO=jazzy
 # Copy environments
 COPY --from=builder /$WORKDIR/.venv /$WORKDIR/.venv
 COPY --from=builder /root/.bashrc /root/.bashrc
+
+# Copy external packages and install runtime dependencies:
+WORKDIR /$WORKDIR/external
+COPY --from=builder /$WORKDIR/external /$WORKDIR/external
+RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked --mount=type=cache,id=apt-lists,target=/var/lib/apt,sharing=locked /$WORKDIR/rosdep_install.sh --exec
+RUN rm -rf src build log
 
 # Copy alliander packages and install runtime dependencies:
 WORKDIR /$WORKDIR/ros
