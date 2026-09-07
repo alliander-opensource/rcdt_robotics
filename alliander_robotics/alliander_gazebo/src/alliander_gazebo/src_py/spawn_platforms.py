@@ -12,7 +12,6 @@ import numpy as np
 import rclpy
 from alliander_gazebo.create_apriltag import create_apriltag
 from alliander_utilities.config_objects import Apriltag, Platform, PlatformList
-from alliander_utilities.ros_utils import get_file_path
 from rclpy.node import Node
 from scipy.spatial.transform import RigidTransform, Rotation
 
@@ -82,9 +81,7 @@ class SpawnPlatform(Node):
             model_path = ""
             if isinstance(platform, Apriltag):
                 create_apriltag(platform, self)
-                model_path = get_file_path(
-                    "alliander_gazebo", ["models", "apriltag"], "model.sdf"
-                )
+                model_path = f"/tmp/apriltag_{platform.id}.sdf"
             self.spawn_platform(platform.namespace, position, orientation, model_path)
 
     def spawn_platform(

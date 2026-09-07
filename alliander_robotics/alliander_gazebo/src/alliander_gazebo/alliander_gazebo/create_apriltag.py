@@ -7,9 +7,13 @@ import PIL
 import requests
 import trimesh
 import trimesh.visual
+import xmltodict
 from alliander_utilities.config_objects import Apriltag
+from alliander_utilities.ros_utils import get_file_path
 from PIL import Image
 from rclpy.node import Node
+
+FAMILIY = "36h11"
 
 
 def create_apriltag(tag: Apriltag, node: Node) -> None:
@@ -19,8 +23,8 @@ def create_apriltag(tag: Apriltag, node: Node) -> None:
         tag (Apriltag): The AprilTag configuration object.
         node (Node): The ROS2 node used for logging.
     """
-    filename = tag.family.replace("h", "_") + f"_{tag.id:05d}" + ".png"
-    url = f"https://raw.githubusercontent.com/AprilRobotics/apriltag-imgs/master/tag{tag.family}/tag{filename}"
+    filename = FAMILIY.replace("h", "_") + f"_{tag.id:05d}" + ".png"
+    url = f"https://raw.githubusercontent.com/AprilRobotics/apriltag-imgs/master/tag{FAMILIY}/tag{filename}"
     try:
         img = np.array(Image.open(requests.get(url, stream=True).raw))
     except PIL.UnidentifiedImageError as _:
@@ -49,4 +53,19 @@ def create_apriltag(tag: Apriltag, node: Node) -> None:
         transform[0, -1] += size
 
     combined_mesh = trimesh.util.concatenate(meshes)
-    combined_mesh.export("/tmp/apriltag.glb", file_type="glb")
+    combined_mesh.export(f"/tmp/apriltag_{tag.id}.glb", file_type="glb")
+
+    sdf_path = get_file_path("alliander_gazebo", ["models", "apriltag"], "model.sdf")
+    with open(sdf_path, encoding="utf-8") as fd:
+        sdf_string = fd.read()
+
+    sdf_dict = xmltodict.parse(sdf_string)
+    sdf_dict["sdf"]["model"]["link"]["collision"]["geometry"]["mesh"]["uri"] = (
+        f"/tmp/apriltag_{tag.id}.glb"
+    )
+    sdf_dict["sdf"]["model"]["link"]["visual"]["geometry"]["mesh"]["uri"] = (
+        f"/tmp/apriltag_{tag.id}.glb"
+    )
+
+    with open(f"/tmp/apriltag_{tag.id}.sdf", "w", encoding="utf-8") as fd:
+        fd.write(xmltodict.unparse(sdf_dict))
